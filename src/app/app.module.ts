@@ -6,11 +6,13 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { HomeComponent } from './home/home.component';
+import { PlayerKhoiDongComponent } from './player-khoi-dong/player-khoi-dong.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    PlayerKhoiDongComponent
   ],
   imports: [
     BrowserModule,
