@@ -7,18 +7,27 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { HomeComponent } from './home/home.component';
 import { PlayerKhoiDongComponent } from './player-khoi-dong/player-khoi-dong.component';
+import { PlayerVcnvQuestionComponent } from './player-vcnv-question/player-vcnv-question.component';
+import { PlayerVcnvAnswerComponent } from './player-vcnv-answer/player-vcnv-answer.component';
+import { PlayerTangtocQComponent } from './player-tangtoc-q/player-tangtoc-q.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    PlayerKhoiDongComponent
+    PlayerKhoiDongComponent,
+    PlayerVcnvQuestionComponent,
+    PlayerVcnvAnswerComponent,
+    PlayerTangtocQComponent,
+  
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MaterialModule
+    MaterialModule,
+    
   ],
   providers: [],
   bootstrap: [AppComponent]

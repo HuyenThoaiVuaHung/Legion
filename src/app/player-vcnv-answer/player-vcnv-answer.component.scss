@@ -1,0 +1,48 @@
+.boxes,.boxes>h1{
+    transition:1s all
+}
+
+
+
+.boxes a{
+    transition:.25s all;
+    text-decoration:none;
+    color:#fff;
+    margin:10px 0;
+}
+.boxes div{
+    position:relative
+}
+
+@keyframes transitionLeft{
+    100%{
+        left:0}
+    }
+@keyframes transitionRight{
+    100%{
+        right:0}
+    }
+
+.boxes div:nth-child(odd) {       
+  right: 100%;
+  animation: 1s transitionRight forwards;
+}
+
+.boxes div:nth-child(even) {
+  left: 100%;
+  animation: 1s transitionLeft forwards;
+}
+@keyframes trasitionUp{
+    100%{
+        height: 100vh;
+    }
+    
+}
+.pole {
+    position:absolute;
+    height: 0;
+    overflow: hidden;
+    background-color:gray;
+    z-index:1;
+    animation:1s trasitionUp forwards;
+}

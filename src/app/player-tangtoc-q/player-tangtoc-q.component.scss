@@ -1,0 +1,23 @@
+.questionBox {
+    width: 960px;
+    height: 540px;
+}
+.very-long {
+    width : 600px;
+}
+ /* Change label color on focused */
+ ::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+    color: goldenrod !important;
+    caret-color: goldenrod !important;
+  }
+  
+  /* underline border color on focused */
+  ::ng-deep .mat-focused .mat-form-field-underline .mat-form-field-ripple{
+    background-color: goldenrod !important;
+    caret-color: goldenrod !important;
+  }
+  ::ng-deep .mat-form-field-cursor{
+    background-color: goldenrod !important;
+    caret-color: goldenrod !important;
+
+  }
