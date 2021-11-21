@@ -10,6 +10,8 @@ import { PlayerKhoiDongComponent } from './player-khoi-dong/player-khoi-dong.com
 import { PlayerVcnvQuestionComponent } from './player-vcnv-question/player-vcnv-question.component';
 import { PlayerVcnvAnswerComponent } from './player-vcnv-answer/player-vcnv-answer.component';
 import { PlayerTangtocQComponent } from './player-tangtoc-q/player-tangtoc-q.component';
+import { PlayerTangtocAComponent } from './player-tangtoc-a/player-tangtoc-a.component';
+import { PlayerVedichComponent } from './player-vedich/player-vedich.component';
 
 
 @NgModule({
@@ -20,6 +22,8 @@ import { PlayerTangtocQComponent } from './player-tangtoc-q/player-tangtoc-q.com
     PlayerVcnvQuestionComponent,
     PlayerVcnvAnswerComponent,
     PlayerTangtocQComponent,
+    PlayerTangtocAComponent,
+    PlayerVedichComponent,
   
   ],
   imports: [
