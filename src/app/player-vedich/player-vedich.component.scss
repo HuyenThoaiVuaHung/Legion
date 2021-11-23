@@ -1,0 +1,21 @@
+.questionBox {
+    width: max-content;
+    height: 540px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+.videoBox{
+    width: 720px;
+    height: 405px;
+}
+.very-long {
+    height: 64px;
+    width : 600px;
+}
+.disablePointerActions {
+    pointer-events: none;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+            user-select: none; 
+}

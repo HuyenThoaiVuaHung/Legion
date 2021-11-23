@@ -118,3 +118,4 @@ dist
 .pnp.*
 #angular
 .angular
+src/assets/testvid.mp4

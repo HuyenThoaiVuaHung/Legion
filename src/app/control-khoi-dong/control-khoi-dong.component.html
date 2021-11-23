@@ -1,0 +1,69 @@
+<div class="bg-gray-darkest flex w-screen h-screen">
+  <div class="half-width float-left flex-col flex text-center overflow-hidden table-container">
+    <div class="m-5">
+      <div class="inline mr-10">
+        <button mat-raised-button class="w-52">Âm thanh khoảng trống</button>
+      </div>
+      <div class="inline mr-10">
+        <button mat-raised-button>Đúng</button>
+      </div>
+      <div class="inline">
+        <button mat-raised-button>Sai</button>
+      </div>
+    </div>
+    <div class="overflow-x-hidden mb-5 mr-5 ml-5 height-600 w-max h-auto text-xs">
+      <table mat-table [dataSource]="questionTableData" class="">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+        </ng-container>
+        <ng-container matColumnDef="question"> 
+          <th mat-header-cell *matHeaderCellDef> Câu hỏi </th>
+          <td mat-cell *matCellDef="let element"> {{element.question}} </td>
+        </ng-container>
+        <ng-container matColumnDef="answer">
+          <th mat-header-cell *matHeaderCellDef> Đáp án </th>
+          <td mat-cell *matCellDef="let element"> {{element.answer}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedQuestionColumns;"></tr>
+      </table>
+    </div>
+  </div>
+  <div class="half-width flex flex-col items-center  float-right text-center overflow-hidden table-container">
+    <div class="m-5">
+
+      <div class="inline mr-10">
+        <button mat-raised-button class="w-52">Tạm dừng</button>
+      </div>
+      <div class="inline">
+        <button mat-raised-button class="w-52">Bắt đầu</button>
+      </div>
+    </div>
+    <div class="text-3xl text-white">
+      Lượt hiện tại: Nguyễn Phạm Văn Nguyên
+      <br>
+      Thời gian đã qua: 12s22ms
+    </div>
+    <div class="overflow-x-hidden w-max m-10 text-2xl">
+      <table mat-table [dataSource]="playerTableData" class="w-max">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+        </ng-container>
+        <ng-container matColumnDef="name"> 
+          <th mat-header-cell *matHeaderCellDef> Tên </th>
+          <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+        </ng-container>
+        <ng-container matColumnDef="score">
+          <th mat-header-cell *matHeaderCellDef> Điểm </th>
+          <td mat-cell *matCellDef="let element"> {{element.score}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedPlayerColumns;"></tr>
+      </table>
+  </div>
+  <div class="fixed z-50 bottom-0 right-0">
+    <button mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">Chuyển tới phần VCNV</button>
+</div>
+</div>

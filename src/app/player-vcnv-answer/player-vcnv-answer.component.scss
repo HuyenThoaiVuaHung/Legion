@@ -46,3 +46,9 @@
     z-index:1;
     animation:1s trasitionUp forwards;
 }
+.disablePointerActions {
+    pointer-events: none;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+            user-select: none; 
+}
