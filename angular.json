@@ -109,7 +109,8 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/video.js/dist/video.min.js"
+              "node_modules/video.js/dist/video.min.js",
+              "node_modules/socket.io-client/dist/socket.io.min.js"
             ]
           }
         }

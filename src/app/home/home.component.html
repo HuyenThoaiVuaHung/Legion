@@ -5,13 +5,15 @@
             <img class="w-32 h-32 m-auto" src="../../assets/htvhlogobw.png">
         </div>
         <p class=" text-4xl">Chào mừng bạn đến với Huyền Thoại Vua Hùng IV!</p>
-        <mat-form-field>
-            <mat-label>Nhập ID do BTC cung cấp</mat-label>
-            <input matInput placeholder="ID">
-        </mat-form-field>
-        <button mat-icon-button>
-            <mat-icon>chevron_right</mat-icon>
-        </button>
+        <div *ngIf="ifAuth === false">
+            <mat-form-field>
+                <mat-label>Nhập ID do BTC cung cấp</mat-label>
+                <input matInput placeholder="ID" [(ngModel)]="authString" >
+            </mat-form-field>
+            <button mat-icon-button (click)="auth()">
+                <mat-icon>chevron_right</mat-icon>
+            </button>
+        </div>
     </div>    
 </div>
 
