@@ -2,7 +2,7 @@
 <div class="flex h-screen justify-center bg-gray text-white items-center">
     <div class="text-center font-black">
         <div class="m-3">
-            <img class="w-32 h-32 m-auto" src="../../assets/htvhlogobw.png">
+            <img class="w-48 h-48 m-auto" src="../../assets/htvhlogo-small.png">
         </div>
         <p class=" text-4xl">Chào mừng bạn đến với Huyền Thoại Vua Hùng IV!</p>
         <div *ngIf="ifAuth === false">
@@ -13,6 +13,9 @@
             <button mat-icon-button (click)="auth()">
                 <mat-icon>chevron_right</mat-icon>
             </button>
+        </div>
+        <div class=" text-3xl text-white" *ngIf="ifAuth === true">
+            {{greetString}}
         </div>
     </div>    
 </div>
