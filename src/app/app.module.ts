@@ -15,6 +15,7 @@ import { PlayerVedichComponent } from './player-vedich/player-vedich.component';
 import { ControlKhoiDongComponent } from './control-khoi-dong/control-khoi-dong.component';
 import { ControlVcnvComponent } from './control-vcnv/control-vcnv.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,

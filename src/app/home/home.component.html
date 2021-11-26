@@ -4,7 +4,7 @@
         <div class="m-3">
             <img class="w-48 h-48 m-auto" src="../../assets/htvhlogo-small.png">
         </div>
-        <p class=" text-4xl">Chào mừng bạn đến với Huyền Thoại Vua Hùng IV!</p>
+        <p class="text-4xl">Chào mừng bạn đến với Huyền Thoại Vua Hùng IV!</p>
         <div *ngIf="ifAuth === false">
             <mat-form-field>
                 <mat-label>Nhập ID do BTC cung cấp</mat-label>
@@ -14,9 +14,31 @@
                 <mat-icon>chevron_right</mat-icon>
             </button>
         </div>
-        <div class=" text-3xl text-white" *ngIf="ifAuth === true">
-            {{greetString}}
+        <div class=" flex flex-col  items-center text-center overflow-hidden" *ngIf="ifAuth === true">
+            <div>
+                {{authString}}
+            </div>
+            <div *ngIf="greetString === 'Chào BTC' ">
+                <div class="text-2xl mt-5 flex">
+                    <table mat-table [dataSource]="playerList" class="w-max">
+                      <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef> STT </th>
+                        <td mat-cell *matCellDef="let element"> {{playerList.indexOf(element) + 1}} </td>
+                      </ng-container>
+                      <ng-container matColumnDef="name"> 
+                        <th mat-header-cell *matHeaderCellDef> Tên </th>
+                        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
+                      <tr mat-row *matRowDef="let row; columns: displayedPlayerColumns;"></tr>
+                    </table>
+                </div>
+                <div class="mt-5">
+                    <button mat-raised-button (click)="transferToKhoiDong()" > Chuyển tới phần Khởi Động </button>
+                </div>
+            </div>
         </div>
+        
     </div>    
 </div>
 

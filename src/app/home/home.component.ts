@@ -13,11 +13,13 @@ import { Route } from '@angular/compiler/src/core';
 export class HomeComponent implements OnInit {
 
   constructor(/*private socketService: SocketService*/private router: Router) { }
+  displayedPlayerColumns: string[] = ['id','name'];
   ifAuth : boolean = false;
   roleID: number = 0;
   socket = io.connect('http://localhost:3000');
   authString: string = '';
   greetString: string = "Chào ";
+  playerList: any[] = [];
   ngOnInit(): void {
     this.initSocket();
   }
@@ -33,8 +35,14 @@ export class HomeComponent implements OnInit {
         if (callback.playerInfo != undefined){
           this.greetString = "Chào " + callback.playerInfo.name;
         }
-        else {
+        else{
           this.greetString = "Chào BTC"
+          this.playerList = callback.connectedPlayers;
+          this.socket.on('update-connected-players', (data) => {
+            this.playerList = data;
+            console.log(this.playerList);
+            }
+          )
         }
       }
       else {
@@ -51,6 +59,10 @@ export class HomeComponent implements OnInit {
         this.socket.emit('error', 'Not authenticated' + this.socket.id)
       }
     }) 
+  }
+  transferToKhoiDong(){
+    this.socket.emit('beginMatch');
+    this.router.navigate(['c-kd']);
   }
 
 }
