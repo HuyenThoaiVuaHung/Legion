@@ -2,6 +2,7 @@
 export interface KDQuestion {
     id: number,
     question: string,
+    ifSong: boolean,
     answer: string,
 }
 

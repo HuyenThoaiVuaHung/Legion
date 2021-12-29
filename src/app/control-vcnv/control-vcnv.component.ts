@@ -19,14 +19,15 @@ export class ControlVcnvComponent implements OnInit {
     {question: '', answer: 'XUÂN QUỲNH', type: 'CNV', value: 40, id: 6},
   ];
   playerTableData: Player[] = [
-    {name: 'Nguyễn Văn A', score: 0, id: 1, answerVCNV: 'Lorem ipsum sumit elmait'},
-    {name: 'Nguyễn Văn B', score: 0, id: 2, answerVCNV: 'Lorem ipsum sumit elmait'},
-    {name: 'Nguyễn Văn C', score: 0, id: 3, answerVCNV: 'Lorem ipsum sumit elmait'},
-    {name: 'Nguyễn Văn D', score: 0, id: 4, answerVCNV: 'Lorem ipsum sumit elmait'},
+    {name: 'Nguyễn Văn A', score: 0, isReady: false, id: 0},
+    {name: 'Nguyễn Văn B', score: 0, isReady: false, id: 1},
+    {name: 'Nguyễn Văn C', score: 0, isReady: false, id: 2},
+    {name: 'Nguyễn Văn D', score: 0, isReady: false, id: 3},
   ];
   displayedQuestionColumns: string[] = ['id','question', 'answer', 'type', 'value','action'];
   displayedPlayerColumns: string[] = ['id','name', 'score', 'response', 'mark'];
   ngOnInit(): void {
+    
   }
 
 }

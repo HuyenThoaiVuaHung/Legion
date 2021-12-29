@@ -19,46 +19,45 @@ export class HomeComponent implements OnInit {
   socket = io.connect('http://localhost:3000');
   authString: string = '';
   greetString: string = "Chào ";
-  playerList: any[] = [];
+  matchData : any;
   ngOnInit(): void {
     this.initSocket();
   }
   auth(){
-    console.log(this.authString);
+    console.log("Đăng nhập với :" + this.authString);
     this.socket.emit('init-authenticate', this.authString, (callback) => {
-      console.log(callback.ifValid);
-      if(callback.ifValid == true){
-        console.log('abcdfeasdgfagdfbvcx')
-        this.ifAuth = true;
-        console.log(callback.playerInfo);
+      if (callback.roleId == 0){
         localStorage.setItem('authString', this.authString);
-        if (callback.playerInfo != undefined){
-          this.greetString = "Chào " + callback.playerInfo.name;
-        }
-        else{
-          this.greetString = "Chào BTC"
-          this.playerList = callback.connectedPlayers;
-          this.socket.on('update-connected-players', (data) => {
-            this.playerList = data;
-            console.log(this.playerList);
-            }
-          )
-        }
+        this.matchData = callback.matchData;
+        this.ifAuth = true;
+        this.roleID = callback.roleId;
+        this.greetString = "Chào " + callback.player.name;
       }
-      else {
-        console.log('Wrong token')
+      else if (callback.roleId == 1){ 
+        this.roleID = 1;
+        this.ifAuth = true;
+        localStorage.setItem('authString', this.authString);
+        this.greetString = "Chào BTC";
+        this.matchData = callback.matchData;
+        this.socket.on('update-match-data', (data) => {
+          this.matchData = data;
+          }
+        )
+      }
+      else if(callback.roleId == -1){
+        console.warn("Không có quyền truy cập (Secret sai)!");
       }
     });
   }
   initSocket(){
     this.socket.on('beginMatch', () => {
       if (this.ifAuth == true) {
-        this.router.navigate(['pl-kd']);
+       this.router.navigate(['pl-kd']);
       }
       else {
         this.socket.emit('error', 'Not authenticated' + this.socket.id)
       }
-    }) 
+    });
   }
   transferToKhoiDong(){
     this.socket.emit('beginMatch');

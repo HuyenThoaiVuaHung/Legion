@@ -14,6 +14,14 @@
   width: 320px;
   text-align: left;
 }
+.highlight {
+  background-color: #2d2d2d !important;
+  color: #000 !important;
+}
+
+.row:hover{
+  background-color: whitesmoke;
+}
 .mat-column-answer{
   width: 320px;
   text-align: left;
@@ -28,7 +36,4 @@
   width: 80px;
   text-align: center;
   padding: 0px;
-}
-th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
-  padding-left: 0px;
 }
