@@ -2,8 +2,9 @@
 <div mat-dialog-content>
   <div>
     <mat-radio-group aria-label="Chọn loại câu hỏi" [(ngModel)]="data.type">
-        <mat-radio-button value="N">Bình thường</mat-radio-button>
-        <mat-radio-button value="A">Âm thanh</mat-radio-button>
+        <mat-radio-button class=" p-5" value="N">Bình thường</mat-radio-button>
+        <mat-radio-button class=" p-5" value="A">Âm thanh</mat-radio-button>
+        <mat-radio-button class=" p-5" value="P">Hình ảnh</mat-radio-button>
     </mat-radio-group>
     <mat-form-field class="inputForm">
       <input matInput placeholder="Câu hỏi" [(ngModel)]="data.question">
@@ -14,8 +15,8 @@
         </mat-form-field>
     </div>
     <div>
-      <mat-form-field class="inputForm">
-          <input matInput placeholder="Tên file âm thanh" [(ngModel)]="data.audioFilePath">
+      <mat-form-field class="inputForm" >
+          <input [disabled]="data.type == 'N'" matInput placeholder="Tên file âm thanh/hình ảnh" [(ngModel)]="data.audioFilePath">
       </mat-form-field>
   </div>
   </div>

@@ -14,23 +14,36 @@
                 <mat-icon>chevron_right</mat-icon>
             </button>
         </div>
-        <div class=" flex flex-col  items-center text-center overflow-hidden" *ngIf="ifAuth === true">
+        <div class=" flex flex-col text-2xl items-center text-center overflow-hidden" *ngIf="ifAuth === true">
             <div>
-                {{authString}}
+                {{greetString}}
             </div>
-            <div *ngIf="greetString === 'Chào BTC' ">
-                <div class="text-2xl mt-5 flex">
+            <div *ngIf="roleID === 1">
+                <div class="overflow-x-hidden w-max m-10 text-2xl">
                     <table mat-table [dataSource]="matchData.players" class="w-max">
                       <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef> STT </th>
+                        <th mat-header-cell *matHeaderCellDef> ID </th>
                         <td mat-cell *matCellDef="let element"> {{matchData.players.indexOf(element) + 1}} </td>
                       </ng-container>
                       <ng-container matColumnDef="name"> 
                         <th mat-header-cell *matHeaderCellDef> Tên </th>
                         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
                       </ng-container>
+                      <ng-container matColumnDef="score">
+                        <th mat-header-cell *matHeaderCellDef> Điểm </th>
+                        <td mat-cell *matCellDef="let element"> {{element.score}} </td>
+                      </ng-container>
+                      <ng-container matColumnDef="active">
+                        <th mat-header-cell *matHeaderCellDef> Đã kết nối? </th>
+                        <td mat-cell *matCellDef="let element">
+                          <mat-checkbox disabled="true" [checked]="element.isReady"></mat-checkbox>  
+                        </td>
+                      </ng-container>
                       <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
-                      <tr mat-row *matRowDef="let row; columns: displayedPlayerColumns;"></tr>
+                      <tr mat-row *matRowDef="let row;
+                          columns: displayedPlayerColumns;"
+                          class="row"
+                      ></tr>
                     </table>
                 </div>
                 <div class="mt-5">

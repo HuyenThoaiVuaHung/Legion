@@ -15,6 +15,7 @@ import { PlayerVedichComponent } from './player-vedich/player-vedich.component';
 import { ControlKhoiDongComponent } from './control-khoi-dong/control-khoi-dong.component';
 import { ControlVcnvComponent } from './control-vcnv/control-vcnv.component';
 import { FormQKdComponent } from './form-q-kd/form-q-kd.component';
+import { FormPlayerComponent } from './form-player/form-player.component';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import { FormQKdComponent } from './form-q-kd/form-q-kd.component';
     ControlKhoiDongComponent,
     ControlVcnvComponent,
     FormQKdComponent,
+    FormPlayerComponent,
   
   ],
   imports: [

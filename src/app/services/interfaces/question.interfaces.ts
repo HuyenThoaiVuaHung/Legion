@@ -1,10 +1,4 @@
 
-export interface KDQuestion {
-    id: number,
-    question: string,
-    ifSong: boolean,
-    answer: string,
-}
 
 export interface VCNVQuestion {
     id: number,
@@ -12,4 +6,5 @@ export interface VCNVQuestion {
     answer: string,
     type: "HN" | "HN_S" | "CNV",
     value: number,
+    state?: 'Yes' | 'No' | 'Pending',
 }

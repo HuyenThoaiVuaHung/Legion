@@ -1,18 +1,16 @@
 <div class="bg-gray-darkest flex w-screen h-screen">
   <div class="half-width float-left flex-col flex text-center overflow-hidden table-container">
     <div class="m-5">
+      <div class="inline mr-5 text-white text-xl">Thí sinh giành quyền: {{lastTurn.name}}</div>
       <div class="inline mr-10">
-        <button mat-raised-button class="w-52">Âm thanh khoảng trống</button>
-      </div>
-      <div class="inline mr-10">
-        <button mat-raised-button>Đúng</button>
+        <button mat-raised-button (click)="markCorrect()">Đúng</button>
       </div>
       <div class="inline">
-        <button mat-raised-button>Sai</button>
+        <button mat-raised-button (click)="markWrong()">Sai</button>
       </div>
     </div>
-    <div class="overflow-x-hidden mb-5 mr-5 ml-5 height-600 w-max h-auto text-xs">
-      <table mat-table [dataSource]="questionTableData" class="">
+    <div class="overflow-x-hidden text-center mb-5 mr-5 ml-5 height-600 w-max h-auto text-xs">
+      <table mat-table [dataSource]="kdData.questions" class="">
         <ng-container matColumnDef="question"> 
           <th mat-header-cell *matHeaderCellDef> Câu hỏi </th>
           <td mat-cell *matCellDef="let element"> {{element.question}} </td>
@@ -20,6 +18,10 @@
         <ng-container matColumnDef="answer">
           <th mat-header-cell *matHeaderCellDef> Đáp án </th>
           <td mat-cell *matCellDef="let element"> {{element.answer}} </td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef> Loại </th>
+          <td mat-cell *matCellDef="let element"> {{element.type}} </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
         <tr mat-row *matRowDef="let row; columns:
@@ -29,10 +31,17 @@
          (click)="onClickQuestion(row)"
          (dblclick)="onDoubleClickQuestion(row)"
          [ngClass]="{'highlight': displayingRow === row}"
+         [ngClass]="{'choose': chosenRow === row}"
          ></tr>
       </table>
     </div>
     <div class=" text-right text-white mr-5">
+      <button mat-icon-button (click)="clearQuestion()">
+        <mat-icon>visibility_off</mat-icon>
+      </button>
+      <button mat-icon-button (click)="editQuestion()">
+        <mat-icon>edit</mat-icon>
+      </button>
       <button mat-icon-button (click)="addQuestion()">
         <mat-icon>add</mat-icon>
       </button>
@@ -42,25 +51,29 @@
     </div>
   </div>
   <div class="half-width flex flex-col items-center  float-right text-center overflow-hidden table-container">
-    <div class="m-5">
-
+    <div class="m-5 flex-col text-white text-xl">
       <div class="inline mr-10">
-        <button mat-raised-button class="w-52">Tạm dừng</button>
+        <button mat-raised-button (click)="clockStart(60)" class="w-52">Bắt đầu 60s</button>
+      </div>
+      <div class="inline mr-10">
+        <button mat-raised-button (click)="clockStart(90)" class="w-52">Bắt đầu 90s</button>
       </div>
       <div class="inline">
-        <button mat-raised-button class="w-52">Bắt đầu</button>
+        <button mat-raised-button (click)="clockPause()" class="w-52">Pause/Resume thời gian</button>
+      </div>
+      <div class=" mt-5">
+        <button mat-raised-button (click)="start3sTimer()" class="w-52">Bắt đầu 3s</button>
       </div>
     </div>
     <div class="text-3xl text-white">
-      Lượt hiện tại: Nguyễn Phạm Văn Nguyên
       <br>
-      Thời gian đã qua: 12s22ms
+      Thời gian đã qua: {{currentTime}}s
     </div>
     <div class="overflow-x-hidden w-max m-10 text-2xl">
-      <table mat-table [dataSource]="playerTableData" class="w-max">
+      <table mat-table [dataSource]="matchData.players" class="w-max">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef> ID </th>
-          <td mat-cell *matCellDef="let element"> {{playerTableData.indexOf(element) + 1}} </td>
+          <td mat-cell *matCellDef="let element"> {{matchData.players.indexOf(element) + 1}} </td>
         </ng-container>
         <ng-container matColumnDef="name"> 
           <th mat-header-cell *matHeaderCellDef> Tên </th>
@@ -70,11 +83,17 @@
           <th mat-header-cell *matHeaderCellDef> Điểm </th>
           <td mat-cell *matCellDef="let element"> {{element.score}} </td>
         </ng-container>
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef> Đã kết nối? </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-checkbox disabled="true" [checked]="element.isReady"></mat-checkbox>  
+          </td>
+        </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
         <tr mat-row *matRowDef="let row;
             columns: displayedPlayerColumns;"
             class="row"
-            
+            (dblclick)="onDoubleClickPlayer(row)"
         ></tr>
       </table>
   </div>

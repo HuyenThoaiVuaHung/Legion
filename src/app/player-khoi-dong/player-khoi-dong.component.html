@@ -1,16 +1,23 @@
-<div class="bg-gray-dark disablePointerActions flex h-screen sm:h-full w-screen">
+<div class="bg-gray-dark  flex h-screen sm:h-full w-screen">
  
   <div class="float-left  ml-5">
-    <div class="w-64 h-64 drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">01</div>
-    <div class=" text-2xl w-64 rounded-xl md:text-xl text-white mt-11 text-center ">Lượt: Nguyễn Phạm Văn Nguyên</div>
-    <div class=" text-2xl w-64 rounded-xl md:text-xl text-white mt-5 text-center "> 10/13</div>
-    <div class=" text-2xl w-64 rounded-xl md:text-xl text-white mt-1 text-center "> 11 QPM</div>
-    <div class=" text-2xl w-64 rounded-xl md:text-xl text-white mt-10 text-center ">Số điểm:</div>
-    <div class=" text-8xl w-64 rounded-xl  text-blue-light mt-5 text-center ">100</div>
+    <div class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">{{time}}</div>
+    <div class=" text-2xl disablePointerActions w-64 rounded-xl md:text-xl text-white mt-11 text-center ">{{player.name}}</div>
+    <div  [ngClass]="{'opacity-0': threeSecTimer === 0 }" class=" text-4xl disablePointerActions w-64 rounded-xl text-white mt-10 text-center ">{{threeSecTimer}}</div>
+    <div class=" text-2xl disablePointerActions w-64 rounded-xl md:text-xl text-white mt-10 text-center ">Số điểm:</div>
+    <div class=" text-8xl disablePointerActions w-64 rounded-xl  text-blue-light mt-5 text-center ">{{player.score}}</div>
+    <div class=" text-2xl w-64 rounded-xl mt-2 text-center">
+      <button mat-button class=" bg-gray h-20 text-xl p-5 text-white" (click)="getAnswerTurn()" [disabled]="answerButtonDisabled">
+        GIÀNH QUYỀN TRẢ LỜI
+      </button>
+    </div>
   </div>
-  <div class="
+  <div class=" disablePointerActions
   bg-gray drop-shadow-lg questionBox float-right mt-5 ml-10 mr-10 p-10 text-3xl border-2 text-white rounded-xl
   ">
-  {{question}}
+  {{question.question}}
+  <img *ngIf="picturePath != ''" src="{{picturePath}}" class=" h-52 mt-10">
+  <div *ngIf="answerCache != ''" class=" flex mt-10 bg-gray-dark rounded-l p-5">{{answerCache}}</div>
+  
   </div>
 </div>

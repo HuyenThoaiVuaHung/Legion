@@ -18,19 +18,27 @@
   background-color: #2d2d2d !important;
   color: #000 !important;
 }
-
+.choose{
+  background-color: #404040 !important;
+  color: #000 !important;
+}
 .row:hover{
-  background-color: whitesmoke;
+  background-color: rgb(64, 64, 64);
 }
 .mat-column-answer{
-  width: 320px;
+  width: 200px;
   text-align: left;
   padding-left: 10px;
 }
 .mat-column-name{
-  width: 320px;
+  width: 200px;
   text-align: left;
   padding-left: 10px;
+}
+.mat-column-score{
+  width: 1em;
+  text-align: center;
+  padding-right: 10px;
 }
 .mat-column-id {
   width: 80px;

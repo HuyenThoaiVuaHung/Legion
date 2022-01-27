@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Player } from '../services/interfaces/player.interface';
 import { of } from 'rxjs';
 import { Route } from '@angular/compiler/src/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -13,13 +14,14 @@ import { Route } from '@angular/compiler/src/core';
 export class HomeComponent implements OnInit {
 
   constructor(/*private socketService: SocketService*/private router: Router) { }
-  displayedPlayerColumns: string[] = ['id','name'];
+  displayedPlayerColumns: string[] = ['id','name', 'score','active'];
   ifAuth : boolean = false;
   roleID: number = 0;
-  socket = io.connect('http://localhost:3000');
+  socket = io.connect(environment.socketIp);
   authString: string = '';
   greetString: string = "Chào ";
   matchData : any;
+  player: any;
   ngOnInit(): void {
     this.initSocket();
   }
@@ -32,6 +34,12 @@ export class HomeComponent implements OnInit {
         this.ifAuth = true;
         this.roleID = callback.roleId;
         this.greetString = "Chào " + callback.player.name;
+        switch(this.matchData.matchPos){
+          case 'KD': this.router.navigate(['pl-kd']); break;
+          case 'VCNV': this.router.navigate(['pl-vcnv-q']); break;
+          case 'TT': this.router.navigate(['pl-tangtoc-q']); break;
+          case 'VD': this.router.navigate(['pl-vd']); break;
+        }
       }
       else if (callback.roleId == 1){ 
         this.roleID = 1;

@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class PlayerVcnvQuestionComponent implements OnInit {
 
   constructor() { }
-
+  imageSource = '../../assets/abcdxyz.png';
   ngOnInit(): void {
   }
 

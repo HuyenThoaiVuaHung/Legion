@@ -12,3 +12,19 @@ th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:
     padding-left: 0px;
   }
   
+  .mat-column-name{
+    width: 200px;
+    text-align: left;
+    padding-left: 10px;
+  }
+  .mat-column-score{
+    width: 1em;
+    text-align: center;
+    padding-right: 10px;
+  }
+  .mat-column-id {
+    width: 80px;
+    text-align: center;
+    padding: 0px;
+  }
+    
