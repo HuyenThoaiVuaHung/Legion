@@ -86,8 +86,6 @@ export class PlayerVcnvQuestionComponent implements OnInit {
     this.VCNVStrings.forEach((element, index) => {
       element = element.replace(/\s/g, '');
       element = element.toUpperCase();
-      console.log(element);
-      console.log(index);
       if (this.vcnvData.questions[index].ifOpen == false){
         let processedString = '';
         for (let i = 0; i < element.length; i++){
@@ -97,7 +95,6 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       }
       this.VCNVStrings[index] = element;
     })
-    console.log(this.VCNVStrings);
   }
   submitAnswer(){
     this.answerCache = this.playerAnswer.toUpperCase();

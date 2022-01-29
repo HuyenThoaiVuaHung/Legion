@@ -14,11 +14,16 @@
             <input matInput placeholder="Đáp án" [(ngModel)]="data.answer">
         </mat-form-field>
     </div>
-    <div>
+    <div *ngIf="data.type != 'CNV'">
       <mat-form-field class="inputForm" >
           <input [disabled]="data.type == 'HN'" matInput placeholder="Tên file âm thanh" [(ngModel)]="data.audioFilePath">
       </mat-form-field>
-  </div>
+    </div>
+    <div *ngIf="data.type == 'CNV'">
+      <mat-form-field class="inputForm" >
+          <input [disabled]="data.type == 'HN'" matInput placeholder="Tên file hình ảnh" [(ngModel)]="data.picFileName">
+      </mat-form-field>
+    </div>
   </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Huỷ</button>

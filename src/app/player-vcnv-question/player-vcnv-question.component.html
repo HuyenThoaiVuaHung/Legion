@@ -6,7 +6,7 @@
             <div [ngClass]="{'opacity-0': vcnvData.questions[1].ifOpen === true}" class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell2 absolute z-10  text-white bg-gray border-2 border-white">2</div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[2].ifOpen === true}" class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell3 absolute z-10  text-white bg-gray border-2 border-white">3</div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[3].ifOpen === true}" class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell4 absolute bg-gray text-white z-10 border-2 border-white">4</div>
-            <img draggable="false" (dragstart)="false" class="min-h-full image min-w-full z-0 static flex-shrink-0" src='{{imageSource}}'>
+            <img draggable="false" (dragstart)="false" class="min-h-full image min-w-full z-0 static flex-shrink-0" src='../../assets/picture-questions/vcnv/{{vcnvData.questions[5].picFileName}}' >
         </div>
         <div class="mt-10 overflow-hidden text-center justify-center items-center cnvTextBox flex mr-10 float-right">
             <div class="">
