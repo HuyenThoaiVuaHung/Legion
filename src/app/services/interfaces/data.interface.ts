@@ -8,7 +8,7 @@ export interface VCNVData {
 export interface MatchData {
     socketId: string, // String phòng của SocketIO (eg: ohtvh4bk1), để gia nhập phòng
     matchName: string, // Tên trận đấu (eg: Bán Kết 1 - HTVH IV)
-    matchPos: 'H' | 'VCNV' | 'TT' | 'KD' | 'VD', // Vị trí trận đấu (VCNV, TT, KD, VD)
+    matchPos: 'H' | 'VCNV_Q' | 'VCNV_A' | 'TT_Q' | 'TT_A' | 'KD' | 'VD', // Vị trí trận đấu (VCNV, TT, KD, VD)
     players: Player[], // Danh sách các người chơi trong trận đấu
     KDFilePath: string, // Đường dẫn đến file KD
 }

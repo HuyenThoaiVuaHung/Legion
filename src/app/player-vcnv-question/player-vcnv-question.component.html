@@ -1,45 +1,53 @@
 <div class="relative overflow-hidden bg-gray-dark h-full w-screen">
     <div class="topPortion disablePointerActions">
         <div class="justify-center bg-blue-dark float-left mt-10 ml-10 cnvPicBox content-center overflow-hidden">
-            <div  class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCellCenter absolute z-20  text-white bg-gray border-2 border-white">5</div>
-            <div class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell1 absolute z-10  text-white bg-gray border-2 opacity-0 border-white" >1</div>
-            <div class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell2 absolute z-10  text-white bg-gray border-2 border-white">2</div>
-            <div class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell3 absolute z-10  text-white bg-gray border-2 border-white">3</div>
-            <div class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell4 absolute bg-gray text-white z-10 border-2 border-white">4</div>
+            <div [ngClass]="{'opacity-0': vcnvData.questions[4].ifOpen === true}"  class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCellCenter absolute z-20  text-white bg-gray border-2 border-white">5</div>
+            <div [ngClass]="{'opacity-0': vcnvData.questions[0].ifOpen === true}" class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell1 absolute z-10  text-white bg-gray border-2 border-white" >1</div>
+            <div [ngClass]="{'opacity-0': vcnvData.questions[1].ifOpen === true}" class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell2 absolute z-10  text-white bg-gray border-2 border-white">2</div>
+            <div [ngClass]="{'opacity-0': vcnvData.questions[2].ifOpen === true}" class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell3 absolute z-10  text-white bg-gray border-2 border-white">3</div>
+            <div [ngClass]="{'opacity-0': vcnvData.questions[3].ifOpen === true}" class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell4 absolute bg-gray text-white z-10 border-2 border-white">4</div>
             <img draggable="false" (dragstart)="false" class="min-h-full image min-w-full z-0 static flex-shrink-0" src='{{imageSource}}'>
         </div>
         <div class="mt-10 overflow-hidden text-center justify-center items-center cnvTextBox flex mr-10 float-right">
             <div class="">
-                <div class="bg-gray      h-auto p-3 text-right items-center justify-center text-4xl rounded-lg text-white">THIÊNVĂNHỌC</div>
-                <div class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-4xl rounded-lg text-white">◯◯◯◯◯◯◯◯◯</div>
-                <div class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-4xl rounded-lg text-white">SUPERTHICC</div>
-                <div class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-4xl rounded-lg text-white">⬤⬤⬤⬤⬤⬤⬤⬤</div>    
+                <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[0].question}" class="bg-gray      h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">{{VCNVStrings[0]}}</div>
+                <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[1].question}" class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">{{VCNVStrings[1]}}</div>
+                <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[2].question}" class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">{{VCNVStrings[2]}}</div>
+                <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[3].question}" class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">{{VCNVStrings[3]}}</div>    
             </div>
             <div class="ml-10">
-                <div class="bg-gray      h-auto p-3 text-right justify-center items-center flex-shrink-0 text-4xl rounded-lg text-white">1</div>
-                <div class="bg-gray mt-5 h-auto p-3 text-right justify-center items-center flex text-4xl rounded-lg text-white">2</div>
-                <div class="bg-gray mt-5 h-auto p-3 text-right justify-center items-center flex text-4xl rounded-lg text-white">3</div>
-                <div class="bg-gray mt-5 h-auto p-3 text-right justify-center items-center flex text-4xl rounded-lg text-white">4</div>    
+                <div class="      h-auto p-3 justify-center items-center flex-shrink-0 text-2xl text-center rounded-lg text-white">1</div>
+                <div class=" mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">2</div>
+                <div class=" mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">3</div>
+                <div class=" mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">4</div>    
             </div>
         </div>
     </div>
     <div>
-        <div class="text-xl ml-10 mt-5 text-white">CNV CÓ: X CHỮ CÁI</div>
-        <div  class="bg-gray disablePointerActions h-40 p-5 text-2xl w-auto block overflow-auto text-white ml-10 mt-5 mr-10 rounded-xl">
-            Nghề không ai nhờ tới ở thị trấn Mondstadt
+        <div class="text-xl ml-10 mt-5 disablePointerActions text-white">CNV CÓ: {{vcnvData.questions[5].answer.length}} CHỮ CÁI</div>
+        <div  class="bg-gray disablePointerActions h-40 text-left items float-left p-5 text-2xl question-box flex overflow-auto text-white ml-10 mt-5 rounded-xl">
+            {{curVCNVQuestion.question}}
+        </div>
+        <div class="bg-gray disablePointerActions h-40 p-5 text-center items-center justify-center flex float-right text-2xl w-40 overflow-auto text-white ml-3 mt-5 mr-10 rounded-xl">
+            <span class=" text-5xl">
+                {{matchData.players[playerIndex].score}}
+            </span>
         </div>
         <div class="relative float-left answer-box mt-1">
             <mat-form-field class="ml-10  form-field text-lg ">
-                <input matInput autocomplete="off" placeholder="Nhập đáp án vào đây" class="text-white ">
+                <input matInput autocomplete="off" [(ngModel)]="playerAnswer" placeholder="Nhập đáp án vào đây" class="text-white ">
             </mat-form-field>
-            <button mat-icon-button class="text-white"><mat-icon>done</mat-icon></button>
+            <button (click)="submitAnswer()" [disabled]="currentTime == 0 || disabledCNVButton == true" mat-icon-button class="text-white"><mat-icon>done</mat-icon></button>
         </div>
-        <div class="mr-10 disablePointerActions mt-8 text-right justify-center items-center flex text-white">
-            <p class=" text-2xl inline-block pr-32 text-white">THIÊN VĂN HỌC</p>
+        <div class="mr-10 disablePointerActions inline-flex mt-8 text-right justify-center items-center text-white">
+            <p class=" text-2xl  pr-32 text-white">{{answerCache}}</p>
+        </div>
+        <div class="mr-10 disablePointerActions inline-flex mt-8 text-right justify-center items-center text-white">
+            <p *ngIf="currentTime != 0" class=" text-2xl  pr-32 text-white">Thời gian: {{currentTime}}</p>
         </div>
     </div>
     <div class="fixed z-50 bottom-0 right-0">
-        <button mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">TRẢ LỜI CNV</button>
+        <button [disabled]="disabledCNVButton == true" (click)="attemptVCNV()" mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">TRẢ LỜI CNV</button>
     </div>
 
 </div>

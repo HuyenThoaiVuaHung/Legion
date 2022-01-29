@@ -8,8 +8,11 @@
       <div class="inline">
         <button mat-raised-button (click)="markWrong()">Sai</button>
       </div>
+      <div class=" mt-5">
+        <button mat-raised-button (click)="start3sTimer()" class="w-52">Bắt đầu 3s</button>
+      </div>
     </div>
-    <div class="overflow-x-hidden text-center mb-5 mr-5 ml-5 height-600 w-max h-auto text-xs">
+    <div class="overflow-x-hidden text-center mb-5 mr-5 ml-5 height-600 w-auto h-auto text-xs">
       <table mat-table [dataSource]="kdData.questions" class="">
         <ng-container matColumnDef="question"> 
           <th mat-header-cell *matHeaderCellDef> Câu hỏi </th>
@@ -30,8 +33,7 @@
          [ngClass]="{'bg-gray-light text-gray-darkest': row.ifSong === true}"
          (click)="onClickQuestion(row)"
          (dblclick)="onDoubleClickQuestion(row)"
-         [ngClass]="{'highlight': displayingRow === row}"
-         [ngClass]="{'choose': chosenRow === row}"
+         [ngClass]="{'highlight': displayingRow === row, 'choose': chosenRow === row}"
          ></tr>
       </table>
     </div>
@@ -61,9 +63,7 @@
       <div class="inline">
         <button mat-raised-button (click)="clockPause()" class="w-52">Pause/Resume thời gian</button>
       </div>
-      <div class=" mt-5">
-        <button mat-raised-button (click)="start3sTimer()" class="w-52">Bắt đầu 3s</button>
-      </div>
+
     </div>
     <div class="text-3xl text-white">
       <br>
@@ -98,6 +98,6 @@
       </table>
   </div>
   <div class="fixed z-50 bottom-0 right-0">
-    <button mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">Chuyển tới phần VCNV</button>
+    <button (click)="goToVCNV()" mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">Chuyển tới phần VCNV</button>
 </div>
 </div>

@@ -35,6 +35,7 @@ export class ControlKhoiDongComponent implements OnInit {
     this.socket.emit('init-authenticate', this.authString, (callback) => {
       if(callback.roleId == 1){
         console.log('Logged in as admin');
+        this.socket.emit('change-match-position', 'KD')
         this.matchData = callback.matchData;
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
@@ -133,6 +134,9 @@ export class ControlKhoiDongComponent implements OnInit {
   }
   start3sTimer(){
     this.socket.emit('start-3s-timer-kd', false);
+  }
+  goToVCNV(){
+    this.router.navigate(['/c-vcnv'])
   }
   markCorrect(){
       if (this.lastTurn.name != ''){

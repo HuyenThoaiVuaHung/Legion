@@ -39,7 +39,7 @@
 .cnvTextBox {
     width: 640px;
     height: 360px;
-    letter-spacing: 18px;
+    letter-spacing: 9px;
 }
 .topPortion {
     display: block;
@@ -84,4 +84,10 @@
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
             user-select: none; 
+}
+.question-box {
+    width: 80%;
+  }
+.highlight {
+    background-color: goldenrod !important;
 }

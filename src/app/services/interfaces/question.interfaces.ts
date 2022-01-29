@@ -1,5 +1,3 @@
-
-
 export interface VCNVQuestion {
     id: number,
     question: string,

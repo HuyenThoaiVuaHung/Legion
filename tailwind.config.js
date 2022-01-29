@@ -30,6 +30,11 @@ module.exports = {
       },
       white: {
         DEFAULT: '#FFFFFF'
+      },
+      golden: {
+        DEFAULT: '#ebb000',
+        dark: '#d6a100',
+        light: '#ffd700'
       }
     }
   },

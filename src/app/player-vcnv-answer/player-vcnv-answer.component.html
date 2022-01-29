@@ -1,24 +1,24 @@
 <div class="overflow-y-hidden flex text-center justify-center bg-gray-darkest h-screen w-screen">
     <div class="w-3 bg-gray pole disablePointerActions overflow-hidden"></div>
     <div class="flex-shrink-0 disablePointerActions boxes overflow-hidden">
-        <div class=" w-80 ml-80 h-20 p-2 text-right mt-20 bg-gray overflow-hidden">
-            <p class=" text-sm text-gray-light">NGUYỄN VĂN THỊ ANH THANH</p>
-            <p class=" text-center text-lg text-white">THIÊN VĂN HỌC</p>
+        <div [ngClass]="{'opacity-50': vcnvData.playerAnswers[0].correct === false && vcnvData.showResults === true}" class=" w-80 ml-80 h-20 p-2 text-right mt-20 bg-gray overflow-hidden">
+            <p class=" text-sm text-gray-light">{{matchData.players[0].name}}</p>
+            <p class=" text-center text-lg text-white">{{vcnvData.playerAnswers[0].answer.toUpperCase()}}</p>
         </div>
-        <div class=" w-80 h-20 p-2 text-left mt-20 bg-gray overflow-hidden" >
-            <p class=" text-sm text-gray-light">NGUYỄN VĂN THỊ ANH THANH</p>
-            <p class=" text-center text-lg text-white">THIÊN VĂN HỌC</p>
+        <div [ngClass]="{'opacity-50': vcnvData.playerAnswers[1].correct === false && vcnvData.showResults === true}" class=" w-80 h-20 p-2 text-left mt-20 bg-gray overflow-hidden" >
+            <p class=" text-sm text-gray-light">{{matchData.players[1].name}}</p>
+            <p class=" text-center text-lg text-white">{{vcnvData.playerAnswers[1].answer.toUpperCase()}}</p>
         </div>
-        <div class=" w-80 h-20 ml-80 p-2 text-right mt-20 bg-gray overflow-hidden">
-            <p class=" text-sm text-gray-light">NGUYỄN VĂN THỊ ANH THANH</p>
-            <p class=" text-center text-lg text-white">THIÊN VĂN HỌC</p>
+        <div [ngClass]="{'opacity-50': vcnvData.playerAnswers[2].correct === false && vcnvData.showResults === true}" class=" w-80 h-20 ml-80 p-2 text-right mt-20 bg-gray overflow-hidden">
+            <p class=" text-sm text-gray-light">{{matchData.players[2].name}}</p>
+            <p class=" text-center text-lg text-white">{{vcnvData.playerAnswers[2].answer.toUpperCase()}}</p>
         </div>
-        <div class=" w-80 h-20 p-2 text-left mt-20 bg-gray overflow-hidden" >
-            <p class=" text-sm text-gray-light">NGUYỄN VĂN THỊ ANH THANH</p>
-            <p class=" text-center text-lg text-white">THIÊN VĂN HỌC</p>
+        <div [ngClass]="{'opacity-50': vcnvData.playerAnswers[3].correct === false && vcnvData.showResults === true}" class=" w-80 h-20 p-2 text-left mt-20 bg-gray overflow-hidden" >
+            <p class=" text-sm text-gray-light">{{matchData.players[3].name}}</p>
+            <p class=" text-center text-lg text-white">{{vcnvData.playerAnswers[3].answer.toUpperCase()}}</p>
         </div>
     </div>
     <div class="fixed z-50 bottom-0 right-0">
-        <button mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">TRẢ LỜI CNV</button>
+        <button (click)="attemptCNV()" [disabled]="disabledCNVButton" mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">TRẢ LỜI CNV</button>
     </div>
 </div>

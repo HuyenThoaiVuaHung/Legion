@@ -29,7 +29,14 @@ export class PlayerKhoiDongComponent implements OnInit {
   answerCache: string = '';
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
-      if(callback.roleId == 0 && callback.matchData.matchPos == 'KD'){
+      if(callback.roleId == 0){
+        switch(callback.matchData.matchPos){
+          case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
+          case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
+          case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
+          case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
+          case 'VD': this.router.navigate(['pl-vd']); break;
+        }
         console.log('Logged in as player');
         this.player = callback.player;
         this.questionObservable.subscribe((data) => {
@@ -65,6 +72,15 @@ export class PlayerKhoiDongComponent implements OnInit {
         });
         this.socket.on('update-clock', (clock) => {
           this.time = clock;
+        })
+        this.socket.on('update-match-data', (matchData) => {
+          switch(matchData.matchPos){
+            case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
+            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
+            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
+            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
+            case 'VD': this.router.navigate(['pl-vd']); break;
+          }
         })
       }
       else {

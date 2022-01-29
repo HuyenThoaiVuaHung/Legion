@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Player } from '../services/interfaces/player.interface';
-import { VCNVQuestion } from '../services/interfaces/question.interfaces';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { io } from 'socket.io-client';
+import { FormPlayerComponent } from '../form-player/form-player.component';
+import { FormQVcnvComponent } from '../form-q-vcnv/form-q-vcnv.component';
 
 @Component({
   selector: 'app-control-vcnv',
@@ -9,25 +12,129 @@ import { VCNVQuestion } from '../services/interfaces/question.interfaces';
 })
 export class ControlVcnvComponent implements OnInit {
   ifPlayerCNV : boolean = true;
-  constructor() { }
-  questionTableData: VCNVQuestion[] = [
-    {question: 'Lorem ipsum sumit elmait', answer: 'Lorem ipsum sumit elmait', type: 'HN_S', value: 10, id: 1},
-    {question: 'Lorem ipsum sumit elmait', answer: 'Lorem ipsum sumit elmait', type: 'HN', value: 10, id: 2},
-    {question: 'Lorem ipsum sumit elmait', answer: 'Lorem ipsum sumit elmait', type: 'HN', value: 10, id: 3},
-    {question: 'Lorem ipsum sumit elmait', answer: 'Lorem ipsum sumit elmait', type: 'HN', value: 10, id: 4},
-    {question: 'Lorem ipsum sumit elmait', answer: 'Lorem ipsum sumit elmait', type: 'HN', value: 10, id: 5},
-    {question: '', answer: 'XUÂN QUỲNH', type: 'CNV', value: 40, id: 6},
-  ];
-  playerTableData: Player[] = [
-    {name: 'Nguyễn Văn A', score: 0, isReady: false, id: 0},
-    {name: 'Nguyễn Văn B', score: 0, isReady: false, id: 1},
-    {name: 'Nguyễn Văn C', score: 0, isReady: false, id: 2},
-    {name: 'Nguyễn Văn D', score: 0, isReady: false, id: 3},
-  ];
+  socket = io('http://localhost:3000');
+  constructor(
+    public router: Router,
+    public dialog: MatDialog,
+  ) { }
+  vcnvData : any = {};
+  matchData: any = {};
+  currentTime : number = 0;
+  authString: string = '';
+  playerGetVCNV : any[] = [];
+  displayingRow: any = {};
+  chosenRow: any = {};
+  vcnvMark: boolean[] = [];
   displayedQuestionColumns: string[] = ['id','question', 'answer', 'type', 'value','action'];
-  displayedPlayerColumns: string[] = ['id','name', 'score', 'response', 'mark'];
+  displayedPlayerColumns: string[] = ['id','name', 'score', 'response', 'mark', 'active'];
+  displayedVCNVPlayersColumns: string[] = ['id','name', 'mark','time'];
   ngOnInit(): void {
-    
+    this.authString = localStorage.getItem('authString') || '';
+    console.log(this.authString);
+    this.socket.emit('init-authenticate', this.authString, (callback) => {
+      if(callback.roleId == 1){
+        console.log('Logged in as admin');
+        if(callback.matchData.matchPos != 'VCNV_Q' && callback.matchData.matchPos != 'VCNV_A'){
+          this.socket.emit('change-match-position', 'VCNV_Q');
+        }
+        this.matchData = callback.matchData;
+        this.socket.on('update-match-data', (data) => {
+          this.matchData = data;
+          }
+        )
+        this.socket.on('update-vcnv-data', (data) => {
+          this.vcnvData = data;
+          console.log(this.vcnvData.questions[5]);
+        });
+        this.socket.on('update-clock', (clock) => {
+          this.currentTime = clock;
+        })
+        this.socket.emit('get-vcnv-data', (callback) =>{
+          this.vcnvData = callback;
+          console.log(this.vcnvData.questions[5]);
+        });
+        this.socket.on('disconnect', () => {
+          this.socket.emit('leave-match', (this.authString))
+        })
+        this.socket.on('player-vcnv-get', (player) => {
+          this.playerGetVCNV.push(player);
+        })
+      }
+      else {
+        console.log('Wrong token');
+        this.router.navigate(['/']);
+      }
+    });
   }
-
+  onDoubleClickPlayer(row: any){
+    let player = this.matchData.players[this.matchData.players.indexOf(row)];
+    const dialogRef = this.dialog.open(FormPlayerComponent, {
+      data: player
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if(result){
+        var payload: any = { player: result, index: this.matchData.players.indexOf(row)};
+        payload.player.score = parseInt(payload.player.score);
+        this.socket.emit('edit-player-info', payload, (callback) => {
+          console.log(callback.message);
+        });
+      }
+    });
+  }
+  editQuestion(){
+    let question = this.vcnvData.questions[this.vcnvData.questions.indexOf(this.chosenRow)];
+    const dialogRef = this.dialog.open(FormQVcnvComponent, {
+      data: question
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if(result){
+        var payload: any = { question: result, index: this.vcnvData.questions.indexOf(this.chosenRow)};
+        payload.question.value = parseInt(payload.question.value);
+        this.vcnvData.questions[this.vcnvData.questions.indexOf(this.chosenRow)] = payload.question;
+        this.socket.emit('update-vcnv-data', this.vcnvData);
+      }
+    });
+  }
+  submitMark(){
+    this.socket.emit('submit-mark-vcnv-admin', this.vcnvData.playerAnswers);
+  }
+  onClickQuestion(row){
+    this.chosenRow = row;
+  }
+  onDoubleClickQuestion(row){
+    this.displayingRow = row;
+    this.socket.emit('highlight-vcnv-question', row.id, (callback) => {
+      console.log(callback.message);
+    })
+  }
+  openHN(id: number){
+    this.socket.emit('open-hn-vcnv', id);
+  }
+  showQuestion(){
+    this.socket.emit('broadcast-vcnv-question', this.displayingRow.id);
+  }
+  hideQuestion(){
+    this.socket.emit('broadcast-vcnv-question', 6)
+  }
+  closeHN(id: number){
+    this.socket.emit('close-hn-vcnv', id);
+  }
+  start15sTimer(){
+    this.socket.emit('start-clock', 15);
+  }
+  toggleResultsDisplay(){
+    this.socket.emit('toggle-results-display-vcnv');
+  }
+  toggleAnswerDisplay(){
+    if (this.matchData.matchPos == 'VCNV_Q'){
+      this.socket.emit('change-match-position', 'VCNV_A');
+    }
+    else if (this.matchData.matchPos == 'VCNV_A'){
+      this.socket.emit('change-match-position', 'VCNV_Q');
+    }
+  }
+  submitVCNVMark(){
+    console.log(this.vcnvMark);
+    this.socket.emit('submit-cnv-mark', this.vcnvMark);
+  }
 }

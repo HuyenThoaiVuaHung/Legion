@@ -36,8 +36,10 @@ export class HomeComponent implements OnInit {
         this.greetString = "Chào " + callback.player.name;
         switch(this.matchData.matchPos){
           case 'KD': this.router.navigate(['pl-kd']); break;
-          case 'VCNV': this.router.navigate(['pl-vcnv-q']); break;
-          case 'TT': this.router.navigate(['pl-tangtoc-q']); break;
+          case 'VCNV_Q': this.router.navigate(['pl-vcnv-q']); break;
+          case 'VCNV_A': this.router.navigate(['pl-vcnv-a']); break;
+          case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
+          case 'TT_A': this.router.navigate(['pl-tangtoc-a']); break;
           case 'VD': this.router.navigate(['pl-vd']); break;
         }
       }
