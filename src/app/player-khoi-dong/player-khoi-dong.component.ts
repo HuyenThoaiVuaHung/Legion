@@ -17,7 +17,8 @@ export class PlayerKhoiDongComponent implements OnInit {
   question: any = {};
   time: number = 0;
   player: any = {};
-  threeSecTimer: number = 0;
+  threeSecTimer1: number = 0;
+  threeSecTimer2: number = 0;
   audio: any = null;
   picturePath: string = '';
   questionObservable = new Observable((observer) => {
@@ -55,7 +56,7 @@ export class PlayerKhoiDongComponent implements OnInit {
             this.picturePath = '';
           }
         });
-        this.socket.on('disable-answer-button-kd', ()=> {
+        this.socket.on('disable-answer-button-kd', (abc)=> {
           this.answerButtonDisabled = true;
         })
         this.socket.on('enable-answer-button-kd', ()=> {
@@ -67,8 +68,13 @@ export class PlayerKhoiDongComponent implements OnInit {
         this.socket.on('update-player-score', (score) => {
           this.player.score = score;
         });
-        this.socket.on('update-3s-timer-kd', (time) => {
-          this.threeSecTimer = time;
+        this.socket.on('update-3s-timer-kd', (time, ifPlayer) => {
+          if(ifPlayer == true){
+            this.threeSecTimer2 = time;
+          }
+          else{
+            this.threeSecTimer1 = time;
+          }
         });
         this.socket.on('update-clock', (clock) => {
           this.time = clock;

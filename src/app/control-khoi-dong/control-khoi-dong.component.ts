@@ -29,6 +29,7 @@ export class ControlKhoiDongComponent implements OnInit {
   matchData: any = {};
   kdData: any = {};
   lastTurn: any = {name: ''};
+  threeSecTimers: number[] = [0,0];
   ngOnInit(): void {
     this.authString = localStorage.getItem('authString') || '';
     console.log(this.authString);
@@ -59,6 +60,14 @@ export class ControlKhoiDongComponent implements OnInit {
         this.socket.on('next-question', () => {
           this.nextQuestion();
           this.lastTurn.name = '';
+        })
+        this.socket.on('update-3s-timer-kd', (timer, ifPlayer) => {
+          if(ifPlayer){
+            this.threeSecTimers[1] = timer;
+          }
+          else{
+            this.threeSecTimers[0] = timer;
+          }
         })
       }
       else {
@@ -128,6 +137,7 @@ export class ControlKhoiDongComponent implements OnInit {
     this.socket.emit('start-clock', time, (callback) => {
       console.log(callback.message);
     });
+    this.nextQuestion();
   }
   clockPause(){
     this.socket.emit('play-pause-clock', this.currentTime);
@@ -147,8 +157,8 @@ export class ControlKhoiDongComponent implements OnInit {
       }
     }
   markWrong(){
-    this.socket.emit('stop-3s-timer-kd');
       if (this.lastTurn.name != ''){
+        this.socket.emit('stop-3s-timer-kd');
         this.socket.emit('wrong-mark-kd', true);
         this.nextQuestion();
         this.lastTurn.name = '';

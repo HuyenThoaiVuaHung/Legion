@@ -3,13 +3,13 @@
     <div class="m-5">
       <div class="inline mr-5 text-white text-xl">Thí sinh giành quyền: {{lastTurn.name}}</div>
       <div class="inline mr-10">
-        <button mat-raised-button (click)="markCorrect()">Đúng</button>
+        <button mat-raised-button [disabled]="lastTurn.name == ''" (click)="markCorrect()">Đúng</button>
       </div>
       <div class="inline">
-        <button mat-raised-button (click)="markWrong()">Sai</button>
+        <button mat-raised-button [disabled]="lastTurn.name == ''" (click)="markWrong()">Sai</button>
       </div>
       <div class=" mt-5">
-        <button mat-raised-button (click)="start3sTimer()" class="w-52">Bắt đầu 3s</button>
+        <button mat-raised-button [disabled]="threeSecTimers[1] > 0 || currentTime <= 0" (click)="start3sTimer()" class="w-52">Bắt đầu 3s</button>
       </div>
     </div>
     <div class="overflow-x-hidden text-center mb-5 mr-5 ml-5 height-600 w-auto h-auto text-xs">
