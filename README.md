@@ -6,7 +6,7 @@
 
 Sử dụng chủ yếu là Angular và TailwindCSS, được viết ban đầu bởi Ban Kỹ Thuật thuộc CLB Huyền Thoại Vua Hùng thuộc THPT Chuyên Hùng Vương, Gia Lai. 
 ## Cách khởi tạo server
-
+## Bạn cần Angular CLI phiên bản `>13.0.0` để chạy server!
 ### Server local
 Dùng `ng serve` để khởi tạo một server trên `localhost`
 ### Server LAN
