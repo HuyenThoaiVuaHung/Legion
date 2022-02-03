@@ -1,0 +1,131 @@
+<div class="bg-gray-darkest flex w-screen h-screen">
+    <div class="half-width float-left flex-col flex text-center overflow-hidden table-container">
+      <div class="m-5">
+      </div>
+      <div class="overflow-x-hidden mb-5 mr-5 ml-5 height-600 w-max h-auto text-xs">
+        <table mat-table [dataSource]="tangtocData.questions" class="">
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef> ID </th>
+            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+          </ng-container>
+          <ng-container matColumnDef="question"> 
+            <th mat-header-cell *matHeaderCellDef> Câu hỏi </th>
+            <td mat-cell *matCellDef="let element"> {{element.question}} </td>
+          </ng-container>
+          <ng-container matColumnDef="answer">
+            <th mat-header-cell *matHeaderCellDef> Đáp án </th>
+            <td mat-cell *matCellDef="let element"> {{element.answer}} </td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef> Loại </th>
+            <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedQuestionColumns;"
+              (click)="onClickQuestion(row)"
+              (dblclick)="onDoubleClickQuestion(row)"
+              [ngClass]="{'highlight': displayingRow === row, 'choose': chosenRow === row}"
+          ></tr>
+        </table>
+        <div class=" text-right text-white m-2">
+          <button mat-icon-button title="Chỉnh sửa câu hỏi đang chọn (nhấn 1 lần vào câu hỏi cần sửa)" (click)="editQuestion()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <span class=" pl-2">
+            <button mat-icon-button (click)="hideQuestion()">
+                <mat-icon>clear</mat-icon>
+            </button>
+          </span>
+          <span *ngIf="displayingRow.question" class=" pl-2">
+            <button mat-icon-button (click)="showQuestion()">
+                <mat-icon>visibility</mat-icon>
+            </button>
+          </span>
+          <span *ngIf="displayingRow.type == 'TT_IMG'"  class=" pl-2">
+            <button [ngClass]="{'bg-gray-lightest text-gray-darkest': tangtocData.showAnswer === true}" mat-raised-button (click)="toggleQuestionAnswer()">Toggle đáp án</button>
+          </span>
+          <span class="pl-2" *ngIf="displayingRow.type == 'TT_VD'">
+            <button mat-icon-button (click)="hideQuestion()">
+                <mat-icon>play_circle</mat-icon>
+            </button>
+          </span>
+          <span class="pl-2" *ngIf="displayingRow.type == 'TT_VD'">
+            <button mat-icon-button (click)="hideQuestion()">
+                <mat-icon>pause</mat-icon>
+            </button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="half-width flex flex-col items-center  float-right text-center overflow-hidden table-container">
+      <div class="m-5">
+  
+        <div class="inline">
+          <button mat-raised-button (click)="toggleAnswerDisplay()">Chuyển giữa xem đáp án/câu hỏi</button>
+        </div>
+        <div class="ml-5 inline">
+          <button mat-raised-button (click)="startTimer(10)">10s</button>
+        </div>
+        <div class="ml-5 inline">
+            <button mat-raised-button (click)="startTimer(20)">20s</button>
+          </div>
+          <div class="ml-5 inline">
+            <button mat-raised-button (click)="startTimer(30)">30s</button>
+          </div>
+          <div class="ml-5 inline">
+            <button mat-raised-button (click)="startTimer(40)">40s</button>
+          </div>
+        <div class="text-2xl mt-5 text-white">
+          Vị trí thí sinh: <span class="text-white">{{matchData.matchPos}}</span>
+        </div>
+      </div>
+      <div class="overflow-x-hidden w-max m-5 text-2xl">
+        <div class="text-white">Chấm</div>
+        <table mat-table [dataSource]="matchData.players" class="w-max">
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef> ID </th>
+            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+          </ng-container>
+          <ng-container matColumnDef="name"> 
+            <th mat-header-cell *matHeaderCellDef> Tên </th>
+            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+          </ng-container>
+          <ng-container matColumnDef="score">
+            <th mat-header-cell *matHeaderCellDef> Điểm </th>
+            <td mat-cell *matCellDef="let element"> {{element.score}} </td>
+          </ng-container>
+          <ng-container matColumnDef="response">
+            <th mat-header-cell *matHeaderCellDef> Trả lời </th>
+            <td mat-cell *matCellDef="let element"> {{tangtocData.playerAnswers[element.id - 1].answer}} </td>
+          </ng-container>
+          <ng-container matColumnDef="timestamp">
+            <th mat-header-cell *matHeaderCellDef> Thời điểm </th>
+            <td mat-cell *matCellDef="let element"> {{tangtocData.playerAnswers[element.id - 1].readableTime}} </td>
+          </ng-container>
+          <ng-container matColumnDef="mark">
+            <th mat-header-cell *matHeaderCellDef> Chấm </th>
+            <td mat-cell *matCellDef="let element"> 
+                <mat-checkbox (change)="socket.emit('update-tangtoc-data', tangtocData);" [(ngModel)]="tangtocData.playerAnswers[element.id - 1].correct">Đúng</mat-checkbox>    
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="active">
+            <th mat-header-cell *matHeaderCellDef> Đã kết nối? </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-checkbox disabled="true" [checked]="element.isReady"></mat-checkbox>  
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedPlayerColumns;"
+              (dblclick)="onDoubleClickPlayer(row)"></tr>
+        </table>
+        <div class="m-5 ">
+            <button mat-raised-button [disabled]="currentTime > 0" (click)="submitMark()">Xác Nhận</button>
+        </div>
+        <div class="m-5 inline">
+          <button [ngClass]="{'bg-gray-lightest text-gray-darkest': tangtocData.showResults === true}" mat-raised-button (click)="toggleResultsDisplay()">Toggle KQ chấm</button>
+        </div>
+    </div>
+    <div class="fixed z-50 bottom-0 right-0">
+      <button mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">Chuyển tới phần VĐ</button>
+  </div>
+</div>

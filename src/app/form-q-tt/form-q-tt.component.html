@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>Sửa câu hỏi</h1>
+<div mat-dialog-content class="h-full">
+  <div>
+    <mat-form-field class="inputForm">
+      <input matInput placeholder="Câu hỏi" [(ngModel)]="data.question">
+    </mat-form-field>
+    <mat-form-field class="inputForm">
+        <input matInput placeholder="Đáp án" [(ngModel)]="data.answer">
+    </mat-form-field>
+    <div *ngIf="data.type == 'TT_IMG'">
+      <mat-form-field class="inputForm" >
+          <input matInput placeholder="Tên file ảnh câu hỏi" [(ngModel)]="data.question_image">
+      </mat-form-field>
+      <mat-form-field class="inputForm" >
+        <input matInput placeholder="Tên file ảnh đáp án" [(ngModel)]="data.answer_image">
+    </mat-form-field>
+    </div>
+    <div *ngIf="data.type == 'TT_VD'">
+      <mat-form-field class="inputForm" >
+          <input matInput placeholder="Tên file video" [(ngModel)]="data.video_name">
+      </mat-form-field>
+    </div>
+  </div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Huỷ</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
+</div>
