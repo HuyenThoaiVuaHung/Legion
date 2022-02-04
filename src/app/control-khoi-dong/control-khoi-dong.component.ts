@@ -23,7 +23,7 @@ export class ControlKhoiDongComponent implements OnInit {
   displayingRow: any = null;
   chosenRow: any = null;
   currentTime: number = 0;
-  displayedQuestionColumns: string[] = ['question', 'answer', 'type'];
+  displayedQuestionColumns: string[] = ['question', 'answer', 'type', 'subject'];
   displayedPlayerColumns: string[] = ['id','name', 'score','active'];
   authString: string = '';
   matchData: any = {};

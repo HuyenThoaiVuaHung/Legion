@@ -15,6 +15,11 @@
         </mat-form-field>
     </div>
     <div>
+      <mat-form-field class="inputForm">
+          <input matInput placeholder="Lĩnh vực" [(ngModel)]="data.subject">
+      </mat-form-field>
+    </div>
+    <div>
       <mat-form-field class="inputForm" >
           <input [disabled]="data.type == 'N'" matInput placeholder="Tên file âm thanh/hình ảnh" [(ngModel)]="data.audioFilePath">
       </mat-form-field>
