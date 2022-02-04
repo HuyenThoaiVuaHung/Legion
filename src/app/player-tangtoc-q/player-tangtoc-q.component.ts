@@ -77,15 +77,17 @@ export class PlayerTangtocQComponent implements OnInit {
             }
             else if (this.curQuestion.type == 'TT_VD'){
               this.videoSource =  "../../../assets/video-questions/tt/" + this.ttData.questions[this.curQuestion.id - 1].video_name;
-              setTimeout(() => {
-                this.togglePlay();
-              }, 200)
             }
           }
           else{
             this.curQuestion = {};
+            this.imageSource = '';
+            this.videoSource = '';
           }
         });
+        this.socket.on('tangtoc-play-video', () => {
+          this.togglePlay();
+        })
       }
     });
   }

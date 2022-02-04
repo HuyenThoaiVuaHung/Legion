@@ -45,13 +45,8 @@
             <button [ngClass]="{'bg-gray-lightest text-gray-darkest': tangtocData.showAnswer === true}" mat-raised-button (click)="toggleQuestionAnswer()">Toggle đáp án</button>
           </span>
           <span class="pl-2" *ngIf="displayingRow.type == 'TT_VD'">
-            <button mat-icon-button (click)="hideQuestion()">
+            <button mat-icon-button (click)="togglePlayVideo()">
                 <mat-icon>play_circle</mat-icon>
-            </button>
-          </span>
-          <span class="pl-2" *ngIf="displayingRow.type == 'TT_VD'">
-            <button mat-icon-button (click)="hideQuestion()">
-                <mat-icon>pause</mat-icon>
             </button>
           </span>
         </div>

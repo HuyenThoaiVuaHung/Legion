@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ControlKhoiDongComponent } from './control-khoi-dong/control-khoi-dong.component';
 import { ControlTangtocComponent } from './control-tangtoc/control-tangtoc.component';
 import { ControlVcnvComponent } from './control-vcnv/control-vcnv.component';
+import { ControlVdComponent } from './control-vd/control-vd.component';
 import { HomeComponent } from './home/home.component';
 import { PlayerKhoiDongComponent } from './player-khoi-dong/player-khoi-dong.component';
 import { PlayerTangtocAComponent } from './player-tangtoc-a/player-tangtoc-a.component';
@@ -21,7 +22,8 @@ const routes: Routes = [
   {path: 'pl-vd', component: PlayerVedichComponent },
   {path: 'c-kd', component: ControlKhoiDongComponent },
   {path: 'c-vcnv', component: ControlVcnvComponent },
-  {path: 'c-tt', component: ControlTangtocComponent }
+  {path: 'c-tt', component: ControlTangtocComponent },
+  {path: 'c-vd', component: ControlVdComponent }
 ];
 
 @NgModule({

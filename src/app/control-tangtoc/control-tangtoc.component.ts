@@ -101,7 +101,6 @@ export class ControlTangtocComponent implements OnInit {
      this.displayingRow = row;
    }
    toggleQuestionAnswer(){
-     console.log(this.displayingRow)
      if(this.tangtocData.showAnswer == true){
       this.tangtocData.showAnswer = false;
     }
@@ -111,12 +110,16 @@ export class ControlTangtocComponent implements OnInit {
      this.socket.emit('update-tangtoc-data', this.tangtocData);
    }
    showQuestion(){
-     this.socket.emit('broadcast-tt-question', this.displayingRow.id);
+    this.tangtocData.showAnswer = false;
+    this.socket.emit('update-tangtoc-data', this.tangtocData);
+    this.socket.emit('broadcast-tt-question', this.displayingRow.id);
+     
    }
    hideQuestion(){
      this.socket.emit('broadcast-tt-question', -1);
    }
    startTimer(time: number){
+     this.socket.emit('update-timer-start-timestamp', Date.now());
      this.socket.emit('start-clock', time);
    }
    toggleResultsDisplay(){
@@ -129,6 +132,9 @@ export class ControlTangtocComponent implements OnInit {
      else if (this.matchData.matchPos == 'TT_A'){
        this.socket.emit('change-match-position', 'TT_Q');
      }
+   }
+   togglePlayVideo(){
+     this.socket.emit('tangtoc-play-video');
    }
    
 }

@@ -137,4 +137,7 @@ export class ControlVcnvComponent implements OnInit {
     console.log(this.vcnvMark);
     this.socket.emit('submit-cnv-mark', this.vcnvMark);
   }
+  moveToTT(){
+    this.router.navigate(['/c-tt']);
+  }
 }
