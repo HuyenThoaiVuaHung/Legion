@@ -52,9 +52,15 @@ export class PlayerVedichComponent implements OnInit {
           this.vdData = data;
         });
         this.socket.on('update-vedich-question', (question) => {
-          this.curQuestion = question;
-          if(this.curQuestion.type == 'V'){
-            this.videoSource = "../../../assets/video-questions/vd/" + this.curQuestion.video_name;
+          if(question != undefined){
+            this.curQuestion = question;
+            if(this.curQuestion.type == 'V'){
+              this.videoSource = "../../../assets/video-questions/vd/" + this.curQuestion.video_name;
+            }
+          }
+          else{
+            this.curQuestion = {};
+            this.videoSource = '';
           }
         });
         this.socket.on('update-clock', (clock) => {
