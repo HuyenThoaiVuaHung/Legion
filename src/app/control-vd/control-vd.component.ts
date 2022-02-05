@@ -130,7 +130,7 @@ export class ControlVdComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.vdData.questionPools[this.vdData.currentPlayer][this.vdData.questionPools[this.vdData.currentPlayer].indexOf(this.chosenRow)] = result;
-        this.vdData.questionPools[this.vdData.currentPlayer][this.vdData.questionPools[this.vdData.currentPlayer].indexOf(this.chosenRow)].value = Number.parseInt(this.vdData.questionPools[this.vdData.currentPlayer][this.vdData.questionPools[this.vdData.currentPlayer].indexOf(this.chosenRow)].value);
+        this.vdData.questionPools[this.vdData.currentPlayer][this.vdData.questionPools[this.vdData.currentPlayer].indexOf(this.chosenRow)].value = +result.value;
         this.socket.emit('update-vedich-data', this.vdData);
       }
     });
@@ -168,7 +168,9 @@ export class ControlVdComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.vdData.questionPools[this.vdData.currentPlayerId - 1].push(result);
+        let payload = result;
+        payload.value = +payload.value;
+        this.vdData.questionPools[this.vdData.currentPlayerId - 1].push(payload);
         this.socket.emit('update-vedich-data', this.vdData);
       }
     });

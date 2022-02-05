@@ -27,7 +27,7 @@
       </table>
     </div>
     <div class=" text-right text-white m-2">
-      <button mat-icon-button title="Chỉnh sửa câu hỏi đang chọn (nhấn 1 lần vào câu hỏi cần sửa)"
+      <button *ngIf="chosenRow.question != undefined" mat-icon-button title="Chỉnh sửa câu hỏi đang chọn (nhấn 1 lần vào câu hỏi cần sửa)"
         (click)="editQuestion()">
         <mat-icon>edit</mat-icon>
       </button>
