@@ -19,3 +19,31 @@
     -webkit-user-select: none; /* Safari */
             user-select: none; 
 }
+.question-text {
+    width: 70rem;
+    height: 75vh;
+    margin-top: 4rem;
+    margin-right: 2rem;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.active{
+    width: 100%;
+}
+.hidden{
+    width: 0px;
+}
+.typebox {
+    height: 33%;
+    width: 100%;
+    margin: 10px;
+}
+mat-checkbox {
+    transform: scale(2);
+    margin: 0.5rem;
+    margin-top: 1.25rem;
+}
+.text-black {
+    color: black !important;
+}

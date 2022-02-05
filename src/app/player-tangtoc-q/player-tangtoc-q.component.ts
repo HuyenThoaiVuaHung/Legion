@@ -93,6 +93,7 @@ export class PlayerTangtocQComponent implements OnInit {
   }
   togglePlay(){
     var myPlayer: HTMLVideoElement = document.getElementById('video-1') as HTMLVideoElement;
+    myPlayer.muted = true;
     if (myPlayer != null){
       if (myPlayer.paused == true) {
         myPlayer.play();

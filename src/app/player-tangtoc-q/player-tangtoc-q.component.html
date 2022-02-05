@@ -7,7 +7,7 @@
       <div class=" text-8xl w-64 rounded-xl  text-blue-light mt-5 text-center ">{{matchData.players[playerIndex].score}}</div>
     </div>
     <div class="questionBox  float-right mt-16 ml-10 mr-10 text-3xl">
-        <video  *ngIf="curQuestion.type == 'TT_VD'" id="video-1" class="disablePointerActions questionBox z-10 absolute" preload="auto" poster="../../assets/BG-HTVH-IV.png">
+        <video muted="true" *ngIf="curQuestion.type == 'TT_VD'" id="video-1" class="disablePointerActions questionBox z-10 absolute" preload="auto" poster="../../assets/BG-HTVH-IV.png">
             <source *ngIf="curQuestion.type == 'TT_VD'" src="{{videoSource}}" type="video/mp4" />
         </video>
         <img *ngIf="imageSource != '' && curQuestion.type == 'TT_IMG'" src="{{imageSource}}" class=" disablePointerActions absolute questionBox">

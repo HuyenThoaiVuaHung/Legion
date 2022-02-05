@@ -136,5 +136,8 @@ export class ControlTangtocComponent implements OnInit {
    togglePlayVideo(){
      this.socket.emit('tangtoc-play-video');
    }
+   goToVD(){
+      this.router.navigate(['/c-vd']);
+   }
    
 }
