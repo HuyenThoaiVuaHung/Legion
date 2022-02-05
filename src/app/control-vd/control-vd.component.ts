@@ -28,7 +28,7 @@ export class ControlVdComponent implements OnInit {
   authString: string = '';
   displayingRow: any = {};
   chosenRow: any = {};
-  numbers: number[] = [1, 2, 3, 4, 5, 6];
+  currentTurnPlayer: any = {};
   chosenPlayer: any = {};
   playerStoleQuestion: any = undefined;
   displayedQuestionColumns: string[] = ['question', 'answer', 'type', 'value'];
@@ -45,13 +45,13 @@ export class ControlVdComponent implements OnInit {
         this.matchData = callback.matchData;
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
-          this.chosenPlayer = this.matchData.players[this.vdData.currentPlayerId - 1];
+          this.currentTurnPlayer = this.matchData.players[this.vdData.currentPlayerId - 1];
 
         }
         )
         this.socket.on('update-vedich-data', (data) => {
           this.vdData = data;
-          this.chosenPlayer = this.matchData.players[this.vdData.currentPlayerId - 1];
+          this.currentTurnPlayer = this.matchData.players[this.vdData.currentPlayerId - 1];
           switch (this.vdData.currentPlayerId) {
             case 1: this.currentQuestionPool = this.vdData.questionPools[0];
               break;
@@ -73,7 +73,7 @@ export class ControlVdComponent implements OnInit {
         })
         this.socket.emit('get-vedich-data', (callback) => {
           this.vdData = callback;
-          this.chosenPlayer = this.matchData.players[this.vdData.currentPlayerId - 1];
+          this.currentTurnPlayer = this.matchData.players[this.vdData.currentPlayerId - 1];
           switch (this.vdData.currentPlayerId) {
             case 1: this.currentQuestionPool = this.vdData.questionPools[0];
               break;
@@ -100,7 +100,7 @@ export class ControlVdComponent implements OnInit {
     });
   }
   onDoubleClickPlayer(row: any) {
-    this.chosenPlayer = row;
+    this.currentTurnPlayer = row;
     this.vdData.currentPlayerId = row.id;
     this.chosenRow = {};
     this.displayingRow = {};
@@ -120,7 +120,9 @@ export class ControlVdComponent implements OnInit {
         });
       }
     });
-    this.chosenPlayer = this.matchData.players[this.vdData.currentPlayerId - 1];
+  }
+  choosePlayer(row: any) {
+    this.chosenPlayer = row;
   }
   editQuestion() {
     let question = this.currentQuestionPool[this.currentQuestionPool.indexOf(this.chosenRow)];
@@ -130,8 +132,9 @@ export class ControlVdComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.vdData.questionPools[this.vdData.currentPlayer][this.vdData.questionPools[this.vdData.currentPlayer].indexOf(this.chosenRow)] = result;
-        this.vdData.questionPools[this.vdData.currentPlayer][this.vdData.questionPools[this.vdData.currentPlayer].indexOf(this.chosenRow)].value = +result.value;
+        console.log(result);
+        this.vdData.questionPools[this.vdData.currentPlayerId - 1][this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow)] = result;
+        this.vdData.questionPools[this.vdData.currentPlayerId - 1][this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow)].value = +result.value;
         this.socket.emit('update-vedich-data', this.vdData);
       }
     });
@@ -141,7 +144,7 @@ export class ControlVdComponent implements OnInit {
   }
   clearPlayer() {
     this.vdData.currentPlayerId = 0;
-    this.chosenPlayer = {};
+    this.currentTurnPlayer = {};
     this.socket.emit('update-vedich-data', this.vdData);
   }
   toggleQuestionPicker() {
@@ -164,7 +167,6 @@ export class ControlVdComponent implements OnInit {
         answer: '',
         value: 0,
         type: '',
-        id: ''
       }
     });
     dialogRef.afterClosed().subscribe(result => {

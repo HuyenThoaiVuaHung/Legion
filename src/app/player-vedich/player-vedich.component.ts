@@ -55,8 +55,8 @@ export class PlayerVedichComponent implements OnInit {
           if(question != undefined){
             this.curQuestion = question;
             if(this.curQuestion.type == 'V'){
-              this.videoSource = "../../../assets/video-questions/vd/" + this.curQuestion.video_name;
-            }
+              this.videoSource = "../../../assets/video-questions/vd/" + this.curQuestion.video_name;  
+            }            
           }
           else{
             this.curQuestion = {};

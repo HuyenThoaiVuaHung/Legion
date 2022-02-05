@@ -148,14 +148,14 @@
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedPlayerColumns;" (dblclick)="onDoubleClickPlayer(row)"
-          [ngClass]="{' bg-gray-dark': chosenPlayer === row, 'bg-golden-dark': playerStoleQuestion === row}"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedPlayerColumns;" (dblclick)="onDoubleClickPlayer(row)" (click)="choosePlayer(row)"
+          [ngClass]="{' bg-gray': chosenPlayer === row, 'bg-golden-dark': playerStoleQuestion === row, 'highlight': currentTurnPlayer === row}"></tr>
       </table>
       <div class=" text-white p-2 text-right">
-        <button mat-icon-button (click)="editPlayer()">
+        <button *ngIf="chosenPlayer.name != undefined" mat-icon-button (click)="editPlayer()">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button (click)="clearPlayer()">
+        <button *ngIf=" currentTurnPlayer != undefined" mat-icon-button (click)="clearPlayer()">
           <mat-icon>clear</mat-icon>
         </button>
       </div>
