@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { io } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-player-vcnv-question',
@@ -8,7 +9,7 @@ import { io } from 'socket.io-client';
   styleUrls: ['./player-vcnv-question.component.scss']
 })
 export class PlayerVcnvQuestionComponent implements OnInit {
-  socket = io('http://localhost:3000');
+  socket = io(environment.socketIp);
   constructor( private router: Router) { }
   imageSource = '../../assets/abcdxyz.png';
   vcnvData : any = {};
@@ -55,6 +56,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         })
         this.socket.emit('get-vcnv-data', (callback) =>{
           this.vcnvData = callback;
+          console.log(this.vcnvData);
           if (this.vcnvData.disabledPlayers.includes(this.playerIndex)){
             this.disabledCNVButton = true;
           }

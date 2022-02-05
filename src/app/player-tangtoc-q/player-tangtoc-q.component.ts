@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { io } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 declare var videojs: any;
 @Component({
   selector: 'app-player-tangtoc-q',
@@ -9,7 +10,7 @@ declare var videojs: any;
 })
 export class PlayerTangtocQComponent implements OnInit {
 
-  socket = io('http://localhost:3000');
+  socket = io(environment.socketIp);
   constructor( private router: Router) { }
   imageSource = '';
   videoSource = '';

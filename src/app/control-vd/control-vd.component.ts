@@ -2,6 +2,7 @@ import { ApplicationRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { io } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 import { FormPlayerComponent } from '../form-player/form-player.component';
 import { FormQTtComponent } from '../form-q-tt/form-q-tt.component';
 import { FormQVcnvComponent } from '../form-q-vcnv/form-q-vcnv.component';
@@ -20,7 +21,7 @@ export class ControlVdComponent implements OnInit {
   ) {
   }
   currentQuestionPool: any = [];
-  socket = io('http://localhost:3000');
+  socket = io(environment.socketIp);
   vdData: any = {};
   matchData: any = {};
   currentTime: number = 0;

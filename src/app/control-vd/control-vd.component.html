@@ -92,23 +92,23 @@
           </div>
         </div>
       </div>
-      <div class=" inline">
+      <div class=" inline p-2">
         <button [ngClass]="{'bg-gray-lightest text-gray-darkest': vdData.ifQuestionPickerShowing === true}" (click)="toggleQuestionPicker()" mat-raised-button>Toggle Thanh Chọn câu hỏi</button>
       </div>
-      <div class=" inline">
+      <div class=" inline p-2">
         <button (click)="clearQuestionPicker()" mat-raised-button>Clear Thanh chọn câu hỏi</button>
       </div>
     </div>
   </div>
   <div class="half-width flex flex-col items-center  float-right text-center overflow-hidden table-container">
     <div class="m-5">
-      <div class="ml-5 inline">
-        <button mat-raised-button (click)="startTimer(15)">15s</button>
+      <div class="m-5 inline">
+        <button mat-raised-button (click)="startTimer(15)">Bắt đầu 15s</button>
       </div>
-      <div class="ml-5 inline">
-        <button mat-raised-button (click)="startTimer(20)">20s</button>
+      <div class="m-5 inline">
+        <button mat-raised-button (click)="startTimer(20)">Bắt đầu 20s</button>
       </div>
-      <div class="ml-5">
+      <div class="m-5">
         <button mat-raised-button (click)="openStealTurn()">Mở chuông trả lời</button>
       </div>
       <div class="text-2xl mt-5 text-white">

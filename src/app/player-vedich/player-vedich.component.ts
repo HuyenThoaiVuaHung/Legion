@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { io } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-player-vedich',
@@ -8,7 +9,7 @@ import { io } from 'socket.io-client';
   styleUrls: ['./player-vedich.component.scss']
 })
 export class PlayerVedichComponent implements OnInit {
-  socket = io('http://localhost:3000');
+  socket = io(environment.socketIp);
   constructor( private router: Router) { }
   videoSource = '';
   vdData : any = {};

@@ -22,7 +22,7 @@ export class ControlTangtocComponent implements OnInit {
 
    }
    ifPlayerCNV : boolean = true;
-   socket = io('http://localhost:3000');
+   socket = io(environment.socketIp);
    tangtocData : any = {};
    matchData: any = {};
    currentTime : number = 0;

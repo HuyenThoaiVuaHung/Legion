@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { io } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 import { FormPlayerComponent } from '../form-player/form-player.component';
 import { FormQVcnvComponent } from '../form-q-vcnv/form-q-vcnv.component';
 
@@ -12,7 +13,7 @@ import { FormQVcnvComponent } from '../form-q-vcnv/form-q-vcnv.component';
 })
 export class ControlVcnvComponent implements OnInit {
   ifPlayerCNV : boolean = true;
-  socket = io('http://localhost:3000');
+  socket = io(environment.socketIp);
   constructor(
     public router: Router,
     public dialog: MatDialog,
