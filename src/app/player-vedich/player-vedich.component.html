@@ -6,38 +6,51 @@
         <div
             class="w-64 h-64 drop-shadow-lg flex text-center bg-gray text-white p-10 border-2 justify-center items-center text-8xl font-black rounded-xl">
             {{currentTime}}</div>
-        <div class=" text-2xl w-64 rounded-xl  text-white mt-10 text-center ">Số điểm:</div>
-        <div class=" text-8xl w-64 rounded-xl  text-blue-light mt-5 text-center ">{{matchData.players[playerIndex].score}}</div>
-        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 1, 'bg-golden-dark': stealingPlayerIndex == 0}" class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">{{matchData.players[0].name.toUpperCase()}} - {{matchData.players[0].score}}
+        <div *ngIf="roleId != 3"  class=" text-2xl w-64 rounded-xl  text-white mt-10 text-center ">Số điểm:</div>
+        <div *ngIf="roleId != 3"  class=" text-8xl w-64 rounded-xl  text-blue-light mt-5 text-center ">
+            {{matchData.players[playerIndex].score}}</div>
+        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 1, 'bg-golden-dark': stealingPlayerIndex == 0}"
+            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
+            {{matchData.players[0].name.toUpperCase()}} - {{matchData.players[0].score}}
         </div>
-        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 2, 'bg-golden-dark': stealingPlayerIndex == 1}" class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">{{matchData.players[1].name.toUpperCase()}} - {{matchData.players[1].score}}
+        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 2, 'bg-golden-dark': stealingPlayerIndex == 1}"
+            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
+            {{matchData.players[1].name.toUpperCase()}} - {{matchData.players[1].score}}
         </div>
-        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 3, 'bg-golden-dark': stealingPlayerIndex == 2}" class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">{{matchData.players[2].name.toUpperCase()}} - {{matchData.players[2].score}}
+        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 3, 'bg-golden-dark': stealingPlayerIndex == 2}"
+            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
+            {{matchData.players[2].name.toUpperCase()}} - {{matchData.players[2].score}}
         </div>
-        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 4, 'bg-golden-dark': stealingPlayerIndex == 3}" class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">{{matchData.players[3].name.toUpperCase()}} - {{matchData.players[3].score}}
+        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 4, 'bg-golden-dark': stealingPlayerIndex == 3}"
+            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
+            {{matchData.players[3].name.toUpperCase()}} - {{matchData.players[3].score}}
         </div>
     </div>
-    <div *ngIf="vdData.ifQuestionPickerShowing == false" class=" justify-center items-center text-center">
-        <div  *ngIf="curQuestion.type == 'V'" class="questionBox disablePointerActions float-right mt-16 ml-10  mb-5 text-3xl">
-            <video id="vedich-video" class="videoBox" preload="auto"
-                poster="../../assets/BG-HTVH-IV.png">
+    <div *ngIf="vdData.ifQuestionPickerShowing == false" class=" items-center text-center">
+        <div *ngIf="curQuestion.type == 'V'" class="disablePointerActions
+        bg-gray drop-shadow-lg relative question-text float-right p-5 text-3xl border-2 text-white rounded-xl">
+            <div class="h-20 m-5 w-96 text-white text-3xl text-left  rounded-xl bg-gray">{{curQuestion.question}}</div>
+            <video id="vedich-video" class="videoBox" preload="auto" poster="../../assets/BG-HTVH-IV.png">
                 <source src="{{videoSource}}" type="video/mp4" />
             </video>
-            <div class="h-full m-5 w-96 text-white text-3xl text-left border-2 border-white rounded-xl p-5 bg-gray">{{curQuestion.question}}</div>
+            <span class="absolute text-7xl p-5 bottom-0 right-0">🌟</span>
         </div>
         <div *ngIf="curQuestion.type != 'V'" class=" disablePointerActions
-        bg-gray drop-shadow-lg question-text float-right p-10 text-3xl border-2 text-white rounded-xl
-        ">{{curQuestion.question}}</div>
-        <div class=" text-white inline">
+        bg-gray drop-shadow-lg question-text relative float-right p-10 text-3xl border-2 text-white rounded-xl
+        ">{{curQuestion.question}}
+            <span *ngIf="vdData.ifNSHV == true" class="absolute right-0 bottom-0 text-7xl text-golden p-5">🌟</span>
+        </div>
+        <div  *ngIf="roleId != 3" class=" text-white inline">
             <div *ngIf="fiveSecTimer != 0" class="text-3xl inline pr-5">{{(fiveSecTimer/10)}}s</div>
-            <button [disabled]="buttonDisabled" (click)="stealQuestion()" mat-raised-button class="bg-gray-light text-xl h-32 very-long text-gray-darkest">
+            <button [disabled]="buttonDisabled" (click)="stealQuestion()" mat-raised-button
+                class="bg-gray-light text-xl h-32 very-long text-gray-darkest">
                 GIÀNH CHUÔNG TRẢ LỜI
             </button>
         </div>
-
     </div>
-    <div >
-        <div *ngIf="vdData.ifQuestionPickerShowing == true" class=" absolute right-5 bottom-52 disablePointerActions flex-col h-96 w-52">
+    <div>
+        <div *ngIf="vdData.ifQuestionPickerShowing == true"
+            class=" absolute right-5 bottom-52 disablePointerActions flex-col h-96 w-52">
             <div>
                 <div class=" float-left h-40 w-12">
                     <span>

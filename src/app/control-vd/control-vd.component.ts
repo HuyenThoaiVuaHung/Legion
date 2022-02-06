@@ -35,7 +35,6 @@ export class ControlVdComponent implements OnInit {
   displayedPlayerColumns: string[] = ['id', 'name', 'score', 'active'];
   ngOnInit(): void {
     this.authString = localStorage.getItem('authString') || '';
-    console.log(this.authString);
     this.socket.emit('init-authenticate', this.authString, (callback) => {
       if (callback.roleId == 1) {
         console.log('Logged in as admin');
@@ -52,6 +51,7 @@ export class ControlVdComponent implements OnInit {
         this.socket.on('update-vedich-data', (data) => {
           this.vdData = data;
           this.currentTurnPlayer = this.matchData.players[this.vdData.currentPlayerId - 1];
+
           switch (this.vdData.currentPlayerId) {
             case 1: this.currentQuestionPool = this.vdData.questionPools[0];
               break;
@@ -86,8 +86,6 @@ export class ControlVdComponent implements OnInit {
             default: this.currentQuestionPool = [];
               break;
           }
-          console.log(this.vdData);
-          console.log(this.currentQuestionPool);
         });
         this.socket.on('disconnect', () => {
           this.socket.emit('leave-match', (this.authString))
@@ -116,10 +114,13 @@ export class ControlVdComponent implements OnInit {
         var payload: any = { player: result, index: this.matchData.players.indexOf(this.chosenPlayer) };
         payload.player.score = parseInt(payload.player.score);
         this.socket.emit('edit-player-info', payload, (callback) => {
-          console.log(callback.message);
         });
       }
     });
+  }
+  toggleNSHV() {
+    this.vdData.ifNSHV = !this.vdData.ifNSHV;
+    this.socket.emit('update-vedich-data', this.vdData);
   }
   choosePlayer(row: any) {
     this.chosenPlayer = row;
@@ -132,7 +133,6 @@ export class ControlVdComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log(result);
         this.vdData.questionPools[this.vdData.currentPlayerId - 1][this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow)] = result;
         this.vdData.questionPools[this.vdData.currentPlayerId - 1][this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow)].value = +result.value;
         this.socket.emit('update-vedich-data', this.vdData);
@@ -208,7 +208,6 @@ export class ControlVdComponent implements OnInit {
       this.socket.emit('mark-correct-vd', this.playerStoleQuestion.id, this.displayingRow.value);
     }
     else {
-      console.log(this.vdData.currentPlayerId);
       this.socket.emit('mark-correct-vd', this.vdData.currentPlayerId, this.displayingRow.value);
     }
     this.playerStoleQuestion = undefined;

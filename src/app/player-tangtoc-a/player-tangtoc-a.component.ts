@@ -14,26 +14,31 @@ export class PlayerTangtocAComponent implements OnInit {
   matchData : any = {};
   ttData : any = {};
   playerIndex : number = -1;
+  roleId: number = -1;
   constructor(
     private router: Router
   ) { }
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       this.matchData = callback.matchData;
+      this.roleId = callback.roleId;
       this.playerIndex = callback.playerIndex;
-      if(callback.roleId == 0){
+      if(callback.roleId == 0 || callback.roleId == 3){
         console.log('Logged in as player');
         switch(callback.matchData.matchPos){
           case 'KD': this.router.navigate(['/pl-kd']); break;
           case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
           case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
           case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-          case 'VD': this.router.navigate(['pl-vd']); break;      
+          case 'VD': this.router.navigate(['pl-vd']); break;    
+          case 'H': this.router.navigate(['']); break;
+  
       };
       this.socket.emit('get-tangtoc-data', (callback) =>{
         this.ttData = callback;
         this.ttData.playerAnswers.sort(sortByTimestamp);
       });
+
         this.socket.on('update-match-data', (data) => {
           console.log('Match data updated');
           this.matchData = data;
@@ -42,7 +47,9 @@ export class PlayerTangtocAComponent implements OnInit {
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-            case 'VD': this.router.navigate(['pl-vd']); break;     
+            case 'VD': this.router.navigate(['pl-vd']); break;   
+            case 'H': this.router.navigate(['']); break;
+  
           };
           this.matchData = data;
         });

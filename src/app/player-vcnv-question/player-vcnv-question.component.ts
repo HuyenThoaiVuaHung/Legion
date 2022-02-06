@@ -21,21 +21,28 @@ export class PlayerVcnvQuestionComponent implements OnInit {
   answerCache : string = '';
   playerAnswer: string = '';
   playerIndex : number = 0;
+  roleId: number = -1;
   disabledCNVButton : boolean = false;
   audio :any = null;
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       this.matchData = callback.matchData;
-      this.playerIndex = callback.playerIndex
-      if(callback.roleId == 0){
-        this.socket.emit('clear-player-answer')
+      this.playerIndex = callback.playerIndex;
+      this.roleId = callback.roleId;
+      if(callback.roleId == 0 || callback.roleId == 3){
+
         switch(callback.matchData.matchPos){
           case 'KD': this.router.navigate(['/pl-kd']); break;
           case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
           case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
           case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-          case 'VD': this.router.navigate(['pl-vd']); break;      
+          case 'VD': this.router.navigate(['pl-vd']); break;    
+          case 'H': this.router.navigate(['']); break;
+  
       };
+      if(callback.roleId == 0){
+        this.socket.emit('clear-player-answer')
+      }
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
           switch(data.matchPos){
@@ -43,7 +50,9 @@ export class PlayerVcnvQuestionComponent implements OnInit {
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-            case 'VD': this.router.navigate(['pl-vd']); break;   
+            case 'VD': this.router.navigate(['pl-vd']); break; 
+            case 'H': this.router.navigate(['']); break;
+  
         };
           this.matchData = data;
         });

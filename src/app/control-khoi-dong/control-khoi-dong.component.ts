@@ -131,9 +131,9 @@ export class ControlKhoiDongComponent implements OnInit {
     this.socket.emit('remove-kd-question', this.kdData.questions.indexOf(this.chosenRow), (callback) => {
       console.log(callback.message);
     });
-
   }
   clockStart(time: number){
+    this.socket.emit('play-sfx', 'kd-clock-' + time);
     this.socket.emit('start-clock', time, (callback) => {
       console.log(callback.message);
     });

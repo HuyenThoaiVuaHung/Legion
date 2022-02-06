@@ -21,6 +21,7 @@ import { ControlTangtocComponent } from './control-tangtoc/control-tangtoc.compo
 import { FormQTtComponent } from './form-q-tt/form-q-tt.component';
 import { ControlVdComponent } from './control-vd/control-vd.component';
 import { FormQVdComponent } from './form-q-vd/form-q-vd.component';
+import { McComponent } from './mc/mc.component';
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import { FormQVdComponent } from './form-q-vd/form-q-vd.component';
     FormQTtComponent,
     ControlVdComponent,
     FormQVdComponent,
+    McComponent,
   
   ],
   imports: [

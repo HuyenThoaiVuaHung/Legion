@@ -1,7 +1,7 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import * as io from 'socket.io-client';
+import io from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-player-khoi-dong',
@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./player-khoi-dong.component.scss']
 })
 export class PlayerKhoiDongComponent implements OnInit {
-  socket = io.connect(environment.socketIp);
+  socket = io(environment.socketIp);
   answerButtonDisabled = false;
   constructor(
     public router: Router
@@ -20,6 +20,7 @@ export class PlayerKhoiDongComponent implements OnInit {
   threeSecTimer1: number = 0;
   threeSecTimer2: number = 0;
   audio: any = null;
+  roleId: number = -1;
   picturePath: string = '';
   questionObservable = new Observable((observer) => {
     this.socket.on('update-kd-question', (data) => {
@@ -30,13 +31,16 @@ export class PlayerKhoiDongComponent implements OnInit {
   answerCache: string = '';
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
-      if(callback.roleId == 0){
+      if(callback.roleId == 0 || callback.roleId == 3){
+        this.roleId = callback.roleId;
         switch(callback.matchData.matchPos){
           case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
           case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
           case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
           case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
           case 'VD': this.router.navigate(['pl-vd']); break;
+          case 'H': this.router.navigate(['']); break;
+
         }
         console.log('Logged in as player');
         this.player = callback.player;
@@ -56,17 +60,20 @@ export class PlayerKhoiDongComponent implements OnInit {
             this.picturePath = '';
           }
         });
-        this.socket.on('disable-answer-button-kd', (abc)=> {
-          this.answerButtonDisabled = true;
-        })
-        this.socket.on('enable-answer-button-kd', ()=> {
-          this.answerButtonDisabled = false;
-        });
+        if(this.roleId == 0){
+          this.socket.on('disable-answer-button-kd', (abc)=> {
+            this.answerButtonDisabled = true;
+          })
+          this.socket.on('enable-answer-button-kd', ()=> {
+            this.answerButtonDisabled = false;
+          });
+          this.socket.on('update-player-score', (score) => {
+            this.player.score = score;
+          });
+        }
+
         this.socket.on('update-kd-time', (time) => {
           this.time = time;
-        });
-        this.socket.on('update-player-score', (score) => {
-          this.player.score = score;
         });
         this.socket.on('update-3s-timer-kd', (time, ifPlayer) => {
           if(ifPlayer == true){
@@ -86,6 +93,8 @@ export class PlayerKhoiDongComponent implements OnInit {
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
             case 'VD': this.router.navigate(['pl-vd']); break;
+            case 'H': this.router.navigate(['']); break;
+
           }
         })
       }

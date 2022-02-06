@@ -16,6 +16,7 @@ export class PlayerTangtocQComponent implements OnInit {
   videoSource = '';
   ttData : any = {};
   matchData: any = {};
+  roleId = -1;
   currentTime : number = 0;
   curQuestion : any = {};
   highlightedVCNVQuestion : any = {};
@@ -27,14 +28,17 @@ export class PlayerTangtocQComponent implements OnInit {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       this.matchData = callback.matchData;
       this.playerIndex = callback.playerIndex
-      if(callback.roleId == 0){
-        this.socket.emit('clear-player-answer')
+      this.roleId = callback.roleId;
+      if(callback.roleId == 0 || callback.roleId == 3){
+
         switch(callback.matchData.matchPos){
           case 'KD': this.router.navigate(['/pl-kd']); break;
           case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
           case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
           case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-          case 'VD': this.router.navigate(['pl-vd']); break;      
+          case 'VD': this.router.navigate(['pl-vd']); break;   
+          case 'H': this.router.navigate(['']); break;
+   
       };
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
@@ -43,14 +47,19 @@ export class PlayerTangtocQComponent implements OnInit {
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-            case 'VD': this.router.navigate(['pl-vd']); break;   
+            case 'VD': this.router.navigate(['pl-vd']); break;  
+            case 'H': this.router.navigate(['']); break;
+ 
         };
           this.matchData = data;
         });
+        if(this.roleId == 0){
+          this.socket.emit('clear-answer-tt');
+        }
         this.socket.emit('get-tangtoc-data', (callback) =>{
           this.ttData = callback;
         })
-        this.socket.emit('clear-answer-tt');
+
         this.socket.on('update-tangtoc-data', (data) => {
           this.ttData = data;
           if (this.curQuestion.type == 'TT_IMG'){

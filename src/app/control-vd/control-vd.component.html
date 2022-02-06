@@ -23,7 +23,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedQuestionColumns;" (click)="onClickQuestion(row)"
           (dblclick)="onDoubleClickQuestion(row)"
-          [ngClass]="{'highlight': displayingRow === row, 'choose': chosenRow === row}"></tr>
+          [ngClass]="{'highlight': displayingRow == row, 'choose': chosenRow == row}"></tr>
       </table>
     </div>
     <div class=" text-right text-white m-2">
@@ -110,6 +110,9 @@
       </div>
       <div class="m-5">
         <button mat-raised-button (click)="openStealTurn()">Mở chuông trả lời</button>
+      </div>
+      <div class="m-5">
+        <button mat-raised-button [ngClass]="{'bg-white text-gray-darkest': vdData.ifNSHV === true}" (click)="toggleNSHV()">Toggle NSHV</button>
       </div>
       <div class="text-2xl mt-5 text-white">
         Vị trí thí sinh: <span class="text-white">{{matchData.matchPos}}</span>

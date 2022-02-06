@@ -13,6 +13,7 @@ export class PlayerVedichComponent implements OnInit {
   constructor( private router: Router) { }
   videoSource = '';
   vdData : any = {};
+  roleId: number = -1;
   matchData: any = {};
   currentTime : number = 0;
   stealingPlayerIndex : number = -1;
@@ -25,14 +26,16 @@ export class PlayerVedichComponent implements OnInit {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       this.matchData = callback.matchData;
       this.playerIndex = callback.playerIndex
-      if(callback.roleId == 0){
-        this.socket.emit('clear-player-answer')
+      this.roleId = callback.roleId;
+      if(callback.roleId == 0 || callback.roleId == 3){
         switch(callback.matchData.matchPos){
           case 'KD': this.router.navigate(['/pl-kd']); break;
           case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
           case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
           case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-          case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;      
+          case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
+          case 'H': this.router.navigate(['']); break;
+      
       };
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
@@ -42,6 +45,8 @@ export class PlayerVedichComponent implements OnInit {
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;   
+            case 'H': this.router.navigate(['']); break;
+
         };
           this.matchData = data;
         });
@@ -75,12 +80,15 @@ export class PlayerVedichComponent implements OnInit {
             video.pause();
           }
         });
-        this.socket.on('unlock-button-vd', () => {
-          this.buttonDisabled = false;
-        });
-        this.socket.on('lock-button-vd', () => {
-          this.buttonDisabled = true;
-        });
+        if(this.roleId == 0){
+          this.socket.on('unlock-button-vd', () => {
+            this.buttonDisabled = false;
+          });
+          this.socket.on('lock-button-vd', () => {
+            this.buttonDisabled = true;
+          });
+        }
+
         this.socket.on('update-5s-countdown-vd', (counter) =>{
           this.fiveSecTimer = counter;
         });

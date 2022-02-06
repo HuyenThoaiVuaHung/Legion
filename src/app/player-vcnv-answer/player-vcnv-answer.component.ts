@@ -13,6 +13,7 @@ export class PlayerVcnvAnswerComponent implements OnInit {
   matchData : any = {};
   vcnvData : any = {};
   playerIndex : number = -1;
+  roleId: number = -1;
   disabledCNVButton: boolean = false;
   constructor(
     private router: Router
@@ -21,7 +22,8 @@ export class PlayerVcnvAnswerComponent implements OnInit {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       this.matchData = callback.matchData;
       this.playerIndex = callback.playerIndex;
-      if(callback.roleId == 0){
+      this.roleId = callback.roleId;
+      if(callback.roleId == 0 || callback.roleId == 3){
         console.log('Logged in as player');
         switch(callback.matchData.matchPos){
           case 'KD': this.router.navigate(['/pl-kd']); break;
@@ -29,7 +31,10 @@ export class PlayerVcnvAnswerComponent implements OnInit {
           case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
           case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
           case 'VD': this.router.navigate(['pl-vd']); break;      
+          case 'H': this.router.navigate(['']); break;
+
       };
+      
       this.socket.emit('get-vcnv-data', (callback) =>{
         this.vcnvData = callback;
         if (this.vcnvData.disabledPlayers.includes(this.playerIndex)){
@@ -44,7 +49,9 @@ export class PlayerVcnvAnswerComponent implements OnInit {
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-            case 'VD': this.router.navigate(['pl-vd']); break;   
+            case 'VD': this.router.navigate(['pl-vd']); break;  
+            case 'H': this.router.navigate(['']); break;
+ 
         };
           this.matchData = data;
         });

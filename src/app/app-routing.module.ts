@@ -5,6 +5,7 @@ import { ControlTangtocComponent } from './control-tangtoc/control-tangtoc.compo
 import { ControlVcnvComponent } from './control-vcnv/control-vcnv.component';
 import { ControlVdComponent } from './control-vd/control-vd.component';
 import { HomeComponent } from './home/home.component';
+import { McComponent } from './mc/mc.component';
 import { PlayerKhoiDongComponent } from './player-khoi-dong/player-khoi-dong.component';
 import { PlayerTangtocAComponent } from './player-tangtoc-a/player-tangtoc-a.component';
 import { PlayerTangtocQComponent } from './player-tangtoc-q/player-tangtoc-q.component';
@@ -23,7 +24,9 @@ const routes: Routes = [
   {path: 'c-kd', component: ControlKhoiDongComponent },
   {path: 'c-vcnv', component: ControlVcnvComponent },
   {path: 'c-tt', component: ControlTangtocComponent },
-  {path: 'c-vd', component: ControlVdComponent }
+  {path: 'c-vd', component: ControlVdComponent },
+  {path: 'mc', component: McComponent},
+  {path: '**', component: HomeComponent}
 ];
 
 @NgModule({

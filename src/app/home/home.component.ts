@@ -34,6 +34,19 @@ export class HomeComponent implements OnInit {
         this.ifAuth = true;
         this.roleID = callback.roleId;
         this.greetString = "Chào " + callback.player.name;
+        this.socket.on('update-match-data', (data) => {
+          this.matchData = data;
+          switch(this.matchData.matchPos){
+            case 'KD': this.router.navigate(['pl-kd']); break;
+            case 'VCNV_Q': this.router.navigate(['pl-vcnv-q']); break;
+            case 'VCNV_A': this.router.navigate(['pl-vcnv-a']); break;
+            case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
+            case 'TT_A': this.router.navigate(['pl-tangtoc-a']); break;
+            case 'VD': this.router.navigate(['pl-vd']); break;
+            case 'H': this.router.navigate(['']); break;
+          }
+          }
+        )
         switch(this.matchData.matchPos){
           case 'KD': this.router.navigate(['pl-kd']); break;
           case 'VCNV_Q': this.router.navigate(['pl-vcnv-q']); break;
@@ -41,6 +54,7 @@ export class HomeComponent implements OnInit {
           case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
           case 'TT_A': this.router.navigate(['pl-tangtoc-a']); break;
           case 'VD': this.router.navigate(['pl-vd']); break;
+          case 'H': this.router.navigate(['']); break;
         }
       }
       else if (callback.roleId == 1){ 
@@ -49,13 +63,54 @@ export class HomeComponent implements OnInit {
         localStorage.setItem('authString', this.authString);
         this.greetString = "Chào BTC";
         this.matchData = callback.matchData;
+        this.socket.emit('change-match-position', 'H');
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
           }
         )
       }
-      else if(callback.roleId == -1){
-        console.warn("Không có quyền truy cập (Secret sai)!");
+      else if(callback.roleId == 2) {
+        this.roleID = 2;
+        this.ifAuth = true;
+        localStorage.setItem('authString', this.authString);
+        this.greetString = "Chào MC";
+        this.matchData = callback.matchData;
+        this.socket.on('update-match-data', (data) => {
+          this.matchData = data;
+          if (this.matchData.matchPos != 'H'){
+            this.router.navigate(['mc'])
+          }
+          }
+        )
+      }
+      else if (callback.roleId == 3){
+        this.roleID = 3;
+        this.ifAuth = true;
+        localStorage.setItem('authString', this.authString);
+        this.greetString = "Viewer";
+        this.matchData = callback.matchData;
+        this.socket.on('update-match-data', (data) => {
+          this.matchData = data;
+          switch(this.matchData.matchPos){
+            case 'KD': this.router.navigate(['pl-kd']); break;
+            case 'VCNV_Q': this.router.navigate(['pl-vcnv-q']); break;
+            case 'VCNV_A': this.router.navigate(['pl-vcnv-a']); break;
+            case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
+            case 'TT_A': this.router.navigate(['pl-tangtoc-a']); break;
+            case 'VD': this.router.navigate(['pl-vd']); break;
+            case 'H': this.router.navigate(['']); break;
+          }
+          }
+        )
+        switch(this.matchData.matchPos){
+          case 'KD': this.router.navigate(['pl-kd']); break;
+          case 'VCNV_Q': this.router.navigate(['pl-vcnv-q']); break;
+          case 'VCNV_A': this.router.navigate(['pl-vcnv-a']); break;
+          case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
+          case 'TT_A': this.router.navigate(['pl-tangtoc-a']); break;
+          case 'VD': this.router.navigate(['pl-vd']); break;
+          case 'H': this.router.navigate(['']); break;
+        }
       }
     });
   }

@@ -18,7 +18,7 @@
             <p class=" text-center text-lg text-white">{{vcnvData.playerAnswers[3].answer.toUpperCase()}}</p>
         </div>
     </div>
-    <div class="fixed z-50 bottom-0 right-0">
+    <div *ngIf="roleId != 3"  class="fixed z-50 bottom-0 right-0">
         <button (click)="attemptCNV()" [disabled]="disabledCNVButton" mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">TRẢ LỜI CNV</button>
     </div>
 </div>
