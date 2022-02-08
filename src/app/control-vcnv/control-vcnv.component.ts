@@ -67,6 +67,9 @@ export class ControlVcnvComponent implements OnInit {
       }
     });
   }
+  playSfx(sfxId: string){
+    this.socket.emit('play-sfx', sfxId);
+  }
   onDoubleClickPlayer(row: any){
     let player = this.matchData.players[this.matchData.players.indexOf(row)];
     const dialogRef = this.dialog.open(FormPlayerComponent, {
@@ -104,6 +107,7 @@ export class ControlVcnvComponent implements OnInit {
   }
   onDoubleClickQuestion(row){
     this.displayingRow = row;
+    this.socket.emit('play-sfx', 'VCNV_CHOOSE_ROW') 
     this.socket.emit('highlight-vcnv-question', row.id, (callback) => {
       console.log(callback.message);
     })
@@ -135,7 +139,23 @@ export class ControlVcnvComponent implements OnInit {
     }
   }
   submitVCNVMark(){
+    let ifAnswerCorrect: boolean = false;
     console.log(this.vcnvMark);
+    for(let i = 0; i < this.vcnvMark.length; i++){
+      if(this.vcnvMark[i] == true) ifAnswerCorrect = true;
+    }
+    if(ifAnswerCorrect){
+      this.playSfx('VCNV_OBSTACLE_CORRECT');
+      this.socket.emit('open-hn-vcnv', 1);
+      this.socket.emit('open-hn-vcnv', 2);
+      this.socket.emit('open-hn-vcnv', 3);
+      this.socket.emit('open-hn-vcnv', 4);
+      this.socket.emit('open-hn-vcnv', 5);
+
+    }
+    else{
+      this.playSfx('VCNV_WRONG_ROW');
+    }
     this.socket.emit('submit-cnv-mark', this.vcnvMark);
   }
   moveToTT(){

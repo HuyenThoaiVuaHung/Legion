@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import io from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { SfxService } from '../services/sfx-service.service';
 @Component({
   selector: 'app-player-khoi-dong',
   templateUrl: './player-khoi-dong.component.html',
@@ -12,7 +13,8 @@ export class PlayerKhoiDongComponent implements OnInit {
   socket = io(environment.socketIp);
   answerButtonDisabled = false;
   constructor(
-    public router: Router
+    public router: Router,
+    private sfxService: SfxService
   ) {}
   question: any = {};
   time: number = 0;
@@ -34,14 +36,17 @@ export class PlayerKhoiDongComponent implements OnInit {
       if(callback.roleId == 0 || callback.roleId == 3){
         this.roleId = callback.roleId;
         switch(callback.matchData.matchPos){
-          case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
-          case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
-          case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-          case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-          case 'VD': this.router.navigate(['pl-vd']); break;
-          case 'H': this.router.navigate(['']); break;
+          case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); this.socket.close(); break;
+          case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); this.socket.close(); break;
+          case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); this.socket.close(); break;
+          case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); this.socket.close(); break;
+          case 'VD': this.router.navigate(['pl-vd']); this.socket.close(); break;
+          case 'H': this.router.navigate(['']); this.socket.close(); break;
 
         }
+        this.socket.on('play-sfx', (sfxID) => {
+          this.sfxService.playSfx(sfxID);
+        })
         console.log('Logged in as player');
         this.player = callback.player;
         this.questionObservable.subscribe((data) => {
@@ -88,12 +93,12 @@ export class PlayerKhoiDongComponent implements OnInit {
         })
         this.socket.on('update-match-data', (matchData) => {
           switch(matchData.matchPos){
-            case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
-            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
-            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-            case 'VD': this.router.navigate(['pl-vd']); break;
-            case 'H': this.router.navigate(['']); break;
+            case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); this.socket.close(); break;
+            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); this.socket.close(); break;
+            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); this.socket.close(); break;
+            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); this.socket.close(); break;
+            case 'VD': this.router.navigate(['pl-vd']); this.socket.close(); break;
+            case 'H': this.router.navigate(['']); this.socket.close(); break;
 
           }
         })

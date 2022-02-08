@@ -12,6 +12,9 @@ import { PlayerTangtocQComponent } from './player-tangtoc-q/player-tangtoc-q.com
 import { PlayerVcnvAnswerComponent } from './player-vcnv-answer/player-vcnv-answer.component';
 import { PlayerVcnvQuestionComponent } from './player-vcnv-question/player-vcnv-question.component';
 import { PlayerVedichComponent } from './player-vedich/player-vedich.component';
+import { ScKhoiDongComponent } from './sc-khoi-dong/sc-khoi-dong.component';
+import { ScQuestionBarComponent } from './sc-question-bar/sc-question-bar.component';
+import { ScVeDichComponent } from './sc-ve-dich/sc-ve-dich.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -26,6 +29,9 @@ const routes: Routes = [
   {path: 'c-tt', component: ControlTangtocComponent },
   {path: 'c-vd', component: ControlVdComponent },
   {path: 'mc', component: McComponent},
+  {path: 'sc-qb', component: ScQuestionBarComponent},
+  {path: 'sc-vd', component: ScVeDichComponent},
+  {path: 'sc-kd', component: ScKhoiDongComponent},
   {path: '**', component: HomeComponent}
 ];
 

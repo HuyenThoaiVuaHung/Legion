@@ -22,6 +22,9 @@ import { FormQTtComponent } from './form-q-tt/form-q-tt.component';
 import { ControlVdComponent } from './control-vd/control-vd.component';
 import { FormQVdComponent } from './form-q-vd/form-q-vd.component';
 import { McComponent } from './mc/mc.component';
+import { ScKhoiDongComponent } from './sc-khoi-dong/sc-khoi-dong.component';
+import { ScVeDichComponent } from './sc-ve-dich/sc-ve-dich.component';
+import { ScQuestionBarComponent } from './sc-question-bar/sc-question-bar.component';
 
 
 @NgModule({
@@ -44,6 +47,9 @@ import { McComponent } from './mc/mc.component';
     ControlVdComponent,
     FormQVdComponent,
     McComponent,
+    ScKhoiDongComponent,
+    ScVeDichComponent,
+    ScQuestionBarComponent,
   
   ],
   imports: [

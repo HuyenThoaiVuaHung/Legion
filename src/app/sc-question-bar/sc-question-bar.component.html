@@ -1,0 +1,35 @@
+<div *ngIf="vdData.ifQuestionPickerShowing == true"
+class=" absolute disablePointerActions flex-col h-96 w-52">
+<div>
+    <div class=" float-left h-40 w-12">
+        <span>
+            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[0]"></mat-checkbox>
+        </span>
+        <span>
+            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[1]"></mat-checkbox>
+        </span>
+        <span>
+            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[2]"></mat-checkbox>
+        </span>
+    </div>
+    <div
+        class=" justify-center font-black text-center items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-gradient-to-r from-golden-dark to-golden-light">
+        20</div>
+</div>
+<div class="">
+    <div class="mt-5 float-left h-40 w-12">
+        <span>
+            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[3]"></mat-checkbox>
+        </span>
+        <span>
+            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[4]"></mat-checkbox>
+        </span>
+        <span>
+            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[5]"></mat-checkbox>
+        </span>
+    </div>
+    <div
+        class="mt-5 justify-center font-black text-center items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-gradient-to-r from-golden-dark to-golden-light">
+        30</div>
+</div>
+</div>

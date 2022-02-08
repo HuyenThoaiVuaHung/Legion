@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { SfxService } from '../services/sfx-service.service';
 
 @Component({
   selector: 'app-player-vcnv-question',
@@ -10,7 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class PlayerVcnvQuestionComponent implements OnInit {
   socket = io(environment.socketIp);
-  constructor( private router: Router) { }
+  constructor( private router: Router, private sfxService: SfxService ) { }
   imageSource = '../../assets/abcdxyz.png';
   vcnvData : any = {};
   matchData: any = {};
@@ -32,30 +33,36 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       if(callback.roleId == 0 || callback.roleId == 3){
 
         switch(callback.matchData.matchPos){
-          case 'KD': this.router.navigate(['/pl-kd']); break;
-          case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
-          case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-          case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-          case 'VD': this.router.navigate(['pl-vd']); break;    
-          case 'H': this.router.navigate(['']); break;
+          case 'KD': this.router.navigate(['/pl-kd']); this.socket.close(); break;
+          case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); this.socket.close(); break;
+          case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); this.socket.close(); break;
+          case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); this.socket.close(); break;
+          case 'VD': this.router.navigate(['pl-vd']); this.socket.close(); break;    
+          case 'H': this.router.navigate(['']); this.socket.close(); break;
   
       };
       if(callback.roleId == 0){
         this.socket.emit('clear-player-answer')
       }
+      this.socket.on('play-sfx', (sfx) => {
+        this.sfxService.playSfx(sfx);
+      })
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
           switch(data.matchPos){
-            case 'KD': this.router.navigate(['/pl-kd']); break;
-            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
-            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-            case 'VD': this.router.navigate(['pl-vd']); break; 
-            case 'H': this.router.navigate(['']); break;
+            case 'KD': this.router.navigate(['/pl-kd']); this.socket.close(); break;
+            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); this.socket.close(); break;
+            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); this.socket.close(); break;
+            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); this.socket.close(); break;
+            case 'VD': this.router.navigate(['pl-vd']); this.socket.close(); break; 
+            case 'H': this.router.navigate(['']); this.socket.close(); break;
   
         };
           this.matchData = data;
         });
+        this.socket.on('play-sfx', (sfx) => {
+          this.sfxService.playSfx(sfx);
+        })
         this.socket.on('update-vcnv-data', (data) => {
           this.vcnvData = data;
           this.formatStrings();
@@ -113,6 +120,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
   }
   attemptVCNV(){
     this.socket.emit('attempt-cnv-player', Date.now());
+    this.socket.emit('play-sfx', 'VCNV_OBSTACLE');
     this.disabledCNVButton = true;
   }
 }

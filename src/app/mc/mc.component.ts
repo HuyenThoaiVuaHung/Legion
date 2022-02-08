@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 

@@ -59,15 +59,17 @@
   <div class="half-width flex flex-col items-center  float-right text-center overflow-hidden table-container">
     <div class="m-5 flex-col text-white text-xl">
       <div class="inline mr-10">
-        <button mat-raised-button (click)="clockStart(60)" class="w-52">Bắt đầu 60s</button>
+        <button mat-raised-button (click)="clockStart(60)" (click)="playSfx('KD_60S')" class="w-52">Bắt đầu 60s</button>
       </div>
       <div class="inline mr-10">
-        <button mat-raised-button (click)="clockStart(90)" class="w-52">Bắt đầu 90s</button>
+        <button mat-raised-button (click)="clockStart(90)" (click)="playSfx('KD_90S')" class="w-52">Bắt đầu 90s</button>
       </div>
       <div class="inline">
         <button mat-raised-button (click)="clockPause()" class="w-52">Pause/Resume thời gian</button>
       </div>
-
+      <div class="mt-5">
+        <button mat-raised-button (click)="playSfx('KD_START')" class="w-52">Nhạc hiệu KĐ</button>
+      </div>
     </div>
     <div class="text-3xl text-white">
       <br>

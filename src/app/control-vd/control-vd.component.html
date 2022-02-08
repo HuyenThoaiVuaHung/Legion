@@ -61,13 +61,13 @@
           <div>
               <div class=" float-left h-20 w-6">
                   <span class="checkboxes">
-                      <mat-checkbox (change)="updateVdData()" [(ngModel)]="vdData.questionPickerArray[0]"></mat-checkbox>
+                      <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')" [(ngModel)]="vdData.questionPickerArray[0]"></mat-checkbox>
                   </span>
                   <span class="checkboxes">
-                      <mat-checkbox (change)="updateVdData()" [(ngModel)]="vdData.questionPickerArray[1]"></mat-checkbox>
+                      <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')" [(ngModel)]="vdData.questionPickerArray[1]"></mat-checkbox>
                   </span>
                   <span class="checkboxes">
-                      <mat-checkbox (change)="updateVdData()" [(ngModel)]="vdData.questionPickerArray[2]"></mat-checkbox>
+                      <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')" [(ngModel)]="vdData.questionPickerArray[2]"></mat-checkbox>
                   </span>
               </div>
               <div
@@ -77,13 +77,13 @@
           <div class="">
               <div class="mt-5 float-left h-20 w-6">
                   <span class="checkboxes">
-                      <mat-checkbox (change)="updateVdData()" [(ngModel)]="vdData.questionPickerArray[3]"></mat-checkbox>
+                      <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')" [(ngModel)]="vdData.questionPickerArray[3]"></mat-checkbox>
                   </span>
                   <span class="checkboxes">
-                      <mat-checkbox (change)="updateVdData()" [(ngModel)]="vdData.questionPickerArray[4]"></mat-checkbox>
+                      <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')" [(ngModel)]="vdData.questionPickerArray[4]"></mat-checkbox>
                   </span>
                   <span class="checkboxes">
-                      <mat-checkbox (change)="updateVdData()" [(ngModel)]="vdData.questionPickerArray[5]"></mat-checkbox>
+                      <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')" [(ngModel)]="vdData.questionPickerArray[5]"></mat-checkbox>
                   </span>
               </div>
               <div
@@ -102,16 +102,24 @@
   </div>
   <div class="half-width flex flex-col items-center  float-right text-center overflow-hidden table-container">
     <div class="m-5">
-      <div class="m-5 inline">
+      <div class="mb-2">
+        <div class="mt-2 inline">
+          <button mat-raised-button (click)="playSfx('VD_START')">Nhạc hiệu Về đích</button>
+        </div>
+        <div class="mt-2 ml-2 inline">
+          <button mat-raised-button (click)="playSfx('VD_END')">Nhạc hiệu Kết Thúc Về đích</button>
+        </div>
+      </div>
+      <div class="mt-2 inline">
         <button mat-raised-button (click)="startTimer(15)">Bắt đầu 15s</button>
       </div>
-      <div class="m-5 inline">
+      <div class="mt-2 ml-2 inline">
         <button mat-raised-button (click)="startTimer(20)">Bắt đầu 20s</button>
       </div>
-      <div class="m-5">
+      <div class="mt-2">
         <button mat-raised-button (click)="openStealTurn()">Mở chuông trả lời</button>
       </div>
-      <div class="m-5">
+      <div class="mt-2">
         <button mat-raised-button [ngClass]="{'bg-white text-gray-darkest': vdData.ifNSHV === true}" (click)="toggleNSHV()">Toggle NSHV</button>
       </div>
       <div class="text-2xl mt-5 text-white">

@@ -69,6 +69,7 @@ export class ControlVdComponent implements OnInit {
           this.currentTime = clock;
         })
         this.socket.on('player-steal-question', (id) => {
+          this.playSfx('VD_STEAL_Q');
           this.playerStoleQuestion = this.matchData.players[id];
         })
         this.socket.emit('get-vedich-data', (callback) => {
@@ -102,6 +103,7 @@ export class ControlVdComponent implements OnInit {
     this.vdData.currentPlayerId = row.id;
     this.chosenRow = {};
     this.displayingRow = {};
+    this.playSfx('VD_START_TURN');
     this.socket.emit('update-vedich-data', this.vdData);
   }
   editPlayer() {
@@ -119,11 +121,15 @@ export class ControlVdComponent implements OnInit {
     });
   }
   toggleNSHV() {
+    this.playSfx('VD_NSHV');
     this.vdData.ifNSHV = !this.vdData.ifNSHV;
     this.socket.emit('update-vedich-data', this.vdData);
   }
   choosePlayer(row: any) {
     this.chosenPlayer = row;
+  }
+  playSfx(sfxId: string){
+    this.socket.emit('play-sfx', sfxId);
   }
   editQuestion() {
     let question = this.currentQuestionPool[this.currentQuestionPool.indexOf(this.chosenRow)];
@@ -134,7 +140,7 @@ export class ControlVdComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.vdData.questionPools[this.vdData.currentPlayerId - 1][this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow)] = result;
-        this.vdData.questionPools[this.vdData.currentPlayerId - 1][this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow)].value = +result.value;
+        this.vdData.questionPools[this.vdData.currentPlayerId - 1][this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow)].value = Number.parseInt(result.value);
         this.socket.emit('update-vedich-data', this.vdData);
       }
     });
@@ -149,9 +155,11 @@ export class ControlVdComponent implements OnInit {
   }
   toggleQuestionPicker() {
     if (this.vdData.ifQuestionPickerShowing == true) {
+      this.playSfx('VD_CHOSEN');
       this.vdData.ifQuestionPickerShowing = false;
     }
     else {
+      this.playSfx('VD_SHOW_PICKER');
       this.vdData.ifQuestionPickerShowing = true;
     }
     this.socket.emit('update-vedich-data', this.vdData);
@@ -199,11 +207,13 @@ export class ControlVdComponent implements OnInit {
   }
   startTimer(time: number) {
     this.socket.emit('start-clock', time);
+    this.playSfx('VD_' + time + 'S');
   }
   togglePlayVideo() {
     this.socket.emit('vd-play-video');
   }
   markCorrect() {
+    this.playSfx('VD_CORRECT');
     if (this.playerStoleQuestion != undefined) {
       this.socket.emit('mark-correct-vd', this.playerStoleQuestion.id, this.displayingRow.value);
     }
@@ -213,6 +223,7 @@ export class ControlVdComponent implements OnInit {
     this.playerStoleQuestion = undefined;
   }
   markIncorrect() {
+    this.playSfx('VD_WRONG');
     if (this.playerStoleQuestion != undefined) {
       this.socket.emit('mark-incorrect-vd', this.playerStoleQuestion.id, this.displayingRow.value);
     }
@@ -220,5 +231,6 @@ export class ControlVdComponent implements OnInit {
   }
   openStealTurn() {
     this.socket.emit('start-5s-countdown-vd');
+    this.playSfx('VD_5S');
   }
 }

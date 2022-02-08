@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Router } from '@angular/router';
-import { Player } from '../services/interfaces/player.interface';
-import { of } from 'rxjs';
-import { Route } from '@angular/compiler/src/core';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -24,9 +21,13 @@ export class HomeComponent implements OnInit {
   player: any;
   ngOnInit(): void {
     this.initSocket();
+    this.socket.emit('get-match-data', (callback) => {
+      this.matchData = callback;
+    })
   }
   auth(){
     console.log("Đăng nhập với :" + this.authString);
+
     this.socket.emit('init-authenticate', this.authString, (callback) => {
       if (callback.roleId == 0){
         localStorage.setItem('authString', this.authString);

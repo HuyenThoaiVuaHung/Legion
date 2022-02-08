@@ -1,0 +1,23 @@
+<div class=" base relative flex justify-center items-center">
+    <div class=" question flex flex-col mr-5  float-left">
+        <div class=" h-12 w-full inline-flex">
+            <div [ngClass]="{'bg-golden-dark text-black': vdData.currentPlayerId === 1, 'bg-golden-light text-black': playerStealingQuestion === 0}" class=" border-2 border-golden w-56 rounded-sm h-full justify-center items-center bg-gray text-white text-lg font-black flex text-center">
+                {{matchData.players[0].name.toUpperCase()}} - {{matchData.players[0].score}}
+            </div>
+            <div [ngClass]="{'bg-golden-dark text-black': vdData.currentPlayerId === 2, 'bg-golden-light text-black': playerStealingQuestion === 1}" class=" border-2 border-golden w-56 rounded-sm h-full justify-center items-center bg-gray text-white text-lg font-black flex text-center">
+                {{matchData.players[1].name.toUpperCase()}} - {{matchData.players[1].score}}
+            </div>
+            <div [ngClass]="{'bg-golden-dark text-black': vdData.currentPlayerId === 3, 'bg-golden-light text-black': playerStealingQuestion === 2}" class=" border-2 border-golden w-56 rounded-sm h-full justify-center items-center bg-gray text-white text-lg font-black flex text-center">
+                {{matchData.players[2].name.toUpperCase()}} - {{matchData.players[2].score}}
+            </div>
+            <div [ngClass]="{'bg-golden-dark text-black': vdData.currentPlayerId === 4, 'bg-golden-light text-black': playerStealingQuestion === 3}" class=" border-2 border-golden w-56 rounded-sm h-full  justify-center items-center bg-gray text-white text-lg font-black flex text-center">
+                {{matchData.players[3].name.toUpperCase()}} - {{matchData.players[3].score}}
+            </div>
+        </div>
+        <div class="w-full relative border-2 text-lg text-white p-5 border-golden-dark h-56 rounded-lg bg-gray-darkest">
+            {{currentQuestion.question}}
+            <span *ngIf="vdData.ifNSHV == true" class="absolute right-0 bottom-0 text-5xl text-golden p-5">🌟</span>
+        </div>
+    </div>
+    <div class=" float-right w-52 text-7xl border-2 font-black rounded-xl justify-center text-center items-center flex h-52 bg-gradient-to-r from-golden-dark to-golden-light">{{time}}</div>
+</div>

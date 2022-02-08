@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { SfxService } from '../services/sfx-service.service';
 
 @Component({
   selector: 'app-player-vcnv-answer',
@@ -16,25 +17,25 @@ export class PlayerVcnvAnswerComponent implements OnInit {
   roleId: number = -1;
   disabledCNVButton: boolean = false;
   constructor(
-    private router: Router
+    private router: Router,
+    private sfxService: SfxService
   ) { }
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       this.matchData = callback.matchData;
       this.playerIndex = callback.playerIndex;
       this.roleId = callback.roleId;
+      this.sfxService.playSfx('VCNV_SHOWANS');
       if(callback.roleId == 0 || callback.roleId == 3){
         console.log('Logged in as player');
         switch(callback.matchData.matchPos){
-          case 'KD': this.router.navigate(['/pl-kd']); break;
-          case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
-          case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-          case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-          case 'VD': this.router.navigate(['pl-vd']); break;      
-          case 'H': this.router.navigate(['']); break;
-
+          case 'KD': this.router.navigate(['/pl-kd']); this.socket.close(); break;
+          case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); this.socket.close(); break;
+          case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); this.socket.close(); break;
+          case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); this.socket.close(); break;
+          case 'VD': this.router.navigate(['pl-vd']); this.socket.close(); break;      
+          case 'H': this.router.navigate(['']); this.socket.close(); break;
       };
-      
       this.socket.emit('get-vcnv-data', (callback) =>{
         this.vcnvData = callback;
         if (this.vcnvData.disabledPlayers.includes(this.playerIndex)){
@@ -45,24 +46,45 @@ export class PlayerVcnvAnswerComponent implements OnInit {
           console.log('Match data updated');
           this.matchData = data;
           switch(data.matchPos){
-            case 'KD': this.router.navigate(['/pl-kd']); break;
-            case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); break;
-            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-            case 'VD': this.router.navigate(['pl-vd']); break;  
-            case 'H': this.router.navigate(['']); break;
+            case 'KD': this.router.navigate(['/pl-kd']); this.socket.close(); break;
+            case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); this.socket.close(); break;
+            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); this.socket.close(); break;
+            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); this.socket.close(); break;
+            case 'VD': this.router.navigate(['pl-vd']); this.socket.close(); break;  
+            case 'H': this.router.navigate(['']); this.socket.close(); break;
  
         };
           this.matchData = data;
         });
+        this.socket.on('play-sfx', (sfx) => {
+          this.sfxService.playSfx(sfx);
+        })
         this.socket.on('update-vcnv-data', (data) => {
           this.vcnvData = data;
+          if(this.vcnvData.disabledPlayers.includes(this.playerIndex)){
+            this.disabledCNVButton = true;
+          }
+          if(this.vcnvData.showResults == true){
+            let counter = 0;
+            this.vcnvData.playerAnswers.forEach(element => {
+              if (element.correct == true){
+                counter++;
+              }
+            });
+            if (counter == 0){
+              this.sfxService.playSfx('VCNV_WRONG_ROW');
+            }
+            else{
+              this.sfxService.playSfx('VCNV_CORRECT_ROW');
+            }
+          }
         });
       }
     });
   }
   attemptCNV(){
     this.socket.emit('attempt-cnv-player', Date.now());
+    this.socket.emit('play-sfx', 'VCNV_OBSTACLE');
     this.disabledCNVButton = true;
   }
 

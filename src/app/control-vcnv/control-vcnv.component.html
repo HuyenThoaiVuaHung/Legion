@@ -32,7 +32,7 @@
                         <mat-icon>disabled_by_default</mat-icon>
                     </button>
                 </div>
-                <div class="inline" (click)="openHN(element.id)" title="Cho thầy góc hình ảnh" *ngIf="element.type != 'CNV'">
+                <div class="inline" (click)="openHN(element.id)" (click)="playSfx('VCNV_PIC_REVEAL')" title="Cho thầy góc hình ảnh" *ngIf="element.type != 'CNV'">
                     <button mat-icon-button>
                         <mat-icon>visibility</mat-icon>
                     </button>
@@ -43,6 +43,7 @@
           <tr mat-row *matRowDef="let row; columns: displayedQuestionColumns;"
               (click)="onClickQuestion(row)"
               (dblclick)="onDoubleClickQuestion(row)"
+              (dblclick)="playSfx('VCNV_CHOOSE_ROW')"
               [ngClass]="{'highlight': displayingRow === row, 'choose': chosenRow === row, 'bg-gray': vcnvData.questions[row.id - 1].ifOpen === true}"
           ></tr>
         </table>
@@ -95,7 +96,10 @@
           <button mat-raised-button (click)="toggleAnswerDisplay()">Chuyển giữa xem đáp án/câu hỏi</button>
         </div>
         <div class="ml-5 inline">
-          <button mat-raised-button (click)="start15sTimer()">Bắt đầu 15s</button>
+          <button mat-raised-button (click)="start15sTimer()" (click)="playSfx('VCNV_15S')">Bắt đầu 15s</button>
+        </div>
+        <div class="mt-5">
+          <button mat-raised-button (click)="playSfx('VCNV_START')">Nhạc hiệu VCNV</button>
         </div>
         <div class="text-2xl mt-5 text-white">
           Vị trí thí sinh: <span class="text-white">{{matchData.matchPos}}</span>

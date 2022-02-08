@@ -31,7 +31,8 @@ export class ControlTangtocComponent implements OnInit {
    chosenRow: any = {};
    tangtocMark: boolean[] = [];
    displayedQuestionColumns: string[] = ['id','question', 'answer', 'type'];
-   displayedPlayerColumns: string[] = ['id','name', 'score', 'response', 'timestamp', 'mark', 'active'];   ngOnInit(): void {
+   displayedPlayerColumns: string[] = ['id','name', 'score', 'response', 'timestamp', 'mark', 'active'];   
+   ngOnInit(): void {
      this.authString = localStorage.getItem('authString') || '';
      console.log(this.authString);
      this.socket.emit('init-authenticate', this.authString, (callback) => {
@@ -94,6 +95,9 @@ export class ControlTangtocComponent implements OnInit {
    submitMark(){
      this.socket.emit('submit-mark-tangtoc-admin', this.tangtocData.playerAnswers);
    }
+   playSfx(sfxId: string){
+    this.socket.emit('play-sfx', sfxId);
+  }
    onClickQuestion(row){
      this.chosenRow = row;
    }
@@ -113,13 +117,14 @@ export class ControlTangtocComponent implements OnInit {
     this.tangtocData.showAnswer = false;
     this.socket.emit('update-tangtoc-data', this.tangtocData);
     this.socket.emit('broadcast-tt-question', this.displayingRow.id);
-     
+     this.playSfx('TT_QUESTION_SHOW')
    }
    hideQuestion(){
      this.socket.emit('broadcast-tt-question', -1);
    }
    startTimer(time: number){
      this.socket.emit('update-timer-start-timestamp', Date.now());
+     this.playSfx('TT_' + time + 'S');
      this.socket.emit('start-clock', time);
    }
    toggleResultsDisplay(){
@@ -135,6 +140,8 @@ export class ControlTangtocComponent implements OnInit {
    }
    togglePlayVideo(){
      this.socket.emit('tangtoc-play-video');
+     this.playSfx('TT_40S');
+     this.startTimer(40);
    }
    goToVD(){
       this.router.navigate(['/c-vd']);

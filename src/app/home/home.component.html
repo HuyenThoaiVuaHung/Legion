@@ -4,7 +4,7 @@
         <div class="m-3">
             <img class="w-48 h-48 m-auto" src="../../assets/htvhlogo-small.png">
         </div>
-        <p class="text-4xl">Chào mừng bạn đến với Huyền Thoại Vua Hùng IV!</p>
+        <p class="text-4xl">Chào mừng bạn đến với {{matchData.matchName}}</p>
         <div *ngIf="ifAuth === false">
             <mat-form-field>
                 <mat-label>Nhập ID do BTC cung cấp</mat-label>
