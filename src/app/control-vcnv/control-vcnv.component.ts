@@ -144,6 +144,7 @@ export class ControlVcnvComponent implements OnInit {
     for(let i = 0; i < this.vcnvMark.length; i++){
       if(this.vcnvMark[i] == true) ifAnswerCorrect = true;
     }
+    this.socket.emit('submit-cnv-mark', this.vcnvMark);
     if(ifAnswerCorrect){
       this.playSfx('VCNV_OBSTACLE_CORRECT');
       this.socket.emit('open-hn-vcnv', 1);
@@ -156,7 +157,6 @@ export class ControlVcnvComponent implements OnInit {
     else{
       this.playSfx('VCNV_WRONG_ROW');
     }
-    this.socket.emit('submit-cnv-mark', this.vcnvMark);
   }
   moveToTT(){
     this.router.navigate(['/c-tt']);

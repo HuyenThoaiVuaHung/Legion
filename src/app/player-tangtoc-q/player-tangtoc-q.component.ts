@@ -118,8 +118,10 @@ export class PlayerTangtocQComponent implements OnInit {
     }
   }
   submitAnswer() {
-    this.socket.emit('player-submit-answer-tangtoc', this.playerAnswer, Date.now());
-    this.answerCache = this.playerAnswer;
-    this.socket.emit('')
+    if (this.currentTime > 0){
+      this.socket.emit('player-submit-answer-tangtoc', this.playerAnswer, Date.now());
+      this.answerCache = this.playerAnswer;
+      this.socket.emit('')
+    }
   }
 }

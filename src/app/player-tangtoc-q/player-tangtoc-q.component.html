@@ -13,7 +13,7 @@
         <img *ngIf="imageSource != '' && curQuestion.type == 'TT_IMG'" src="{{imageSource}}" class=" disablePointerActions absolute questionBox">
         <img [ngClass]="{'opacity-0': (imageSource != '' && videoSource != '') || curQuestion == null}" src="../../assets/BG-HTVH-IV.png" class=" disablePointerActions questionBox">
         <mat-form-field *ngIf="roleId != 3" class="very-long h-10 text-white">
-            <input matInput [(ngModel)]="playerAnswer" autocomplete="off" placeholder="Đáp án">
+            <input matInput [(ngModel)]="playerAnswer" (keydown.enter)="submitAnswer()" autocomplete="off" placeholder="Đáp án">
         </mat-form-field>
         <button *ngIf="roleId != 3" (click)="submitAnswer()" [disabled]="currentTime <= 0" mat-icon-button class="text-white"><mat-icon>done</mat-icon></button>
     </div>

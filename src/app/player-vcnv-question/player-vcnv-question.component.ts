@@ -60,9 +60,6 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         };
           this.matchData = data;
         });
-        this.socket.on('play-sfx', (sfx) => {
-          this.sfxService.playSfx(sfx);
-        })
         this.socket.on('update-vcnv-data', (data) => {
           this.vcnvData = data;
           this.formatStrings();
@@ -98,7 +95,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
     })
   }
   formatStrings(){
-    for(let i: number = 0; i <= 4; i++){
+    for(let i: number = 0; i <= 5; i++){
       this.VCNVStrings[i] = this.vcnvData.questions[i].answer;
     }
     this.VCNVStrings.forEach((element, index) => {
@@ -115,8 +112,10 @@ export class PlayerVcnvQuestionComponent implements OnInit {
     })
   }
   submitAnswer(){
-    this.answerCache = this.playerAnswer.toUpperCase();
-    this.socket.emit('submit-answer-vcnv', this.playerAnswer)
+    if (this.currentTime > 0){
+      this.answerCache = this.playerAnswer.toUpperCase();
+      this.socket.emit('submit-answer-vcnv', this.playerAnswer)
+    }
   }
   attemptVCNV(){
     this.socket.emit('attempt-cnv-player', Date.now());

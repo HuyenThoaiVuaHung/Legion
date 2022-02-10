@@ -1,4 +1,10 @@
-<div class="relative overflow-hidden bg-gray-dark h-full w-screen">
+<div class="relative overflow-hidden flex-col flex bg-gray-dark h-full w-screen">
+    <div class=" absolute self-center ml-5 mt-10 w-52 h-60">
+        <div *ngIf="vcnvData.CNVPlayers[0] != undefined" class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black bg-golden text-gray-darkest">{{matchData.players[vcnvData.CNVPlayers[0].id].name}}</div>
+        <div *ngIf="vcnvData.CNVPlayers[1] != undefined" class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">{{matchData.players[vcnvData.CNVPlayers[1].id].name}}</div>
+        <div *ngIf="vcnvData.CNVPlayers[2] != undefined" class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">{{matchData.players[vcnvData.CNVPlayers[2].id].name}}</div>
+        <div *ngIf="vcnvData.CNVPlayers[3] != undefined" class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">{{matchData.players[vcnvData.CNVPlayers[3].id].name}}</div>
+    </div>
     <div class="topPortion disablePointerActions">
         <div class="justify-center bg-blue-dark float-left mt-10 ml-10 cnvPicBox content-center overflow-hidden">
             <div [ngClass]="{'opacity-0': vcnvData.questions[4].ifOpen === true}"  class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCellCenter absolute z-20  text-white bg-gray border-2 border-white">5</div>
@@ -8,7 +14,7 @@
             <div [ngClass]="{'opacity-0': vcnvData.questions[3].ifOpen === true}" class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell4 absolute bg-gray text-white z-10 border-2 border-white">4</div>
             <img draggable="false" (dragstart)="false" class="min-h-full image min-w-full z-0 static flex-shrink-0" src='../../assets/picture-questions/vcnv/{{vcnvData.questions[5].picFileName}}' >
         </div>
-        <div class="mt-10 overflow-hidden text-center justify-center items-center cnvTextBox flex mr-10 float-right">
+        <div class=" overflow-hidden text-center justify-center items-center cnvTextBox flex mr-10 float-right">
             <div class="">
                 <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[0].question}" class="bg-gray      h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">{{VCNVStrings[0]}}</div>
                 <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[1].question}" class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">{{VCNVStrings[1]}}</div>
@@ -24,7 +30,7 @@
         </div>
     </div>
     <div>
-        <div class="text-xl ml-10 mt-5 disablePointerActions text-white">CNV CÓ: {{vcnvData.questions[5].answer.length}} CHỮ CÁI</div>
+        <div class="text-xl ml-10 mt-5 disablePointerActions text-white">CNV CÓ: {{VCNVStrings[5].length}} CHỮ CÁI</div>
         <div  class="bg-gray disablePointerActions h-40 text-left items float-left p-5 text-2xl question-box flex overflow-auto text-white ml-10 mt-5 rounded-xl">
             {{curVCNVQuestion.question}}
         </div>
@@ -40,7 +46,7 @@
         </div>
         <div  *ngIf="roleId != 3"class="relative float-left answer-box mt-1">
             <mat-form-field class="ml-10  form-field text-lg ">
-                <input matInput autocomplete="off" [(ngModel)]="playerAnswer" placeholder="Nhập đáp án vào đây" class="text-white ">
+                <input matInput autocomplete="off" (keyup.enter)="submitAnswer()" [(ngModel)]="playerAnswer" placeholder="Nhập đáp án vào đây" class="text-white ">
             </mat-form-field>
             <button (click)="submitAnswer()" [disabled]="currentTime == 0 || disabledCNVButton == true" mat-icon-button class="text-white"><mat-icon>done</mat-icon></button>
         </div>
@@ -54,5 +60,4 @@
     <div *ngIf="roleId != 3"  class="fixed z-50 bottom-0 right-0">
         <button [disabled]="disabledCNVButton == true" (click)="attemptVCNV()" mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">TRẢ LỜI CNV</button>
     </div>
-
 </div>

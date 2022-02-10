@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { MatDialog } from '@angular/material/dialog';
+import { FormPlayerComponent } from '../form-player/form-player.component';
 
 @Component({
   selector: 'app-home',
@@ -10,7 +12,8 @@ import { environment } from 'src/environments/environment';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(/*private socketService: SocketService*/private router: Router) { }
+  constructor(/*private socketService: SocketService*/private router: Router
+    , private dialog: MatDialog) { }
   displayedPlayerColumns: string[] = ['id','name', 'score','active'];
   ifAuth : boolean = false;
   roleID: number = 0;
@@ -122,6 +125,21 @@ export class HomeComponent implements OnInit {
       }
       else {
         this.socket.emit('error', 'Not authenticated' + this.socket.id)
+      }
+    });
+  }
+  editPlayer(row: any){
+    let player = this.matchData.players[this.matchData.players.indexOf(row)];
+    const dialogRef = this.dialog.open(FormPlayerComponent, {
+      data: player
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if(result){
+        var payload: any = { player: result, index: this.matchData.players.indexOf(row)};
+        payload.player.score = parseInt(payload.player.score);
+        this.socket.emit('edit-player-info', payload, (callback) => {
+          console.log(callback.message);
+        });
       }
     });
   }

@@ -15,7 +15,9 @@ export class FormQKdComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    
+    if(this.data.type == undefined){
+      this.data.type = 'N';
+    }
   }
   onNoClick() : void {
     this.dialogRef.close();
