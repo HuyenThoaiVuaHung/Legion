@@ -138,6 +138,10 @@ export class ControlVcnvComponent implements OnInit {
       this.socket.emit('change-match-position', 'VCNV_Q');
     }
   }
+  decreaseNoOfOpenRows(){
+    this.vcnvData.noOfOpenRows--;
+    this.socket.emit('update-vcnv-data', this.vcnvData);
+  }
   submitVCNVMark(){
     let ifAnswerCorrect: boolean = false;
     console.log(this.vcnvMark);
