@@ -11,53 +11,56 @@ import { SfxService } from '../services/sfx-service.service';
 })
 export class PlayerVcnvQuestionComponent implements OnInit {
   socket = io(environment.socketIp);
-  constructor( private router: Router, private sfxService: SfxService ) { }
+  constructor(private router: Router, private sfxService: SfxService) { }
   imageSource = '../../assets/abcdxyz.png';
-  vcnvData : any = {};
+  vcnvData: any = {};
   matchData: any = {};
-  currentTime : number = 0;
-  curVCNVQuestion : any = {};
-  highlightedVCNVQuestion : any = {};
-  VCNVStrings : string[] = [];
-  answerCache : string = '';
+  currentTime: number = 0;
+  curVCNVQuestion: any = {};
+  highlightedVCNVQuestion: any = {};
+  VCNVStrings: string[] = [];
+  answerCache: string = '';
   playerAnswer: string = '';
-  playerIndex : number = 0;
+  playerIndex: number = 0;
   roleId: number = -1;
-  disabledCNVButton : boolean = false;
-  audio :any = null;
+  disabledCNVButton: boolean = false;
+  audio: any = null;
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       this.matchData = callback.matchData;
       this.playerIndex = callback.playerIndex;
       this.roleId = callback.roleId;
-      if(callback.roleId == 0 || callback.roleId == 3){
-
-        switch(callback.matchData.matchPos){
-          case 'KD': this.router.navigate(['/pl-kd']); this.socket.close(); break;
-          case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); this.socket.close(); break;
-          case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); this.socket.close(); break;
-          case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); this.socket.close(); break;
-          case 'VD': this.router.navigate(['pl-vd']); this.socket.close(); break;    
-          case 'H': this.router.navigate(['']); this.socket.close(); break;
-  
-      };
-      if(callback.roleId == 0){
-        this.socket.emit('clear-player-answer')
-      }
-      this.socket.on('play-sfx', (sfx) => {
-        this.sfxService.playSfx(sfx);
-      })
+      if (callback.roleId == 0 || callback.roleId == 3) {
+        if (callback.matchData.matchPos != 'VCNV_Q') {
+          this.socket.disconnect();
+          switch (callback.matchData.matchPos) {
+            case 'KD': this.router.navigate(['/pl-kd']); break;
+            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
+            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
+            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
+            case 'VD': this.router.navigate(['pl-vd']); break;
+            case 'H': this.router.navigate(['']); break;
+          };
+        }
+        if (callback.roleId == 0) {
+          this.socket.emit('clear-player-answer')
+        }
+        this.socket.on('play-sfx', (sfx) => {
+          this.sfxService.playSfx(sfx);
+        })
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
-          switch(data.matchPos){
-            case 'KD': this.router.navigate(['/pl-kd']); this.socket.close(); break;
-            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); this.socket.close(); break;
-            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); this.socket.close(); break;
-            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); this.socket.close(); break;
-            case 'VD': this.router.navigate(['pl-vd']); this.socket.close(); break; 
-            case 'H': this.router.navigate(['']); this.socket.close(); break;
-  
-        };
+          if (data.matchPos != 'VCNV_Q') {
+            this.socket.disconnect();
+            switch (data.matchPos) {
+              case 'KD': this.router.navigate(['/pl-kd']); break;
+              case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
+              case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
+              case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
+              case 'VD': this.router.navigate(['pl-vd']); break;
+              case 'H': this.router.navigate(['']); break;
+            };
+          }
           this.matchData = data;
         });
         this.socket.on('update-vcnv-data', (data) => {
@@ -67,10 +70,10 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         this.socket.on('update-clock', (clock) => {
           this.currentTime = clock;
         })
-        this.socket.emit('get-vcnv-data', (callback) =>{
+        this.socket.emit('get-vcnv-data', (callback) => {
           this.vcnvData = callback;
           console.log(this.vcnvData);
-          if (this.vcnvData.disabledPlayers.includes(this.playerIndex)){
+          if (this.vcnvData.disabledPlayers.includes(this.playerIndex)) {
             this.disabledCNVButton = true;
           }
           this.formatStrings();
@@ -84,7 +87,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
             this.audio = new Audio('../../../assets/audio-questions/vcnv/' + this.curVCNVQuestion.audioFilePath);
             this.audio.play();
           }
-          else if (this.audio != null){
+          else if (this.audio != null) {
             this.audio.pause();
           }
         })
@@ -94,16 +97,16 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       }
     })
   }
-  formatStrings(){
-    for(let i: number = 0; i <= 5; i++){
+  formatStrings() {
+    for (let i: number = 0; i <= 5; i++) {
       this.VCNVStrings[i] = this.vcnvData.questions[i].answer;
     }
     this.VCNVStrings.forEach((element, index) => {
       element = element.replace(/\s/g, '');
       element = element.toUpperCase();
-      if (this.vcnvData.questions[index].ifOpen == false){
+      if (this.vcnvData.questions[index].ifOpen == false) {
         let processedString = '';
-        for (let i = 0; i < element.length; i++){
+        for (let i = 0; i < element.length; i++) {
           processedString += '◯';
         }
         element = processedString;
@@ -111,13 +114,13 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       this.VCNVStrings[index] = element;
     })
   }
-  submitAnswer(){
-    if (this.currentTime > 0){
+  submitAnswer() {
+    if (this.currentTime > 0) {
       this.answerCache = this.playerAnswer.toUpperCase();
       this.socket.emit('submit-answer-vcnv', this.playerAnswer)
     }
   }
-  attemptVCNV(){
+  attemptVCNV() {
     this.socket.emit('attempt-cnv-player', Date.now());
     this.socket.emit('play-sfx', 'VCNV_OBSTACLE');
     this.disabledCNVButton = true;
