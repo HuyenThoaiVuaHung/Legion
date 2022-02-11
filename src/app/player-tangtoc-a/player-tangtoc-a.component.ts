@@ -61,7 +61,6 @@ export class PlayerTangtocAComponent implements OnInit {
         });
         this.socket.on('update-tangtoc-data', (data) => {
           this.ttData = data;
-          console.log(this.ttData.playerAnswers[0].correct == true && this.ttData.showResults == true)
           this.ttData.playerAnswers.sort(sortByTimestamp);
           if(this.ttData.showResults == true){
             let counter = 0;

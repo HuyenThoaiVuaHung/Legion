@@ -18,12 +18,14 @@ export class PlayerKhoiDongComponent implements OnInit {
   ) {}
   question: any = {};
   time: number = 0;
-  player: any = {};
   threeSecTimer1: number = 0;
+  matchData: any = {};
   threeSecTimer2: number = 0;
   audio: any = null;
+  playerIndex: number = 0;
   roleId: number = -1;
   picturePath: string = '';
+  ifGotTurn: boolean = false;
   questionObservable = new Observable((observer) => {
     this.socket.on('update-kd-question', (data) => {
       this.answerCache = this.question.answer;
@@ -34,6 +36,7 @@ export class PlayerKhoiDongComponent implements OnInit {
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       if(callback.roleId == 0 || callback.roleId == 3){
+        this.matchData = callback.matchData;
         this.roleId = callback.roleId;
         switch(callback.matchData.matchPos){
           case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); this.socket.close(); break;
@@ -48,9 +51,9 @@ export class PlayerKhoiDongComponent implements OnInit {
           this.sfxService.playSfx(sfxID);
         })
         console.log('Logged in as player');
-        this.player = callback.player;
         this.questionObservable.subscribe((data) => {
           this.question = data;
+          this.ifGotTurn = false;
           if (this.audio != null){
             this.audio.pause();
           }
@@ -66,20 +69,20 @@ export class PlayerKhoiDongComponent implements OnInit {
           }
         });
         if(this.roleId == 0){
+          this.playerIndex = callback.playerIndex;
           this.socket.on('disable-answer-button-kd', (abc)=> {
             this.answerButtonDisabled = true;
           })
           this.socket.on('enable-answer-button-kd', ()=> {
             this.answerButtonDisabled = false;
           });
-          this.socket.on('update-player-score', (score) => {
-            this.player.score = score;
-          });
-        }
+          this.socket.on('player-got-turn-kd', (data) => {
 
-        this.socket.on('update-kd-time', (time) => {
-          this.time = time;
-        });
+            if(this.playerIndex == data.id - 1){
+              this.ifGotTurn = true;
+            }
+          })
+        }
         this.socket.on('update-3s-timer-kd', (time, ifPlayer) => {
           if(ifPlayer == true){
             this.threeSecTimer2 = time;
@@ -90,8 +93,11 @@ export class PlayerKhoiDongComponent implements OnInit {
         });
         this.socket.on('update-clock', (clock) => {
           this.time = clock;
+          console.log(this.answerButtonDisabled || this.time <= 0)
+
         })
         this.socket.on('update-match-data', (matchData) => {
+          this.matchData = matchData;
           switch(matchData.matchPos){
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']); this.socket.close(); break;
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); this.socket.close(); break;
@@ -99,7 +105,6 @@ export class PlayerKhoiDongComponent implements OnInit {
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); this.socket.close(); break;
             case 'VD': this.router.navigate(['pl-vd']); this.socket.close(); break;
             case 'H': this.router.navigate(['']); this.socket.close(); break;
-
           }
         })
       }

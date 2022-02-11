@@ -5,7 +5,7 @@
       class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">
       {{time}}</div>
     <div *ngIf="roleId != 3"
-      class=" text-2xl disablePointerActions w-64 rounded-xl md:text-xl text-white mt-11 text-center ">{{player.name}}
+      class=" text-2xl disablePointerActions w-64 rounded-xl md:text-xl text-white mt-11 text-center ">{{matchData.players[playerIndex].name}}
     </div>
     <!-- 3s Timer (Admin triggered)-->
     <div *ngIf="threeSecTimer2 <= 0 && threeSecTimer1 > 0"
@@ -17,15 +17,15 @@
     <div *ngIf="roleId != 3"
       class=" text-2xl disablePointerActions w-64 rounded-xl md:text-xl text-white mt-10 text-center ">Số điểm:</div>
     <div *ngIf="roleId != 3" class=" text-8xl disablePointerActions w-64 rounded-xl  text-blue-light mt-5 text-center ">
-      {{player.score}}</div>
+      {{matchData.players[playerIndex].score}}</div>
     <div class=" text-2xl w-64 rounded-xl mt-2 text-center">
       <button *ngIf="roleId != 3" mat-button class=" bg-gray h-20 text-xl p-5 text-white" (click)="getAnswerTurn()"
-        [disabled]="answerButtonDisabled || time <= 0">
+        [disabled]="(answerButtonDisabled || time <= 0)">
         GIÀNH QUYỀN TRẢ LỜI
       </button>
     </div>
   </div>
-  <div class=" disablePointerActions
+  <div [ngClass]="{'text-gold': ifGotTurn === true}" class=" disablePointerActions 
   bg-gray relative drop-shadow-lg questionBox float-right mt-5 ml-10 mr-10 p-10 text-3xl border-2 text-white rounded-xl
   ">
     {{question.question}}

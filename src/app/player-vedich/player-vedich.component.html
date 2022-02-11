@@ -33,12 +33,12 @@
             <video id="vedich-video" class="videoBox" preload="auto" poster="../../assets/BG-HTVH-IV.png">
                 <source src="{{videoSource}}" type="video/mp4" />
             </video>
-            <span class="absolute text-7xl p-5 bottom-0 right-0">🌟</span>
+            <span  *ngIf="vdData.ifNSHV == true" class="absolute text-7xl p-5 bottom-0 right-0 text-golden-dark">★</span>
         </div>
         <div *ngIf="curQuestion.type != 'V'" class=" disablePointerActions
         bg-gray drop-shadow-lg question-text relative float-right p-10 text-3xl border-2 text-white rounded-xl
         ">{{curQuestion.question}}
-            <span *ngIf="vdData.ifNSHV == true" class="absolute right-0 bottom-0 text-7xl text-golden p-5">🌟</span>
+            <span *ngIf="vdData.ifNSHV == true" class="absolute right-0 bottom-0 text-7xl text-golden-dark p-5">★</span>
         </div>
         <div *ngIf="roleId != 3" class=" text-white inline">
             <div *ngIf="fiveSecTimer != 0" class="text-3xl inline pr-5">{{(fiveSecTimer/10)}}s</div>
