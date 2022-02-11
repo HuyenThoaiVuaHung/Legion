@@ -41,7 +41,6 @@
             <span *ngIf="vdData.ifNSHV == true" class="absolute right-0 bottom-0 text-7xl text-golden-dark p-5">★</span>
         </div>
         <div *ngIf="roleId != 3" class=" text-white inline">
-            <div *ngIf="fiveSecTimer != 0" class="text-3xl inline pr-5">{{(fiveSecTimer/10)}}s</div>
             <button [disabled]="buttonDisabled" (click)="stealQuestion()" mat-raised-button
                 class="bg-gray-light text-xl h-32 very-long text-gray-darkest">
                 GIÀNH CHUÔNG TRẢ LỜI

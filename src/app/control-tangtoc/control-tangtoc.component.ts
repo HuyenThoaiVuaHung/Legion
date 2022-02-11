@@ -123,7 +123,7 @@ export class ControlTangtocComponent implements OnInit {
      this.socket.emit('broadcast-tt-question', -1);
    }
    startTimer(time: number){
-     this.socket.emit('update-timer-start-timestamp', Date.now());
+     this.socket.emit('update-timer-start-timestamp');
      this.playSfx('TT_' + time + 'S');
      this.socket.emit('start-clock', time);
    }

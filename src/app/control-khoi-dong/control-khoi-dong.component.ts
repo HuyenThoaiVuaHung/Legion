@@ -146,7 +146,12 @@ export class ControlKhoiDongComponent implements OnInit {
     this.socket.emit('play-pause-clock', this.currentTime);
   }
   start3sTimer(){
-    this.socket.emit('start-3s-timer-kd', false);
+    if (this.lastTurn.name != ''){
+      this.socket.emit('start-3s-timer-kd', true)
+    }
+    else{
+      this.socket.emit('start-3s-timer-kd', false)
+    }
   }
   goToVCNV(){
     this.router.navigate(['/c-vcnv'])

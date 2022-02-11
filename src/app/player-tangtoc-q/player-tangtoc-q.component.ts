@@ -18,6 +18,7 @@ export class PlayerTangtocQComponent implements OnInit {
   ttData: any = {};
   matchData: any = {};
   roleId = -1;
+  disabledAnswerBox = true;
   currentTime: number = 0;
   curQuestion: any = {};
   highlightedVCNVQuestion: any = {};
@@ -76,6 +77,13 @@ export class PlayerTangtocQComponent implements OnInit {
           }
         });
         this.socket.on('update-clock', (clock) => {
+          if (clock <= 0) {
+            this.disabledAnswerBox = true;
+            this.playerAnswer = '';
+          }
+          else {
+            this.disabledAnswerBox = false;
+          }
           this.currentTime = clock;
         })
         this.socket.on('update-tangtoc-question', (question) => {
@@ -119,7 +127,7 @@ export class PlayerTangtocQComponent implements OnInit {
   }
   submitAnswer() {
     if (this.currentTime > 0){
-      this.socket.emit('player-submit-answer-tangtoc', this.playerAnswer, Date.now());
+      this.socket.emit('player-submit-answer-tangtoc', this.playerAnswer);
       this.answerCache = this.playerAnswer;
       this.socket.emit('')
     }

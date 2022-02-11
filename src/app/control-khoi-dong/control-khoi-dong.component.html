@@ -1,12 +1,14 @@
 <div class="bg-gray-darkest flex w-screen h-screen">
   <div class="half-width float-left flex-col flex text-center overflow-hidden table-container">
     <div class="m-5">
-      <div class="inline mr-5 text-white text-xl">Thí sinh giành quyền: {{lastTurn.name}}</div>
-      <div class="inline mr-10">
-        <button mat-raised-button [disabled]="lastTurn.name == ''" (click)="markCorrect()">Đúng</button>
-      </div>
-      <div class="inline">
-        <button mat-raised-button [disabled]="lastTurn.name == ''" (click)="markWrong()">Sai</button>
+      <div class="inline text-white text-xl">Thí sinh giành quyền: {{lastTurn.name}}</div>
+      <div class=" mt-2">
+        <div class="inline mr-10">
+          <button mat-raised-button [disabled]="lastTurn.name == ''" (click)="markCorrect()">Đúng</button>
+        </div>
+        <div class="inline">
+          <button mat-raised-button [disabled]="lastTurn.name == ''" (click)="markWrong()">Sai</button>
+        </div>
       </div>
       <div class=" mt-5">
         <button mat-raised-button [disabled]="threeSecTimers[1] > 0 || currentTime <= 0" (click)="start3sTimer()" class="w-52">Bắt đầu 3s</button>

@@ -11,7 +11,7 @@ import { SfxService } from '../services/sfx-service.service';
 })
 export class PlayerKhoiDongComponent implements OnInit {
   socket = io(environment.socketIp);
-  answerButtonDisabled = false;
+  answerButtonDisabled = true;
   constructor(
     public router: Router,
     private sfxService: SfxService
@@ -24,15 +24,17 @@ export class PlayerKhoiDongComponent implements OnInit {
   audio: any = null;
   playerIndex: number = 0;
   roleId: number = -1;
+  qCounter = 0;
   picturePath: string = '';
   ifGotTurn: boolean = false;
   questionObservable = new Observable((observer) => {
     this.socket.on('update-kd-question', (data) => {
+      this.qCounter++;
       this.answerCache = this.question.answer;
       observer.next(data);
     });
   });
-  answerCache: string = '';
+  answerCache: string = "";
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       if(callback.roleId == 0 || callback.roleId == 3){
@@ -70,14 +72,16 @@ export class PlayerKhoiDongComponent implements OnInit {
         });
         if(this.roleId == 0){
           this.playerIndex = callback.playerIndex;
-          this.socket.on('disable-answer-button-kd', (abc)=> {
+          this.socket.on('disable-answer-button-kd', ()=> {
             this.answerButtonDisabled = true;
+            console.log('a')
           })
           this.socket.on('enable-answer-button-kd', ()=> {
             this.answerButtonDisabled = false;
+            console.log('b')
           });
           this.socket.on('player-got-turn-kd', (data) => {
-
+            
             if(this.playerIndex == data.id - 1){
               this.ifGotTurn = true;
             }
@@ -90,11 +94,15 @@ export class PlayerKhoiDongComponent implements OnInit {
           else{
             this.threeSecTimer1 = time;
           }
+          if(this.time <= 0){
+            this.answerButtonDisabled = true;
+          }
         });
         this.socket.on('update-clock', (clock) => {
+          if(clock <= 0){
+            this.answerButtonDisabled = true;
+          }
           this.time = clock;
-          console.log(this.answerButtonDisabled || this.time <= 0)
-
         })
         this.socket.on('update-match-data', (matchData) => {
           this.matchData = matchData;
@@ -118,7 +126,6 @@ export class PlayerKhoiDongComponent implements OnInit {
   counter: number = 0;
   getAnswerTurn(){
     this.socket.emit('get-turn-kd');
-    this.socket.emit('start-3s-timer-kd', true)
   }
   passQuestion(){
   }

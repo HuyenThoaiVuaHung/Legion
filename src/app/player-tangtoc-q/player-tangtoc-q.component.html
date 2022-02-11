@@ -1,22 +1,32 @@
 <div class="bg-gray-dark flex h-screen w-screen">
     <div class="float-left disablePointerActions p-16 ml-5">
-      <div class="w-64 h-64 drop-shadow-lg flex text-center bg-gray text-white p-10 border-2 justify-center items-center text-8xl font-black rounded-xl">{{currentTime}}</div>
-      <div class=" text-2xl w-64 rounded-xl  text-white mt-11 text-center ">{{curQuestion.question}}</div>
-      <div *ngIf="roleId != 3" class=" text-4xl w-64 rounded-xl  text-white mt-5 text-center ">{{answerCache.toUpperCase()}}</div>
-      <div *ngIf="roleId != 3" class=" text-2xl w-64 rounded-xl  text-white mt-5 text-center ">Số điểm:</div>
-      <div *ngIf="roleId != 3" class=" text-7xl w-64 rounded-xl  text-blue-light mt-5 text-center ">{{matchData.players[playerIndex].score}}</div>
+        <div
+            class="w-64 h-64 drop-shadow-lg flex text-center bg-gray text-white p-10 border-2 justify-center items-center text-8xl font-black rounded-xl">
+            {{currentTime}}</div>
+        <div class=" text-2xl w-64 rounded-xl  text-white mt-11 text-center ">{{curQuestion.question}}</div>
+        <div *ngIf="roleId != 3" class=" text-4xl w-64 rounded-xl  text-white mt-5 text-center ">
+            {{answerCache.toUpperCase()}}</div>
+        <div *ngIf="roleId != 3" class=" text-2xl w-64 rounded-xl  text-white mt-5 text-center ">Số điểm:</div>
+        <div *ngIf="roleId != 3" class=" text-7xl w-64 rounded-xl  text-blue-light mt-5 text-center ">
+            {{matchData.players[playerIndex].score}}</div>
     </div>
     <div class="questionBox  float-right mt-16 ml-10 mr-10 text-3xl">
-        <video muted="true" *ngIf="curQuestion.type == 'TT_VD'" id="video-1" class="disablePointerActions questionBox z-10 absolute" preload="auto" poster="../../assets/BG-HTVH-IV.png">
+        <video muted="true" *ngIf="curQuestion.type == 'TT_VD'" id="video-1"
+            class="disablePointerActions questionBox z-10 absolute" preload="auto" poster="../../assets/BG-HTVH-IV.png">
             <source *ngIf="curQuestion.type == 'TT_VD'" src="{{videoSource}}" type="video/mp4" />
         </video>
-        <img *ngIf="imageSource != '' && curQuestion.type == 'TT_IMG'" src="{{imageSource}}" class=" disablePointerActions absolute questionBox">
-        <img [ngClass]="{'opacity-0': (imageSource != '' && videoSource != '') || curQuestion == null}" src="../../assets/BG-HTVH-IV.png" class=" disablePointerActions questionBox">
+        <img *ngIf="imageSource != '' && curQuestion.type == 'TT_IMG'" src="{{imageSource}}"
+            class=" disablePointerActions absolute questionBox">
+        <img [ngClass]="{'opacity-0': (imageSource != '' && videoSource != '') || curQuestion == null}"
+            src="../../assets/BG-HTVH-IV.png" class=" disablePointerActions questionBox">
         <mat-form-field *ngIf="roleId != 3" class="very-long h-10 text-white">
-            <input matInput [(ngModel)]="playerAnswer" (keydown.enter)="submitAnswer()" autocomplete="off" placeholder="Đáp án">
+            <input matInput [disabled]="(disabledAnswerBox == true)" [(ngModel)]="playerAnswer" (keydown.enter)="submitAnswer()" autocomplete="off"
+                placeholder="Đáp án">
         </mat-form-field>
-        <button *ngIf="roleId != 3" (click)="submitAnswer()" [disabled]="currentTime <= 0" mat-icon-button class="text-white"><mat-icon>done</mat-icon></button>
+        <button *ngIf="roleId != 3" (click)="submitAnswer()" [disabled]="currentTime <= 0" mat-icon-button
+            class="text-white">
+            <mat-icon>done</mat-icon>
+        </button>
     </div>
 
-  </div>
-  
+</div> 
