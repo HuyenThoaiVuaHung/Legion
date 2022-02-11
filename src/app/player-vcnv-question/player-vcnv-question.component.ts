@@ -72,7 +72,6 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         })
         this.socket.emit('get-vcnv-data', (callback) => {
           this.vcnvData = callback;
-          console.log(this.vcnvData);
           if (this.vcnvData.disabledPlayers.includes(this.playerIndex)) {
             this.disabledCNVButton = true;
           }
