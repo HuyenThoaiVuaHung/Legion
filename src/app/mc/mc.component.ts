@@ -45,6 +45,7 @@ export class McComponent implements OnInit {
         });
         this.socket.emit('get-vcnv-data', (callback: any) => {
           this.vcnvData = callback;
+          this.formatStrings();
           this.imagePath = '../../../assets/picture-questions/vcnv/' + this.vcnvData.questions[5].picFileName;
         });
         this.socket.emit('get-vedich-data', (callback: any) => {
@@ -73,6 +74,7 @@ export class McComponent implements OnInit {
         })
         this.socket.on('update-vcnv-data', (data) => {
           this.vcnvData = data;
+          this.formatStrings();
           this.imagePath = '../../../assets/picture-questions/vcnv/' + this.vcnvData.questions[5].picFileName;
         })
         this.socket.on('update-vedich-data', (data) => {
@@ -80,6 +82,7 @@ export class McComponent implements OnInit {
         })
         this.socket.on('update-tangtoc-data', (data) => {
           this.ttData = data;
+          this.ttData.playerAnswers.sort(sortByTimestamp);
         })
         this.socket.emit('get-match-data')
         this.socket.on('update-match-data', (matchData: any) => {
@@ -92,7 +95,24 @@ export class McComponent implements OnInit {
       }
     });
   }
-  
+  VCNVStrings: string[] = [];
+  formatStrings() {
+    for (let i: number = 0; i <= 5; i++) {
+      this.VCNVStrings[i] = this.vcnvData.questions[i].answer;
+    }
+    this.VCNVStrings.forEach((element, index) => {
+      element = element.replace(/\s/g, '');
+      element = element.toUpperCase();
+      if (this.vcnvData.questions[index].ifOpen == false) {
+        let processedString = '';
+        for (let i = 0; i < element.length; i++) {
+          processedString += '◯';
+        }
+        element = processedString;
+      }
+      this.VCNVStrings[index] = element;
+    })
+  }
   counter: number = 0;
   getAnswerTurn(){
     this.socket.emit('get-turn-kd');
@@ -100,5 +120,21 @@ export class McComponent implements OnInit {
   }
   passQuestion(){
   }
-
+  getTimePassed(id: number) : string {
+    let readableTime = '0s0ms';
+    if(this.ttData.playerAnswers[id].timestamp > 0){
+      let timePassedinMs = this.ttData.playerAnswers[id].timestamp - this.ttData.timerStartTimestamp;
+      readableTime = Math.trunc(timePassedinMs/1000) + 's' + timePassedinMs%1000 + 'ms';
+    }
+    return readableTime;
+  }
+}
+function sortByTimestamp(a, b) {
+  if (a.timestamp < b.timestamp) {
+    return -1;
+  }
+  if (a.timestamp > b.timestamp) {
+    return 1;
+  }
+  return 0;
 }

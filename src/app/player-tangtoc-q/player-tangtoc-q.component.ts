@@ -22,6 +22,7 @@ export class PlayerTangtocQComponent implements OnInit {
   currentTime: number = 0;
   curQuestion: any = {};
   highlightedVCNVQuestion: any = {};
+  readableTime : string = '';
   answerCache: string = '';
   playerIndex: number = 0;
   playerAnswer: string = '';
@@ -131,6 +132,13 @@ export class PlayerTangtocQComponent implements OnInit {
       this.answerCache = this.playerAnswer;
       this.socket.emit('')
       this.playerAnswer = '';
+      this.getTimePassed(this.playerIndex);
     }
+  }
+  getTimePassed(id: number) {
+    setTimeout(() => {
+      let timePassedinMs = this.ttData.playerAnswers[id].timestamp - this.ttData.timerStartTimestamp;
+      this.readableTime = Math.trunc(timePassedinMs/1000) + 's' + timePassedinMs%1000 + 'ms';
+    },100)
   }
 }

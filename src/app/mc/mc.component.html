@@ -32,31 +32,53 @@
             <br>
             <br>
         </span>
-        <span *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
-            <img class=" w-60" src="{{imagePath}}">
-        </span>
-        <span *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
-            HN1: {{vcnvData.questions[0].answer}}
-            <br>
-            HN2: {{vcnvData.questions[1].answer}}
-            <br>
-            HN3: {{vcnvData.questions[2].answer}}
-            <br>
-            HN4: {{vcnvData.questions[3].answer}}
-            <br>
-            HN5: {{vcnvData.questions[4].answer}}
-            <br>
-            CNV: {{vcnvData.questions[5].answer}}
-        </span>
-        <span *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
-            {{matchData.players[0].name}}: {{vcnvData.playerAnswers[0].answer}}
-            <br>
-            {{matchData.players[1].name}}: {{vcnvData.playerAnswers[1].answer}}
-            <br>
-            {{matchData.players[2].name}}: {{vcnvData.playerAnswers[2].answer}}
-            <br>
-            {{matchData.players[3].name}}: {{vcnvData.playerAnswers[3].answer}}
-            <br>
-        </span>
+        <div *ngIf="matchData.matchPos == 'TT_Q' || matchData.matchPos == 'TT_A'">
+            <div>
+                {{matchData.players[ttData.playerAnswers[0].id - 1].name.toUpperCase()}}: {{ttData.playerAnswers[0].answer}} @ {{getTimePassed(0)}}
+            </div>
+            <div>
+                {{matchData.players[ttData.playerAnswers[1].id - 1].name.toUpperCase()}}: {{ttData.playerAnswers[1].answer}} @ {{getTimePassed(1)}}
+            </div>
+            <div>
+                {{matchData.players[ttData.playerAnswers[2].id - 1].name.toUpperCase()}}: {{ttData.playerAnswers[2].answer}} @ {{getTimePassed(2)}}
+            </div>
+            <div>
+                {{matchData.players[ttData.playerAnswers[3].id - 1].name.toUpperCase()}}: {{ttData.playerAnswers[3].answer}} @ {{getTimePassed(3)}}
+            </div>
+        </div>
+        <div *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
+            <span>
+                <img class=" w-60" src="{{imagePath}}">
+            </span>
+            <div class="float-left">
+                <span>
+                    HN1: {{vcnvData.questions[0].answer}} | {{VCNVStrings[0].length}} Kí tự
+                    <br>
+                    HN2: {{vcnvData.questions[1].answer}} | {{VCNVStrings[1].length}} Kí tự
+                    <br>
+                    HN3: {{vcnvData.questions[2].answer}} | {{VCNVStrings[2].length}} Kí tự
+                    <br>
+                    HN4: {{vcnvData.questions[3].answer}} | {{VCNVStrings[3].length}} Kí tự
+                    <br>
+                    HN5: {{vcnvData.questions[4].answer}} | {{VCNVStrings[4].length}} Kí tự
+                    <br>
+                    CNV: {{vcnvData.questions[5].answer}} | {{VCNVStrings[5].length}} Kí tự
+                    <br>
+                    Giải thích: {{vcnvData.questions[5].question}}
+                </span>
+            </div>
+            <div class="float-right">
+                <span>
+                    {{matchData.players[0].name}}: {{vcnvData.playerAnswers[0].answer}}
+                    <br>
+                    {{matchData.players[1].name}}: {{vcnvData.playerAnswers[1].answer}}
+                    <br>
+                    {{matchData.players[2].name}}: {{vcnvData.playerAnswers[2].answer}}
+                    <br>
+                    {{matchData.players[3].name}}: {{vcnvData.playerAnswers[3].answer}}
+                    <br>
+                </span>
+            </div>
+        </div>
     </div>
 </div>

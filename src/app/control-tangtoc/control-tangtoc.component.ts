@@ -113,6 +113,14 @@ export class ControlTangtocComponent implements OnInit {
     }
      this.socket.emit('update-tangtoc-data', this.tangtocData);
    }
+   getTimePassed(id: number) : string {
+    let readableTime = '0s0ms';
+    if(this.tangtocData.playerAnswers[id].timestamp > 0){
+      let timePassedinMs = this.tangtocData.playerAnswers[id].timestamp - this.tangtocData.timerStartTimestamp;
+      readableTime = Math.trunc(timePassedinMs/1000) + 's' + timePassedinMs%1000 + 'ms';
+    }
+    return readableTime;
+  }
    showQuestion(){
     this.tangtocData.showAnswer = false;
     this.socket.emit('update-tangtoc-data', this.tangtocData);

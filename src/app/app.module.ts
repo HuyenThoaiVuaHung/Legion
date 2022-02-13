@@ -25,6 +25,8 @@ import { McComponent } from './mc/mc.component';
 import { ScKhoiDongComponent } from './sc-khoi-dong/sc-khoi-dong.component';
 import { ScVeDichComponent } from './sc-ve-dich/sc-ve-dich.component';
 import { ScQuestionBarComponent } from './sc-question-bar/sc-question-bar.component';
+import { ControlChpComponent } from './control-chp/control-chp.component';
+import { PlayerChpComponent } from './player-chp/player-chp.component';
 
 
 @NgModule({
@@ -50,6 +52,8 @@ import { ScQuestionBarComponent } from './sc-question-bar/sc-question-bar.compon
     ScKhoiDongComponent,
     ScVeDichComponent,
     ScQuestionBarComponent,
+    ControlChpComponent,
+    PlayerChpComponent,
   
   ],
   imports: [

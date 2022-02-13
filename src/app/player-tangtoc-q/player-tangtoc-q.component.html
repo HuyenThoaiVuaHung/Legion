@@ -4,8 +4,6 @@
             class="w-64 h-64 drop-shadow-lg flex text-center bg-gray text-white p-10 border-2 justify-center items-center text-8xl font-black rounded-xl">
             {{currentTime}}</div>
         <div class=" text-2xl w-64 rounded-xl  text-white mt-11 text-center ">{{curQuestion.question}}</div>
-        <div *ngIf="roleId != 3" class=" text-4xl w-64 rounded-xl  text-white mt-5 text-center ">
-            {{answerCache.toUpperCase()}}</div>
         <div *ngIf="roleId != 3" class=" text-2xl w-64 rounded-xl  text-white mt-5 text-center ">Số điểm:</div>
         <div *ngIf="roleId != 3" class=" text-7xl w-64 rounded-xl  text-blue-light mt-5 text-center ">
             {{matchData.players[playerIndex].score}}</div>
@@ -19,14 +17,20 @@
             class=" disablePointerActions absolute questionBox">
         <img [ngClass]="{'opacity-0': (imageSource != '' && videoSource != '') || curQuestion == null}"
             src="../../assets/BG-HTVH-IV.png" class=" disablePointerActions questionBox">
-        <mat-form-field *ngIf="roleId != 3" class="very-long h-10 text-white">
-            <input matInput [disabled]="(disabledAnswerBox == true)" [(ngModel)]="playerAnswer" (keydown.enter)="submitAnswer()" autocomplete="off"
-                placeholder="Đáp án">
-        </mat-form-field>
-        <button *ngIf="roleId != 3" (click)="submitAnswer()" [disabled]="currentTime <= 0" mat-icon-button
-            class="text-white">
-            <mat-icon>done</mat-icon>
-        </button>
+        <div class="w-max flex justify-center items-center">
+            <mat-form-field *ngIf="roleId != 3" class="very-long text-white">
+                <input matInput [disabled]="(disabledAnswerBox == true)" [(ngModel)]="playerAnswer" (keydown.enter)="submitAnswer()" autocomplete="off"
+                    placeholder="Đáp án">
+            </mat-form-field>
+            <button *ngIf="roleId != 3" (click)="submitAnswer()" [disabled]="currentTime <= 0" mat-icon-button
+                class="text-white inline ">
+                <mat-icon>done</mat-icon>
+            </button>
+            <span *ngIf="roleId != 3" class="disablePointerActions w-52 flex-wrap text-2xl ml-5 p-2 rounded-xl inline text-white text-center ">
+                {{answerCache.toUpperCase()}}</span>
+            <span *ngIf="roleId != 3" class="disablePointerActions text-4xl ml-5 p-2 rounded-xl  inline-block  text-white text-center ">
+                {{readableTime}}</span>
+        </div>
     </div>
 
 </div> 

@@ -7,7 +7,9 @@
         <mat-radio-button disabled="" class=" p-5" value="CNV">Chướng Ngại Vật</mat-radio-button>
     </mat-radio-group>
     <mat-form-field class="inputForm">
-      <input matInput [disabled]="data.type == 'CNV'" placeholder="Câu hỏi" [(ngModel)]="data.question">
+      <mat-label *ngIf="data.type != 'HN'">Câu hỏi</mat-label>
+      <mat-label *ngIf="data.type == 'HN'">Giải thích</mat-label>
+      <input matInput [(ngModel)]="data.question">
     </mat-form-field>
     <div>
         <mat-form-field class="inputForm">

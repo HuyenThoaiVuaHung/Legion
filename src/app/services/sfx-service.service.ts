@@ -12,6 +12,7 @@ export class SfxService {
       case 'KD_START': audio.src = '../../assets/audio-assets/kd/StartRound.mp3'; break;
       case 'KD_60S': audio.src = '../../assets/audio-assets/kd/60Seconds.mp3'; break;
       case 'KD_90S': audio.src = '../../assets/audio-assets/kd/90Seconds.mp3'; break;
+      case 'KD_GET_TURN': audio.src = '../../assets/audio-assets/kd/GetTurn.mp3'; break;
       case 'KD_CORRECT': audio.src = '../../assets/audio-assets/kd/CorrectAnswer.mp3'; break;
       case 'KD_WRONG': audio.src = '../../assets/audio-assets/kd/WrongAnswer.mp3'; break;
       case 'VCNV_START': audio.src = '../../assets/audio-assets/vcnv/StartRound.mp3'; break;

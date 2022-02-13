@@ -74,11 +74,9 @@ export class PlayerKhoiDongComponent implements OnInit {
           this.playerIndex = callback.playerIndex;
           this.socket.on('disable-answer-button-kd', ()=> {
             this.answerButtonDisabled = true;
-            console.log('a')
           })
           this.socket.on('enable-answer-button-kd', ()=> {
             this.answerButtonDisabled = false;
-            console.log('b')
           });
           this.socket.on('player-got-turn-kd', (data) => {
             
