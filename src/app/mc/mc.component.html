@@ -4,42 +4,59 @@
         <div
             class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">
             {{time}}</div>
-            <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 1 && matchData.matchPos === 'VD', 'bg-golden-dark': (stealingPlayerIndex == 0 && matchData.matchPos === 'VD') || (kdTurn === 1 && matchData.matchPos === 'KD')}" class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">{{matchData.players[0].name.toUpperCase()}} - {{matchData.players[0].score}}
-            </div>
-            <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 2 && matchData.matchPos === 'VD', 'bg-golden-dark': (stealingPlayerIndex == 1 && matchData.matchPos === 'VD') || (kdTurn === 2 && matchData.matchPos === 'KD')}" class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">{{matchData.players[1].name.toUpperCase()}} - {{matchData.players[1].score}}
-            </div>
-            <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 3 && matchData.matchPos === 'VD', 'bg-golden-dark': (stealingPlayerIndex == 2 && matchData.matchPos === 'VD') || (kdTurn === 3 && matchData.matchPos === 'KD')}" class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">{{matchData.players[2].name.toUpperCase()}} - {{matchData.players[2].score}}
-            </div>
-            <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 4 && matchData.matchPos === 'VD', 'bg-golden-dark': (stealingPlayerIndex == 3 && matchData.matchPos === 'VD') || (kdTurn === 4 && matchData.matchPos === 'KD')}" class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">{{matchData.players[3].name.toUpperCase()}} - {{matchData.players[3].score}}
-            </div>
-            <div class=" text-center text-white text-2xl mt-5">Vị trí trận đấu: {{matchData.matchPos}}</div>
+        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 1 && matchData.matchPos === 'VD', 'bg-golden-dark': (stealingPlayerIndex == 0 && matchData.matchPos === 'VD') || (kdTurn === 1 && matchData.matchPos === 'KD')}"
+            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
+            {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
+        </div>
+        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 2 && matchData.matchPos === 'VD', 'bg-golden-dark': (stealingPlayerIndex == 1 && matchData.matchPos === 'VD') || (kdTurn === 2 && matchData.matchPos === 'KD')}"
+            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
+            {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
+        </div>
+        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 3 && matchData.matchPos === 'VD', 'bg-golden-dark': (stealingPlayerIndex == 2 && matchData.matchPos === 'VD') || (kdTurn === 3 && matchData.matchPos === 'KD')}"
+            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
+            {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
+        </div>
+        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 4 && matchData.matchPos === 'VD', 'bg-golden-dark': (stealingPlayerIndex == 3 && matchData.matchPos === 'VD') || (kdTurn === 4 && matchData.matchPos === 'KD')}"
+            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
+            {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
+        </div>
+        <div class=" text-center text-white text-2xl mt-5">Vị trí trận đấu: {{matchData.matchPos}}</div>
     </div>
     <div class=" disablePointerActions
     bg-gray drop-shadow-lg questionBox float-right mt-5 ml-10 mr-10 p-10 text-3xl border-2 text-white rounded-xl
     ">
-    <span>
-        Câu hỏi: {{question.question}}
-        <br>
-        Đáp án: {{question.answer}}
-        <br>
-        
-        <br>
-    </span>
-    <span *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
-        <img class=" w-60" src="{{imagePath}}">
-    </span>
-    <span *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
-        HN1: {{vcnvData.questions[0].answer}}
-        <br>
-        HN2: {{vcnvData.questions[1].answer}}
-        <br>
-        HN3: {{vcnvData.questions[2].answer}}
-        <br>
-        HN4: {{vcnvData.questions[3].answer}}
-        <br>
-        HN5: {{vcnvData.questions[4].answer}}
-        <br>
-        CNV: {{vcnvData.questions[5].answer}}
-    </span>
+        <span>
+            Câu hỏi: {{question.question}}
+            <br>
+            Đáp án: {{question.answer}}
+            <br>
+            <br>
+        </span>
+        <span *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
+            <img class=" w-60" src="{{imagePath}}">
+        </span>
+        <span *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
+            HN1: {{vcnvData.questions[0].answer}}
+            <br>
+            HN2: {{vcnvData.questions[1].answer}}
+            <br>
+            HN3: {{vcnvData.questions[2].answer}}
+            <br>
+            HN4: {{vcnvData.questions[3].answer}}
+            <br>
+            HN5: {{vcnvData.questions[4].answer}}
+            <br>
+            CNV: {{vcnvData.questions[5].answer}}
+        </span>
+        <span *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
+            {{matchData.players[0].name}}: {{vcnvData.playerAnswers[0].answer}}
+            <br>
+            {{matchData.players[1].name}}: {{vcnvData.playerAnswers[1].answer}}
+            <br>
+            {{matchData.players[2].name}}: {{vcnvData.playerAnswers[2].answer}}
+            <br>
+            {{matchData.players[3].name}}: {{vcnvData.playerAnswers[3].answer}}
+            <br>
+        </span>
     </div>
 </div>

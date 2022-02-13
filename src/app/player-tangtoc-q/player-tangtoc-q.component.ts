@@ -130,6 +130,7 @@ export class PlayerTangtocQComponent implements OnInit {
       this.socket.emit('player-submit-answer-tangtoc', this.playerAnswer);
       this.answerCache = this.playerAnswer;
       this.socket.emit('')
+      this.playerAnswer = '';
     }
   }
 }

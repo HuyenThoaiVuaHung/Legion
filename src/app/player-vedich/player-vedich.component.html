@@ -11,19 +11,19 @@
             {{matchData.players[playerIndex].score}}</div>
         <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 1, 'bg-golden-dark': stealingPlayerIndex == 0}"
             class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
-            {{matchData.players[0].name.toUpperCase()}} - {{matchData.players[0].score}}
+            {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
         </div>
         <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 2, 'bg-golden-dark': stealingPlayerIndex == 1}"
             class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
-            {{matchData.players[1].name.toUpperCase()}} - {{matchData.players[1].score}}
+            {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
         </div>
         <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 3, 'bg-golden-dark': stealingPlayerIndex == 2}"
             class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
-            {{matchData.players[2].name.toUpperCase()}} - {{matchData.players[2].score}}
+            {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
         </div>
         <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 4, 'bg-golden-dark': stealingPlayerIndex == 3}"
             class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
-            {{matchData.players[3].name.toUpperCase()}} - {{matchData.players[3].score}}
+            {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
         </div>
     </div>
     <div *ngIf="vdData.ifQuestionPickerShowing == false" class=" items-center text-center">

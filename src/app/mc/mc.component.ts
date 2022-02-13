@@ -50,6 +50,9 @@ export class McComponent implements OnInit {
         this.socket.emit('get-vedich-data', (callback: any) => {
           this.vdData = callback;
         });
+        this.socket.on('clear-turn-player-kd', () => {
+          this.kdTurn = -1;
+        })
         this.socket.emit('get-tangtoc-data', (callback: any) => {
           this.ttData = callback;
         });
@@ -64,6 +67,9 @@ export class McComponent implements OnInit {
         })
         this.socket.on('update-vedich-question', (question) => {
           this.question = question;
+        });
+        this.socket.on('clear-stealing-player', () => {
+          this.stealingPlayerIndex = -1;
         })
         this.socket.on('update-vcnv-data', (data) => {
           this.vcnvData = data;

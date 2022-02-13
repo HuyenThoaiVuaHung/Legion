@@ -121,7 +121,7 @@ export class ControlVdComponent implements OnInit {
     });
   }
   toggleNSHV() {
-    this.playSfx('VD_NSHV');
+    if (this.vdData.ifNSHV == false) this.playSfx('VD_NSHV');
     this.vdData.ifNSHV = !this.vdData.ifNSHV;
     this.socket.emit('update-vedich-data', this.vdData);
   }
