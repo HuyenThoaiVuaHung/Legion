@@ -5,6 +5,8 @@
       <mat-radio-group aria-label="Chọn loại câu hỏi" [(ngModel)]="data.type">
         <mat-radio-button class=" p-5" value="N">Bình thường</mat-radio-button>
         <mat-radio-button class=" p-5" value="V">Video</mat-radio-button>
+        <mat-radio-button class=" p-5" value="A">Âm thanh</mat-radio-button>
+        <mat-radio-button class=" p-5" value="I">Hình ảnh</mat-radio-button>
     </mat-radio-group>
     <mat-radio-group aria-label="Chọn loại câu hỏi" [(ngModel)]="data.value">
         <mat-radio-button class=" p-5" value="30">30</mat-radio-button>
@@ -21,7 +23,7 @@
     </div>
     <div>
       <mat-form-field class="inputForm">
-          <input [disabled]="data.type == 'N'" matInput placeholder="Tên file Video" [(ngModel)]="data.video_name">
+          <input [disabled]="data.type == 'N'" matInput placeholder="Tên file Video/Âm thanh/Hình ảnh" [(ngModel)]="data.file_name">
       </mat-form-field>
     </div>
   </div>

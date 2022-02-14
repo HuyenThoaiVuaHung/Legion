@@ -14,6 +14,7 @@ export class PlayerVedichComponent implements OnInit {
   constructor(private router: Router,
               private sfxService: SfxService) { }
   videoSource = '';
+  imgSource = '';
   vdData: any = {};
   roleId: number = -1;
   matchData: any = {};
@@ -64,8 +65,25 @@ export class PlayerVedichComponent implements OnInit {
         this.socket.on('update-vedich-question', (question) => {
           if (question != undefined) {
             this.curQuestion = question;
+            console.log(this.curQuestion);
+            if (this.audio != null) {
+              this.audio.pause();
+              this.audio = null;
+            }
             if (this.curQuestion.type == 'V') {
-              this.videoSource = "../../../assets/video-questions/vd/" + this.curQuestion.video_name;
+              this.videoSource = "../../../assets/video-questions/vd/" + this.curQuestion.file_name;
+            }
+            else if (this.curQuestion.type == 'A'){
+              this.audio = new Audio('../../../assets/audio-questions/vd/' + this.curQuestion.file_name);
+              this.audio.load();
+              this.audio.play();
+            }
+            else if (this.curQuestion.type == 'I') {
+              this.imgSource = "../../../assets/picture-questions/vd/" + this.curQuestion.file_name;
+            }
+            else {
+              this.videoSource = "";
+              this.imgSource = "";
             }
           }
           else {

@@ -27,15 +27,18 @@
         </div>
     </div>
     <div *ngIf="vdData.ifQuestionPickerShowing == false" class=" items-center text-center">
-        <div *ngIf="curQuestion.type == 'V'" class="disablePointerActions
+        <div *ngIf="curQuestion.type == 'V' || curQuestion.type == 'I'" class="disablePointerActions
         bg-gray drop-shadow-lg relative question-text float-right p-5 text-3xl border-2 text-white rounded-xl">
-            <div class="h-20 m-5 w-96 text-white text-3xl text-left  rounded-xl bg-gray">{{curQuestion.question}}</div>
-            <video id="vedich-video" class="videoBox" preload="auto" poster="../../assets/BG-HTVH-IV.png">
-                <source src="{{videoSource}}" type="video/mp4" />
-            </video>
+            <div class="h-auto m-5 block text-white text-3xl text-left  rounded-xl bg-gray">{{curQuestion.question}}</div>
+            <div>
+                <video  *ngIf="curQuestion.type == 'V'" id="vedich-video" class="videoBox" preload="auto" poster="../../assets/BG-HTVH-IV.png">
+                    <source src="{{videoSource}}" type="video/mp4" />
+                </video>
+                <img *ngIf="curQuestion.type == 'I'"  class="h-72" src="{{imgSource}}"/>
+            </div>
             <span  *ngIf="vdData.ifNSHV == true" class="absolute text-7xl p-5 bottom-0 right-0 text-golden-dark">★</span>
         </div>
-        <div *ngIf="curQuestion.type != 'V'" class=" disablePointerActions
+        <div *ngIf="curQuestion.type != 'V' && curQuestion.type != 'I'" class=" disablePointerActions
         bg-gray drop-shadow-lg question-text relative float-right p-10 text-3xl border-2 text-white rounded-xl
         ">{{curQuestion.question}}
             <span *ngIf="vdData.ifNSHV == true" class="absolute right-0 bottom-0 text-7xl text-golden-dark p-5">★</span>

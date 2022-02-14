@@ -2,9 +2,9 @@
 <div mat-dialog-content>
   <div>
     <mat-radio-group aria-label="Chọn loại câu hỏi" [(ngModel)]="data.type">
-        <mat-radio-button [disabled]="data.type == 'CNV'" class=" p-5" value="HN">Bình thường</mat-radio-button>
-        <mat-radio-button [disabled]="data.type == 'CNV'" class=" p-5" value="HN_S">Âm thanh</mat-radio-button>
-        <mat-radio-button disabled="" class=" p-5" value="CNV">Chướng Ngại Vật</mat-radio-button>
+      <mat-radio-button [disabled]="data.type == 'CNV'" class=" p-5" value="HN">Bình thường</mat-radio-button>
+      <mat-radio-button [disabled]="data.type == 'CNV'" class=" p-5" value="HN_S">Âm thanh</mat-radio-button>
+      <mat-radio-button disabled="" class=" p-5" value="CNV">Chướng Ngại Vật</mat-radio-button>
     </mat-radio-group>
     <mat-form-field class="inputForm">
       <mat-label *ngIf="data.type != 'HN'">Câu hỏi</mat-label>
@@ -12,22 +12,22 @@
       <input matInput [(ngModel)]="data.question">
     </mat-form-field>
     <div>
-        <mat-form-field class="inputForm">
-            <input matInput placeholder="Đáp án" [(ngModel)]="data.answer">
-        </mat-form-field>
+      <mat-form-field class="inputForm">
+        <input matInput placeholder="Đáp án" [(ngModel)]="data.answer">
+      </mat-form-field>
     </div>
     <div *ngIf="data.type != 'CNV'">
-      <mat-form-field class="inputForm" >
-          <input [disabled]="data.type == 'HN'" matInput placeholder="Tên file âm thanh" [(ngModel)]="data.audioFilePath">
+      <mat-form-field class="inputForm">
+        <input [disabled]="data.type == 'HN'" matInput placeholder="Tên file âm thanh" [(ngModel)]="data.audioFilePath">
       </mat-form-field>
     </div>
     <div *ngIf="data.type == 'CNV'">
-      <mat-form-field class="inputForm" >
-          <input [disabled]="data.type == 'HN'" matInput placeholder="Tên file hình ảnh" [(ngModel)]="data.picFileName">
+      <mat-form-field class="inputForm">
+        <input [disabled]="data.type == 'HN'" matInput placeholder="Tên file hình ảnh" [(ngModel)]="data.picFileName">
       </mat-form-field>
     </div>
   </div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">Huỷ</button>
-  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
-</div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Huỷ</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
+  </div>

@@ -1,58 +1,60 @@
-
 <div class="flex h-screen justify-center bg-gray text-white items-center">
-    <div class="text-center font-black">
-        <div class="m-3">
-            <img class="w-48 h-48 m-auto" src="../../assets/htvhlogo-small.png">
+  <div class="text-center font-black">
+    <div class="m-3">
+      <img class="w-48 h-48 m-auto" src="../../assets/htvhlogo-small.png">
+    </div>
+    <p class="text-4xl">Chào mừng bạn đến với {{matchData.matchName}}</p>
+    <div *ngIf="ifAuth === false">
+      <mat-form-field>
+        <mat-label>Nhập ID do BTC cung cấp</mat-label>
+        <input matInput placeholder="ID" [(ngModel)]="authString">
+      </mat-form-field>
+      <button mat-icon-button (click)="auth()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+    <div class=" flex flex-col text-2xl items-center text-center overflow-hidden" *ngIf="ifAuth === true">
+      <div>
+        {{greetString}}
+      </div>
+      <div *ngIf="roleID === 1">
+        <div class="overflow-x-hidden w-max m-10 text-2xl">
+          <table mat-table [dataSource]="matchData.players" class="w-max">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef> ID </th>
+              <td mat-cell *matCellDef="let element"> {{matchData.players.indexOf(element) + 1}} </td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef> Tên </th>
+              <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+            <ng-container matColumnDef="score">
+              <th mat-header-cell *matHeaderCellDef> Điểm </th>
+              <td mat-cell *matCellDef="let element"> {{element.score}} </td>
+            </ng-container>
+            <ng-container matColumnDef="active">
+              <th mat-header-cell *matHeaderCellDef> Đã kết nối? </th>
+              <td mat-cell *matCellDef="let element">
+                <mat-checkbox disabled="true" [checked]="element.isReady"></mat-checkbox>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
+            <tr mat-row *matRowDef="let row;
+                          columns: displayedPlayerColumns;" (dblclick)="editPlayer(row)" class="row"></tr>
+          </table>
         </div>
-        <p class="text-4xl">Chào mừng bạn đến với {{matchData.matchName}}</p>
-        <div *ngIf="ifAuth === false">
-            <mat-form-field>
-                <mat-label>Nhập ID do BTC cung cấp</mat-label>
-                <input matInput placeholder="ID" [(ngModel)]="authString" >
-            </mat-form-field>
-            <button mat-icon-button (click)="auth()">
-                <mat-icon>chevron_right</mat-icon>
-            </button>
+        <input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
+        <div class="file-upload">
+          {{fileName || "Chưa nhập đề mới."}}
+          <button class="upload-btn" (click)="fileUpload.click()">
+            <mat-icon>attach_file</mat-icon>
+          </button>
         </div>
-        <div class=" flex flex-col text-2xl items-center text-center overflow-hidden" *ngIf="ifAuth === true">
-            <div>
-                {{greetString}}
-            </div>
-            <div *ngIf="roleID === 1">
-                <div class="overflow-x-hidden w-max m-10 text-2xl">
-                    <table mat-table [dataSource]="matchData.players" class="w-max">
-                      <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef> ID </th>
-                        <td mat-cell *matCellDef="let element"> {{matchData.players.indexOf(element) + 1}} </td>
-                      </ng-container>
-                      <ng-container matColumnDef="name"> 
-                        <th mat-header-cell *matHeaderCellDef> Tên </th>
-                        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-                      </ng-container>
-                      <ng-container matColumnDef="score">
-                        <th mat-header-cell *matHeaderCellDef> Điểm </th>
-                        <td mat-cell *matCellDef="let element"> {{element.score}} </td>
-                      </ng-container>
-                      <ng-container matColumnDef="active">
-                        <th mat-header-cell *matHeaderCellDef> Đã kết nối? </th>
-                        <td mat-cell *matCellDef="let element">
-                          <mat-checkbox disabled="true" [checked]="element.isReady"></mat-checkbox>  
-                        </td>
-                      </ng-container>
-                      <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
-                      <tr mat-row *matRowDef="let row;
-                          columns: displayedPlayerColumns;"
-                          (dblclick)="editPlayer(row)"
-                          class="row"
-                      ></tr>
-                    </table>
-                </div>
-                <div class="mt-5">
-                    <button mat-raised-button (click)="transferToKhoiDong()" > Chuyển tới phần Khởi Động </button>
-                </div>
-            </div>
+        <div class="mt-5">
+          <button mat-raised-button (click)="transferToKhoiDong()"> Chuyển tới phần Khởi Động </button>
         </div>
-        
-    </div>    
-</div>
+      </div>
+    </div>
 
+  </div>
+</div>

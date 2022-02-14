@@ -13,6 +13,9 @@ export class FormQVdComponent implements OnInit {
     public dialogRef: MatDialogRef<FormQVdComponent>,
     @Inject(MAT_DIALOG_DATA) public data : any
   ) {
+    if (!data.type){
+      data.type = 'N';
+    }
    }
 
   ngOnInit(): void {
