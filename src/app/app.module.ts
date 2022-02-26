@@ -27,6 +27,7 @@ import { ScVeDichComponent } from './sc-ve-dich/sc-ve-dich.component';
 import { ScQuestionBarComponent } from './sc-question-bar/sc-question-bar.component';
 import { ControlChpComponent } from './control-chp/control-chp.component';
 import { PlayerChpComponent } from './player-chp/player-chp.component';
+import { FormQChpComponent } from './form-q-chp/form-q-chp.component';
 
 
 @NgModule({
@@ -54,6 +55,7 @@ import { PlayerChpComponent } from './player-chp/player-chp.component';
     ScQuestionBarComponent,
     ControlChpComponent,
     PlayerChpComponent,
+    FormQChpComponent,
   
   ],
   imports: [
