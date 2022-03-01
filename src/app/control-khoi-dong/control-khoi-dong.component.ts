@@ -169,7 +169,7 @@ export class ControlKhoiDongComponent implements OnInit {
   markWrong(){
       if (this.lastTurn.name != ''){
         this.socket.emit('stop-3s-timer-kd');
-        this.socket.emit('wrong-mark-kd', true);
+        this.socket.emit('wrong-mark-kd');
         this.playSfx('KD_WRONG');
         this.socket.emit('clear-turn-kd')
         this.nextQuestion();
