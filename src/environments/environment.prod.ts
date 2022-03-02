@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  socketIp: 'enter://your.ip:here'
 };
