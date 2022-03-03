@@ -28,6 +28,7 @@ import { ScQuestionBarComponent } from './sc-question-bar/sc-question-bar.compon
 import { ControlChpComponent } from './control-chp/control-chp.component';
 import { PlayerChpComponent } from './player-chp/player-chp.component';
 import { FormQChpComponent } from './form-q-chp/form-q-chp.component';
+import { PointsViewComponent } from './points-view/points-view.component';
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import { FormQChpComponent } from './form-q-chp/form-q-chp.component';
     ControlChpComponent,
     PlayerChpComponent,
     FormQChpComponent,
+    PointsViewComponent,
   
   ],
   imports: [

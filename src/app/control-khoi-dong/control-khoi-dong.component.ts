@@ -191,4 +191,12 @@ export class ControlKhoiDongComponent implements OnInit {
   clearQuestion(){
     this.socket.emit('clear-question-kd');
   }
+  showPoints(){
+    if (this.matchData.matchPos == 'PNTS'){
+      this.socket.emit('change-match-position', 'KD');
+    }
+    else{
+      this.socket.emit('change-match-position', 'PNTS');
+    }
+  }
 }

@@ -165,4 +165,12 @@ export class ControlVcnvComponent implements OnInit {
   moveToTT(){
     this.router.navigate(['/c-tt']);
   }
+  showPoints(){
+    if (this.matchData.matchPos == 'PNTS'){
+      this.socket.emit('change-match-position', 'VCNV_Q');
+    }
+    else{
+      this.socket.emit('change-match-position', 'PNTS');
+    }
+  }
 }

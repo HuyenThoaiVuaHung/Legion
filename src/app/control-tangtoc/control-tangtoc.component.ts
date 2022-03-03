@@ -154,5 +154,12 @@ export class ControlTangtocComponent implements OnInit {
    goToVD(){
       this.router.navigate(['/c-vd']);
    }
-   
+   showPoints(){
+    if (this.matchData.matchPos == 'PNTS'){
+      this.socket.emit('change-match-position', 'TT_Q');
+    }
+    else{
+      this.socket.emit('change-match-position', 'PNTS');
+    }
+  }
 }

@@ -233,4 +233,12 @@ export class ControlVdComponent implements OnInit {
     this.socket.emit('start-5s-countdown-vd');
     this.playSfx('VD_5S');
   }
+  showPoints(){
+    if (this.matchData.matchPos == 'PNTS'){
+      this.socket.emit('change-match-position', 'VD');
+    }
+    else{
+      this.socket.emit('change-match-position', 'PNTS');
+    }
+  }
 }

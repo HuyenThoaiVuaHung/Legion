@@ -31,16 +31,25 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       this.playerIndex = callback.playerIndex;
       this.roleId = callback.roleId;
       if (callback.roleId == 0 || callback.roleId == 3) {
-        if (callback.matchData.matchPos != 'VCNV_Q') {
-          this.socket.disconnect();
-          switch (callback.matchData.matchPos) {
-            case 'KD': this.router.navigate(['/pl-kd']); break;
-            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
-            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-            case 'VD': this.router.navigate(['pl-vd']); break;
-            case 'H': this.router.navigate(['']); break;
-          };
+        if (this.matchData.matchPos != 'VCNV_Q'){
+          switch(this.matchData.matchPos){
+            case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
+            break;
+            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
+            break;
+            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
+            break;
+            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
+            break;
+            case 'VD': this.router.navigate(['pl-vd']);
+            break;
+            case 'H': this.router.navigate(['']);
+            break;
+            case 'PNTS': this.router.navigate(['/pnts']);
+            break;
+            case 'KD': this.router.navigate(['/pl-kd']);
+          }
+          this.socket.close();
         }
         if (callback.roleId == 0) {
           this.socket.emit('clear-player-answer')
@@ -50,16 +59,25 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         })
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
-          if (data.matchPos != 'VCNV_Q') {
-            this.socket.disconnect();
-            switch (data.matchPos) {
-              case 'KD': this.router.navigate(['/pl-kd']); break;
-              case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']); break;
-              case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']); break;
-              case 'TT_A': this.router.navigate(['/pl-tangtoc-a']); break;
-              case 'VD': this.router.navigate(['pl-vd']); break;
-              case 'H': this.router.navigate(['']); break;
-            };
+          if (this.matchData.matchPos != 'VCNV_Q'){
+            switch(this.matchData.matchPos){
+              case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
+              break;
+              case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
+              break;
+              case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
+              break;
+              case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
+              break;
+              case 'VD': this.router.navigate(['pl-vd']);
+              break;
+              case 'H': this.router.navigate(['']);
+              break;
+              case 'PNTS': this.router.navigate(['/pnts']);
+              break;
+              case 'KD': this.router.navigate(['/pl-kd']);
+            }
+            this.socket.close();
           }
           this.matchData = data;
         });
