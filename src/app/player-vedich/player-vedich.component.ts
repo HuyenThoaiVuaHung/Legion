@@ -147,4 +147,5 @@ export class PlayerVedichComponent implements OnInit {
   stealQuestion() {
     this.socket.emit('player-steal-question');
   }
+
 }

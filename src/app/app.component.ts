@@ -7,4 +7,8 @@ import * as io from 'socket.io-client';
 })
 export class AppComponent {
   title = 'Legion';
+  isBlocked: boolean = true;
+  closeBlockFrame() {
+    this.isBlocked = false;
+  }
 }

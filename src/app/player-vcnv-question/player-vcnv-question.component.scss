@@ -86,8 +86,12 @@
             user-select: none; 
 }
 .question-box {
-    width: 80%;
+    width: 76rem;
   }
 .highlight {
     background-color: goldenrod !important;
+}
+.name-highlight {
+  background-color: white !important;
+  color: black !important;
 }

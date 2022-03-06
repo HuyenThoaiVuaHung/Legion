@@ -135,6 +135,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
     if (this.currentTime > 0) {
       this.answerCache = this.playerAnswer.toUpperCase();
       this.socket.emit('submit-answer-vcnv', this.playerAnswer)
+      this.playerAnswer = '';
     }
   }
   attemptVCNV() {
