@@ -4,7 +4,8 @@
       class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">
       {{time}}</div>
     <div *ngIf="roleId != 3"
-      class=" text-2xl disablePointerActions w-64 rounded-xl md:text-xl text-white mt-11 text-center ">{{matchData.players[playerIndex].name}}
+      class=" text-2xl disablePointerActions w-64 rounded-xl md:text-xl text-white mt-11 text-center ">
+      {{matchData.players[playerIndex].name}}
     </div>
     <!-- 3s Timer (Admin triggered)-->
     <div *ngIf="threeSecTimer2 <= 0 && threeSecTimer1 > 0"
@@ -23,12 +24,32 @@
         GIÀNH QUYỀN TRẢ LỜI
       </button>
     </div>
+    <div *ngIf="roleId == 3"
+      class="disablePointerActions w-56 overflow-hidden h-48 text-center items-center justify-center flex flex-col float-right text-white ml-3 mt-5 mr-10">
+      <div [ngClass]="{'name-highlight': currentTurn == 0 }"
+        class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
+        {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
+      </div>
+      <div [ngClass]="{'name-highlight': currentTurn == 1 }"
+        class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
+        {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
+      </div>
+      <div [ngClass]="{'name-highlight': currentTurn == 2 }"
+        class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
+        {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
+      </div>
+      <div [ngClass]="{'name-highlight': currentTurn == 3 }"
+        class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
+        {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
+      </div>
+    </div>
   </div>
   <div [ngClass]="{'text-gold': ifGotTurn === true}" class=" disablePointerActions 
   bg-gray relative drop-shadow-lg questionBox float-right mt-5 ml-10 mr-10 p-10 text-3xl border-2 text-white rounded-xl
   ">
     {{question.question}}
     <img *ngIf="picturePath != ''" src="{{picturePath}}" class=" h-52 mt-10">
-    <div *ngIf="this.qCounter > 1" class=" flex mt-10 bottom-32 absolute bg-gray-dark w-max rounded-l p-5">{{answerCache}}</div>
+    <div *ngIf="this.qCounter > 1" class=" flex mt-10 bottom-32 absolute bg-gray-dark w-max rounded-l p-5">
+      {{answerCache}}</div>
   </div>
 </div>

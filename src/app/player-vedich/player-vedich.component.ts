@@ -12,7 +12,7 @@ import { SfxService } from '../services/sfx-service.service';
 export class PlayerVedichComponent implements OnInit {
   socket = io(environment.socketIp);
   constructor(private router: Router,
-              private sfxService: SfxService) { }
+    private sfxService: SfxService) { }
   videoSource = '';
   imgSource = '';
   vdData: any = {};
@@ -31,46 +31,46 @@ export class PlayerVedichComponent implements OnInit {
       this.playerIndex = callback.playerIndex
       this.roleId = callback.roleId;
       if (callback.roleId == 0 || callback.roleId == 3) {
-        if (this.matchData.matchPos != 'VD'){
-          switch(this.matchData.matchPos){
+        if (this.matchData.matchPos != 'VD') {
+          switch (this.matchData.matchPos) {
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-            break;
+              break;
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-            break;
+              break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-            break;
+              break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-            break;
+              break;
             case 'VD': this.router.navigate(['pl-vd']);
-            break;
+              break;
             case 'H': this.router.navigate(['']);
-            break;
+              break;
             case 'PNTS': this.router.navigate(['/pnts']);
-            break;
+              break;
             case 'KD': this.router.navigate(['/pl-kd']);
           }
           this.socket.close();
-        }        this.socket.on('play-sfx', (sfxID) => {
+        } this.socket.on('play-sfx', (sfxID) => {
           this.sfxService.playSfx(sfxID);
         })
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
-          if (this.matchData.matchPos != 'VD'){
-            switch(this.matchData.matchPos){
+          if (this.matchData.matchPos != 'VD') {
+            switch (this.matchData.matchPos) {
               case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-              break;
+                break;
               case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-              break;
+                break;
               case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-              break;
+                break;
               case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-              break;
+                break;
               case 'VD': this.router.navigate(['pl-vd']);
-              break;
+                break;
               case 'H': this.router.navigate(['']);
-              break;
+                break;
               case 'PNTS': this.router.navigate(['/pnts']);
-              break;
+                break;
               case 'KD': this.router.navigate(['/pl-kd']);
             }
             this.socket.close();
@@ -93,7 +93,7 @@ export class PlayerVedichComponent implements OnInit {
             if (this.curQuestion.type == 'V') {
               this.videoSource = "../../../assets/video-questions/vd/" + this.curQuestion.file_name;
             }
-            else if (this.curQuestion.type == 'A'){
+            else if (this.curQuestion.type == 'A') {
               this.audio = new Audio('../../../assets/audio-questions/vd/' + this.curQuestion.file_name);
               this.audio.load();
               this.audio.play();
@@ -147,5 +147,4 @@ export class PlayerVedichComponent implements OnInit {
   stealQuestion() {
     this.socket.emit('player-steal-question');
   }
-
 }

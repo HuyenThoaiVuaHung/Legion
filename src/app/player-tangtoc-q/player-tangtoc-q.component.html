@@ -10,7 +10,8 @@
     </div>
     <div class="questionBox  float-right mt-16 ml-10 mr-10 text-3xl">
         <video muted="true" *ngIf="curQuestion.type == 'TT_VD'" id="video-1"
-            class="disablePointerActions questionBox z-10 absolute" preload="auto" poster="../../assets/misc/placeholder.png">
+            class="disablePointerActions questionBox z-10 absolute" preload="auto"
+            poster="../../assets/misc/placeholder.png">
             <source *ngIf="curQuestion.type == 'TT_VD'" src="{{videoSource}}" type="video/mp4" />
         </video>
         <img *ngIf="imageSource != '' && curQuestion.type == 'TT_IMG'" src="{{imageSource}}"
@@ -19,18 +20,20 @@
             src="../../assets/misc/placeholder.png" class=" disablePointerActions questionBox">
         <div class="w-max flex justify-center items-center">
             <mat-form-field *ngIf="roleId != 3" class="very-long text-white">
-                <input matInput [disabled]="(disabledAnswerBox == true)" [(ngModel)]="playerAnswer" (keydown.enter)="submitAnswer()" autocomplete="off"
-                    placeholder="Đáp án">
+                <input matInput autofocus (keyup)="checkIfTime()" [(ngModel)]="playerAnswer"
+                    (keydown.enter)="submitAnswer()" autocomplete="off" placeholder="Đáp án">
             </mat-form-field>
             <button *ngIf="roleId != 3" (click)="submitAnswer()" [disabled]="currentTime <= 0" mat-icon-button
                 class="text-white inline ">
                 <mat-icon>done</mat-icon>
             </button>
-            <span *ngIf="roleId != 3" class="disablePointerActions w-52 flex-wrap text-2xl ml-5 p-2 rounded-xl inline text-white text-center ">
+            <span *ngIf="roleId != 3"
+                class="disablePointerActions w-52 flex-wrap text-2xl ml-5 p-2 rounded-xl inline text-white text-center ">
                 {{answerCache.toUpperCase()}}</span>
-            <span *ngIf="roleId != 3" class="disablePointerActions text-4xl ml-5 p-2 rounded-xl  inline-block  text-white text-center ">
+            <span *ngIf="roleId != 3"
+                class="disablePointerActions text-4xl ml-5 p-2 rounded-xl  inline-block  text-white text-center ">
                 {{readableTime}}</span>
         </div>
     </div>
 
-</div> 
+</div>

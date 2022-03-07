@@ -28,22 +28,22 @@ export class PlayerVcnvAnswerComponent implements OnInit {
       this.sfxService.playSfx('VCNV_SHOWANS');
       if (callback.roleId == 0 || callback.roleId == 3) {
         console.log('Logged in as player');
-        if (this.matchData.matchPos != 'VCNV_A'){
-          switch(this.matchData.matchPos){
+        if (this.matchData.matchPos != 'VCNV_A') {
+          switch (this.matchData.matchPos) {
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-            break;
+              break;
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-            break;
+              break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-            break;
+              break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-            break;
+              break;
             case 'VD': this.router.navigate(['pl-vd']);
-            break;
+              break;
             case 'H': this.router.navigate(['']);
-            break;
+              break;
             case 'PNTS': this.router.navigate(['/pnts']);
-            break;
+              break;
             case 'KD': this.router.navigate(['/pl-kd']);
           }
           this.socket.close();
@@ -56,28 +56,27 @@ export class PlayerVcnvAnswerComponent implements OnInit {
         });
         this.socket.on('update-match-data', (data) => {
           console.log('Match data updated');
-          if (this.matchData.matchPos != 'VCNV_A'){
-            switch(this.matchData.matchPos){
+          this.matchData = data;
+          if (this.matchData.matchPos != 'VCNV_A') {
+            switch (this.matchData.matchPos) {
               case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-              break;
+                break;
               case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-              break;
+                break;
               case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-              break;
+                break;
               case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-              break;
+                break;
               case 'VD': this.router.navigate(['pl-vd']);
-              break;
+                break;
               case 'H': this.router.navigate(['']);
-              break;
+                break;
               case 'PNTS': this.router.navigate(['/pnts']);
-              break;
+                break;
               case 'KD': this.router.navigate(['/pl-kd']);
             }
             this.socket.close();
           }
-
-          this.matchData = data;
         });
         this.socket.on('play-sfx', (sfx) => {
           this.sfxService.playSfx(sfx);

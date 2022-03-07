@@ -13,7 +13,7 @@ export class McComponent implements OnInit {
   answerButtonDisabled = false;
   constructor(
     public router: Router
-  ) {}
+  ) { }
   question: any = {};
   time: number = 0;
   player: any = {};
@@ -27,7 +27,7 @@ export class McComponent implements OnInit {
   answerCache: string = '';
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
-      if(callback.roleId == 2){
+      if (callback.roleId == 2) {
         console.log('Logged in as MC');
         this.matchData = callback.matchData;
         this.socket.on('update-kd-question', (data) => {
@@ -114,17 +114,17 @@ export class McComponent implements OnInit {
     })
   }
   counter: number = 0;
-  getAnswerTurn(){
+  getAnswerTurn() {
     this.socket.emit('get-turn-kd');
     this.socket.emit('start-3s-timer-kd', true)
   }
-  passQuestion(){
+  passQuestion() {
   }
-  getTimePassed(id: number) : string {
+  getTimePassed(id: number): string {
     let readableTime = '0s0ms';
-    if(this.ttData.playerAnswers[id].timestamp > 0){
+    if (this.ttData.playerAnswers[id].timestamp > 0) {
       let timePassedinMs = this.ttData.playerAnswers[id].timestamp - this.ttData.timerStartTimestamp;
-      readableTime = Math.trunc(timePassedinMs/1000) + 's' + timePassedinMs%1000 + 'ms';
+      readableTime = Math.trunc(timePassedinMs / 1000) + 's' + timePassedinMs % 1000 + 'ms';
     }
     return readableTime;
   }

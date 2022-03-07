@@ -128,7 +128,7 @@ export class ControlVdComponent implements OnInit {
   choosePlayer(row: any) {
     this.chosenPlayer = row;
   }
-  playSfx(sfxId: string){
+  playSfx(sfxId: string) {
     this.socket.emit('play-sfx', sfxId);
   }
   editQuestion() {
@@ -233,11 +233,11 @@ export class ControlVdComponent implements OnInit {
     this.socket.emit('start-5s-countdown-vd');
     this.playSfx('VD_5S');
   }
-  showPoints(){
-    if (this.matchData.matchPos == 'PNTS'){
+  showPoints() {
+    if (this.matchData.matchPos == 'PNTS') {
       this.socket.emit('change-match-position', 'VD');
     }
-    else{
+    else {
       this.socket.emit('change-match-position', 'PNTS');
     }
   }

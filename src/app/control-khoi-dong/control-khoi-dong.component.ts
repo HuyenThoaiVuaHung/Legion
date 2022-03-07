@@ -16,31 +16,31 @@ export class ControlKhoiDongComponent implements OnInit {
   constructor(
     private router: Router,
     public dialog: MatDialog
-    ) {
+  ) {
 
-   }
-   socket = io.connect(environment.socketIp);
+  }
+  socket = io.connect(environment.socketIp);
   displayingRow: any = null;
   chosenRow: any = null;
   currentTime: number = 0;
   displayedQuestionColumns: string[] = ['question', 'answer', 'type', 'subject'];
-  displayedPlayerColumns: string[] = ['id','name', 'score','active'];
+  displayedPlayerColumns: string[] = ['id', 'name', 'score', 'active'];
   authString: string = '';
   matchData: any = {};
   kdData: any = {};
-  lastTurn: any = {name: ''};
-  threeSecTimers: number[] = [0,0];
+  lastTurn: any = { name: '' };
+  threeSecTimers: number[] = [0, 0];
   ngOnInit(): void {
     this.authString = localStorage.getItem('authString') || '';
     console.log(this.authString);
     this.socket.emit('init-authenticate', this.authString, (callback) => {
-      if(callback.roleId == 1){
+      if (callback.roleId == 1) {
         console.log('Logged in as admin');
         this.socket.emit('change-match-position', 'KD')
         this.matchData = callback.matchData;
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
-          }
+        }
         )
         this.socket.on('update-kd-data-admin', (data) => {
           this.kdData = data;
@@ -48,7 +48,7 @@ export class ControlKhoiDongComponent implements OnInit {
         this.socket.on('update-clock', (clock) => {
           this.currentTime = clock;
         })
-        this.socket.emit('get-kd-data-admin', (callback) =>{
+        this.socket.emit('get-kd-data-admin', (callback) => {
           this.kdData = callback;
         });
         this.socket.on('disconnect', () => {
@@ -62,10 +62,10 @@ export class ControlKhoiDongComponent implements OnInit {
           this.lastTurn.name = '';
         })
         this.socket.on('update-3s-timer-kd', (timer, ifPlayer) => {
-          if(ifPlayer){
+          if (ifPlayer) {
             this.threeSecTimers[1] = timer;
           }
-          else{
+          else {
             this.threeSecTimers[0] = timer;
           }
         })
@@ -76,23 +76,23 @@ export class ControlKhoiDongComponent implements OnInit {
       }
     });
   }
-  onClickQuestion(row: any){
+  onClickQuestion(row: any) {
     this.chosenRow = row;
   }
-  onDoubleClickQuestion(row: any){
+  onDoubleClickQuestion(row: any) {
     this.displayingRow = row;
     this.socket.emit('broadcast-kd-question', this.kdData.questions.indexOf(this.displayingRow), callback => {
       console.log(callback.message);
     });
   }
-  onDoubleClickPlayer(row: any){
+  onDoubleClickPlayer(row: any) {
     let player = this.matchData.players[this.matchData.players.indexOf(row)];
     const dialogRef = this.dialog.open(FormPlayerComponent, {
       data: player
     });
     dialogRef.afterClosed().subscribe(result => {
-      if(result){
-        var payload: any = { player: result, index: this.matchData.players.indexOf(row)};
+      if (result) {
+        var payload: any = { player: result, index: this.matchData.players.indexOf(row) };
         payload.player.score = parseInt(payload.player.score);
         this.socket.emit('edit-player-info', payload, (callback) => {
           console.log(callback.message);
@@ -100,21 +100,21 @@ export class ControlKhoiDongComponent implements OnInit {
       }
     });
   }
-  editQuestion(){
+  editQuestion() {
     let question = this.kdData.questions[this.kdData.questions.indexOf(this.chosenRow)];
     const dialogRef = this.dialog.open(FormQKdComponent, {
       data: question
     });
     dialogRef.afterClosed().subscribe(result => {
-      if(result){
-        var payload: any = { question: result, index: this.kdData.questions.indexOf(this.chosenRow)};
+      if (result) {
+        var payload: any = { question: result, index: this.kdData.questions.indexOf(this.chosenRow) };
         this.socket.emit('edit-kd-question', payload, (callback) => {
           console.log(callback.message);
         });
       }
     });
   }
-  addQuestion(){
+  addQuestion() {
     const dialogRef = this.dialog.open(FormQKdComponent, {
       data: { question: '', answer: '', type: '' }
     });
@@ -127,75 +127,75 @@ export class ControlKhoiDongComponent implements OnInit {
       }
     });
   }
-  playSfx(sfxId: string){
+  playSfx(sfxId: string) {
     this.socket.emit('play-sfx', sfxId);
   }
-  removeQuestion(){
+  removeQuestion() {
     this.socket.emit('remove-kd-question', this.kdData.questions.indexOf(this.chosenRow), (callback) => {
       console.log(callback.message);
     });
   }
-  clockStart(time: number){
+  clockStart(time: number) {
     this.socket.emit('play-sfx', 'kd-clock-' + time);
     this.socket.emit('start-clock', time, (callback) => {
       console.log(callback.message);
     });
     this.nextQuestion();
   }
-  clockPause(){
+  clockPause() {
     this.socket.emit('play-pause-clock', this.currentTime);
   }
-  start3sTimer(){
-    if (this.lastTurn.name != ''){
+  start3sTimer() {
+    if (this.lastTurn.name != '') {
       this.socket.emit('start-3s-timer-kd', true)
     }
-    else{
+    else {
       this.socket.emit('start-3s-timer-kd', false)
     }
   }
-  goToVCNV(){
+  goToVCNV() {
     this.router.navigate(['/c-vcnv'])
   }
-  markCorrect(){
-      if (this.lastTurn.name != ''){
-        this.socket.emit('correct-mark-kd');
-        this.socket.emit('stop-3s-timer-kd');
-        this.playSfx('KD_CORRECT');
-        this.socket.emit('clear-turn-kd')
-        this.nextQuestion();
-        this.lastTurn.name = '';
-      }
+  markCorrect() {
+    if (this.lastTurn.name != '') {
+      this.socket.emit('correct-mark-kd');
+      this.socket.emit('stop-3s-timer-kd');
+      this.playSfx('KD_CORRECT');
+      this.socket.emit('clear-turn-kd')
+      this.nextQuestion();
+      this.lastTurn.name = '';
     }
-  markWrong(){
-      if (this.lastTurn.name != ''){
-        this.socket.emit('stop-3s-timer-kd');
-        this.socket.emit('wrong-mark-kd');
-        this.playSfx('KD_WRONG');
-        this.socket.emit('clear-turn-kd')
-        this.nextQuestion();
-        this.lastTurn.name = '';
-      }
+  }
+  markWrong() {
+    if (this.lastTurn.name != '') {
+      this.socket.emit('stop-3s-timer-kd');
+      this.socket.emit('wrong-mark-kd');
+      this.playSfx('KD_WRONG');
+      this.socket.emit('clear-turn-kd')
+      this.nextQuestion();
+      this.lastTurn.name = '';
     }
-  nextQuestion(){
-    if(this.kdData.questions.indexOf(this.displayingRow) + 1 < this.kdData.questions.length) {      
-        this.socket.emit('broadcast-kd-question', this.kdData.questions.indexOf(this.displayingRow) + 1, (callback) => {
+  }
+  nextQuestion() {
+    if (this.kdData.questions.indexOf(this.displayingRow) + 1 < this.kdData.questions.length) {
+      this.socket.emit('broadcast-kd-question', this.kdData.questions.indexOf(this.displayingRow) + 1, (callback) => {
         console.log(callback.message);
       })
       this.displayingRow = this.kdData.questions[this.kdData.questions.indexOf(this.displayingRow) + 1];
 
     }
-    else{
+    else {
       console.log('Last question reached')
     }
   }
-  clearQuestion(){
+  clearQuestion() {
     this.socket.emit('clear-question-kd');
   }
-  showPoints(){
-    if (this.matchData.matchPos == 'PNTS'){
+  showPoints() {
+    if (this.matchData.matchPos == 'PNTS') {
       this.socket.emit('change-match-position', 'KD');
     }
-    else{
+    else {
       this.socket.emit('change-match-position', 'PNTS');
     }
   }

@@ -27,17 +27,18 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Hành động</th>
           <td mat-cell *matCellDef="let element">
-            <div class="inline" (click)="closeHN(element.id)" title="Không cho thầy góc hình ảnh"
-              *ngIf="element.type != 'CNV'">
-              <button mat-icon-button>
+            <div class="inline pr-3" title="Không cho thấy góc hình ảnh" *ngIf="element.type != 'CNV'">
+              <button mat-icon-button (click)="closeHN(element.id)">
                 <mat-icon>disabled_by_default</mat-icon>
               </button>
             </div>
-            <div class="inline" (click)="openHN(element.id)" (click)="playSfx('VCNV_PIC_REVEAL')"
-              title="Cho thầy góc hình ảnh" *ngIf="element.type != 'CNV'">
-              <button mat-icon-button>
+            <div class="inline pr-3" title="Cho thấy góc hình ảnh" *ngIf="element.type != 'CNV'">
+              <button mat-icon-button (click)="playSfx('VCNV_PIC_REVEAL')" (click)="openHN(element.id)">
                 <mat-icon>visibility</mat-icon>
               </button>
+            </div>
+            <div class="inline pr-3" title="Câu hỏi đã hiện hay chưa" *ngIf="element.type != 'CNV'">
+              <mat-checkbox (change)="toggleIfShown()" [(ngModel)]="element.ifShown"></mat-checkbox>
             </div>
           </td>
         </ng-container>
@@ -59,13 +60,6 @@
           <mat-icon>clear</mat-icon>
         </button>
       </div>
-      <div class=" text-2xl text-white">
-        <span>Số HN đã mở: {{vcnvData.noOfOpenRows}}</span>
-        <button [disabled]="vcnvData.noOfOpenRows <= 0" (click)="decreaseNoOfOpenRows()" mat-icon-button>
-          <mat-icon>remove</mat-icon>
-        </button>
-      </div>
-
       <div class="overflow-x-hidden w-max m-10 text-2xl">
         <div class=" text-white mb-3"> Chấm CNV</div>
         <table mat-table [dataSource]="vcnvData.CNVPlayers" class="w-max">
@@ -99,15 +93,21 @@
   </div>
   <div class="half-width flex flex-col items-center  float-right text-center overflow-hidden table-container">
     <div class="m-5">
-
-      <div class="inline">
-        <button mat-raised-button (click)="toggleAnswerDisplay()">Chuyển giữa xem đáp án/câu hỏi</button>
+      <div class="p-2">
+        <div class="inline">
+          <button mat-raised-button (click)="toggleAnswerDisplay()">Chuyển giữa xem đáp án/câu hỏi</button>
+        </div>
+        <div class="ml-2 inline">
+          <button mat-raised-button (click)="start15sTimer()" (click)="playSfx('VCNV_15S')">Bắt đầu 15s</button>
+        </div>
       </div>
-      <div class="ml-5 inline">
-        <button mat-raised-button (click)="start15sTimer()" (click)="playSfx('VCNV_15S')">Bắt đầu 15s</button>
-      </div>
-      <div class="mt-5">
-        <button mat-raised-button (click)="playSfx('VCNV_START')">Nhạc hiệu VCNV</button>
+      <div class="p-2">
+        <div class="mt-5 inline">
+          <button mat-raised-button (click)="playSfx('VCNV_START')">Nhạc hiệu VCNV</button>
+        </div>
+        <span class="m-2 inline">
+          <button mat-raised-button (click)="playSfx('BLANK_SPC')" class="w-52">Âm thanh khoảng trống</button>
+        </span>
       </div>
       <div class="text-2xl mt-5 text-white">
         Vị trí thí sinh: <span class="text-white">{{matchData.matchPos}}</span>
@@ -130,7 +130,7 @@
         </ng-container>
         <ng-container matColumnDef="response">
           <th mat-header-cell *matHeaderCellDef> Trả lời </th>
-          <td mat-cell *matCellDef="let element"> {{vcnvData.playerAnswers[element.id - 1].answer}} </td>
+          <td mat-cell *matCellDef="let element"> {{vcnvData.playerAnswers[element.id - 1].answer.toUpperCase()}} </td>
         </ng-container>
         <ng-container matColumnDef="mark">
           <th mat-header-cell *matHeaderCellDef> Chấm </th>

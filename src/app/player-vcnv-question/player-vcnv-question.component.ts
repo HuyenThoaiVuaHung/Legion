@@ -31,22 +31,22 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       this.playerIndex = callback.playerIndex;
       this.roleId = callback.roleId;
       if (callback.roleId == 0 || callback.roleId == 3) {
-        if (this.matchData.matchPos != 'VCNV_Q'){
-          switch(this.matchData.matchPos){
+        if (this.matchData.matchPos != 'VCNV_Q') {
+          switch (this.matchData.matchPos) {
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-            break;
+              break;
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-            break;
+              break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-            break;
+              break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-            break;
+              break;
             case 'VD': this.router.navigate(['pl-vd']);
-            break;
+              break;
             case 'H': this.router.navigate(['']);
-            break;
+              break;
             case 'PNTS': this.router.navigate(['/pnts']);
-            break;
+              break;
             case 'KD': this.router.navigate(['/pl-kd']);
           }
           this.socket.close();
@@ -59,22 +59,22 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         })
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
-          if (this.matchData.matchPos != 'VCNV_Q'){
-            switch(this.matchData.matchPos){
+          if (this.matchData.matchPos != 'VCNV_Q') {
+            switch (this.matchData.matchPos) {
               case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-              break;
+                break;
               case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-              break;
+                break;
               case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-              break;
+                break;
               case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-              break;
+                break;
               case 'VD': this.router.navigate(['pl-vd']);
-              break;
+                break;
               case 'H': this.router.navigate(['']);
-              break;
+                break;
               case 'PNTS': this.router.navigate(['/pnts']);
-              break;
+                break;
               case 'KD': this.router.navigate(['/pl-kd']);
             }
             this.socket.close();
@@ -121,10 +121,17 @@ export class PlayerVcnvQuestionComponent implements OnInit {
     this.VCNVStrings.forEach((element, index) => {
       element = element.replace(/\s/g, '');
       element = element.toUpperCase();
-      if (this.vcnvData.questions[index].ifOpen == false) {
+      if (this.vcnvData.questions[index].ifOpen == false && this.vcnvData.questions[index].ifShown == false) {
         let processedString = '';
         for (let i = 0; i < element.length; i++) {
           processedString += '◯';
+        }
+        element = processedString;
+      }
+      else if (this.vcnvData.questions[index].ifOpen == false && this.vcnvData.questions[index].ifShown == true) {
+        let processedString = '';
+        for (let i = 0; i < element.length; i++) {
+          processedString += '⬤';
         }
         element = processedString;
       }
@@ -142,5 +149,10 @@ export class PlayerVcnvQuestionComponent implements OnInit {
     this.socket.emit('attempt-cnv-player', Date.now());
     this.socket.emit('play-sfx', 'VCNV_OBSTACLE');
     this.disabledCNVButton = true;
+  }
+  checkIfTime() {
+    if (this.currentTime <= 0) {
+      this.playerAnswer = '';
+    }
   }
 }

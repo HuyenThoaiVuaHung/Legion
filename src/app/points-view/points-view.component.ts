@@ -15,26 +15,26 @@ export class PointsViewComponent implements OnInit {
   constructor(
     private router: Router
   ) { }
-  myIndex : number = 0;
+  myIndex: number = 0;
   ngOnInit(): void {
     this.socket.emit('get-match-data', (matchData) => {
       this.matchData = matchData;
-      if (this.matchData.matchPos != 'PNTS'){
-        switch(this.matchData.matchPos){
+      if (this.matchData.matchPos != 'PNTS') {
+        switch (this.matchData.matchPos) {
           case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-          break;
+            break;
           case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-          break;
+            break;
           case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-          break;
+            break;
           case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-          break;
+            break;
           case 'VD': this.router.navigate(['pl-vd']);
-          break;
+            break;
           case 'H': this.router.navigate(['']);
-          break;
+            break;
           case 'PNTS': this.router.navigate(['/pnts']);
-          break;
+            break;
           case 'KD': this.router.navigate(['/pl-kd']);
         }
         this.socket.close();
@@ -42,33 +42,33 @@ export class PointsViewComponent implements OnInit {
     })
     this.socket.on('update-match-data', (data) => {
       this.matchData = data;
-      if (this.matchData.matchPos != 'PNTS'){
-        switch(this.matchData.matchPos){
+      if (this.matchData.matchPos != 'PNTS') {
+        switch (this.matchData.matchPos) {
           case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-          break;
+            break;
           case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-          break;
+            break;
           case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-          break;
+            break;
           case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-          break;
+            break;
           case 'VD': this.router.navigate(['pl-vd']);
-          break;
+            break;
           case 'H': this.router.navigate(['']);
-          break;
+            break;
           case 'PNTS': this.router.navigate(['/pnts']);
-          break;
+            break;
           case 'KD': this.router.navigate(['/pl-kd']);
         }
         this.socket.close();
       }
     })
     var interval = setInterval(() => {
-      if(this.slideIndex <= 4){
+      if (this.slideIndex <= 4) {
         this.slideIndex++;
         console.log(this.slideIndex);
       }
-      else{
+      else {
         clearInterval(interval);
       }
     }, 5000)

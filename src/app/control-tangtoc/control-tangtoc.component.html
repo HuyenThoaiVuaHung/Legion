@@ -94,7 +94,8 @@
         </ng-container>
         <ng-container matColumnDef="response">
           <th mat-header-cell *matHeaderCellDef> Trả lời </th>
-          <td mat-cell *matCellDef="let element"> {{tangtocData.playerAnswers[element.id - 1].answer}} </td>
+          <td mat-cell *matCellDef="let element"> {{tangtocData.playerAnswers[element.id - 1].answer.toUpperCase()}}
+          </td>
         </ng-container>
         <ng-container matColumnDef="timestamp">
           <th mat-header-cell *matHeaderCellDef> Thời điểm </th>

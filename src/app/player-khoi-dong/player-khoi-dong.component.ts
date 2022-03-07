@@ -15,21 +15,23 @@ export class PlayerKhoiDongComponent implements OnInit {
   constructor(
     public router: Router,
     private sfxService: SfxService
-  ) {}
+  ) { }
   question: any = {};
   time: number = 0;
   threeSecTimer1: number = 0;
   matchData: any = {};
   threeSecTimer2: number = 0;
   audio: any = null;
-  playerIndex: number = 0;
+  playerIndex: number = -1;
   roleId: number = -1;
   qCounter = 0;
+  currentTurn: number = -1;
   picturePath: string = '';
   ifGotTurn: boolean = false;
   questionObservable = new Observable((observer) => {
     this.socket.on('update-kd-question', (data) => {
       this.qCounter++;
+      this.currentTurn = -1;
       this.answerCache = this.question.answer;
       observer.next(data);
     });
@@ -37,25 +39,25 @@ export class PlayerKhoiDongComponent implements OnInit {
   answerCache: string = "";
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
-      if(callback.roleId == 0 || callback.roleId == 3){
+      if (callback.roleId == 0 || callback.roleId == 3) {
         this.matchData = callback.matchData;
         this.roleId = callback.roleId;
-        if (this.matchData.matchPos != 'KD'){
-          switch(this.matchData.matchPos){
+        if (this.matchData.matchPos != 'KD') {
+          switch (this.matchData.matchPos) {
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-            break;
+              break;
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-            break;
+              break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-            break;
+              break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-            break;
+              break;
             case 'VD': this.router.navigate(['pl-vd']);
-            break;
+              break;
             case 'H': this.router.navigate(['']);
-            break;
+              break;
             case 'PNTS': this.router.navigate(['/pnts']);
-            break;
+              break;
             case 'KD': this.router.navigate(['/pl-kd']);
           }
           this.socket.close();
@@ -67,70 +69,71 @@ export class PlayerKhoiDongComponent implements OnInit {
         this.questionObservable.subscribe((data) => {
           this.question = data;
           this.ifGotTurn = false;
-          if (this.audio != null){
+          if (this.audio != null) {
             this.audio.pause();
           }
-          if (this.question.type == 'A'){
+          if (this.question.type == 'A') {
             this.audio = new Audio('../../../assets/audio-questions/khoidong/' + this.question.audioFilePath);
             this.audio.play();
           }
-          else if (this.question.type == 'P'){
+          else if (this.question.type == 'P') {
             this.picturePath = '../../../assets/picture-questions/khoidong/' + this.question.audioFilePath;
           }
-          else if (this.question.type == 'N'){
+          else if (this.question.type == 'N') {
             this.picturePath = '';
           }
         });
-        if(this.roleId == 0){
+        this.socket.on('player-got-turn-kd', (data) => {
+          if (this.playerIndex == data.id - 1) {
+            this.ifGotTurn = true;
+          }
+          this.currentTurn = data.id - 1;
+          console.log(this.currentTurn);
+        })
+        if (this.roleId == 0) {
           this.playerIndex = callback.playerIndex;
-          this.socket.on('disable-answer-button-kd', ()=> {
+          this.socket.on('disable-answer-button-kd', () => {
             this.answerButtonDisabled = true;
           })
-          this.socket.on('enable-answer-button-kd', ()=> {
+          this.socket.on('enable-answer-button-kd', () => {
             this.answerButtonDisabled = false;
           });
-          this.socket.on('player-got-turn-kd', (data) => {
-            
-            if(this.playerIndex == data.id - 1){
-              this.ifGotTurn = true;
-            }
-          })
         }
         this.socket.on('update-3s-timer-kd', (time, ifPlayer) => {
-          if(ifPlayer == true){
+          if (ifPlayer == true) {
             this.threeSecTimer2 = time;
           }
-          else{
+          else {
             this.threeSecTimer1 = time;
           }
-          if(this.time <= 0){
+          if (this.time <= 0) {
             this.answerButtonDisabled = true;
           }
         });
         this.socket.on('update-clock', (clock) => {
-          if(clock <= 0){
+          if (clock <= 0) {
             this.answerButtonDisabled = true;
           }
           this.time = clock;
         })
         this.socket.on('update-match-data', (matchData) => {
           this.matchData = matchData;
-          if (matchData.matchPos != 'KD'){
-            switch(matchData.matchPos){
+          if (matchData.matchPos != 'KD') {
+            switch (matchData.matchPos) {
               case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-              break;
+                break;
               case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-              break;
+                break;
               case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-              break;
+                break;
               case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-              break;
+                break;
               case 'VD': this.router.navigate(['pl-vd']);
-              break;
+                break;
               case 'H': this.router.navigate(['']);
-              break;
+                break;
               case 'PNTS': this.router.navigate(['/pnts']);
-              break;
+                break;
               case 'KD': this.router.navigate(['/pl-kd']);
             }
             this.socket.close();
@@ -143,12 +146,12 @@ export class PlayerKhoiDongComponent implements OnInit {
       }
     });
   }
-  
+
   counter: number = 0;
-  getAnswerTurn(){
+  getAnswerTurn() {
     this.socket.emit('get-turn-kd');
   }
-  passQuestion(){
+  passQuestion() {
   }
 
 }

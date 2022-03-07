@@ -12,7 +12,7 @@ export class PlayerTangtocQComponent implements OnInit {
 
   socket = io(environment.socketIp);
   constructor(private router: Router,
-              private sfxService : SfxService ) { }
+    private sfxService: SfxService) { }
   imageSource = '';
   videoSource = '';
   ttData: any = {};
@@ -22,7 +22,7 @@ export class PlayerTangtocQComponent implements OnInit {
   currentTime: number = 0;
   curQuestion: any = {};
   highlightedVCNVQuestion: any = {};
-  readableTime : string = '';
+  readableTime: string = '';
   answerCache: string = '';
   playerIndex: number = 0;
   playerAnswer: string = '';
@@ -33,22 +33,22 @@ export class PlayerTangtocQComponent implements OnInit {
       this.playerIndex = callback.playerIndex
       this.roleId = callback.roleId;
       if (callback.roleId == 0 || callback.roleId == 3) {
-        if (this.matchData.matchPos != 'TT_Q'){
-          switch(this.matchData.matchPos){
+        if (this.matchData.matchPos != 'TT_Q') {
+          switch (this.matchData.matchPos) {
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-            break;
+              break;
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-            break;
+              break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-            break;
+              break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-            break;
+              break;
             case 'VD': this.router.navigate(['pl-vd']);
-            break;
+              break;
             case 'H': this.router.navigate(['']);
-            break;
+              break;
             case 'PNTS': this.router.navigate(['/pnts']);
-            break;
+              break;
             case 'KD': this.router.navigate(['/pl-kd']);
           }
           this.socket.close();
@@ -58,22 +58,22 @@ export class PlayerTangtocQComponent implements OnInit {
         })
         this.socket.on('update-match-data', (data) => {
           this.matchData = data;
-          if (this.matchData.matchPos != 'TT_Q'){
-            switch(this.matchData.matchPos){
+          if (this.matchData.matchPos != 'TT_Q') {
+            switch (this.matchData.matchPos) {
               case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-              break;
+                break;
               case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-              break;
+                break;
               case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-              break;
+                break;
               case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-              break;
+                break;
               case 'VD': this.router.navigate(['pl-vd']);
-              break;
+                break;
               case 'H': this.router.navigate(['']);
-              break;
+                break;
               case 'PNTS': this.router.navigate(['/pnts']);
-              break;
+                break;
               case 'KD': this.router.navigate(['/pl-kd']);
             }
             this.socket.close();
@@ -148,7 +148,7 @@ export class PlayerTangtocQComponent implements OnInit {
     }
   }
   submitAnswer() {
-    if (this.currentTime > 0){
+    if (this.currentTime > 0) {
       this.socket.emit('player-submit-answer-tangtoc', this.playerAnswer);
       this.answerCache = this.playerAnswer;
       this.socket.emit('')
@@ -159,7 +159,12 @@ export class PlayerTangtocQComponent implements OnInit {
   getTimePassed(id: number) {
     setTimeout(() => {
       let timePassedinMs = this.ttData.playerAnswers[id].timestamp - this.ttData.timerStartTimestamp;
-      this.readableTime = Math.trunc(timePassedinMs/1000) + 's' + timePassedinMs%1000 + 'ms';
-    },100)
+      this.readableTime = Math.trunc(timePassedinMs / 1000) + 's' + timePassedinMs % 1000 + 'ms';
+    }, 100)
+  }
+  checkIfTime() {
+    if (this.disabledAnswerBox == true) {
+      this.playerAnswer = '';
+    }
   }
 }

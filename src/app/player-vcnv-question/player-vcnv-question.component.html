@@ -1,4 +1,3 @@
-
 <div class="relative overflow-hidden flex-col flex bg-gray-dark h-full w-screen">
     <div class=" absolute self-center ml-5 mt-10 w-52 h-60">
         <div *ngIf="vcnvData.CNVPlayers[0] != undefined"
@@ -50,16 +49,16 @@
                     {{VCNVStrings[3]}}</div>
             </div>
             <div class="ml-10">
-                <div
-                    class="      h-auto p-3 justify-center items-center flex-shrink-0 text-2xl text-center rounded-lg text-white">
+                <div [ngClass]="{'opened-question': vcnvData.questions[0].ifShown == true}"
+                    class="      h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">
                     1</div>
-                <div
+                <div [ngClass]="{'opened-question': vcnvData.questions[1].ifShown == true}"
                     class=" mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">
                     2</div>
-                <div
+                <div [ngClass]="{'opened-question': vcnvData.questions[2].ifShown == true}"
                     class=" mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">
                     3</div>
-                <div
+                <div [ngClass]="{'opened-question': vcnvData.questions[3].ifShown == true}"
                     class=" mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">
                     4</div>
             </div>
@@ -73,35 +72,35 @@
             <div *ngIf="curVCNVQuestion.answer != undefined" class="font-bold absolute m-5 right-0 bottom-0">
                 HN CÓ {{curVCNVQuestion.answer.replace(" ", '').length}} CHỮ CÁI
             </div>
+            <div *ngIf="roleId == 3 && currentTime > 0" class="font-thin absolute m-5 right-left bottom-0">
+                {{currentTime}}
+            </div>
         </div>
-        <div *ngIf="roleId != 3"
+        <div
             class="disablePointerActions w-56 overflow-hidden h-48 text-center items-center justify-center flex flex-col float-right text-white ml-3 mt-5 mr-10">
-            <div [ngClass]="{'name-highlight': playerIndex == 0 }" class="text-lg mt-2 w-64 rounded-lg p-0.5 text-center text-white bg-gray">
+            <div [ngClass]="{'name-highlight': playerIndex == 0 }"
+                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
                 {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
             </div>
-            <div [ngClass]="{'name-highlight': playerIndex == 1 }" class="text-lg mt-2 w-64 rounded-lg p-0.5 text-center text-white bg-gray">
+            <div [ngClass]="{'name-highlight': playerIndex == 1 }"
+                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
                 {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
             </div>
-            <div [ngClass]="{'name-highlight': playerIndex == 2 }" class="text-lg mt-2 w-64 rounded-lg p-1 text-center text-white bg-gray">
+            <div [ngClass]="{'name-highlight': playerIndex == 2 }"
+                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
                 {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
             </div>
-            <div [ngClass]="{'name-highlight': playerIndex == 3 }" class="text-lg mt-2 w-64 rounded-lg p-1 text-center text-white bg-gray">
+            <div [ngClass]="{'name-highlight': playerIndex == 3 }"
+                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
                 {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
             </div>
         </div>
-        <div *ngIf="roleId == 3"
-            class="bg-gray disablePointerActions h-40 p-5 text-center items-center justify-center flex float-right text-2xl w-40 overflow-auto text-white ml-3 mt-5 mr-10 rounded-xl">
-            <span class=" text-5xl">
-                {{currentTime}}
-            </span>
-        </div>
         <div *ngIf="roleId != 3" class="relative float-left answer-box mt-1">
             <mat-form-field class="ml-10  form-field text-lg ">
-                <input matInput autocomplete="off" (keyup.enter)="submitAnswer()" [(ngModel)]="playerAnswer"
-                    placeholder="Nhập đáp án vào đây" class="text-white ">
+                <input matInput autocomplete="off" (keyup)="checkIfTime()" (keyup.enter)="submitAnswer()"
+                    [(ngModel)]="playerAnswer" placeholder="Nhập đáp án vào đây" class="text-white ">
             </mat-form-field>
-            <button (click)="submitAnswer()" [disabled]="currentTime == 0 || disabledCNVButton == true" mat-icon-button
-                class="text-white">
+            <button (click)="submitAnswer()" mat-icon-button class="text-white">
                 <mat-icon>done</mat-icon>
             </button>
         </div>
