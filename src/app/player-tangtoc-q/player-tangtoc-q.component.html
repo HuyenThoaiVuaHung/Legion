@@ -7,6 +7,21 @@
         <div *ngIf="roleId != 3" class=" text-2xl w-64 rounded-xl  text-white mt-5 text-center ">Số điểm:</div>
         <div *ngIf="roleId != 3" class=" text-7xl w-64 rounded-xl  text-blue-light mt-5 text-center ">
             {{matchData.players[playerIndex].score}}</div>
+        <div *ngIf="roleId == 3"
+            class="disablePointerActions w-64 overflow-hidden text-center items-center justify-center flex flex-col float-right text-white ml-3 mt-5 mr-10">
+            <div class="text-xl mt-2 w-64 rounded-xl p-1.5 text-center text-white bg-gray">
+                {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
+            </div>
+            <div class="text-xl mt-2 w-64 rounded-xl p-1.5 text-center text-white bg-gray">
+                {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
+            </div>
+            <div class="text-xl mt-2 w-64 rounded-xl p-1.5 text-center text-white bg-gray">
+                {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
+            </div>
+            <div class="text-xl mt-2 w-64 rounded-xl p-1.5 text-center text-white bg-gray">
+                {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
+            </div>
+        </div>
     </div>
     <div class="questionBox  float-right mt-16 ml-10 mr-10 text-3xl">
         <video muted="true" *ngIf="curQuestion.type == 'TT_VD'" id="video-1"
