@@ -33,15 +33,23 @@
             class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
             {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
         </div>
+        <div *ngIf="threeSecTimer2 <= 0 && threeSecTimer1 > 0"
+            class=" text-4xl disablePointerActions absolute z-2 w-64 rounded-xl text-white mt-10 text-center ">
+            {{threeSecTimer1/10}}s</div>
+        <div [ngClass]="{'opacity-0': threeSecTimer2 <= 0}"
+            class=" text-4xl disablePointerActions w-64 rounded-xl text-white mt-10 text-center ">{{threeSecTimer2/10}}s
+        </div>
         <div class=" text-center text-white text-2xl mt-5">Vị trí trận đấu: {{matchData.matchPos}}</div>
     </div>
     <div class=" disablePointerActions
     bg-gray drop-shadow-lg questionBox float-right relative mt-5 ml-10 mr-10 p-10 text-3xl border-2 text-white rounded-xl
     "> <span>
-            <span *ngIf="matchData.matchPos == 'KD'">
-                Thí sinh giành quyền: {{kdTurn.name}}
-            </span>
-            <br>
+            <div class="mb-5" *ngIf="matchData.matchPos == 'KD'">
+                <span>
+                    Thí sinh giành quyền: {{kdTurn.name}}
+                </span>
+                <br>
+            </div>
             <span *ngIf="vdData.ifNSHV == true" class="absolute text-7xl p-5 bottom-0 right-0 text-golden-dark">★</span>
             Câu hỏi: {{question.question}}
             <br>

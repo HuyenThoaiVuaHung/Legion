@@ -10,7 +10,6 @@ import { environment } from 'src/environments/environment';
 })
 export class McComponent implements OnInit {
   socket = io(environment.socketIp);
-  answerButtonDisabled = false;
   constructor(
     public router: Router
   ) { }
@@ -20,6 +19,8 @@ export class McComponent implements OnInit {
   matchData: any = {};
   vdData: any = {};
   vcnvData: any = {};
+  threeSecTimer1: number = 0;
+  threeSecTimer2: number = 0;
   ttData: any = {};
   kdTurn: any = {};
   imagePath: string = '../../../assets/images/';
@@ -66,6 +67,14 @@ export class McComponent implements OnInit {
         this.socket.on('update-tangtoc-question', (question) => {
           this.question = question;
         })
+        this.socket.on('update-3s-timer-kd', (time, ifPlayer) => {
+          if (ifPlayer == true) {
+            this.threeSecTimer2 = time;
+          }
+          else {
+            this.threeSecTimer1 = time;
+          }
+        });
         this.socket.on('update-vedich-question', (question) => {
           this.question = question;
         });

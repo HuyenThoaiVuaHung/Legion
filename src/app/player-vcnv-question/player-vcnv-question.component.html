@@ -65,12 +65,12 @@
         </div>
     </div>
     <div>
-        <div class="text-xl ml-10 mt-5 disablePointerActions text-white">CNV CÓ: {{VCNVStrings[5].length}} CHỮ CÁI</div>
+        <div class="text-xl ml-10 mt-5 disablePointerActions text-white">CNV CÓ: {{VCNVStrings[5].length}} KÍ TỰ</div>
         <div
             class="bg-gray disablePointerActions h-48 text-left relative items float-left p-5 text-2xl question-box flex overflow-auto text-white ml-10 mt-5 rounded-xl">
             {{curVCNVQuestion.question}}
             <div *ngIf="curVCNVQuestion.answer != undefined" class="font-bold absolute m-5 right-0 bottom-0">
-                HN CÓ {{curVCNVQuestion.answer.replace(" ", '').length}} CHỮ CÁI
+                HN CÓ {{curVCNVQuestion.answer.replace(" ", '').length}} KÍ TỰ
             </div>
             <div *ngIf="roleId == 3 && currentTime > 0" class="font-thin absolute m-5 right-left bottom-0">
                 {{currentTime}}
