@@ -21,7 +21,7 @@ export class McComponent implements OnInit {
   vdData: any = {};
   vcnvData: any = {};
   ttData: any = {};
-  kdTurn: number = 0;
+  kdTurn: any = {};
   imagePath: string = '../../../assets/images/';
   stealingPlayerIndex: number = -1;
   answerCache: string = '';
@@ -38,7 +38,7 @@ export class McComponent implements OnInit {
           this.time = clock;
         })
         this.socket.on('player-got-turn-kd', (player) => {
-          this.kdTurn = player.id;
+          this.kdTurn = player;
         })
         this.socket.on('player-steal-question', (id) => {
           this.stealingPlayerIndex = id;
@@ -52,7 +52,7 @@ export class McComponent implements OnInit {
           this.vdData = callback;
         });
         this.socket.on('clear-turn-player-kd', () => {
-          this.kdTurn = -1;
+          this.kdTurn = {};
         })
         this.socket.emit('get-tangtoc-data', (callback: any) => {
           this.ttData = callback;
