@@ -21,7 +21,6 @@
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
     "ajv": "^8.8.0",
-    "angular-notifier": "^9.1.0",
     "autoprefixer": "^10.4.0",
     "rxjs": "~7.4.0",
     "socket.io-client": "^4.4.0",
