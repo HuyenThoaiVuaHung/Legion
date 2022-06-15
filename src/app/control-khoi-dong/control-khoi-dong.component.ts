@@ -71,7 +71,7 @@ export class ControlKhoiDongComponent implements OnInit {
         })
       }
       else {
-        console.log('Wrong token');
+        console.log('');
         this.router.navigate(['/']);
       }
     });

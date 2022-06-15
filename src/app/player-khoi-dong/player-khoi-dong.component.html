@@ -3,10 +3,6 @@
     <div
       class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">
       {{time}}</div>
-    <div *ngIf="roleId != 3"
-      class=" text-2xl disablePointerActions w-64 rounded-xl md:text-xl text-white mt-11 text-center ">
-      {{matchData.players[playerIndex].name}}
-    </div>
     <!-- 3s Timer (Admin triggered)-->
     <div *ngIf="threeSecTimer2 <= 0 && threeSecTimer1 > 0"
       class=" text-4xl disablePointerActions absolute z-2 w-64 rounded-xl text-white mt-10 text-center ">
@@ -14,18 +10,8 @@
     <div [ngClass]="{'opacity-0': threeSecTimer2 <= 0}"
       class=" text-4xl disablePointerActions w-64 rounded-xl text-white mt-10 text-center ">{{threeSecTimer2/10}}s</div>
     <!-- 3s Timer (Player Triggered) *ngIf="threeSecTimer2 > 0"-->
-    <div *ngIf="roleId != 3"
-      class=" text-2xl disablePointerActions w-64 rounded-xl md:text-xl text-white mt-10 text-center ">Số điểm:</div>
-    <div *ngIf="roleId != 3" class=" text-8xl disablePointerActions w-64 rounded-xl  text-blue-light mt-5 text-center ">
-      {{matchData.players[playerIndex].score}}</div>
-    <div class=" text-2xl w-64 rounded-xl mt-2 text-center">
-      <button *ngIf="roleId != 3" mat-button class=" bg-gray h-20 text-xl p-5 text-white" (click)="getAnswerTurn()"
-        [disabled]="(answerButtonDisabled)">
-        GIÀNH QUYỀN TRẢ LỜI
-      </button>
-    </div>
-    <div *ngIf="roleId == 3"
-      class="disablePointerActions w-56 overflow-hidden h-48 text-center items-center justify-center flex flex-col float-right text-white ml-3 mt-5 mr-10">
+    <div
+      class="disablePointerActions w-56 overflow-hidden h-52 text-center items-center justify-center flex flex-col float-right text-white ml-3 mr-10">
       <div [ngClass]="{'name-highlight': currentTurn == 0 }"
         class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
         {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
@@ -42,6 +28,12 @@
         class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
         {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
       </div>
+    </div>
+    <div class=" text-2xl w-64 rounded-xl  text-center">
+      <button *ngIf="roleId != 3" mat-button class=" bg-gray h-20 text-xl p-5 text-white" (click)="getAnswerTurn()"
+        [disabled]="(answerButtonDisabled)">
+        GIÀNH QUYỀN TRẢ LỜI
+      </button>
     </div>
   </div>
   <div [ngClass]="{'text-gold': ifGotTurn === true}" class=" disablePointerActions 

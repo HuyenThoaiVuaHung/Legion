@@ -9,13 +9,12 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./points-view.component.scss']
 })
 export class PointsViewComponent implements OnInit {
-  slideIndex = 1;
+  slideIndex = 5;
   socket = io(environment.socketIp);
   matchData: any = {};
   constructor(
     private router: Router
   ) { }
-  myIndex: number = 0;
   ngOnInit(): void {
     this.socket.emit('get-match-data', (matchData) => {
       this.matchData = matchData;
@@ -63,14 +62,5 @@ export class PointsViewComponent implements OnInit {
         this.socket.close();
       }
     })
-    var interval = setInterval(() => {
-      if (this.slideIndex <= 4) {
-        this.slideIndex++;
-        console.log(this.slideIndex);
-      }
-      else {
-        clearInterval(interval);
-      }
-    }, 5000)
   }
 }

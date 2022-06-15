@@ -115,6 +115,10 @@ export class ControlVcnvComponent implements OnInit {
   openHN(id: number) {
     this.socket.emit('open-hn-vcnv', id);
   }
+  resetCNVPlayers(){
+    this.vcnvData.CNVPlayers = [];
+    this.socket.emit('update-vcnv-data', this.vcnvData);
+  }
   showQuestion() {
     this.socket.emit('broadcast-vcnv-question', this.displayingRow.id);
     this.vcnvData.questions[this.displayingRow.id - 1].ifShown = true;

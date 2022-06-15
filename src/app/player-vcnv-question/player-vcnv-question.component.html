@@ -16,20 +16,35 @@
     <div class="topPortion disablePointerActions">
         <div class="justify-center bg-blue-dark float-left mt-10 ml-10 cnvPicBox content-center overflow-hidden">
             <div [ngClass]="{'opacity-0': vcnvData.questions[4].ifOpen === true}"
-                class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCellCenter absolute z-20  text-white bg-gray border-2 border-white">
+                class=" text-center flex justify-center items-center text-4xl font-black cnvPicCoverCellCenter absolute z-20  text-white bg-gray border-1 border-white">
                 5</div>
+            <div [ngClass]="{'opacity-0': vcnvData.questions[4].ifOpen === true}"
+                class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCellCenter absolute z-20  text-white bg-transparent border-2 border-white">
+            </div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[0].ifOpen === true}"
-                class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell1 absolute z-10  text-white bg-gray border-2 border-white">
-                1</div>
+                class="  text-4xl font-black cnvPicCoverCell1 absolute z-10 text-white bg-transparent border-white">
+                <div class="bg-gray cnvCornerCell1 CCell1"></div>
+                <div class="bg-gray cnvCornerCell2 items-start justify-end flex CCell2">1</div>
+                <div class="bg-transparent cnvCornerCell2 CCell3"></div>
+            </div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[1].ifOpen === true}"
-                class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell2 absolute z-10  text-white bg-gray border-2 border-white">
-                2</div>
+                class="text-4xl font-black cnvPicCoverCell2 absolute z-10 text-white bg-transparent border-white">
+                <div class="bg-gray cnvCornerCell1 CCell4"></div>
+                <div class="bg-transparent absolute cnvCornerCell2 CCell5"></div>
+                <div class="bg-gray absolute ml-40 items-start justify-start flex cnvCornerCell2 CCell6">2</div>
+            </div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[2].ifOpen === true}"
-                class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell3 absolute z-10  text-white bg-gray border-2 border-white">
-                3</div>
+                class="text-4xl font-black cnvPicCoverCell3 absolute z-10 text-white bg-transparent border-white">
+                <div class="bg-gray cnvCornerCell2 items-end justify-end flex CCell7">3</div>
+                <div class="bg-gray cnvCornerCell1 CCell8"></div>
+
+            </div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[3].ifOpen === true}"
-                class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCell4 absolute bg-gray text-white z-10 border-2 border-white">
-                4</div>
+                class="text-4xl font-black cnvPicCoverCell4 absolute bg-transparent text-white z-10 border-white">
+                <div class="bg-transparent absolute block cnvCornerCell2 CCell9"></div>
+                <div class="bg-gray absolute ml-40 items-end justify-start flex cnvCornerCell2 CCell10">4</div>
+                <div class="bg-gray mt-90px cnvCornerCell1 CCell12"></div>
+            </div>
             <img draggable="false" (dragstart)="false" class="min-h-full image min-w-full z-0 static flex-shrink-0"
                 src='../../assets/picture-questions/vcnv/{{vcnvData.questions[5].picFileName}}'>
         </div>

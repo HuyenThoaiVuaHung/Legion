@@ -85,8 +85,12 @@
           <tr mat-row *matRowDef="let row; columns: displayedVCNVPlayersColumns;"></tr>
         </table>
         <div class="m-5">
-          <button mat-raised-button [disabled]="vcnvData.CNVPlayers.length == 0" (click)="submitVCNVMark()">Xác
-            Nhận</button>
+          <button mat-raised-button [disabled]="vcnvData.CNVPlayers.length == 0" (click)="submitVCNVMark()">
+            Xác Nhận</button>
+        </div>
+        <div class="m-5">
+          <button mat-raised-button (click)="resetCNVPlayers()">
+            Reset Chuông CNV</button>
         </div>
       </div>
     </div>

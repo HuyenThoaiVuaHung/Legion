@@ -73,11 +73,11 @@ export class PlayerKhoiDongComponent implements OnInit {
             this.audio.pause();
           }
           if (this.question.type == 'A') {
-            this.audio = new Audio('../../../assets/audio-questions/khoidong/' + this.question.audioFilePath);
+            this.audio = new Audio('../../../assets/audio-questions/kd/' + this.question.audioFilePath);
             this.audio.play();
           }
           else if (this.question.type == 'P') {
-            this.picturePath = '../../../assets/picture-questions/khoidong/' + this.question.audioFilePath;
+            this.picturePath = '../../../assets/picture-questions/kd/' + this.question.audioFilePath;
           }
           else if (this.question.type == 'N') {
             this.picturePath = '';

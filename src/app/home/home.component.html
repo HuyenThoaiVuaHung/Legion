@@ -7,7 +7,7 @@
     <div *ngIf="ifAuth === false">
       <mat-form-field>
         <mat-label>Nhập ID do BTC cung cấp</mat-label>
-        <input matInput placeholder="ID" [(ngModel)]="authString">
+        <input matInput (keyup.enter)="auth()" placeholder="ID" [(ngModel)]="authString">
       </mat-form-field>
       <button mat-icon-button (click)="auth()">
         <mat-icon>chevron_right</mat-icon>

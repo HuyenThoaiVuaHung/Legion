@@ -160,7 +160,7 @@ export class PlayerTangtocQComponent implements OnInit {
     setTimeout(() => {
       let timePassedinMs = this.ttData.playerAnswers[id].timestamp - this.ttData.timerStartTimestamp;
       this.readableTime = Math.trunc(timePassedinMs / 1000) + 's' + timePassedinMs % 1000 + 'ms';
-    }, 100)
+    }, 200)
   }
   checkIfTime() {
     if (this.disabledAnswerBox == true) {

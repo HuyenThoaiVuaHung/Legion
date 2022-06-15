@@ -6,27 +6,59 @@
 .cnvPicCoverCell1 {
     width: 320px;
     height: 180px;
-    border-top-left-radius: 10px;
+    box-shadow: -1px -1px 0 #FFF;
+}
+.cnvCornerCell1{
+    width: 320px;
+    height: 90px;
+}
+.cnvCornerCell2{
+  width: 160px;
+  height: 90px;
+
+}
+.CCell1{
+  box-shadow: inset -1px 0px 0 #FFF;
+}
+.CCell2{
+  box-shadow: inset 0px -1px 0 #FFF;
+}
+.CCell3{
+  box-shadow:  0px -1px 0 #FFF;
+}
+.CCell6{
+  box-shadow: inset 0px -1px 0 #FFF;
+}
+.CCell8{
+  box-shadow: inset -1px 0px 0 #FFF;
+}
+.border-right-1{
+  border: 1px;
 }
 .cnvPicCoverCell2 {
     width: 320px;
     height: 180px;
     margin-left: 320px;
-    border-top-right-radius: 10px;
+    box-shadow: 1px -1px 0 #FFF;
 }
 .cnvPicCoverCell3 {
     width: 320px;
     height: 180px;
     margin-top: 180px;
-    border-bottom-left-radius: 10px;
+    box-shadow: -1px 1px 0 #FFF;
 }
+.mt-90px{
+  margin-top: 90px;
+}
+
 .cnvPicCoverCell4 {
     width: 320px;
     height: 180px;
     margin-top: 180px;
     margin-left: 320px;
-    border-bottom-right-radius: 10px;
+    box-shadow: 1px 1px 0 #FFF;
 }
+
 .cnvPicCoverCellCenter{
     width: 320px;
     height: 180px;
@@ -34,7 +66,6 @@
     margin-left: 160px;
     margin-right: 160px;
     margin-bottom: 90px;
-    border-radius: 10px;
 }
 .cnvTextBox {
     width: 640px;
