@@ -119,6 +119,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       this.VCNVStrings[i] = this.vcnvData.questions[i].answer;
     }
     this.VCNVStrings.forEach((element, index) => {
+      element = element.toString();
       element = element.replace(/\s/g, '');
       element = element.toUpperCase();
       if (this.vcnvData.questions[index].ifOpen == false && this.vcnvData.questions[index].ifShown == false) {
