@@ -41,7 +41,7 @@ export class PlayerVedichComponent implements OnInit {
               break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
               break;
-            case 'VD': this.router.navigate(['pl-vd']);
+            case 'CHP': this.router.navigate(['pl-chp']);
               break;
             case 'H': this.router.navigate(['']);
               break;
@@ -65,7 +65,7 @@ export class PlayerVedichComponent implements OnInit {
                 break;
               case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
                 break;
-              case 'VD': this.router.navigate(['pl-vd']);
+              case 'CHP': this.router.navigate(['pl-chp']);
                 break;
               case 'H': this.router.navigate(['']);
                 break;

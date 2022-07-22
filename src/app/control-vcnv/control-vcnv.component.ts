@@ -5,6 +5,7 @@ import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { FormPlayerComponent } from '../form-player/form-player.component';
 import { FormQVcnvComponent } from '../form-q-vcnv/form-q-vcnv.component';
+import { CommonService } from '../services/common.service';
 
 @Component({
   selector: 'app-control-vcnv',
@@ -17,6 +18,7 @@ export class ControlVcnvComponent implements OnInit {
   constructor(
     public router: Router,
     public dialog: MatDialog,
+    private service: CommonService
   ) { }
   vcnvData: any = {};
   matchData: any = {};
@@ -34,6 +36,7 @@ export class ControlVcnvComponent implements OnInit {
     console.log(this.authString);
     this.socket.emit('init-authenticate', this.authString, (callback) => {
       if (callback.roleId == 1) {
+        this.service.changeData(callback.roleId);
         console.log('Logged in as admin');
         if (callback.matchData.matchPos != 'VCNV_Q' && callback.matchData.matchPos != 'VCNV_A') {
           this.socket.emit('change-match-position', 'VCNV_Q');

@@ -5,6 +5,7 @@ import { FormQKdComponent } from '../form-q-kd/form-q-kd.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FormPlayerComponent } from '../form-player/form-player.component';
 import { environment } from 'src/environments/environment';
+import { CommonService } from '../services/common.service';
 
 @Component({
   selector: 'app-control-khoi-dong',
@@ -15,7 +16,8 @@ export class ControlKhoiDongComponent implements OnInit {
 
   constructor(
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private service: CommonService
   ) {
 
   }
@@ -34,6 +36,7 @@ export class ControlKhoiDongComponent implements OnInit {
     this.authString = localStorage.getItem('authString') || '';
     console.log(this.authString);
     this.socket.emit('init-authenticate', this.authString, (callback) => {
+      this.service.changeData(callback.roleId);
       if (callback.roleId == 1) {
         console.log('Logged in as admin');
         this.socket.emit('change-match-position', 'KD')
@@ -143,7 +146,7 @@ export class ControlKhoiDongComponent implements OnInit {
     this.nextQuestion();
   }
   clockPause() {
-    this.socket.emit('play-pause-clock', this.currentTime);
+    this.socket.emit('play-pause-clock');
   }
   start3sTimer() {
     if (this.lastTurn.name != '') {

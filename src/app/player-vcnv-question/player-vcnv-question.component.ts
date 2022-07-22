@@ -33,7 +33,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       if (callback.roleId == 0 || callback.roleId == 3) {
         if (this.matchData.matchPos != 'VCNV_Q') {
           switch (this.matchData.matchPos) {
-            case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
+            case 'CHP': this.router.navigate(['/pl-chp']);
               break;
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
               break;
@@ -61,7 +61,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
           this.matchData = data;
           if (this.matchData.matchPos != 'VCNV_Q') {
             switch (this.matchData.matchPos) {
-              case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
+              case 'CHP': this.router.navigate(['/pl-chp']);
                 break;
               case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
                 break;
@@ -83,7 +83,13 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         });
         this.socket.on('update-vcnv-data', (data) => {
           this.vcnvData = data;
-          this.formatStrings();
+          try {
+            this.formatStrings();
+          }
+          catch (error) {
+            console.log(error);
+            this.VCNVStrings = [];
+          }
         });
         this.socket.on('update-clock', (clock) => {
           this.currentTime = clock;
@@ -93,7 +99,13 @@ export class PlayerVcnvQuestionComponent implements OnInit {
           if (this.vcnvData.disabledPlayers.includes(this.playerIndex)) {
             this.disabledCNVButton = true;
           }
-          this.formatStrings();
+          try {
+            this.formatStrings();
+          }
+          catch (error) {
+            console.log(error);
+            this.VCNVStrings = [];
+          }
         });
         this.socket.on('update-highlighted-vcnv-question', (index) => {
           this.highlightedVCNVQuestion = this.vcnvData.questions[index - 1];

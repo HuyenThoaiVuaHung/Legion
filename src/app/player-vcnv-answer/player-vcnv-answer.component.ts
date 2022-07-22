@@ -32,7 +32,7 @@ export class PlayerVcnvAnswerComponent implements OnInit {
           switch (this.matchData.matchPos) {
             case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
               break;
-            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
+            case 'CHP': this.router.navigate(['/pl-chp']);
               break;
             case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
               break;
@@ -61,7 +61,7 @@ export class PlayerVcnvAnswerComponent implements OnInit {
             switch (this.matchData.matchPos) {
               case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
                 break;
-              case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
+              case 'CHP': this.router.navigate(['/pl-chp']);
                 break;
               case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
                 break;

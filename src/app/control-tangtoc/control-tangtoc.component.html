@@ -35,9 +35,15 @@
             <mat-icon>clear</mat-icon>
           </button>
         </span>
+
         <span *ngIf="displayingRow.question" class=" pl-2">
           <button mat-icon-button (click)="showQuestion()">
             <mat-icon>visibility</mat-icon>
+          </button>
+        </span>
+        <span *ngIf="displayingRow.id < 4">
+          <button mat-icon-button (click)="startTimer(displayingRow.id*10)">
+            <mat-icon>timer_outline</mat-icon>
           </button>
         </span>
         <span *ngIf="displayingRow.type == 'TT_IMG'" class=" pl-2">
@@ -58,19 +64,7 @@
       <div class="inline">
         <button mat-raised-button (click)="toggleAnswerDisplay()">Chuyển giữa xem đáp án/câu hỏi</button>
       </div>
-      <div class="ml-5 inline">
-        <button mat-raised-button (click)="startTimer(10)">10s</button>
-      </div>
-      <div class="ml-5 inline">
-        <button mat-raised-button (click)="startTimer(20)">20s</button>
-      </div>
-      <div class="ml-5 inline">
-        <button mat-raised-button (click)="startTimer(30)">30s</button>
-      </div>
-      <div class="ml-5 inline">
-        <button mat-raised-button (click)="startTimer(40)">40s</button>
-      </div>
-      <div class="mt-5">
+      <div class="inline ml-5">
         <button mat-raised-button (click)="playSfx('TT_START')">Nhạc hiệu tăng tốc</button>
       </div>
       <div class="text-2xl mt-5 text-white">
@@ -124,14 +118,5 @@
         <button [ngClass]="{'bg-gray-lightest text-gray-darkest': tangtocData.showResults === true}" mat-raised-button
           (click)="toggleResultsDisplay()">Toggle KQ chấm</button>
       </div>
-    </div>
-    <div class="fixed z-50 bottom-0 right-0">
-      <button (click)="goToVD()" mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">Chuyển tới
-        phần VĐ</button>
-    </div>
-    <div class="fixed z-50 bottom-0 left-0">
-      <button (click)="showPoints()" mat-raised-button class=" h-12 w-64 align-bottom items-center text-right">
-        Hiện tổng kết điểm
-      </button>
     </div>
   </div>

@@ -7,6 +7,7 @@ import { FormPlayerComponent } from '../form-player/form-player.component';
 import { FormQTtComponent } from '../form-q-tt/form-q-tt.component';
 import { FormQVcnvComponent } from '../form-q-vcnv/form-q-vcnv.component';
 import { FormQVdComponent } from '../form-q-vd/form-q-vd.component';
+import { CommonService } from '../services/common.service';
 
 @Component({
   selector: 'app-control-vd',
@@ -17,7 +18,8 @@ export class ControlVdComponent implements OnInit {
 
   constructor(
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private service: CommonService
   ) {
   }
   currentQuestionPool: any = [];
@@ -36,6 +38,7 @@ export class ControlVdComponent implements OnInit {
   ngOnInit(): void {
     this.authString = localStorage.getItem('authString') || '';
     this.socket.emit('init-authenticate', this.authString, (callback) => {
+      this.service.changeData(callback.roleId);
       if (callback.roleId == 1) {
         console.log('Logged in as admin');
         if (callback.matchData.matchPos != 'VD') {

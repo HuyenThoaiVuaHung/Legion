@@ -58,7 +58,7 @@ export class PlayerKhoiDongComponent implements OnInit {
               break;
             case 'PNTS': this.router.navigate(['/pnts']);
               break;
-            case 'KD': this.router.navigate(['/pl-kd']);
+            case 'CHP': this.router.navigate(['/pl-chp']);
           }
           this.socket.close();
         }
@@ -134,7 +134,7 @@ export class PlayerKhoiDongComponent implements OnInit {
                 break;
               case 'PNTS': this.router.navigate(['/pnts']);
                 break;
-              case 'KD': this.router.navigate(['/pl-kd']);
+              case 'CHP': this.router.navigate(['/pl-chp']);
             }
             this.socket.close();
           }

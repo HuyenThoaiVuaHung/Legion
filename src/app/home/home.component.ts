@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as io from 'socket.io-client';
 import * as XLSX from 'xlsx';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { FormPlayerComponent } from '../form-player/form-player.component';
+import { CommonService } from '../services/common.service';
 
 @Component({
   selector: 'app-home',
@@ -12,9 +13,7 @@ import { FormPlayerComponent } from '../form-player/form-player.component';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-
-  constructor(/*private socketService: SocketService*/private router: Router
-    , private dialog: MatDialog) { }
+  constructor(private router: Router, private dialog: MatDialog, private service: CommonService) { }
   displayedPlayerColumns: string[] = ['id', 'name', 'score', 'active'];
   ifAuth: boolean = false;
   roleID: number = 0;
@@ -25,15 +24,15 @@ export class HomeComponent implements OnInit {
   matchData: any;
   player: any;
   ngOnInit(): void {
-    this.initSocket();
     this.socket.emit('get-match-data', (callback) => {
       this.matchData = callback;
     })
+    this.service.changeData(-1);
   }
   auth() {
     console.log("Đăng nhập với :" + this.authString);
-
     this.socket.emit('init-authenticate', this.authString, (callback) => {
+      this.service.changeData(callback.roleId);
       if (callback.roleId == 0) {
         localStorage.setItem('authString', this.authString);
         this.matchData = callback.matchData;
@@ -58,6 +57,7 @@ export class HomeComponent implements OnInit {
                 break;
               case 'PNTS': this.router.navigate(['/pnts']);
                 break;
+              case 'CHP': this.router.navigate(['/pl-chp']); break;
               case 'KD': this.router.navigate(['/pl-kd']);
             }
             this.socket.close();
@@ -80,6 +80,7 @@ export class HomeComponent implements OnInit {
               break;
             case 'PNTS': this.router.navigate(['/pnts']);
               break;
+            case 'CHP': this.router.navigate(['/pl-chp']); break;
             case 'KD': this.router.navigate(['/pl-kd']);
           }
           this.socket.close();
@@ -126,6 +127,7 @@ export class HomeComponent implements OnInit {
             case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
             case 'TT_A': this.router.navigate(['pl-tangtoc-a']); break;
             case 'VD': this.router.navigate(['pl-vd']); break;
+            case 'CHP': this.router.navigate(['pl-chp']); break;
             case 'H': this.router.navigate(['']); break;
           }
         }
@@ -137,18 +139,9 @@ export class HomeComponent implements OnInit {
           case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
           case 'TT_A': this.router.navigate(['pl-tangtoc-a']); break;
           case 'VD': this.router.navigate(['pl-vd']); break;
+          case 'CHP': this.router.navigate(['pl-chp']); break;
           case 'H': this.router.navigate(['']); break;
         }
-      }
-    });
-  }
-  initSocket() {
-    this.socket.on('beginMatch', () => {
-      if (this.ifAuth == true) {
-        this.router.navigate(['pl-kd']);
-      }
-      else {
-        this.socket.emit('error', 'Not authenticated' + this.socket.id)
       }
     });
   }
@@ -166,10 +159,6 @@ export class HomeComponent implements OnInit {
         });
       }
     });
-  }
-  transferToKhoiDong() {
-    this.socket.emit('beginMatch');
-    this.router.navigate(['c-kd']);
   }
   onFileSelected(event) {
     const file: File = event.target.files[0];

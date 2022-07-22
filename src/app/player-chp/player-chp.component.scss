@@ -1,0 +1,17 @@
+.questionBox {
+    width: 80%;
+    height: 90vh;
+}
+.disablePointerActions {
+    pointer-events: none;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+            user-select: none; 
+}
+.text-gold {
+    color: goldenrod !important;
+}
+.name-highlight {
+    background-color: goldenrod !important;
+    color: black !important;
+}

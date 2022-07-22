@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Thêm/Sửa câu hỏi</h1>
+<div mat-dialog-content>
+  <div>
+    <div>
+      <mat-form-field class="inputForm mt-2 inline">
+        <input matInput placeholder="Câu hỏi" [(ngModel)]="data.question">
+      </mat-form-field>
+      <mat-form-field class="inputForm mt-2 ml-2 inline">
+        <input matInput placeholder="Đáp án" [(ngModel)]="data.answer">
+      </mat-form-field>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Huỷ</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
+  </div>

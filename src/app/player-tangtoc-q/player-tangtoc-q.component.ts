@@ -39,7 +39,7 @@ export class PlayerTangtocQComponent implements OnInit {
               break;
             case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
               break;
-            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
+            case 'CHP': this.router.navigate(['/pl-chp']);
               break;
             case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
               break;
@@ -64,7 +64,7 @@ export class PlayerTangtocQComponent implements OnInit {
                 break;
               case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
                 break;
-              case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
+              case 'CHP': this.router.navigate(['/pl-chp']);
                 break;
               case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
                 break;

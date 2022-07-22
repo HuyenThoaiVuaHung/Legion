@@ -29,6 +29,7 @@ import { ControlChpComponent } from './control-chp/control-chp.component';
 import { PlayerChpComponent } from './player-chp/player-chp.component';
 import { FormQChpComponent } from './form-q-chp/form-q-chp.component';
 import { PointsViewComponent } from './points-view/points-view.component';
+import { FormQchpComponent } from './form-qchp/form-qchp.component';
 
 
 @NgModule({
@@ -58,6 +59,7 @@ import { PointsViewComponent } from './points-view/points-view.component';
     PlayerChpComponent,
     FormQChpComponent,
     PointsViewComponent,
+    FormQchpComponent,
   
   ],
   imports: [

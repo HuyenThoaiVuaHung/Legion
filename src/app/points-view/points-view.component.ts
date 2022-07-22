@@ -32,7 +32,7 @@ export class PointsViewComponent implements OnInit {
             break;
           case 'H': this.router.navigate(['']);
             break;
-          case 'PNTS': this.router.navigate(['/pnts']);
+          case 'CHP': this.router.navigate(['/pl-chp']);
             break;
           case 'KD': this.router.navigate(['/pl-kd']);
         }
@@ -55,7 +55,7 @@ export class PointsViewComponent implements OnInit {
             break;
           case 'H': this.router.navigate(['']);
             break;
-          case 'PNTS': this.router.navigate(['/pnts']);
+          case 'CHP': this.router.navigate(['/pl-chp']);
             break;
           case 'KD': this.router.navigate(['/pl-kd']);
         }

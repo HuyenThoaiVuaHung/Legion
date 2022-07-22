@@ -7,6 +7,7 @@ import { FormPlayerComponent } from '../form-player/form-player.component';
 import { FormQKdComponent } from '../form-q-kd/form-q-kd.component';
 import { FormQTtComponent } from '../form-q-tt/form-q-tt.component';
 import { FormQVcnvComponent } from '../form-q-vcnv/form-q-vcnv.component';
+import { CommonService } from '../services/common.service';
 
 @Component({
   selector: 'app-control-tangtoc',
@@ -17,7 +18,8 @@ export class ControlTangtocComponent implements OnInit {
 
   constructor(
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private service: CommonService
   ) {
 
   }
@@ -36,6 +38,7 @@ export class ControlTangtocComponent implements OnInit {
     this.authString = localStorage.getItem('authString') || '';
     console.log(this.authString);
     this.socket.emit('init-authenticate', this.authString, (callback) => {
+      this.service.changeData(callback.roleId);
       if (callback.roleId == 1) {
         console.log('Logged in as admin');
         if (callback.matchData.matchPos != 'TT_Q' && callback.matchData.matchPos != 'TT_A') {
