@@ -1,4 +1,6 @@
 # Legion
+![Legion Logo - name](https://user-images.githubusercontent.com/34957236/180366753-f463eb91-bc95-4641-863a-457c9b11607f.png)
+
 
 Đây là phần giao diện (Frontend) cho app mô phỏng chương trình Đường Lên Đỉnh Olympia thuộc Đài Truyền Hình Việt Nam (VTV)
 ## Thông tin cơ bản
