@@ -128,7 +128,9 @@ export class ControlTangtocComponent implements OnInit {
     this.tangtocData.showAnswer = false;
     this.socket.emit('update-tangtoc-data', this.tangtocData);
     this.socket.emit('broadcast-tt-question', this.displayingRow.id);
-    this.playSfx('TT_QUESTION_SHOW')
+    if (this.tangtocData.showAnswer == false){
+      this.playSfx('TT_QUESTION_SHOW')
+    }
   }
   hideQuestion() {
     this.socket.emit('broadcast-tt-question', -1);

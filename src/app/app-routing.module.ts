@@ -18,6 +18,7 @@ import { PointsViewComponent } from './points-view/points-view.component';
 import { ScKhoiDongComponent } from './sc-khoi-dong/sc-khoi-dong.component';
 import { ScQuestionBarComponent } from './sc-question-bar/sc-question-bar.component';
 import { ScVeDichComponent } from './sc-ve-dich/sc-ve-dich.component';
+import { SinglePointTsComponent } from './single-point-ts/single-point-ts.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -38,6 +39,7 @@ const routes: Routes = [
   {path: 'sc-qb', component: ScQuestionBarComponent},
   {path: 'sc-vd', component: ScVeDichComponent},
   {path: 'sc-kd', component: ScKhoiDongComponent},
+  {path: 'rl-pnts', component: SinglePointTsComponent},
   {path: '**', component: HomeComponent}
 ];
 
