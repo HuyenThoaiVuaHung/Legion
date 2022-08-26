@@ -159,12 +159,16 @@ export class ControlKhoiDongComponent implements OnInit {
   goToVCNV() {
     this.router.navigate(['/c-vcnv'])
   }
+  resetTurn(){
+    this.socket.emit('clear-turn-kd');
+    this.lastTurn = {};
+  }
   markCorrect() {
     if (this.lastTurn.name != '') {
       this.socket.emit('correct-mark-kd');
       this.socket.emit('stop-3s-timer-kd');
       this.playSfx('KD_CORRECT');
-      this.socket.emit('clear-turn-kd')
+      this.socket.emit('clear-turn-kd');
       this.nextQuestion();
       this.lastTurn.name = '';
     }
@@ -174,7 +178,7 @@ export class ControlKhoiDongComponent implements OnInit {
       this.socket.emit('stop-3s-timer-kd');
       this.socket.emit('wrong-mark-kd');
       this.playSfx('KD_WRONG');
-      this.socket.emit('clear-turn-kd')
+      this.socket.emit('clear-turn-kd');
       this.nextQuestion();
       this.lastTurn.name = '';
     }

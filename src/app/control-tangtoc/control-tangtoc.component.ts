@@ -57,6 +57,7 @@ export class ControlTangtocComponent implements OnInit {
         })
         this.socket.emit('get-tangtoc-data', (callback) => {
           this.tangtocData = callback;
+          if(this.tangtocData.showResults == true) this.toggleResultsDisplay();
         });
         this.socket.on('disconnect', () => {
           this.socket.emit('leave-match', (this.authString))
@@ -149,11 +150,11 @@ export class ControlTangtocComponent implements OnInit {
     }
     else if (this.matchData.matchPos == 'TT_A') {
       this.socket.emit('change-match-position', 'TT_Q');
+      if(this.tangtocData.showResults == true) this.toggleResultsDisplay();
     }
   }
   togglePlayVideo() {
     this.socket.emit('tangtoc-play-video');
-    this.playSfx('TT_40S');
     this.startTimer(40);
   }
   goToVD() {

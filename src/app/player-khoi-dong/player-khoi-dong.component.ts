@@ -83,6 +83,10 @@ export class PlayerKhoiDongComponent implements OnInit {
             this.picturePath = '';
           }
         });
+        this.socket.on('clear-turn-player-kd', () =>{
+          this.ifGotTurn = false;
+          this.currentTurn = -1;
+        })
         this.socket.on('player-got-turn-kd', (data) => {
           if (this.playerIndex == data.id - 1) {
             this.ifGotTurn = true;

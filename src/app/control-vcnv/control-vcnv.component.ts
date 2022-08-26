@@ -33,7 +33,6 @@ export class ControlVcnvComponent implements OnInit {
   displayedVCNVPlayersColumns: string[] = ['id', 'name', 'mark', 'time'];
   ngOnInit(): void {
     this.authString = localStorage.getItem('authString') || '';
-    console.log(this.authString);
     this.socket.emit('init-authenticate', this.authString, (callback) => {
       if (callback.roleId == 1) {
         this.service.changeData(callback.roleId);
@@ -48,14 +47,13 @@ export class ControlVcnvComponent implements OnInit {
         )
         this.socket.on('update-vcnv-data', (data) => {
           this.vcnvData = data;
-          console.log(this.vcnvData.questions[5]);
         });
         this.socket.on('update-clock', (clock) => {
           this.currentTime = clock;
         })
         this.socket.emit('get-vcnv-data', (callback) => {
           this.vcnvData = callback;
-          console.log(this.vcnvData.questions[5]);
+          if(this.vcnvData.showResults == true) {this.toggleResultsDisplay();};
         });
         this.socket.on('disconnect', () => {
           this.socket.emit('leave-match', (this.authString))
@@ -83,7 +81,6 @@ export class ControlVcnvComponent implements OnInit {
         var payload: any = { player: result, index: this.matchData.players.indexOf(row) };
         payload.player.score = parseInt(payload.player.score);
         this.socket.emit('edit-player-info', payload, (callback) => {
-          console.log(callback.message);
         });
       }
     });
@@ -112,7 +109,6 @@ export class ControlVcnvComponent implements OnInit {
     this.displayingRow = row;
     this.socket.emit('play-sfx', 'VCNV_CHOOSE_ROW')
     this.socket.emit('highlight-vcnv-question', row.id, (callback) => {
-      console.log(callback.message);
     })
   }
   openHN(id: number) {
@@ -120,6 +116,7 @@ export class ControlVcnvComponent implements OnInit {
   }
   resetCNVPlayers(){
     this.vcnvData.CNVPlayers = [];
+    this.vcnvData.disabledPlayers = [];
     this.socket.emit('update-vcnv-data', this.vcnvData);
   }
   showQuestion() {
@@ -148,15 +145,11 @@ export class ControlVcnvComponent implements OnInit {
     }
     else if (this.matchData.matchPos == 'VCNV_A') {
       this.socket.emit('change-match-position', 'VCNV_Q');
+      if(this.vcnvData.showResults == true) {this.toggleResultsDisplay();};
     }
-  }
-  decreaseNoOfOpenRows() {
-    this.vcnvData.noOfOpenRows--;
-    this.socket.emit('update-vcnv-data', this.vcnvData);
   }
   submitVCNVMark() {
     let ifAnswerCorrect: boolean = false;
-    console.log(this.vcnvMark);
     for (let i = 0; i < this.vcnvMark.length; i++) {
       if (this.vcnvMark[i] == true) ifAnswerCorrect = true;
     }

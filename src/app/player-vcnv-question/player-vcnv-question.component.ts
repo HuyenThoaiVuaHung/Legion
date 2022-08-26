@@ -83,6 +83,12 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         });
         this.socket.on('update-vcnv-data', (data) => {
           this.vcnvData = data;
+          if (this.vcnvData.disabledPlayers.includes(this.playerIndex)) {
+            this.disabledCNVButton = true;
+          }
+          else {
+            this.disabledCNVButton = false
+          }
           try {
             this.formatStrings();
           }
@@ -98,6 +104,9 @@ export class PlayerVcnvQuestionComponent implements OnInit {
           this.vcnvData = callback;
           if (this.vcnvData.disabledPlayers.includes(this.playerIndex)) {
             this.disabledCNVButton = true;
+          }
+          else {
+            this.disabledCNVButton = false
           }
           try {
             this.formatStrings();
