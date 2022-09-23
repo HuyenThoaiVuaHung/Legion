@@ -88,7 +88,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
           }
           else {
             this.disabledCNVButton = false
-          }
+          } 
           try {
             this.formatStrings();
           }

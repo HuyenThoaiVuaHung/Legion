@@ -92,21 +92,21 @@
             </div>
         </div>
         <div
-            class="disablePointerActions w-56 overflow-hidden h-48 text-center items-center justify-center flex flex-col float-right text-white ml-3 mt-5 mr-10">
+            class="disablePointerActions w-max overflow-hidden h-48 text-center items-center justify-center flex flex-col float-right text-white ml-3 mt-5 mr-10">
             <div [ngClass]="{'name-highlight': playerIndex == 0 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
+                class="text-xl mt-2 w-72 rounded-lg p-1.5 text-center text-white bg-gray">
                 {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
             </div>
             <div [ngClass]="{'name-highlight': playerIndex == 1 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
+                class="text-xl mt-2 w-72 rounded-lg p-1.5 text-center text-white bg-gray">
                 {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
             </div>
             <div [ngClass]="{'name-highlight': playerIndex == 2 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
+                class="text-xl mt-2 w-72 rounded-lg p-1.5 text-center text-white bg-gray">
                 {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
             </div>
             <div [ngClass]="{'name-highlight': playerIndex == 3 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
+                class="text-xl mt-2 w-72 rounded-lg p-1.5 text-center text-white bg-gray">
                 {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
             </div>
         </div>
