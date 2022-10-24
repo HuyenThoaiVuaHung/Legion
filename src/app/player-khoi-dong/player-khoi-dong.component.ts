@@ -17,20 +17,19 @@ export class PlayerKhoiDongComponent implements OnInit {
     private sfxService: SfxService
   ) { }
   question: any = {};
-  time: number = 0;
   threeSecTimer1: number = 0;
   matchData: any = {};
   threeSecTimer2: number = 0;
   audio: any = null;
   playerIndex: number = -1;
+  currentMaxQuestionNo = 0;
   roleId: number = -1;
-  qCounter = 0;
+  currentQuestionNo: number = 0;
   currentTurn: number = -1;
   picturePath: string = '';
   ifGotTurn: boolean = false;
   questionObservable = new Observable((observer) => {
     this.socket.on('update-kd-question', (data) => {
-      this.qCounter++;
       this.currentTurn = -1;
       this.answerCache = this.question.answer;
       observer.next(data);
@@ -94,6 +93,10 @@ export class PlayerKhoiDongComponent implements OnInit {
           this.currentTurn = data.id - 1;
           console.log(this.currentTurn);
         })
+        this.socket.on('update-number-question-kd', (max, curr) =>{
+          this.currentMaxQuestionNo = max;
+          this.currentQuestionNo = curr;
+        })
         if (this.roleId == 0) {
           this.playerIndex = callback.playerIndex;
           this.socket.on('disable-answer-button-kd', () => {
@@ -110,16 +113,7 @@ export class PlayerKhoiDongComponent implements OnInit {
           else {
             this.threeSecTimer1 = time;
           }
-          if (this.time <= 0) {
-            this.answerButtonDisabled = true;
-          }
         });
-        this.socket.on('update-clock', (clock) => {
-          if (clock <= 0) {
-            this.answerButtonDisabled = true;
-          }
-          this.time = clock;
-        })
         this.socket.on('update-match-data', (matchData) => {
           this.matchData = matchData;
           if (matchData.matchPos != 'KD') {

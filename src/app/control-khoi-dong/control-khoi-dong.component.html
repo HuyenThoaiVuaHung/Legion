@@ -12,11 +12,11 @@
       </div>
       <div class="mt-5">
         <span class="m-2 inline">
-          <button mat-raised-button [disabled]="threeSecTimers[1] > 0 || currentTime <= 0" (click)="start3sTimer()"
+          <button mat-raised-button [disabled]="threeSecTimers[1] > 0" (click)="start3sTimer()"
             class="w-52">Bắt đầu 3s</button>
         </span>
         <span class="m-2 inline">
-          <button mat-raised-button [disabled]="threeSecTimers[1] > 0 || currentTime <= 0"
+          <button mat-raised-button [disabled]="threeSecTimers[1] > 0"
             (click)="playSfx('BLANK_SPC')" class="w-52">Âm thanh khoảng trống</button>
         </span>
       </div>
@@ -65,10 +65,13 @@
   <div class="half-width flex flex-col items-center  float-right text-center overflow-auto table-container">
     <div class="m-5 flex-col text-white text-xl">
       <div class="inline mr-10">
-        <button mat-raised-button (click)="clockStart(60)" (click)="playSfx('KD_60S')" class="w-52">Bắt đầu 60s</button>
+        <button mat-raised-button (click)="roundStart(8)" class="w-52">8C</button>
       </div>
       <div class="inline mr-10">
-        <button mat-raised-button (click)="clockStart(90)" (click)="playSfx('KD_90S')" class="w-52">Bắt đầu 90s</button>
+        <button mat-raised-button (click)="roundStart(12)" class="w-52">12C</button>
+      </div>
+      <div class="inline mr-10">
+        <button mat-raised-button (click)="roundStart(16)" class="w-52">16C</button>
       </div>
       <div class="inline">
         <button mat-raised-button (click)="clockPause()" class="w-52">Pause/Resume thời gian</button>
@@ -82,7 +85,7 @@
     </div>
     <div class="text-2xl text-white">
       <br>
-      Thời gian hiện tại: {{currentTime}}s
+      Số câu hỏi hiện tại: {{currentQuestionNo}}/{{currentMaxQuestionNo}}
     </div>
     <div class="text-2xl mt-5 text-white">
       Vị trí thí sinh: <span class="text-white">{{matchData.matchPos}}</span>

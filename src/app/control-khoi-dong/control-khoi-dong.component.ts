@@ -28,8 +28,11 @@ export class ControlKhoiDongComponent implements OnInit {
   displayedQuestionColumns: string[] = ['question', 'answer', 'type', 'subject'];
   displayedPlayerColumns: string[] = ['id', 'name', 'score', 'active'];
   authString: string = '';
+  currentMaxQuestionNo : number = 0;
+  currentQuestionNo: number = 0;
   matchData: any = {};
   kdData: any = {};
+  currentQuestionCount: number = 0;
   lastTurn: any = { name: '' };
   threeSecTimers: number[] = [0, 0];
   ngOnInit(): void {
@@ -48,6 +51,10 @@ export class ControlKhoiDongComponent implements OnInit {
         this.socket.on('update-kd-data-admin', (data) => {
           this.kdData = data;
         });
+        this.socket.on('update-number-question', (max,curr) => {
+          this.currentMaxQuestionNo = max;
+          this.currentQuestionNo = curr;
+        })
         this.socket.on('update-clock', (clock) => {
           this.currentTime = clock;
         })
@@ -138,11 +145,8 @@ export class ControlKhoiDongComponent implements OnInit {
       console.log(callback.message);
     });
   }
-  clockStart(time: number) {
-    this.socket.emit('play-sfx', 'kd-clock-' + time);
-    this.socket.emit('start-clock', time, (callback) => {
-      console.log(callback.message);
-    });
+  roundStart(amount: number) {
+    this.socket.emit('start-turn-kd', amount);
     this.nextQuestion();
   }
   clockPause() {
@@ -185,11 +189,12 @@ export class ControlKhoiDongComponent implements OnInit {
   }
   nextQuestion() {
     if (this.kdData.questions.indexOf(this.displayingRow) + 1 < this.kdData.questions.length) {
+      if (this.currentMaxQuestionNo != 0 && (this.currentQuestionNo != this.currentMaxQuestionNo)) return;
       this.socket.emit('broadcast-kd-question', this.kdData.questions.indexOf(this.displayingRow) + 1, (callback) => {
         console.log(callback.message);
       })
       this.displayingRow = this.kdData.questions[this.kdData.questions.indexOf(this.displayingRow) + 1];
-
+      this.currentQuestionCount += 1;
     }
     else {
       console.log('Last question reached')
