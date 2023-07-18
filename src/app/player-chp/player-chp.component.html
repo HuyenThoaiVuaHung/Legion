@@ -1,35 +1,66 @@
-<img src="../../assets/misc/trongdong.png" class="w-screen h-screen object-cover absolute top-0 bottom-0 -z-30 ">
-<div class="bg-trongdong flex h-screen sm:h-full w-screen">
-    <div class="float-left  ml-5">
-        <div
-            class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">
-            {{time}}</div>
-        <div
-            class="disablePointerActions w-56 overflow-hidden h-52 text-center items-center justify-center flex flex-col float-right text-white ml-3 mr-10">
-            <div [ngClass]="{'name-highlight': currentTurn == 0 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-                {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
-            </div>
-            <div [ngClass]="{'name-highlight': currentTurn == 1 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-                {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
-            </div>
-            <div [ngClass]="{'name-highlight': currentTurn == 2 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-                {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
-            </div>
-        </div>
-        <div class=" text-2xl w-64 rounded-xl mt-10 text-center">
-            <button *ngIf="roleId != 3 && chpData.playerIDs[playerIndex] == true" mat-button
-                class=" bg-gray h-20 text-xl p-5 text-white" (click)="getAnswerTurn()"
-                [disabled]="(answerButtonDisabled)">
-                GIÀNH QUYỀN TRẢ LỜI
-            </button>
-        </div>
+<img
+  src="../../assets/misc/trongdong.png"
+  style="z-index: -99"
+  class="w-full h-screen object-cover absolute bg-gradient-to-r from-yellow-50 to-yellow-100 top-0 bottom-0 -"
+/>
+<div class="W-10/12 uppercase box-border h-max z-50 text-center sticky top-0 text-5xl font-bold bg-gradient-to-r font-serif from-yellow-200 to-yellow-300 p-3 text-red-700">Hội thi cán bộ tuyên giáo giỏi tỉnh Gia Lai năm 2023</div>
+<div class=" z-10 flex h-full sm:h-full w-screen">
+  <div class="float-left ml-5">
+    <div
+      class="h-48 w-96 disablePointerActions drop-shadow-lg flex text-center bg-white text-5xl text-golden-dark p-10 mt-5 border-2 justify-center items-center font-black rounded-xl"
+    >
+    <span *ngIf="question.packNo">
+        Gói câu hỏi<br>số {{question.packNo}}
+    </span>
+    <span class="text-4xl" *ngIf="!question.packNo">
+        Đội thi chưa chọn gói câu hỏi
+    </span>
     </div>
-    <div [ngClass]="{'text-gold': ifGotTurn === true}" class=" disablePointerActions 
-    bg-gray relative drop-shadow-lg questionBox float-right mt-5 ml-10 mr-10 p-10 text-3xl border-2 text-white rounded-xl
-    ">
-        {{question.question}}
+    <div
+      class="disablePointerActions font-black mt-10 text-4xl w-96 overflow-hidden h-max text-center items-center justify-center flex flex-col float-right text-white"
+    >
+      <div
+        [ngClass]="{ 'name-highlight': currentTurn == 0 }"
+        class="mt-2 w-full rounded-lg py-5 text-center bg-gradient-to-t from-yellow-50 to-yellow-100 text-golden-dark"
+      >
+        {{ matchData.players[0].name.toUpperCase() }}
+      </div>
+      <div
+        [ngClass]="{ 'name-highlight': currentTurn == 1 }"
+        class="mt-2 w-full rounded-lg py-5 text-center bg-gradient-to-t from-yellow-50 to-yellow-100 text-golden-dark"
+      >
+        {{ matchData.players[1].name.toUpperCase() }}
+      </div>
+      <div
+        [ngClass]="{ 'name-highlight': currentTurn == 2 }"
+        class="mt-2 w-full rounded-lg py-5 text-center bg-gradient-to-t from-yellow-50 to-yellow-100  text-golden-dark"
+      >
+        {{ matchData.players[2].name.toUpperCase() }} ({{
+          matchData.players[2].score
+        }})
+      </div>
     </div>
+    <div class="text-2xl w-full rounded-xl mt-10 text-center">
+      <button matRipple
+        *ngIf="roleId != 3 && chpData.playerIDs[playerIndex] == true"
+        class="h-20 w-full mt-5 p-5 font-black text-2xl rounded-lg text-yellow-50"
+        (click)="getAnswerTurn()"
+        [ngClass]="{ 'bg-gray-300': answerButtonDisabled, 'bg-golden-dark': !answerButtonDisabled }"
+        [disabled]="answerButtonDisabled"
+      >
+        GIÀNH QUYỀN TRẢ LỜI
+      </button>
+    </div>
+    <img class="h-64 w-64" src="../../assets/misc/logo Tuyên giáo.png">
+  </div>
+  <div
+    [ngClass]="{ 'text-gold': ifGotTurn === true }"
+    style="font-family: 'Times New Roman', Times, serif;"
+    class="disablePointerActions text-justify text-6xl font-black bg-white text-red-900 border-blue-300 relative drop-shadow-lg questionBox float-right mt-5 ml-10 mr-10 px-10 py-36 border-4 rounded-xl"
+  >
+  <img src="../../assets/misc/Asset 1.svg" style="z-index: 0;" class=" absolute h-2/5 -top-20 -left-20">
+    {{ question.question }}
+    <img src="../../assets/misc/Asset 2.svg" style="z-index: 0;" class=" absolute h-2/5 -bottom-10 overflow-hidden -right-0">
+
+  </div>
 </div>

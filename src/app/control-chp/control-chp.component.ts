@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Router } from '@angular/router';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { FormPlayerComponent } from '../form-player/form-player.component';
 import { environment } from 'src/environments/environment';
 import { FormQchpComponent } from '../form-qchp/form-qchp.component';

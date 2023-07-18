@@ -1,6 +1,6 @@
 .questionBox {
     width: 80%;
-    height: 90vh;
+    height: 80%;
 }
 .disablePointerActions {
     pointer-events: none;
@@ -12,12 +12,6 @@
     color: goldenrod !important;
 }
 .name-highlight {
-    background-color: goldenrod !important;
+    background: goldenrod !important;
     color: black !important;
-}
-.bg-trongdong {
-    background-image: "../../assets/misc/trongdong.png";
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
 }
