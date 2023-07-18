@@ -3,7 +3,7 @@ import * as io from 'socket.io-client';
 import * as XLSX from 'xlsx';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { FormPlayerComponent } from '../form-player/form-player.component';
 import { CommonService } from '../services/common.service';
 
