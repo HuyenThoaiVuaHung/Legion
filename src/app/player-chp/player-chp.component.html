@@ -1,4 +1,5 @@
-<div class="bg-gray-dark  flex h-screen sm:h-full w-screen">
+<img src="../../assets/misc/trongdong.png" class="w-screen h-screen object-cover absolute top-0 bottom-0 -z-30 ">
+<div class="bg-trongdong flex h-screen sm:h-full w-screen">
     <div class="float-left  ml-5">
         <div
             class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">
@@ -16,10 +17,6 @@
             <div [ngClass]="{'name-highlight': currentTurn == 2 }"
                 class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
                 {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
-            </div>
-            <div [ngClass]="{'name-highlight': currentTurn == 3 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-                {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
             </div>
         </div>
         <div class=" text-2xl w-64 rounded-xl mt-10 text-center">

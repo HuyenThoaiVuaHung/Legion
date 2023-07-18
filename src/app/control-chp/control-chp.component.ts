@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Router } from '@angular/router';
-import { FormQKdComponent } from '../form-q-kd/form-q-kd.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FormPlayerComponent } from '../form-player/form-player.component';
 import { environment } from 'src/environments/environment';
