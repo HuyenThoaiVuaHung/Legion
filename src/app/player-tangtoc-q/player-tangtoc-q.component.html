@@ -1,11 +1,13 @@
-<div class="bg-gray-dark flex h-screen w-screen">
+<div class="flex h-screen w-screen">
+    <img src="../../assets/misc/1.png" class="w-screen disablePointerActions object-cover h-screen absolute -z-50">
+
     <div class="float-left disablePointerActions p-16 ml-5">
         <div
-            class="w-64 h-64 drop-shadow-lg flex text-center bg-gray text-white p-10 border-2 justify-center items-center text-8xl font-black rounded-xl">
+            class="w-64 h-64 drop-shadow-lg flex text-center aurora p-10 shadow-xl justify-center items-center text-8xl font-black rounded-xl">
             {{currentTime}}</div>
-        <div class=" text-2xl w-64 rounded-xl  text-white mt-11 text-center ">{{curQuestion.question}}</div>
-        <div *ngIf="roleId != 3" class=" text-2xl w-64 rounded-xl  text-white mt-5 text-center ">Số điểm:</div>
-        <div *ngIf="roleId != 3" class=" text-7xl w-64 rounded-xl  text-blue-light mt-5 text-center ">
+        <div class=" text-2xl w-64 rounded-xl  mt-11 text-center ">{{curQuestion.question}}</div>
+        <div *ngIf="roleId != 3" class=" text-4xl w-64 rounded-xl mt-5 text-center ">Số điểm:</div>
+        <div *ngIf="roleId != 3" class=" text-7xl w-64 rounded-xl  text-cyan-600 mt-5 text-center ">
             {{matchData.players[playerIndex].score}}</div>
         <div *ngIf="roleId == 3"
             class="disablePointerActions w-64 overflow-hidden text-center items-center justify-center flex flex-col float-right text-white ml-3 mt-5 mr-10">
@@ -31,16 +33,16 @@
         </video>
         <img *ngIf="imageSource != '' && curQuestion.type == 'TT_IMG'" src="{{imageSource}}"
             class=" disablePointerActions absolute questionBox">
-        <img [ngClass]="{'opacity-0': (imageSource != '' && videoSource != '') || curQuestion == null}"
-            src="../../assets/misc/placeholder.png" class=" disablePointerActions questionBox">
+        <img [ngClass]="{'opacity-0': (imageSource != '' || videoSource != '') || curQuestion.type != undefined}"
+            src="../../assets/misc/placeholder.png" class="aurora shadow-xl disablePointerActions questionBox">
         <div class="w-max flex justify-center items-center">
             <mat-form-field *ngIf="roleId != 3" class="very-long text-white">
                 <input matInput autofocus (keyup)="checkIfTime()" [(ngModel)]="playerAnswer"
                     (keydown.enter)="submitAnswer()" autocomplete="off" placeholder="Đáp án">
             </mat-form-field>
             <button *ngIf="roleId != 3" (click)="submitAnswer()" [disabled]="currentTime <= 0" mat-icon-button
-                class="text-white inline ">
-                <mat-icon>done</mat-icon>
+                class="text-black inline aurora shadow-lg">
+                <mat-icon class="text-black">done</mat-icon>
             </button>
             <span *ngIf="roleId != 3"
                 class="disablePointerActions w-52 flex-wrap text-2xl ml-5 p-2 rounded-xl inline text-white text-center ">

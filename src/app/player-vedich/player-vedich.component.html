@@ -1,32 +1,22 @@
-<div class="bg-gray-dark flex h-screen w-screen">
+<div class=" flex h-screen w-screen">
+    <img src="../../assets/misc/1.png" class="w-screen disablePointerActions object-cover h-screen absolute -z-50">
     <div class="float-left disablePointerActions p-16 ml-5">
         <div
-            class="w-64 h-64 drop-shadow-lg flex text-center bg-gray text-white p-10 border-2 justify-center items-center text-8xl font-black rounded-xl">
+            class="w-64 h-64 drop-shadow-lg aurora flex text-center p-10 shadow-xl justify-center items-center text-8xl font-black rounded-xl">
             {{currentTime}}</div>
-        <div *ngIf="roleId != 3" class=" text-2xl w-64 rounded-xl  text-white mt-10 text-center ">Số điểm:</div>
-        <div *ngIf="roleId != 3" class=" text-8xl w-64 rounded-xl  text-blue-light mt-5 text-center ">
+        <div *ngIf="roleId != 3" class=" text-2xl w-64 rounded-xl mt-10 text-center ">Số điểm:</div>
+        <div *ngIf="roleId != 3" class=" text-8xl w-64 rounded-xl  text-cyan-500 mt-5 text-center ">
             {{matchData.players[playerIndex].score}}</div>
-        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 1, 'bg-golden-dark': stealingPlayerIndex == 0}"
-            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
-            {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
+        <div *ngFor="let player of matchData.players; let i = index" [ngClass]="{'text-black bg-white': vdData.currentPlayerId === i + 1, 'name-highlight': stealingPlayerIndex == i}"
+            class="text-xl mt-2 w-64 rounded-md p-2 aurora shadow-lg text-center">
+            {{matchData.players[i].name.toUpperCase()}} ({{matchData.players[i].score}})
         </div>
-        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 2, 'bg-golden-dark': stealingPlayerIndex == 1}"
-            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
-            {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
-        </div>
-        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 3, 'bg-golden-dark': stealingPlayerIndex == 2}"
-            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
-            {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
-        </div>
-        <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 4, 'bg-golden-dark': stealingPlayerIndex == 3}"
-            class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
-            {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
-        </div>
+
     </div>
     <div *ngIf="vdData.ifQuestionPickerShowing == false" class=" items-center text-center">
         <div *ngIf="curQuestion.type == 'V' || curQuestion.type == 'I'" class="disablePointerActions
-        bg-gray drop-shadow-lg relative question-text float-right p-5 text-3xl border-2 text-white rounded-xl">
-            <div class="h-auto m-5 block text-white text-3xl text-left  rounded-xl bg-gray">{{curQuestion.question}}
+     drop-shadow-lg relative bg-white question-text float-right p-5 text-3xl border-2 aurora rounded-xl">
+            <div class="h-auto m-5 block text-black text-4xl font-bold text-left  rounded-xl">{{curQuestion.question}}
             </div>
             <div>
                 <video *ngIf="curQuestion.type == 'V'" id="vedich-video" class="videoBox" preload="auto"
@@ -38,20 +28,20 @@
             <span *ngIf="vdData.ifNSHV == true" class="absolute text-7xl p-5 bottom-0 right-0 text-golden-dark">★</span>
         </div>
         <div *ngIf="curQuestion.type != 'V' && curQuestion.type != 'I'" class=" disablePointerActions
-        bg-gray drop-shadow-lg question-text relative float-right p-10 text-3xl border-2 text-white rounded-xl
+        drop-shadow-xl question-text relative  float-right p-10 text-4xl aurora bg-white rounded-xl
         ">{{curQuestion.question}}
             <span *ngIf="vdData.ifNSHV == true" class="absolute right-0 bottom-0 text-7xl text-golden-dark p-5">★</span>
         </div>
         <div *ngIf="roleId != 3" class=" text-white inline">
-            <button [disabled]="buttonDisabled" (click)="stealQuestion()" mat-raised-button
-                class="bg-gray-light text-xl h-32 very-long text-gray-darkest">
+            <button [disabled]="buttonDisabled" (click)="stealQuestion()" matRipple
+                class="bg-white disabled:bg-gray-900 shadow-xl disabled:text-gray-300 aurora text-xl h-32 very-long text-gray-darkest">
                 GIÀNH CHUÔNG TRẢ LỜI
             </button>
         </div>
     </div>
     <div>
         <div *ngIf="vdData.ifQuestionPickerShowing == true"
-            class=" absolute right-5 bottom-52 disablePointerActions flex-col h-96 w-52">
+            class=" absolute right-5 zoom bottom-52 disablePointerActions flex-col h-96 w-52">
             <div>
                 <div class=" float-left h-40 w-12">
                     <span>
@@ -65,7 +55,7 @@
                     </span>
                 </div>
                 <div
-                    class=" justify-center font-black text-center items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-gradient-to-r from-golden-dark to-golden-light">
+                    class=" justify-center font-black text-center items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-white aurora">
                     20</div>
             </div>
             <div class="">
@@ -81,7 +71,7 @@
                     </span>
                 </div>
                 <div
-                    class="mt-5 justify-center font-black text-center items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-gradient-to-r from-golden-dark to-golden-light">
+                    class="mt-5 justify-center font-black text-center items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-white aurora">
                     30</div>
             </div>
         </div>

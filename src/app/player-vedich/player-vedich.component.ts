@@ -137,6 +137,7 @@ export class PlayerVedichComponent implements OnInit {
         });
         this.socket.on('player-steal-question', (id) => {
           this.stealingPlayerIndex = id;
+          console.log(id);
         });
         this.socket.on('clear-stealing-player', () => {
           this.stealingPlayerIndex = -1;

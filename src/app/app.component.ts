@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { CommonService } from './services/common.service';
@@ -23,6 +23,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.socket.emit('verify-identity', localStorage.getItem('authString'), (callback: { roleId: number; }) => {
       this.roleId = callback.roleId;
+      if (['/sc-kd','/sc-vd','/sc-qb', '/rl-pnts'].includes(this.router.url)) this.closeBlockFrame(); 
       if (this.roleId != 1) this.socket.close()
       else {
         this.service.data$.subscribe((data) => {
@@ -31,6 +32,8 @@ export class AppComponent implements OnInit {
         });
       }
     });
+
+    
   }
   changeMatchPosAdmin(pos: string) {
     switch (pos) {
@@ -69,7 +72,6 @@ export class AppComponent implements OnInit {
           default: this.router.navigate(['/c-kd']);
             this.socket.emit('change-match-position', 'KD', localStorage.getItem('authString'));
             break;
-
         }
       }
       else {

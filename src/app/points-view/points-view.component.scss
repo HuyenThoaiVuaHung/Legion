@@ -51,3 +51,6 @@
 .zoom-out {
     transform: scale(0.8);
 }
+.aurora {
+    @apply drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
+  }

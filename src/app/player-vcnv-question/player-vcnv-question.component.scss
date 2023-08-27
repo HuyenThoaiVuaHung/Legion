@@ -6,7 +6,7 @@
 .cnvPicCoverCell1 {
     width: 320px;
     height: 180px;
-    box-shadow: -1px -1px 0 #FFF;
+    box-shadow: -1px -1px 0 #000;
 }
 .cnvCornerCell1{
     width: 320px;
@@ -18,19 +18,19 @@
 
 }
 .CCell1{
-  box-shadow: inset -1px 0px 0 #FFF;
+  box-shadow: inset -1px 0px 0 #000;
 }
 .CCell2{
-  box-shadow: inset 0px -1px 0 #FFF;
+  box-shadow: inset 0px -1px 0 #000;
 }
 .CCell3{
-  box-shadow:  0px -1px 0 #FFF;
+  box-shadow:  0px -1px 0 #000;
 }
 .CCell6{
-  box-shadow: inset 0px -1px 0 #FFF;
+  box-shadow: inset 0px -1px 0 #000;
 }
 .CCell8{
-  box-shadow: inset -1px 0px 0 #FFF;
+  box-shadow: inset -1px 0px 0 #000;
 }
 .border-right-1{
   border: 1px;
@@ -39,13 +39,13 @@
     width: 320px;
     height: 180px;
     margin-left: 320px;
-    box-shadow: 1px -1px 0 #FFF;
+    box-shadow: 1px -1px 0 #000;
 }
 .cnvPicCoverCell3 {
     width: 320px;
     height: 180px;
     margin-top: 180px;
-    box-shadow: -1px 1px 0 #FFF;
+    box-shadow: -1px 1px 0 #000;
 }
 .mt-90px{
   margin-top: 90px;
@@ -56,7 +56,7 @@
     height: 180px;
     margin-top: 180px;
     margin-left: 320px;
-    box-shadow: 1px 1px 0 #FFF;
+    box-shadow: 1px 1px 0 #000;
 }
 
 .cnvPicCoverCellCenter{
@@ -77,7 +77,7 @@
     overflow: auto;
 }
 ::ng-deep input.mat-input-element {
-    color: white;
+    color: black;
   }
   
   /* Change label color on focused */
@@ -85,7 +85,11 @@
     color: goldenrod !important;
     caret-color: goldenrod !important;
   }
-  
+  ::ng-deep .mat-form-field-label {
+    /* clear label styles */
+    color: black !important;
+
+  }
   /* underline border color on focused */
   ::ng-deep .mat-focused .mat-form-field-underline .mat-form-field-ripple{
     background-color: goldenrod !important;
@@ -94,10 +98,9 @@
   ::ng-deep .mat-form-field-cursor{
     background-color: goldenrod !important;
     caret-color: goldenrod !important;
-
   }
-  .answer-box{
-      width: 720px;
+  .aurora {
+    @apply relative drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
   }
   .form-field{
       width: 70%
@@ -116,16 +119,10 @@
     -webkit-user-select: none; /* Safari */
             user-select: none; 
 }
-.question-box {
-    width: 76rem;
-  }
 .highlight {
     background-color: goldenrod !important;
 }
-.name-highlight {
-  background-color: white !important;
-  color: black !important;
-}
+
 .opened-question {
   color: gray !important;
 }
