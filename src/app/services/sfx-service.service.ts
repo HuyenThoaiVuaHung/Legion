@@ -4,10 +4,12 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SfxService {
-
+  loopingAudio: any = null;
   constructor() { }
-  public playSfx(sfx: string){
+  public playSfx(sfx: string, loop?: boolean){
     let audio = new Audio();
+    audio.loop = loop? loop : false;
+    if (loop) this.loopingAudio = audio;
     switch(sfx){
       case 'KD_START': audio.src = '../../assets/audio-assets/kd/StartRound.mp3'; break;
       case 'KD_60S': audio.src = '../../assets/audio-assets/kd/60Seconds.mp3'; break;
@@ -50,5 +52,11 @@ export class SfxService {
     }
     audio.load();
     audio.play();
+  }
+  stopLoopingAudio(){
+    if(this.loopingAudio != null){
+      this.loopingAudio.pause();
+      this.loopingAudio = null;
+    }
   }
 }

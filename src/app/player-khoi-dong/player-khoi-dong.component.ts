@@ -61,8 +61,8 @@ export class PlayerKhoiDongComponent implements OnInit {
           }
           this.socket.close();
         }
-        this.socket.on('play-sfx', (sfxID) => {
-          this.sfxService.playSfx(sfxID);
+        this.socket.on('play-sfx', (sfxID,loop) => {
+          this.sfxService.playSfx(sfxID,loop);
         })
         console.log('Logged in as player');
         this.questionObservable.subscribe((data) => {

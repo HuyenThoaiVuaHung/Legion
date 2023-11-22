@@ -1,7 +1,7 @@
 <div class="bg-gray-darkest flex w-screen h-screen">
   <div class="half-width float-left flex-col flex text-center overflow-auto table-container">
     <div class="m-5">
-      <div class="inline text-white text-xl">Thí sinh giành quyền: {{lastTurn.name}}</div>
+      <div *ngIf="kdData.gamemode == 'M'" class="inline text-white text-xl">Thí sinh giành quyền: {{lastTurn.name}}</div>
       <div class=" mt-2">
         <div class="inline mr-10">
           <button mat-raised-button [disabled]="lastTurn.name == undefined" (click)="markCorrect()">Đúng</button>
@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="overflow-x-hidden text-center mb-5 mr-5 ml-5 height-600 w-auto h-auto text-xs">
-      <table mat-table [dataSource]="kdData.questions" class="">
+      <table mat-table [dataSource]="kdData.gamemode == 'S'? kdData.questions.singleplayer[kdData.currentSingleplayerPlayer] : kdData.questions.multiplayer" class="">
         <ng-container matColumnDef="question">
           <th mat-header-cell *matHeaderCellDef> Câu hỏi </th>
           <td mat-cell *matCellDef="let element"> {{element.question}} </td>
@@ -41,7 +41,7 @@
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
         <tr mat-row *matRowDef="let row; columns:
-         displayedQuestionColumns;" class=" hover:bg-gray-darkest"
+         displayedQuestionColumns; let i = index" class=" hover:bg-gray-darkest"
           [ngClass]="{'bg-gray-light text-gray-darkest': row.ifSong === true}" (click)="onClickQuestion(row)"
           (dblclick)="onDoubleClickQuestion(row)"
           [ngClass]="{'highlight': displayingRow === row, 'choose': chosenRow === row}"></tr>
@@ -54,30 +54,28 @@
       <button mat-icon-button (click)="editQuestion()">
         <mat-icon>edit</mat-icon>
       </button>
-      <button mat-icon-button (click)="addQuestion()">
-        <mat-icon>add</mat-icon>
-      </button>
-      <button mat-icon-button (click)="removeQuestion()">
-        <mat-icon>remove</mat-icon>
-      </button>
     </div>
   </div>
   <div class="half-width flex flex-col items-center  float-right text-center overflow-auto table-container">
     <div class="m-5 flex-col text-white text-xl">
-      <div class="inline mr-10">
-        <button mat-raised-button (click)="roundStart(8)" class="w-52">8C</button>
+      <div class="">
+        <mat-form-field>
+          <mat-label>Phần thi</mat-label>
+          <mat-select [(value)]="kdData.gamemode" (valueChange)="onGamemodeChange($event)">
+            <mat-option *ngFor="let gamemode of ['S','M']" [value]="gamemode">
+              {{gamemode == 'S' ? 'Cá nhân' : 'Đối kháng'}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
-      <div class="inline mr-10">
-        <button mat-raised-button (click)="roundStart(12)" class="w-52">12C</button>
-      </div>
-      <div class="inline mr-10">
-        <button mat-raised-button (click)="roundStart(16)" class="w-52">16C</button>
-      </div>
-      <div class="inline">
+      <div class="inline mt-5">
         <button mat-raised-button (click)="clockPause()" class="w-52">Pause/Resume thời gian</button>
       </div>
       <div class="mt-5">
         <button mat-raised-button (click)="playSfx('KD_START')" class="w-52">Nhạc hiệu KĐ</button>
+      </div>
+      <div class="mt-5">
+        <button mat-raised-button (click)="roundStart(kdData.gamemode == 'S'? 6 : 12)" class="w-52 mt-5 bg-gray-lightest text-gray-darkest">Bắt đầu phần thi</button>
       </div>
       <div class="mt-5">
         <button mat-raised-button (click)="resetTurn()" class="w-52 mt-5 bg-gray-lightest text-gray-darkest">RESET CHUÔNG KĐ</button>
@@ -90,11 +88,11 @@
     <div class="text-2xl mt-5 text-white">
       Vị trí thí sinh: <span class="text-white">{{matchData.matchPos}}</span>
     </div>
-    <div class="overflow-x-hidden w-max m-10 text-2xl">
+    <div class="overflow-x-hidden w-max m-5 text-2xl">
       <table mat-table [dataSource]="matchData.players" class="w-max">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef> ID </th>
-          <td mat-cell *matCellDef="let element"> {{matchData.players.indexOf(element) + 1}} </td>
+          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
         </ng-container>
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef> Tên </th>
@@ -111,8 +109,15 @@
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
-        <tr mat-row *matRowDef="let row;
-            columns: displayedPlayerColumns;" class="row" (dblclick)="onDoubleClickPlayer(row)"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedPlayerColumns;" (dblclick)="onDoubleClickPlayer(row)"
+          (click)="choosePlayer(row)"
+          [ngClass]="{' bg-gray': chosenPlayer === row, 'bg-golden-dark': lastTurn === row, 'highlight': kdData.currentSingleplayerPlayer === row.id - 1}">
+        </tr>
       </table>
+      <div class=" text-white p-2 text-right">
+        <button *ngIf="chosenPlayer.name != undefined" mat-icon-button (click)="editPlayer()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
     </div>
   </div>

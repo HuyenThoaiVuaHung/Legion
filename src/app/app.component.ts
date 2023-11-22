@@ -32,7 +32,6 @@ export class AppComponent implements OnInit {
         });
       }
     });
-
     
   }
   changeMatchPosAdmin(pos: string) {
