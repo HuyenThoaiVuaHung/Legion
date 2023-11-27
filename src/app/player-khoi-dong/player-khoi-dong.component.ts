@@ -22,6 +22,7 @@ export class PlayerKhoiDongComponent implements OnInit {
   threeSecTimer2: number = 0;
   audio: any = null;
   playerIndex: number = -1;
+  gamemode: string = '';
   currentMaxQuestionNo = 0;
   roleId: number = -1;
   currentQuestionNo: number = 0;
@@ -140,11 +141,17 @@ export class PlayerKhoiDongComponent implements OnInit {
         this.socket.on('stop-kd-sound', () => {
           this.sfxService.stopLoopingAudio();
         })
+        this.socket.on('update-kd-gamemode', (gamemode) => {
+          this.gamemode = gamemode;
+        });
       }
       else {
         console.log('Wrong token/Wrong match position');
         this.router.navigate(['/']);
       }
+      this.socket.emit('get-kd-gamemode', (callback) => {
+        this.gamemode = callback;
+      });
     });
   }
 

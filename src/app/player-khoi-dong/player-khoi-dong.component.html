@@ -33,7 +33,7 @@
         }})
       </div>
     </div>
-    <button
+    <button *ngIf="gamemode == 'M'"
       (click)="getAnswerTurn()"
       [disabled]="answerButtonDisabled"
       class="max-w-lg text-lg font-bold py-5 w-64 h-max active:bg-black bg-white
