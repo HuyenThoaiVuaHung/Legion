@@ -137,6 +137,9 @@ export class PlayerKhoiDongComponent implements OnInit {
             this.socket.close();
           }
         })
+        this.socket.on('stop-kd-sound', () => {
+          this.sfxService.stopLoopingAudio();
+        })
       }
       else {
         console.log('Wrong token/Wrong match position');

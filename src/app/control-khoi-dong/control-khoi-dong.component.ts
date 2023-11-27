@@ -214,6 +214,7 @@ export class ControlKhoiDongComponent implements OnInit {
       );
       this.currentQuestionCount += 1;
     } else {
+      this.socket.emit('stop-kd-sound');
       console.log("Last question reached");
     }
   }
