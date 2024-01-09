@@ -19,16 +19,17 @@ import { ScKhoiDongComponent } from './sc-khoi-dong/sc-khoi-dong.component';
 import { ScQuestionBarComponent } from './sc-question-bar/sc-question-bar.component';
 import { ScVeDichComponent } from './sc-ve-dich/sc-ve-dich.component';
 import { SinglePointTsComponent } from './single-point-ts/single-point-ts.component';
+import { MatchPosGuard } from './services/guards/match-pos.guard';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
-  {path: 'pl-kd', component: PlayerKhoiDongComponent },
-  {path: 'pl-vcnv-q', component: PlayerVcnvQuestionComponent },
-  {path: 'pl-vcnv-a', component: PlayerVcnvAnswerComponent },
-  {path: 'pl-tangtoc-q', component: PlayerTangtocQComponent },
-  {path: 'pl-tangtoc-a', component: PlayerTangtocAComponent },
-  {path: 'pl-vd', component: PlayerVedichComponent },
-  {path: 'pl-chp', component: PlayerChpComponent },
+  {path: 'pl-kd', component: PlayerKhoiDongComponent, canActivate: [MatchPosGuard] },
+  {path: 'pl-vcnv-q', component: PlayerVcnvQuestionComponent, canActivate: [MatchPosGuard] },
+  {path: 'pl-vcnv-a', component: PlayerVcnvAnswerComponent, canActivate: [MatchPosGuard] },
+  {path: 'pl-tangtoc-q', component: PlayerTangtocQComponent, canActivate: [MatchPosGuard] },
+  {path: 'pl-tangtoc-a', component: PlayerTangtocAComponent, canActivate: [MatchPosGuard] },
+  {path: 'pl-vd', component: PlayerVedichComponent, canActivate: [MatchPosGuard] },
+  {path: 'pl-chp', component: PlayerChpComponent, canActivate: [MatchPosGuard] },
   {path: 'c-kd', component: ControlKhoiDongComponent },
   {path: 'c-vcnv', component: ControlVcnvComponent },
   {path: 'c-tt', component: ControlTangtocComponent },

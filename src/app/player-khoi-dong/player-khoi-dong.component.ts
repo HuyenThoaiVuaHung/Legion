@@ -37,7 +37,7 @@ export class PlayerKhoiDongComponent implements OnInit {
     });
   });
   answerCache: string = "";
-  ngOnInit(): void {
+  ngOnInit(): void {4
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       if (callback.roleId == 0 || callback.roleId == 3) {
         this.matchData = callback.matchData;
