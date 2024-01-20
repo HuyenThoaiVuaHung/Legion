@@ -5,7 +5,6 @@ import { FormQKdComponent } from "../form-q-kd/form-q-kd.component";
 import { MatDialog } from "@angular/material/dialog";
 import { FormPlayerComponent } from "../form-player/form-player.component";
 import { environment } from "src/environments/environment";
-import { CommonService } from "../services/common.service";
 import { AuthService } from "../services/auth.service";
 
 @Component({
@@ -17,7 +16,6 @@ export class ControlKhoiDongComponent implements OnInit {
   constructor(
     private router: Router,
     public dialog: MatDialog,
-    private service: CommonService,
     private auth: AuthService
   ) {}
   displayingRow: any = null;
@@ -40,12 +38,8 @@ export class ControlKhoiDongComponent implements OnInit {
   lastTurn: any = { name: "" };
   threeSecTimers: number[] = [0, 0];
   async ngOnInit(): Promise<void> {
-    this.service.changeData(this.auth.roleId);
-    await new Promise<void>((resolve) => {
-      this.auth.roleId != -1 ? resolve() : setTimeout(resolve, 100);
-    });
-    console.log(this.auth.roleId);
-    if (this.auth.roleId == 1) {
+    this.auth.reconnect();
+    this.auth.socketHook = () => {
       console.log("Logged in as admin");
       this.auth.socket.emit("change-match-position", "KD");
       this.auth.matchData = this.auth.matchData;
@@ -83,9 +77,6 @@ export class ControlKhoiDongComponent implements OnInit {
           this.threeSecTimers[0] = timer;
         }
       });
-    } else {
-      console.log(this.auth.roleId);
-
     }
   }
   onClickQuestion(row: any) {

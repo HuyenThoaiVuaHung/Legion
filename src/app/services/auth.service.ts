@@ -2,64 +2,105 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { Socket, io } from "socket.io-client";
 import { environment } from "src/environments/environment";
-import { MatchData } from "./types/match.data";
+import { MatchData, UserInfo } from "./types/match.data";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  public socket: Socket = io();
+  public socket: Socket = {} as Socket;
   public matchData: MatchData = {} as MatchData;
-  public roleId: Promise<number> = new Promise<number>((resolve) => {
-    resolve()
-  });
+  public userInfo: UserInfo = {
+    roleId: -1,
+    index: -1,
+    socketId: "",
+  };
+  public socketHook = () => {};
+  public guardHook = () => {};
   constructor(private router: Router) {
     this.socket = io(environment.socketIp);
-    if (localStorage.getItem("authString")) this.authenticate(); 
-    else this.router.navigate(["/"]);
+    console.log(localStorage.getItem("authString") && router.url != "/");
+    if (localStorage.getItem("authString") && router.url != "/")
+      this.authenticate();
+    else;
+    this.resetListeners();
   }
   public authenticate(authId?: string) {
+    this.socket.emit(
+      "init-authenticate",
+      authId ? authId : localStorage.getItem("authString"),
+      (callback: string) => console.log(callback)
+    );
+  }
+  public resetListeners() {
+    this.socket.removeAllListeners();
     this.socket.on("connect", () => {
-      this.socket.emit(
-        "init-authenticate",
-        authId ? authId : localStorage.getItem("authString"),
-        (callback: any) => {
-          console.log("Connected");
-          this.matchData = callback.matchData;
-          this.roleId = callback.roleId;
-          console.log(callback);
-          if (callback.roleId == 0 || callback.roleId == 3) {
-            if (this.matchData.matchPos != "KD") {
-              switch (this.matchData.matchPos) {
-                case "VCNV_Q":
-                  this.router.navigate(["/pl-vcnv-q"]);
-                  break;
-                case "VCNV_A":
-                  this.router.navigate(["/pl-vcnv-a"]);
-                  break;
-                case "TT_Q":
-                  this.router.navigate(["/pl-tangtoc-q"]);
-                  break;
-                case "TT_A":
-                  this.router.navigate(["/pl-tangtoc-a"]);
-                  break;
-                case "VD":
-                  this.router.navigate(["pl-vd"]);
-                  break;
-                case "H":
-                  this.router.navigate([""]);
-                  break;
-                case "PNTS":
-                  this.router.navigate(["/pnts"]);
-                  break;
-                case "CHP":
-                  this.router.navigate(["/pl-chp"]);
-              }
-            }
-          } else if (callback.roleId == 1) {
-          }
-        }
-      );
+      if(localStorage.getItem("authString")) this.authenticate();
     });
+    this.socket.on(
+      "authentication",
+      (_matchData: MatchData, _userInfo: UserInfo) => {
+        this.matchData = _matchData;
+        this.userInfo = _userInfo;
+        this.socketHook();
+        this.guardHook();
+        if (_userInfo.roleId == 1) return;
+        console.log();
+        this.navigateMatchPosition();
+      }
+    );
+    this.socket.on("update-match-data", (data) => {
+      this.matchData = data;
+      if (this.userInfo.roleId == 1) return;
+      this.navigateMatchPosition();
+    });
+  }
+  public deauthenticate() {
+    localStorage.removeItem("authString");
+    this.socketHook = () => {};
+    this.guardHook = () => {};
+    this.userInfo = {
+      roleId: -1,
+      index: -1,
+      socketId: "",
+    };
+    this.reconnect();
+  }
+  public reconnect() {
+    this.socket.disconnect();
+    this.socket.connect();
+    this.resetListeners();
+  }
+  private navigateMatchPosition() {
+    if (this.userInfo.roleId == 1 || this.userInfo.roleId == 2) return;
+    console.log(this.matchData.matchPos+"nav");
+    switch (this.matchData.matchPos) {
+      case "KD":
+        this.router.navigate(["/pl-kd"]);
+        break;
+      case "VCNV_Q":
+        this.router.navigate(["/pl-vcnv-q"]);
+        break;
+      case "VCNV_A":
+        this.router.navigate(["/pl-vcnv-a"]);
+        break;
+      case "TT_Q":
+        this.router.navigate(["/pl-tangtoc-q"]);
+        break;
+      case "TT_A":
+        this.router.navigate(["/pl-tangtoc-a"]);
+        break;
+      case "VD":
+        this.router.navigate(["pl-vd"]);
+        break;
+      case "H":
+        this.router.navigate([""]);
+        break;
+      case "PNTS":
+        this.router.navigate(["/pnts"]);
+        break;
+      case "CHP":
+        this.router.navigate(["/pl-chp"]);
+    }
   }
 }

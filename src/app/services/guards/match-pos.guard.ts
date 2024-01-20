@@ -18,7 +18,7 @@ export class MatchPosGuard implements CanActivate {
         this.auth.socket.emit("get-match-position", (callback) => {
           if (route.url[0].path.toLowerCase().includes(callback.toLowerCase().replace('_', '-').replace('tt', 'tangtoc')))
             resolve(true);
-          else resolve(false);
+          else reject("Invalid match position");
         });
       } catch (e) {
         console.log(e);

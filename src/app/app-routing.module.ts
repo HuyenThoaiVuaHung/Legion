@@ -20,6 +20,7 @@ import { ScQuestionBarComponent } from './sc-question-bar/sc-question-bar.compon
 import { ScVeDichComponent } from './sc-ve-dich/sc-ve-dich.component';
 import { SinglePointTsComponent } from './single-point-ts/single-point-ts.component';
 import { MatchPosGuard } from './services/guards/match-pos.guard';
+import { AdminGuard } from './services/guards/admin.guard';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -30,7 +31,7 @@ const routes: Routes = [
   {path: 'pl-tangtoc-a', component: PlayerTangtocAComponent, canActivate: [MatchPosGuard] },
   {path: 'pl-vd', component: PlayerVedichComponent, canActivate: [MatchPosGuard] },
   {path: 'pl-chp', component: PlayerChpComponent, canActivate: [MatchPosGuard] },
-  {path: 'c-kd', component: ControlKhoiDongComponent },
+  {path: 'c-kd', component: ControlKhoiDongComponent, canActivate: [AdminGuard] },
   {path: 'c-vcnv', component: ControlVcnvComponent },
   {path: 'c-tt', component: ControlTangtocComponent },
   {path: 'c-vd', component: ControlVdComponent },

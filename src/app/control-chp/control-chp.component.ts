@@ -6,7 +6,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormPlayerComponent } from '../form-player/form-player.component';
 import { environment } from 'src/environments/environment';
 import { FormQchpComponent } from '../form-qchp/form-qchp.component';
-import { CommonService } from '../services/common.service';
 
 @Component({
   selector: 'app-control-chp',
@@ -18,7 +17,6 @@ export class ControlChpComponent implements OnInit {
   constructor(
     private router: Router,
     public dialog: MatDialog,
-    private service: CommonService
   ) {
 
   }
@@ -35,9 +33,7 @@ export class ControlChpComponent implements OnInit {
   threeSecTimers: number[] = [0, 0];
   ngOnInit(): void {
     this.authString = localStorage.getItem('authString') || '';
-    console.log(this.authString);
     this.socket.emit('init-authenticate', this.authString, (callback) => {
-      this.service.changeData(callback.roleId);
       if (callback.roleId == 1) {
         console.log('Logged in as admin');
         this.socket.emit('change-match-position', 'CHP');

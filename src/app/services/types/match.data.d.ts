@@ -10,3 +10,8 @@ export interface Player {
     score: number;
     isReady: boolean;
 }
+export interface UserInfo {
+    socketId: string;
+    roleId: number;
+    index?: number;
+}
