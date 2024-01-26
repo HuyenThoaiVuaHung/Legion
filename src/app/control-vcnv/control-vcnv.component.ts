@@ -1,8 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
-import { io } from "socket.io-client";
-import { environment } from "src/environments/environment";
 import { FormPlayerComponent } from "../form-player/form-player.component";
 import { FormQVcnvComponent } from "../form-q-vcnv/form-q-vcnv.component";
 import { AuthService } from "../services/auth.service";
@@ -43,7 +41,6 @@ export class ControlVcnvComponent implements OnInit {
   ];
   displayedVCNVPlayersColumns: string[] = ["id", "name", "mark", "time"];
   ngOnInit(): void {
-    console.log("Logged in as admin");
     this.auth.resetListeners();
     if (
       this.auth.matchData.matchPos != "VCNV_Q" &&

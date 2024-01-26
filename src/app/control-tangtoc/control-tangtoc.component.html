@@ -68,12 +68,12 @@
         <button mat-raised-button (click)="playSfx('TT_START')">Nhạc hiệu tăng tốc</button>
       </div>
       <div class="text-2xl mt-5 text-white">
-        Vị trí thí sinh: <span class="text-white">{{matchData.matchPos}}</span>
+        Vị trí thí sinh: <span class="text-white">{{auth.matchData.matchPos}}</span>
       </div>
     </div>
     <div class="overflow-x-hidden w-max m-5 text-2xl">
       <div class="text-white">Chấm</div>
-      <table mat-table [dataSource]="matchData.players" class="w-max">
+      <table mat-table [dataSource]="auth.matchData.players" class="w-max">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef> ID </th>
           <td mat-cell *matCellDef="let element"> {{element.id}} </td>
@@ -98,7 +98,7 @@
         <ng-container matColumnDef="mark">
           <th mat-header-cell *matHeaderCellDef> Chấm </th>
           <td mat-cell *matCellDef="let element">
-            <mat-checkbox (change)="socket.emit('update-tangtoc-data', tangtocData);"
+            <mat-checkbox (change)="auth.socket.emit('update-tangtoc-data', tangtocData);"
               [(ngModel)]="tangtocData.playerAnswers[element.id - 1].correct">Đúng</mat-checkbox>
           </td>
         </ng-container>
