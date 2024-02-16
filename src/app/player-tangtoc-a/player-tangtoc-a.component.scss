@@ -23,3 +23,6 @@
 .answer-incorrect{
   opacity: 0.25 !important;
 }
+.aurora {
+  @apply relative drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
+}

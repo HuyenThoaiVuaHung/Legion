@@ -1,4 +1,5 @@
-<div class="relative overflow-hidden flex-col flex bg-gray-dark h-full w-screen">
+<div class="relative overflow-hidden flex-col flex h-full w-screen">
+    <img src="../../assets/misc/1.png" class="w-screen object-cover h-screen absolute -z-50">
     <div class=" absolute self-center ml-5 mt-10 w-52 h-60">
         <div *ngIf="vcnvData.CNVPlayers[0] != undefined"
             class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black bg-golden text-gray-darkest">
@@ -16,34 +17,34 @@
     <div class="topPortion disablePointerActions">
         <div class="justify-center bg-blue-dark float-left mt-10 ml-10 cnvPicBox content-center overflow-hidden">
             <div [ngClass]="{'opacity-0': vcnvData.questions[4].ifOpen === true}"
-                class=" text-center flex justify-center items-center text-4xl font-black cnvPicCoverCellCenter absolute z-20  text-white bg-gray border-1 border-white">
+                class=" text-center flex justify-center items-center text-4xl font-black cnvPicCoverCellCenter absolute z-20  text-black bg-white border border-black">
                 5</div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[4].ifOpen === true}"
-                class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCellCenter absolute z-20  text-white bg-transparent border-2 border-white">
+                class=" text-center flex justify-center items-center text-2xl font-black cnvPicCoverCellCenter absolute z-20   bg-transparent border border-black">
             </div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[0].ifOpen === true}"
-                class="  text-4xl font-black cnvPicCoverCell1 absolute z-10 text-white bg-transparent border-white">
-                <div class="bg-gray cnvCornerCell1 CCell1"></div>
-                <div class="bg-gray cnvCornerCell2 items-start justify-end flex CCell2">1</div>
+                class="  text-4xl font-black cnvPicCoverCell1 absolute z-10 bg-transparent border-white">
+                <div class="bg-white cnvCornerCell1 CCell1"></div>
+                <div class="bg-white cnvCornerCell2 items-start justify-end flex CCell2">1</div>
                 <div class="bg-transparent cnvCornerCell2 CCell3"></div>
             </div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[1].ifOpen === true}"
-                class="text-4xl font-black cnvPicCoverCell2 absolute z-10 text-white bg-transparent border-white">
-                <div class="bg-gray cnvCornerCell1 CCell4"></div>
+                class="text-4xl font-black cnvPicCoverCell2 absolute z-10 bg-transparent border-white">
+                <div class="bg-white cnvCornerCell1 CCell4"></div>
                 <div class="bg-transparent absolute cnvCornerCell2 CCell5"></div>
-                <div class="bg-gray absolute ml-40 items-start justify-start flex cnvCornerCell2 CCell6">2</div>
+                <div class="bg-white absolute ml-40 items-start justify-start flex cnvCornerCell2 CCell6">2</div>
             </div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[2].ifOpen === true}"
-                class="text-4xl font-black cnvPicCoverCell3 absolute z-10 text-white bg-transparent border-white">
-                <div class="bg-gray cnvCornerCell2 items-end justify-end flex CCell7">3</div>
-                <div class="bg-gray cnvCornerCell1 CCell8"></div>
+                class="text-4xl font-black cnvPicCoverCell3 absolute z-10 bg-transparent border-white">
+                <div class="bg-white cnvCornerCell2 items-end justify-end flex CCell7">3</div>
+                <div class="bg-white cnvCornerCell1 CCell8"></div>
 
             </div>
             <div [ngClass]="{'opacity-0': vcnvData.questions[3].ifOpen === true}"
-                class="text-4xl font-black cnvPicCoverCell4 absolute bg-transparent text-white z-10 border-white">
+                class="text-4xl font-black cnvPicCoverCell4 absolute bg-transparent z-10 border-white">
                 <div class="bg-transparent absolute block cnvCornerCell2 CCell9"></div>
-                <div class="bg-gray absolute ml-40 items-end justify-start flex cnvCornerCell2 CCell10">4</div>
-                <div class="bg-gray mt-90px cnvCornerCell1 CCell12"></div>
+                <div class="bg-white absolute ml-40 items-end justify-start flex cnvCornerCell2 CCell10">4</div>
+                <div class="bg-white mt-90px cnvCornerCell1 CCell12"></div>
             </div>
             <img draggable="false" (dragstart)="false" class="min-h-full image min-w-full z-0 static flex-shrink-0"
                 src='../../assets/picture-questions/vcnv/{{vcnvData.questions[5].picFileName}}'>
@@ -51,82 +52,89 @@
         <div class=" overflow-hidden text-center justify-center items-center cnvTextBox flex mr-10 float-right">
             <div class="">
                 <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[0].question}"
-                    class="bg-gray      h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">
+                    class="aurora shadow-lg h-auto p-3 text-right items-center justify-center text-2xl rounded-lg ">
                     {{VCNVStrings[0]}}</div>
                 <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[1].question}"
-                    class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">
+                    class="aurora shadow-lg mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg ">
                     {{VCNVStrings[1]}}</div>
                 <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[2].question}"
-                    class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">
+                    class="aurora shadow-lg mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg ">
                     {{VCNVStrings[2]}}</div>
                 <div [ngClass]="{'highlight': highlightedVCNVQuestion.question === vcnvData.questions[3].question}"
-                    class="bg-gray mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg text-white">
+                    class="aurora shadow-lg mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg ">
                     {{VCNVStrings[3]}}</div>
             </div>
             <div class="ml-10">
                 <div [ngClass]="{'opened-question': vcnvData.questions[0].ifShown == true}"
-                    class="      h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">
+                    class=" aurora h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg ">
                     1</div>
                 <div [ngClass]="{'opened-question': vcnvData.questions[1].ifShown == true}"
-                    class=" mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">
+                    class=" aurora mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg ">
                     2</div>
                 <div [ngClass]="{'opened-question': vcnvData.questions[2].ifShown == true}"
-                    class=" mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">
+                    class=" aurora mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg ">
                     3</div>
                 <div [ngClass]="{'opened-question': vcnvData.questions[3].ifShown == true}"
-                    class=" mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg text-white">
+                    class=" aurora mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg ">
                     4</div>
             </div>
         </div>
     </div>
-    <div>
-        <div class="text-xl ml-10 mt-5 disablePointerActions text-white">CNV CÓ: {{VCNVStrings[5].length}} KÍ TỰ</div>
-        <div
-            class="bg-gray disablePointerActions h-48 text-left relative items float-left p-5 text-2xl question-box flex overflow-auto text-white ml-10 mt-5 rounded-xl">
-            {{curVCNVQuestion.question}}
-            <div *ngIf="curVCNVQuestion.answer != undefined" class="font-bold absolute m-5 right-0 bottom-0">
-                HN CÓ {{curVCNVQuestion.answer.replace(" ", '').length}} KÍ TỰ
-            </div>
-            <div *ngIf="roleId == 3 && currentTime > 0" class="font-thin absolute m-5 right-left bottom-0">
-                {{currentTime}}
+    <div class="flex flex-row w-screen">
+        <div class="w-9/12 h-max">
+            <div class="text-xl ml-10 mt-5 disablePointerActions ">CNV CÓ: {{VCNVStrings[5].length}} KÍ TỰ</div>
+            <div class="bg-white disablePointerActions h-48 text-left w-11/12
+                 relative items float-left p-5 text-2xl question-box flex overflow-auto  ml-10 mt-5 border
+                 drop-shadow-lg questionBox rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60">
+                {{curVCNVQuestion.question}}
+                <div *ngIf="curVCNVQuestion.answer != undefined" class="font-bold absolute m-5 right-0 bottom-0">
+                    HN CÓ {{curVCNVQuestion.answer.replace(" ", '').length}} KÍ TỰ
+                </div>
+                <div *ngIf="roleId == 3 && currentTime > 0" class="font-thin absolute m-5 right-left bottom-0">
+                    {{currentTime}}
+                </div>
             </div>
         </div>
         <div
-            class="disablePointerActions w-max overflow-hidden h-48 text-center items-center justify-center flex flex-col float-right text-white ml-3 mt-5 mr-10">
+            class="disablePointerActions w-2/12 overflow-hidden h-full text-center items-center
+             justify-center flex flex-col float-right  ml-3 mt-5 mr-10">
             <div [ngClass]="{'name-highlight': playerIndex == 0 }"
-                class="text-xl mt-2 w-72 rounded-lg p-1.5 text-center text-white bg-gray">
+                class="text-xl mt-2 w-72 rounded-md p-1.5 text-center aurora bg-white">
                 {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
             </div>
             <div [ngClass]="{'name-highlight': playerIndex == 1 }"
-                class="text-xl mt-2 w-72 rounded-lg p-1.5 text-center text-white bg-gray">
+                class="text-xl mt-2 w-72 rounded-md p-1.5 text-center aurora bg-white">
                 {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
             </div>
             <div [ngClass]="{'name-highlight': playerIndex == 2 }"
-                class="text-xl mt-2 w-72 rounded-lg p-1.5 text-center text-white bg-gray">
+                class="text-xl mt-2 w-72 rounded-md p-1.5 text-center aurora bg-white">
                 {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
             </div>
             <div [ngClass]="{'name-highlight': playerIndex == 3 }"
-                class="text-xl mt-2 w-72 rounded-lg p-1.5 text-center text-white bg-gray">
+                class="text-xl mt-2 w-72 rounded-md p-1.5 text-center aurora bg-white">
                 {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
             </div>
         </div>
-        <div *ngIf="roleId != 3" class="relative float-left answer-box mt-1">
-            <mat-form-field class="ml-10  form-field text-lg ">
+    </div>
+    <div class="w-full flex h-max px-10">
+        <div *ngIf="roleId != 3" class="relative  w-6/12 flex gap-2 items-center answer-box mt-1">
+            <mat-form-field class="w-full form-field text-lg ">
                 <input matInput autocomplete="off" (keyup)="checkIfTime()" (keyup.enter)="submitAnswer()"
-                    [(ngModel)]="playerAnswer" placeholder="Nhập đáp án vào đây" class="text-white ">
+                    [(ngModel)]="playerAnswer" placeholder="Nhập đáp án vào đây" class="">
             </mat-form-field>
-            <button (click)="submitAnswer()" mat-icon-button class="text-white">
+            <button (click)="submitAnswer()" mat-icon-button class=" aurora shadow-lg">
                 <mat-icon>done</mat-icon>
             </button>
         </div>
         <div *ngIf="roleId != 3"
-            class="mr-10 disablePointerActions inline-flex mt-8 text-right justify-center items-center text-white">
-            <p class=" text-2xl  pr-32 text-white">{{answerCache}}</p>
+            class="disablePointerActions w-3/12 mt-8 text-center justify-center items-center ">
+            <p class=" text-2xl  pr-32 ">{{answerCache}}</p>
         </div>
         <div *ngIf="roleId != 3"
-            class="mr-10 disablePointerActions inline-flex mt-8 text-right justify-center items-center text-white">
-            <p *ngIf="currentTime != 0" class=" text-2xl  pr-32 text-white">Thời gian: {{currentTime}}</p>
+            class="disablePointerActions w-3/12 mt-8 text-center justify-center items-center ">
+            <p *ngIf="currentTime != 0" class=" text-2xl  pr-32 ">Thời gian: {{currentTime}}</p>
         </div>
+
     </div>
     <div *ngIf="roleId != 3" class="fixed z-50 bottom-0 right-0">
         <button [disabled]="disabledCNVButton == true" (click)="attemptVCNV()" mat-raised-button

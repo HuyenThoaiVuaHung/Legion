@@ -9,3 +9,6 @@
 .text-black {
     color: black !important;
 }
+.aurora {
+    @apply drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
+}

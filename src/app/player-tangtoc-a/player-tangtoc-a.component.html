@@ -1,40 +1,18 @@
-<div class="flex disablePointerActions text-center justify-center bg-gray-darkest h-screen w-screen">
-    <div class="flex-shrink-0 boxes  box">
-        <div [ngClass]="{' answer-incorrect': ttData.playerAnswers[0].correct == false && ttData.showResults == true}"
-            class=" w-96 h-auto text-right mt-20 bg-gray  rounded-xl border-white">
-            <div class=" w-96 p-2 bg-gray-darkest text-left float-left left-0 top-0 text-white mb-1">
-                {{matchData.players[ttData.playerAnswers[0].id - 1].name}}</div>
-            <div class=" p-1 text-right float-right text-xl bg-gray-light top-0 rounded-md mr-2 mt-2 ">
-                {{getTimePassed(0)}}</div>
-            <div class=" text-center h-24 justify-center text-lg text-white">
-                {{ttData.playerAnswers[0].answer.toUpperCase()}}</div>
+<div class="flex disablePointerActions text-center justify-center h-screen w-screen">
+    <img src="../../assets/misc/1.png" class="w-screen disablePointerActions object-cover h-screen absolute -z-50">
+
+    <div class="flex-shrink-0 boxes box">
+        <div *ngFor="let playerAnswer of ttData.playerAnswers; let i = index" [ngClass]="{'answer-incorrect': ttData.playerAnswers[i].correct == false && ttData.showResults == true}"
+            class=" w-96 h-max text-right mt-14 bg-white aurora rounded-xl border-white">
+            <div class=" w-full h-10 p-2 text-left mb-1 text-lg font-semibold border-b border-black">
+                {{matchData.players[ttData.playerAnswers[i].id - 1].name}}</div>
+            <div class="flex h-24 justify-center items-center">
+                <div class="w-8/12 text-center justify-center text-2xl font-bold">
+                    {{ttData.playerAnswers[i].answer.toUpperCase()}}</div>
+                <div class="w-max p-2 aurora bg-white justify-center items-center h-max text-2xl rounded-md">
+                    {{getTimePassed(i)}}</div>
+            </div>
         </div>
-        <div [ngClass]="{' answer-incorrect': ttData.playerAnswers[1].correct == false && ttData.showResults == true}"
-            class=" w-96 h-auto text-right mt-10 bg-gray  rounded-xl border-white">
-            <div class=" w-96 p-2 bg-gray-darkest text-left float-left left-0 top-0 text-white mb-1">
-                {{matchData.players[ttData.playerAnswers[1].id - 1].name}}</div>
-            <div class=" p-1 text-right float-right text-xl bg-gray-light top-0 rounded-md mr-2 mt-2 ">
-                {{getTimePassed(1)}}</div>
-            <div class=" text-center h-24 justify-center text-lg text-white">
-                {{ttData.playerAnswers[1].answer.toUpperCase()}}</div>
-        </div>
-        <div [ngClass]="{' answer-incorrect': ttData.playerAnswers[2].correct == false && ttData.showResults == true}"
-            class=" w-96 h-auto text-right mt-10 bg-gray  rounded-xl border-white">
-            <div class=" w-96 p-2 bg-gray-darkest text-left float-left left-0 top-0 text-white mb-1">
-                {{matchData.players[ttData.playerAnswers[2].id - 1].name}}</div>
-            <div class=" p-1 text-right float-right text-xl bg-gray-light top-0 rounded-md mr-2 mt-2 ">
-                {{getTimePassed(2)}}</div>
-            <div class=" text-center h-24 justify-center text-lg text-white">
-                {{ttData.playerAnswers[2].answer.toUpperCase()}}</div>
-        </div>
-        <div [ngClass]="{' answer-incorrect': ttData.playerAnswers[3].correct == false && ttData.showResults == true}"
-            class=" w-96 h-auto text-right mt-10 bg-gray  rounded-xl border-white">
-            <div class=" w-96 p-2 bg-gray-darkest text-left float-left left-0 top-0 text-white mb-1">
-                {{matchData.players[ttData.playerAnswers[3].id - 1].name}}</div>
-            <div class=" p-1 text-right float-right text-xl bg-gray-light top-0 rounded-md mr-2 mt-2 ">
-                {{getTimePassed(3)}}</div>
-            <div class=" text-center h-24 justify-center text-lg text-white">
-                {{ttData.playerAnswers[3].answer.toUpperCase()}}</div>
-        </div>
+
     </div>
 </div>

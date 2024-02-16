@@ -1,47 +1,64 @@
-<div class="bg-gray-dark  flex h-screen sm:h-full w-screen">
-  <div class="float-left  ml-5">
+<div class=" aurora-bg flex h-screen sm:h-full w-screen">
+  <img src="../../assets/misc/1.png" class="w-screen object-cover h-screen absolute -z-50">
+  <div class="float-left gap-5 pt-5 flex flex-col items-center ml-5">
     <div
-      class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">
-      {{time}}</div>
+      class="w-64 aurora shadow-xl h-64 rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 disablePointerActions flex text-center  text-black justify-center items-center text-8xl font-black"
+    >
+      <img class="h-48 w-48" src="../../assets/misc/logo.png">
+    </div>
     <!-- 3s Timer (Admin triggered)-->
-    <div *ngIf="threeSecTimer2 <= 0 && threeSecTimer1 > 0"
-      class=" text-4xl disablePointerActions absolute z-2 w-64 rounded-xl text-white mt-10 text-center ">
-      {{threeSecTimer1/10}}s</div>
-    <div [ngClass]="{'opacity-0': threeSecTimer2 <= 0}"
-      class=" text-4xl disablePointerActions w-64 rounded-xl text-white mt-10 text-center ">{{threeSecTimer2/10}}s</div>
+    <div
+      *ngIf="threeSecTimer2 <= 0 && threeSecTimer1 > 0"
+      class="text-4xl disablePointerActions absolute z-2 w-64 rounded-xl mt-10 text-center"
+    >
+      {{ threeSecTimer1 / 10 }}s
+    </div>
+    <div
+      [ngClass]="{ 'opacity-0': threeSecTimer2 <= 0 }"
+      class="text-4xl disablePointerActions w-64 rounded-xl mt-10 text-center"
+    >
+      {{ threeSecTimer2 / 10 }}s
+    </div>
     <!-- 3s Timer (Player Triggered) *ngIf="threeSecTimer2 > 0"-->
     <div
-      class="disablePointerActions w-56 overflow-hidden h-52 text-center items-center justify-center flex flex-col float-right text-white ml-3 mr-10">
-      <div [ngClass]="{'name-highlight': currentTurn == 0 }"
-        class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-        {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
-      </div>
-      <div [ngClass]="{'name-highlight': currentTurn == 1 }"
-        class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-        {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
-      </div>
-      <div [ngClass]="{'name-highlight': currentTurn == 2 }"
-        class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-        {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
-      </div>
-      <div [ngClass]="{'name-highlight': currentTurn == 3 }"
-        class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-        {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
+      class="disablePointerActions w-64 overflow-hidden p-1 text-center gap-3 items-center flex flex-col"
+    >
+      <div
+        *ngFor="let player of matchData.players; let i = index"
+        [ngClass]="{ 'name-highlight': currentTurn == i }"
+        class="text-xl w-full rounded-md aurora py-3 px-1 text-center shadow-lg"
+      >
+        {{ matchData.players[i].name.toUpperCase() }} ({{
+          matchData.players[i].score
+        }})
       </div>
     </div>
-    <div class=" text-2xl w-64 rounded-xl  text-center">
-      <button *ngIf="roleId != 3" mat-button class=" bg-gray h-20 text-xl p-5 text-white" (click)="getAnswerTurn()"
-        [disabled]="(answerButtonDisabled)">
-        GIÀNH QUYỀN TRẢ LỜI
-      </button>
-    </div>
+    <button *ngIf="gamemode == 'M'"
+      (click)="getAnswerTurn()"
+      [disabled]="answerButtonDisabled"
+      class="max-w-lg text-lg font-bold py-5 w-64 h-max active:bg-black bg-white
+       active:text-white active:shadow-none active:translate-x-[2px] active:translate-y-[2px] font-sans p-4
+        shadow-black transition-all flex justify-center items-center gap-1
+         disabled:bg-black disabled:translate-x-0 disabled:translate-y-0 disabled:text-white disabled:hover:shadow-none
+         aurora"
+    >
+      GIÀNH QUYỀN TRẢ LỜI
+    </button>
   </div>
-  <div [ngClass]="{'text-gold': ifGotTurn === true}" class=" disablePointerActions 
-  bg-gray relative drop-shadow-lg questionBox float-right mt-5 ml-10 mr-10 p-10 text-3xl border-2 text-white rounded-xl
-  ">
-    {{question.question}}
-    <img *ngIf="picturePath != ''" src="{{picturePath}}" class=" h-52 mt-10">
-    <div *ngIf="this.qCounter > 1" class=" flex mt-10 bottom-32 absolute bg-gray-dark w-max rounded-l p-5">
-      {{answerCache}}</div>
+  <div
+    [ngClass]="{ 'text-gold': ifGotTurn === true }"
+    class="disablePointerActions bg-white relative shadow-lg questionBox aurora
+     float-right mt-5 ml-10 mr-10 text-3xl border-4"
+    >
+    <span class="h-full flex flex-col w-full p-10 text-6xl">
+      {{ question.question }}
+      <img *ngIf="picturePath != ''" src="{{ picturePath }}" class=" max-w-2xl  mt-10" />
+    </span>
+    <div
+      *ngIf="this.currentQuestionNo > 1"
+      class="flex mt-10 bottom-32 absolute w-max rounded-l p-5"
+    >
+      {{ answerCache }}
+    </div>
   </div>
 </div>

@@ -13,6 +13,10 @@ export class ScKhoiDongComponent implements OnInit {
   matchData : any = {};
   currentQuestion: any = {};
   time = 0;
+  currentMaxQuestionNo = 0;
+
+  currentQuestionNo: number = 0;
+
   threeSecTimers: number[] = [0,0];
   playerGotTurn: any = {};
   ngOnInit(): void {
@@ -30,7 +34,10 @@ export class ScKhoiDongComponent implements OnInit {
         this.currentQuestion = {};
       }
     });
-
+    this.socket.on('update-number-question-kd', (max, curr) =>{
+      this.currentMaxQuestionNo = max;
+      this.currentQuestionNo = curr;
+    })
     this.socket.on('player-got-turn-kd', (player) =>{
       if(player != undefined){
         this.playerGotTurn = player;

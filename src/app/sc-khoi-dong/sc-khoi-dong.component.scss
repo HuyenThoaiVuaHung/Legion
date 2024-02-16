@@ -12,3 +12,6 @@
 .text-black {
     color: black !important;
 }
+.aurora {
+    @apply bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
+  }

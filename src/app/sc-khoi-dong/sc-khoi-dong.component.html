@@ -1,20 +1,20 @@
 <div class=" base relative flex justify-center items-center">
     <div class=" question flex flex-col mr-5  float-left">
         <div class=" h-12 w-full inline-flex">
-            <div [ngClass]="{'bg-darkblue text-black': playerGotTurn.id === 0 + 1}" class=" border-2 border-darkblue w-56 rounded-tl-md h-full justify-center items-center bg-gray text-white text-lg font-black flex text-center">
+            <div [ngClass]="{'bg-gradient-to-r from-blue-900 to-blue-950 text-white': playerGotTurn.id === 0 + 1}" class=" border-2 border-white w-56 rounded-tl-md h-full justify-center items-center bg-white text-lg font-black flex text-center">
                 {{matchData.players[0].name.toUpperCase()}} - {{matchData.players[0].score}}
             </div>
-            <div [ngClass]="{'bg-darkblue text-black': playerGotTurn.id === 1 + 1}" class=" border-2 border-darkblue w-56 h-full justify-center items-center bg-gray text-white text-lg font-black flex text-center">
+            <div [ngClass]="{'bg-gradient-to-r from-blue-900 to-blue-950 text-white': playerGotTurn.id === 1 + 1}" class=" border-2 border-white w-56 h-full justify-center items-center bg-white text-lg font-black flex text-center">
                 {{matchData.players[1].name.toUpperCase()}} - {{matchData.players[1].score}}
             </div>
-            <div [ngClass]="{'bg-darkblue text-black': playerGotTurn.id === 2 + 1}" class=" border-2 border-darkblue w-56 h-full justify-center items-center bg-gray text-white text-lg font-black flex text-center">
+            <div [ngClass]="{'bg-gradient-to-r from-blue-900 to-blue-950 text-white': playerGotTurn.id === 2 + 1}" class=" border-2 border-white w-56 h-full justify-center items-center bg-white text-lg font-black flex text-center">
                 {{matchData.players[2].name.toUpperCase()}} - {{matchData.players[2].score}}
             </div>
-            <div [ngClass]="{ 'bg-darkblue text-black': playerGotTurn.id === 3 + 1}" class=" border-2 border-darkblue w-56 rounded-tr-md h-full  justify-center items-center bg-gray text-white text-lg font-black flex text-center">
+            <div [ngClass]="{ 'bg-gradient-to-r from-blue-900 to-blue-950 text-white': playerGotTurn.id === 3 + 1}" class=" border-2 border-white w-56 rounded-tr-md h-full  justify-center items-center bg-white text-lg font-black flex text-center">
                 {{matchData.players[3].name.toUpperCase()}} - {{matchData.players[3].score}}
             </div>
         </div>
-        <div class="w-full relative border-2 text-lg text-white p-5 border-darkblue h-56 rounded-b-md bg-gray-darkest">
+        <div class="w-full relative text-2xl p-5 shadow-lg h-56 rounded-b-md bg-gradient-to-br from-pink-50 to-blue-50 bg-opacity-95">
             <span class="" *ngIf="currentQuestion.type != 'P'">
                 <span>
                     {{currentQuestion.question}}
@@ -30,5 +30,5 @@
             <span *ngIf="threeSecTimers[1] > 0" class="absolute right-0 bottom-0 text-5xl text-darkblue p-5">{{threeSecTimers[1]/10}}</span>
         </div>
     </div>
-    <div class=" float-right w-52 text-7xl border-2 font-black rounded-xl text-white justify-center text-center items-center flex h-52 bg-gradient-to-r from-darkblue-dark to-darkblue">{{time}}</div>
+    <div class=" float-right w-52 text-7xl border-2 font-black rounded-xl justify-center text-center items-center flex h-52 bg-gradient-to-br from-pink-50 to-blue-50">      {{ currentQuestionNo }}/{{ currentMaxQuestionNo }}</div>
 </div>

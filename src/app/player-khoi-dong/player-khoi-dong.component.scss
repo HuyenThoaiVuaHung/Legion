@@ -15,3 +15,7 @@
     background-color: goldenrod !important;
     color: black !important;
 }
+
+.aurora {
+    @apply relative drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
+  }

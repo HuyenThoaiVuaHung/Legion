@@ -151,7 +151,8 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         element = processedString;
       }
       else if (this.vcnvData.questions[index].ifOpen == false && this.vcnvData.questions[index].ifShown == true) {
-        let processedString = '';
+        let processedString 
+        = '';
         for (let i = 0; i < element.length; i++) {
           processedString += '⬤';
         }
