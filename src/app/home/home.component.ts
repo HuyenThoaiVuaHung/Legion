@@ -1,160 +1,65 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import * as io from 'socket.io-client';
-import * as XLSX from 'xlsx';
-import { Router } from '@angular/router';
-import { environment } from 'src/environments/environment';
-import { MatDialog } from '@angular/material/dialog';
-import { FormPlayerComponent } from '../form-player/form-player.component';
-import { CommonService } from '../services/common.service';
+import { Component, OnInit, Output, EventEmitter } from "@angular/core";
+import * as XLSX from "xlsx";
+import { Router } from "@angular/router";
+import { MatDialog } from "@angular/material/dialog";
+import { FormPlayerComponent } from "../form-player/form-player.component";
+import { AuthService } from "../services/auth.service";
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  selector: "app-home",
+  templateUrl: "./home.component.html",
+  styleUrls: ["./home.component.scss"],
 })
 export class HomeComponent implements OnInit {
-  constructor(private router: Router, private dialog: MatDialog, private service: CommonService) { }
-  displayedPlayerColumns: string[] = ['id', 'name', 'score', 'active'];
-  ifAuth: boolean = false;
-  roleID: number = 0;
-  socket = io.connect(environment.socketIp);
-  authString: string = '';
-  greetString: string = "Chào ";
-  fileName = '';
-  matchData: any;
+  constructor(
+    private router: Router,
+    public auth: AuthService,
+    private dialog: MatDialog
+  ) {}
+  displayedPlayerColumns: string[] = ["id", "name", "score", "active"];
+  authString: string = "";
+  greetString: string = "";
+  fileName = "";
   player: any;
   ngOnInit(): void {
-    this.socket.emit('get-match-data', (callback) => {
-      this.matchData = callback;
-    })
-    this.service.changeData(-1);
+    this.auth.deauthenticate();
   }
-  auth() {
+  authenticate() {
     console.log("Đăng nhập với :" + this.authString);
-    this.socket.emit('init-authenticate', this.authString, (callback) => {
-      this.service.changeData(callback.roleId);
-      if (callback.roleId == 0) {
-        localStorage.setItem('authString', this.authString);
-        this.matchData = callback.matchData;
-        this.ifAuth = true;
-        this.roleID = callback.roleId;
-        this.greetString = "Chào " + callback.player.name;
-        this.socket.on('update-match-data', (data) => {
-          this.matchData = data;
-          if (this.matchData.matchPos != 'H') {
-            switch (this.matchData.matchPos) {
-              case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-                break;
-              case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-                break;
-              case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-                break;
-              case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-                break;
-              case 'VD': this.router.navigate(['pl-vd']);
-                break;
-              case 'H': this.router.navigate(['']);
-                break;
-              case 'PNTS': this.router.navigate(['/pnts']);
-                break;
-              case 'CHP': this.router.navigate(['/pl-chp']); break;
-              case 'KD': this.router.navigate(['/pl-kd']);
-            }
-            this.socket.close();
-          }
-        }
-        )
-        if (this.matchData.matchPos != 'H') {
-          switch (this.matchData.matchPos) {
-            case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-              break;
-            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-              break;
-            case 'TT_Q': this.router.navigate(['/pl-tangtoc-q']);
-              break;
-            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-              break;
-            case 'VD': this.router.navigate(['pl-vd']);
-              break;
-            case 'H': this.router.navigate(['']);
-              break;
-            case 'PNTS': this.router.navigate(['/pnts']);
-              break;
-            case 'CHP': this.router.navigate(['/pl-chp']); break;
-            case 'KD': this.router.navigate(['/pl-kd']);
-          }
-          this.socket.close();
-        }
-      }
-      else if (callback.roleId == 1) {
-        this.roleID = 1;
-        this.ifAuth = true;
-        localStorage.setItem('authString', this.authString);
+    this.auth.socketHook = () => {
+      localStorage.setItem("authString", this.authString);
+      if (this.auth.userInfo.roleId == 0) {
+        this.greetString =
+          "Chào " +
+          this.auth.matchData.players[this.auth.userInfo.index || 0].name;
+      } else if (this.auth.userInfo.roleId == 1) {
         this.greetString = "Chào BTC";
-        this.matchData = callback.matchData;
-        this.socket.emit('change-match-position', 'H');
-        this.socket.on('update-match-data', (data) => {
-          this.matchData = data;
-        }
-        )
-      }
-      else if (callback.roleId == 2) {
-        this.roleID = 2;
-        this.ifAuth = true;
-        localStorage.setItem('authString', this.authString);
+        this.auth.socket.emit("change-match-position", "H");
+
+      } else if (this.auth.userInfo.roleId == 2) {
         this.greetString = "Chào MC";
-        this.matchData = callback.matchData;
-        this.socket.on('update-match-data', (data) => {
-          this.matchData = data;
-          if (this.matchData.matchPos != 'H') {
-            this.router.navigate(['mc'])
-          }
-        }
-        )
-      }
-      else if (callback.roleId == 3) {
-        this.roleID = 3;
-        this.ifAuth = true;
-        localStorage.setItem('authString', this.authString);
+
+      } else if (this.auth.userInfo.roleId == 3) {
+        localStorage.setItem("authString", this.authString);
         this.greetString = "Viewer";
-        this.matchData = callback.matchData;
-        this.socket.on('update-match-data', (data) => {
-          this.matchData = data;
-          switch (this.matchData.matchPos) {
-            case 'KD': this.router.navigate(['pl-kd']); break;
-            case 'VCNV_Q': this.router.navigate(['pl-vcnv-q']); break;
-            case 'VCNV_A': this.router.navigate(['pl-vcnv-a']); break;
-            case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
-            case 'TT_A': this.router.navigate(['pl-tangtoc-a']); break;
-            case 'VD': this.router.navigate(['pl-vd']); break;
-            case 'CHP': this.router.navigate(['pl-chp']); break;
-            case 'H': this.router.navigate(['']); break;
-          }
-        }
-        )
-        switch (this.matchData.matchPos) {
-          case 'KD': this.router.navigate(['pl-kd']); break;
-          case 'VCNV_Q': this.router.navigate(['pl-vcnv-q']); break;
-          case 'VCNV_A': this.router.navigate(['pl-vcnv-a']); break;
-          case 'TT_Q': this.router.navigate(['pl-tangtoc-q']); break;
-          case 'TT_A': this.router.navigate(['pl-tangtoc-a']); break;
-          case 'VD': this.router.navigate(['pl-vd']); break;
-          case 'CHP': this.router.navigate(['pl-chp']); break;
-          case 'H': this.router.navigate(['']); break;
-        }
-      }
-    });
+      } else { console.log('who tf?')}
+    };
+    this.auth.authenticate(this.authString);
   }
   editPlayer(row: any) {
-    let player = this.matchData.players[this.matchData.players.indexOf(row)];
+    let player =
+      this.auth.matchData.players[this.auth.matchData.players.indexOf(row)];
     const dialogRef = this.dialog.open(FormPlayerComponent, {
-      data: player
+      data: player,
     });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        var payload: any = { player: result, index: this.matchData.players.indexOf(row) };
+        var payload: any = {
+          player: result,
+          index: this.auth.matchData.players.indexOf(row),
+        };
         payload.player.score = parseInt(payload.player.score);
-        this.socket.emit('edit-player-info', payload, (callback) => {
+        this.auth.socket.emit("edit-player-info", payload, (callback) => {
           console.log(callback.message);
         });
       }
@@ -168,7 +73,7 @@ export class HomeComponent implements OnInit {
       reader.readAsArrayBuffer(file);
       reader.onload = (e) => {
         const bufferArray = e.target?.result;
-        const wb = XLSX.read(bufferArray, { type: 'buffer' });
+        const wb = XLSX.read(bufferArray, { type: "buffer" });
         const kdSheet = wb.Sheets[wb.SheetNames[0]];
         const vcnvSheet = wb.Sheets[wb.SheetNames[1]];
         const ttSheet = wb.Sheets[wb.SheetNames[2]];
@@ -177,14 +82,13 @@ export class HomeComponent implements OnInit {
           kd: XLSX.utils.sheet_to_json(kdSheet),
           vcnv: XLSX.utils.sheet_to_json(vcnvSheet),
           tt: XLSX.utils.sheet_to_json(ttSheet),
-          vd: XLSX.utils.sheet_to_json(vdSheet)
-        }
-        this.socket.emit('update-data-from-excel', payload, (callback) => {
+          vd: XLSX.utils.sheet_to_json(vdSheet),
+        };
+        this.auth.socket.emit("update-data-from-excel", payload, (callback) => {
           console.log(callback.message);
         });
         console.log(payload);
-      }
+      };
     }
-
   }
 }
