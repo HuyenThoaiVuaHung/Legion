@@ -3,16 +3,16 @@
     <div class=" absolute self-center ml-5 mt-10 w-52 h-60">
         <div *ngIf="vcnvData.CNVPlayers[0] != undefined"
             class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black bg-golden text-gray-darkest">
-            {{matchData.players[vcnvData.CNVPlayers[0].id].name}}</div>
+            {{auth.matchData.players[vcnvData.CNVPlayers[0].id].name}}</div>
         <div *ngIf="vcnvData.CNVPlayers[1] != undefined"
             class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">
-            {{matchData.players[vcnvData.CNVPlayers[1].id].name}}</div>
+            {{auth.matchData.players[vcnvData.CNVPlayers[1].id].name}}</div>
         <div *ngIf="vcnvData.CNVPlayers[2] != undefined"
             class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">
-            {{matchData.players[vcnvData.CNVPlayers[2].id].name}}</div>
+            {{auth.matchData.players[vcnvData.CNVPlayers[2].id].name}}</div>
         <div *ngIf="vcnvData.CNVPlayers[3] != undefined"
             class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">
-            {{matchData.players[vcnvData.CNVPlayers[3].id].name}}</div>
+            {{auth.matchData.players[vcnvData.CNVPlayers[3].id].name}}</div>
     </div>
     <div class="topPortion disablePointerActions">
         <div class="justify-center bg-blue-dark float-left mt-10 ml-10 cnvPicBox content-center overflow-hidden">
@@ -90,7 +90,7 @@
                 <div *ngIf="curVCNVQuestion.answer != undefined" class="font-bold absolute m-5 right-0 bottom-0">
                     HN CÓ {{curVCNVQuestion.answer.replace(" ", '').length}} KÍ TỰ
                 </div>
-                <div *ngIf="roleId == 3 && currentTime > 0" class="font-thin absolute m-5 right-left bottom-0">
+                <div *ngIf="auth.userInfo.roleId == 3 && currentTime > 0" class="font-thin absolute m-5 right-left bottom-0">
                     {{currentTime}}
                 </div>
             </div>
@@ -98,26 +98,26 @@
         <div
             class="disablePointerActions w-2/12 overflow-hidden h-full text-center items-center
              justify-center flex flex-col float-right  ml-3 mt-5 mr-10">
-            <div [ngClass]="{'name-highlight': playerIndex == 0 }"
+            <div [ngClass]="{'name-highlight': auth.userInfo.index == 0 }"
                 class="text-xl mt-2 w-72 rounded-md p-1.5 text-center aurora bg-white">
-                {{matchData.players[0].name.toUpperCase()}} ({{matchData.players[0].score}})
+                {{auth.matchData.players[0].name.toUpperCase()}} ({{auth.matchData.players[0].score}})
             </div>
-            <div [ngClass]="{'name-highlight': playerIndex == 1 }"
+            <div [ngClass]="{'name-highlight': auth.userInfo.index == 1 }"
                 class="text-xl mt-2 w-72 rounded-md p-1.5 text-center aurora bg-white">
-                {{matchData.players[1].name.toUpperCase()}} ({{matchData.players[1].score}})
+                {{auth.matchData.players[1].name.toUpperCase()}} ({{auth.matchData.players[1].score}})
             </div>
-            <div [ngClass]="{'name-highlight': playerIndex == 2 }"
+            <div [ngClass]="{'name-highlight': auth.userInfo.index == 2 }"
                 class="text-xl mt-2 w-72 rounded-md p-1.5 text-center aurora bg-white">
-                {{matchData.players[2].name.toUpperCase()}} ({{matchData.players[2].score}})
+                {{auth.matchData.players[2].name.toUpperCase()}} ({{auth.matchData.players[2].score}})
             </div>
-            <div [ngClass]="{'name-highlight': playerIndex == 3 }"
+            <div [ngClass]="{'name-highlight': auth.userInfo.index == 3 }"
                 class="text-xl mt-2 w-72 rounded-md p-1.5 text-center aurora bg-white">
-                {{matchData.players[3].name.toUpperCase()}} ({{matchData.players[3].score}})
+                {{auth.matchData.players[3].name.toUpperCase()}} ({{auth.matchData.players[3].score}})
             </div>
         </div>
     </div>
     <div class="w-full flex h-max px-10">
-        <div *ngIf="roleId != 3" class="relative  w-6/12 flex gap-2 items-center answer-box mt-1">
+        <div *ngIf="auth.userInfo.roleId != 3" class="relative  w-6/12 flex gap-2 items-center answer-box mt-1">
             <mat-form-field class="w-full form-field text-lg ">
                 <input matInput autocomplete="off" (keyup)="checkIfTime()" (keyup.enter)="submitAnswer()"
                     [(ngModel)]="playerAnswer" placeholder="Nhập đáp án vào đây" class="">
@@ -126,17 +126,17 @@
                 <mat-icon>done</mat-icon>
             </button>
         </div>
-        <div *ngIf="roleId != 3"
+        <div *ngIf="auth.userInfo.roleId != 3"
             class="disablePointerActions w-3/12 mt-8 text-center justify-center items-center ">
             <p class=" text-2xl  pr-32 ">{{answerCache}}</p>
         </div>
-        <div *ngIf="roleId != 3"
+        <div *ngIf="auth.userInfo.roleId != 3"
             class="disablePointerActions w-3/12 mt-8 text-center justify-center items-center ">
             <p *ngIf="currentTime != 0" class=" text-2xl  pr-32 ">Thời gian: {{currentTime}}</p>
         </div>
 
     </div>
-    <div *ngIf="roleId != 3" class="fixed z-50 bottom-0 right-0">
+    <div *ngIf="auth.userInfo.roleId != 3" class="fixed z-50 bottom-0 right-0">
         <button [disabled]="disabledCNVButton == true" (click)="attemptVCNV()" mat-raised-button
             class=" h-12 w-64 align-bottom items-center text-right">TRẢ LỜI CNV</button>
     </div>

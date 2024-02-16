@@ -1,5 +1,5 @@
-<div [ngClass]="{'overflow-x-hidden overflow-y-scroll': roleId===1}" class="w-screen h-screen">
-    <mat-toolbar color="" *ngIf="roleId == 1">
+<div [ngClass]="{'overflow-x-hidden overflow-y-scroll': auth.userInfo.roleId == 1}" class="w-screen h-screen">
+    <mat-toolbar color="" *ngIf="auth.userInfo.roleId == 1">
         <button mat-icon-button (click)="changeMatchPosAdmin('H')" title="Quay về màn hình chính">
             <mat-icon>home</mat-icon>
         </button>

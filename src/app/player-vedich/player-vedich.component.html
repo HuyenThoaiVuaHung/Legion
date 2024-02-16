@@ -4,12 +4,12 @@
         <div
             class="w-64 h-64 drop-shadow-lg aurora flex text-center p-10 shadow-xl justify-center items-center text-8xl font-black rounded-xl">
             {{currentTime}}</div>
-        <div *ngIf="roleId != 3" class=" text-2xl w-64 rounded-xl mt-10 text-center ">Số điểm:</div>
-        <div *ngIf="roleId != 3" class=" text-8xl w-64 rounded-xl  text-cyan-500 mt-5 text-center ">
-            {{matchData.players[playerIndex].score}}</div>
-        <div *ngFor="let player of matchData.players; let i = index" [ngClass]="{'text-black bg-white': vdData.currentPlayerId === i + 1, 'name-highlight': stealingPlayerIndex == i}"
+        <div *ngIf="auth.userInfo.roleId != 3" class=" text-2xl w-64 rounded-xl mt-10 text-center ">Số điểm:</div>
+        <div *ngIf="auth.userInfo.roleId != 3" class=" text-8xl w-64 rounded-xl  text-cyan-500 mt-5 text-center ">
+            {{auth.matchData.players[this.auth.userInfo.index!].score}}</div>
+        <div *ngFor="let player of auth.matchData.players; let i = index" [ngClass]="{'text-black bg-white': vdData.currentPlayerId === i + 1, 'name-highlight': stealingPlayerIndex == i}"
             class="text-xl mt-2 w-64 rounded-md p-2 aurora shadow-lg text-center">
-            {{matchData.players[i].name.toUpperCase()}} ({{matchData.players[i].score}})
+            {{auth.matchData.players[i].name.toUpperCase()}} ({{auth.matchData.players[i].score}})
         </div>
 
     </div>
@@ -32,7 +32,7 @@
         ">{{curQuestion.question}}
             <span *ngIf="vdData.ifNSHV == true" class="absolute right-0 bottom-0 text-7xl text-golden-dark p-5">★</span>
         </div>
-        <div *ngIf="roleId != 3" class=" text-white inline">
+        <div *ngIf="auth.userInfo.roleId != 3" class=" text-white inline">
             <button [disabled]="buttonDisabled" (click)="stealQuestion()" matRipple
                 class="bg-white disabled:bg-gray-900 shadow-xl disabled:text-gray-300 aurora text-xl h-32 very-long text-gray-darkest">
                 GIÀNH CHUÔNG TRẢ LỜI

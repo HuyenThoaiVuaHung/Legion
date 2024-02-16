@@ -24,12 +24,12 @@
       class="disablePointerActions w-64 overflow-hidden p-1 text-center gap-3 items-center flex flex-col"
     >
       <div
-        *ngFor="let player of matchData.players; let i = index"
+        *ngFor="let player of auth.matchData.players; let i = index"
         [ngClass]="{ 'name-highlight': currentTurn == i }"
         class="text-xl w-full rounded-md aurora py-3 px-1 text-center shadow-lg"
       >
-        {{ matchData.players[i].name.toUpperCase() }} ({{
-          matchData.players[i].score
+        {{ auth.matchData.players[i].name.toUpperCase() }} ({{
+          auth.matchData.players[i].score
         }})
       </div>
     </div>

@@ -1,170 +1,128 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { io } from 'socket.io-client';
-import { environment } from 'src/environments/environment';
-import { SfxService } from '../services/sfx-service.service';
+import { Component, OnInit } from "@angular/core";
+import { SfxService } from "../services/sfx-service.service";
+import { AuthService } from "../services/auth.service";
 @Component({
-  selector: 'app-player-tangtoc-q',
-  templateUrl: './player-tangtoc-q.component.html',
-  styleUrls: ['./player-tangtoc-q.component.scss']
+  selector: "app-player-tangtoc-q",
+  templateUrl: "./player-tangtoc-q.component.html",
+  styleUrls: ["./player-tangtoc-q.component.scss"],
 })
 export class PlayerTangtocQComponent implements OnInit {
-
-  socket = io(environment.socketIp);
-  constructor(private router: Router,
-    private sfxService: SfxService) { }
-  imageSource = '';
-  videoSource = '';
+  constructor(
+    private sfxService: SfxService,
+    public auth: AuthService
+  ) {}
+  imageSource = "";
+  videoSource = "";
   ttData: any = {};
-  matchData: any = {};
-  roleId = -1;
   disabledAnswerBox = true;
   currentTime: number = 0;
   curQuestion: any = {};
   highlightedVCNVQuestion: any = {};
-  readableTime: string = '';
-  answerCache: string = '';
-  playerIndex: number = 0;
-  playerAnswer: string = '';
+  readableTime: string = "";
+  answerCache: string = "";
+  playerAnswer: string = "";
   audio: any = null;
   ngOnInit(): void {
-    this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
-      this.matchData = callback.matchData;
-      this.playerIndex = callback.playerIndex
-      this.roleId = callback.roleId;
-      if (callback.roleId == 0 || callback.roleId == 3) {
-        if (this.matchData.matchPos != 'TT_Q') {
-          switch (this.matchData.matchPos) {
-            case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-              break;
-            case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-              break;
-            case 'CHP': this.router.navigate(['/pl-chp']);
-              break;
-            case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-              break;
-            case 'VD': this.router.navigate(['pl-vd']);
-              break;
-            case 'H': this.router.navigate(['']);
-              break;
-            case 'PNTS': this.router.navigate(['/pnts']);
-              break;
-            case 'KD': this.router.navigate(['/pl-kd']);
-          }
-          this.socket.close();
-        }
-        this.socket.on('play-sfx', (sfxID) => {
-          this.sfxService.playSfx(sfxID);
-        })
-        this.socket.on('update-match-data', (data) => {
-          this.matchData = data;
-          if (this.matchData.matchPos != 'TT_Q') {
-            switch (this.matchData.matchPos) {
-              case 'VCNV_Q': this.router.navigate(['/pl-vcnv-q']);
-                break;
-              case 'VCNV_A': this.router.navigate(['/pl-vcnv-a']);
-                break;
-              case 'CHP': this.router.navigate(['/pl-chp']);
-                break;
-              case 'TT_A': this.router.navigate(['/pl-tangtoc-a']);
-                break;
-              case 'VD': this.router.navigate(['pl-vd']);
-                break;
-              case 'H': this.router.navigate(['']);
-                break;
-              case 'PNTS': this.router.navigate(['/pnts']);
-                break;
-              case 'KD': this.router.navigate(['/pl-kd']);
-            }
-            this.socket.close();
-          }
-        });
+    this.auth.resetListeners();
+    this.auth.socket.on("play-sfx", (sfxID) => {
+      this.sfxService.playSfx(sfxID);
+    });
+    if (this.auth.userInfo.roleId == 0) {
+      this.auth.socket.emit("clear-answer-tt");
+    }
+    this.auth.socket.emit("get-tangtoc-data", (callback) => {
+      this.ttData = callback;
+    });
 
-        if (this.roleId == 0) {
-          this.socket.emit('clear-answer-tt');
+    this.auth.socket.on("update-tangtoc-data", (data) => {
+      this.ttData = data;
+      if (this.curQuestion.type == "TT_IMG") {
+        if (this.ttData.showAnswer == true) {
+          this.imageSource =
+            "../../../assets/picture-questions/tt/" +
+            this.ttData.questions[this.curQuestion.id - 1].answer_image;
+        } else {
+          this.imageSource =
+            "../../../assets/picture-questions/tt/" +
+            this.ttData.questions[this.curQuestion.id - 1].question_image;
         }
-        this.socket.emit('get-tangtoc-data', (callback) => {
-          this.ttData = callback;
-        })
-
-        this.socket.on('update-tangtoc-data', (data) => {
-          this.ttData = data;
-          if (this.curQuestion.type == 'TT_IMG') {
-            if (this.ttData.showAnswer == true) {
-              this.imageSource = "../../../assets/picture-questions/tt/" + this.ttData.questions[this.curQuestion.id - 1].answer_image;
-            }
-            else {
-              this.imageSource = "../../../assets/picture-questions/tt/" + this.ttData.questions[this.curQuestion.id - 1].question_image;
-            }
-          }
-        });
-        this.socket.on('update-clock', (clock) => {
-          if (clock <= 0) {
-            this.disabledAnswerBox = true;
-            this.playerAnswer = '';
-          }
-          else {
-            this.disabledAnswerBox = false;
-          }
-          this.currentTime = clock;
-        })
-        this.socket.on('update-tangtoc-question', (question) => {
-          if (question != undefined) {
-            this.curQuestion = question;
-            if (this.curQuestion.type == 'TT_IMG') {
-              if (this.ttData.showAnswer == true) {
-                this.imageSource = "../../../assets/picture-questions/tt/" + this.ttData.questions[this.curQuestion.id - 1].answer_image;
-              }
-              else {
-                this.imageSource = "../../../assets/picture-questions/tt/" + this.ttData.questions[this.curQuestion.id - 1].question_image;
-              }
-            }
-            else if (this.curQuestion.type == 'TT_VD') {
-              this.videoSource = "../../../assets/video-questions/tt/" + this.ttData.questions[this.curQuestion.id - 1].video_name;
-            }
-          }
-          else {
-            this.curQuestion = {};
-            this.imageSource = '';
-            this.videoSource = '';
-          }
-        });
-        this.socket.on('tangtoc-play-video', () => {
-          this.togglePlay();
-        })
       }
     });
+    this.auth.socket.on("update-clock", (clock) => {
+      if (clock <= 0) {
+        this.disabledAnswerBox = true;
+        this.playerAnswer = "";
+      } else {
+        this.disabledAnswerBox = false;
+      }
+      this.currentTime = clock;
+    });
+    this.auth.socket.on("update-tangtoc-question", (question) => {
+      if (question != undefined) {
+        this.curQuestion = question;
+        if (this.curQuestion.type == "TT_IMG") {
+          if (this.ttData.showAnswer == true) {
+            this.imageSource =
+              "../../../assets/picture-questions/tt/" +
+              this.ttData.questions[this.curQuestion.id - 1].answer_image;
+          } else {
+            this.imageSource =
+              "../../../assets/picture-questions/tt/" +
+              this.ttData.questions[this.curQuestion.id - 1].question_image;
+          }
+        } else if (this.curQuestion.type == "TT_VD") {
+          this.videoSource =
+            "../../../assets/video-questions/tt/" +
+            this.ttData.questions[this.curQuestion.id - 1].video_name;
+        }
+      } else {
+        this.curQuestion = {};
+        this.imageSource = "";
+        this.videoSource = "";
+      }
+    });
+    this.auth.socket.on("tangtoc-play-video", () => {
+      this.togglePlay();
+    });
   }
+
   togglePlay() {
-    var myPlayer: HTMLVideoElement = document.getElementById('video-1') as HTMLVideoElement;
+    var myPlayer: HTMLVideoElement = document.getElementById(
+      "video-1"
+    ) as HTMLVideoElement;
     myPlayer.muted = true;
     if (myPlayer != null) {
       if (myPlayer.paused == true) {
         myPlayer.play();
-      }
-      else {
+      } else {
         myPlayer.pause();
       }
     }
   }
   submitAnswer() {
     if (this.currentTime > 0) {
-      this.socket.emit('player-submit-answer-tangtoc', this.playerAnswer);
+      this.auth.socket.emit("player-submit-answer-tangtoc", this.playerAnswer);
       this.answerCache = this.playerAnswer;
-      this.socket.emit('')
-      this.playerAnswer = '';
-      this.getTimePassed(this.playerIndex);
+      this.auth.socket.emit("");
+      this.playerAnswer = "";
+      this.getTimePassed(this.auth.userInfo.index!);
     }
   }
   getTimePassed(id: number) {
     setTimeout(() => {
-      let timePassedinMs = this.ttData.playerAnswers[id].timestamp - this.ttData.timerStartTimestamp;
-      this.readableTime = Math.trunc(timePassedinMs / 1000) + 's' + timePassedinMs % 1000 + 'ms';
-    }, 200)
+      let timePassedinMs =
+        this.ttData.playerAnswers[id].timestamp -
+        this.ttData.timerStartTimestamp;
+      this.readableTime =
+        Math.trunc(timePassedinMs / 1000) +
+        "s" +
+        (timePassedinMs % 1000) +
+        "ms";
+    }, 200);
   }
   checkIfTime() {
     if (this.disabledAnswerBox == true) {
-      this.playerAnswer = '';
+      this.playerAnswer = "";
     }
   }
 }

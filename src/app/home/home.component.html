@@ -4,26 +4,26 @@
     <div class="m-3">
       <img class="w-48 h-48 m-auto" src="../../assets/misc/logo.png">
     </div>
-    <p class="text-4xl">Chào mừng bạn đến với {{matchData.matchName}}</p>
-    <div *ngIf="ifAuth === false">
+    <p class="text-4xl">Chào mừng bạn đến với {{auth.matchData.matchName}}</p>
+    <div *ngIf="auth.userInfo.roleId === -1">
       <mat-form-field>
         <mat-label>Nhập ID do BTC cung cấp</mat-label>
-        <input matInput (keyup.enter)="auth()" placeholder="ID" [(ngModel)]="authString">
+        <input matInput (keyup.enter)="authenticate()" placeholder="ID" [(ngModel)]="authString">
       </mat-form-field>
-      <button mat-icon-button (click)="auth()">
+      <button mat-icon-button (click)="authenticate()">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
-    <div class=" flex flex-col text-2xl items-center text-center overflow-hidden" *ngIf="ifAuth === true">
+    <div class=" flex flex-col text-2xl items-center text-center overflow-hidden" *ngIf="auth.userInfo.roleId != -1">
       <div>
         {{greetString}}
       </div>
-      <div *ngIf="roleID === 1">
+      <div *ngIf="auth.userInfo.roleId === 1">
         <div class="overflow-x-hidden w-max m-10 text-2xl">
-          <table mat-table [dataSource]="matchData.players" class="w-max">
+          <table mat-table [dataSource]="auth.matchData.players" class="w-max">
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef> ID </th>
-              <td mat-cell *matCellDef="let element"> {{matchData.players.indexOf(element) + 1}} </td>
+              <td mat-cell *matCellDef="let element"> {{auth.matchData.players.indexOf(element) + 1}} </td>
             </ng-container>
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef> Tên </th>

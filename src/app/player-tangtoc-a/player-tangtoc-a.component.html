@@ -5,7 +5,7 @@
         <div *ngFor="let playerAnswer of ttData.playerAnswers; let i = index" [ngClass]="{'answer-incorrect': ttData.playerAnswers[i].correct == false && ttData.showResults == true}"
             class=" w-96 h-max text-right mt-14 bg-white aurora rounded-xl border-white">
             <div class=" w-full h-10 p-2 text-left mb-1 text-lg font-semibold border-b border-black">
-                {{matchData.players[ttData.playerAnswers[i].id - 1].name}}</div>
+                {{auth.matchData.players[ttData.playerAnswers[i].id - 1].name}}</div>
             <div class="flex h-24 justify-center items-center">
                 <div class="w-8/12 text-center justify-center text-2xl font-bold">
                     {{ttData.playerAnswers[i].answer.toUpperCase()}}</div>
