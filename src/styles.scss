@@ -1,6 +1,70 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use "@angular/material" as mat;
+@use "@angular/material-experimental" as matx;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+// Plus imports for other components in your app.
 
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
-html, body { height: 100%; }
-body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+
+$m3-dark-theme: matx.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: matx.$m3-rose-palette,
+      tertiary: matx.$m3-blue-palette,
+    ),
+    typography: (
+      brand-family: "Montserrat",
+      plain-family: "Noto Sans",
+      bold-weight: 900,
+    ),
+  )
+);
+
+$m3-light-theme: matx.define-theme(
+  (
+    color: (
+      primary: matx.$m3-rose-palette,
+      tertiary: matx.$m3-blue-palette,
+    ),
+  )
+);
+.light-theme {
+  @include mat.all-component-themes($m3-dark-theme);
+  height: 100%;
+}
+
+//.light-theme {
+//  @include mat.all-component-themes($m3-light-theme);
+//}
+
+/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) 77%,
+    rgba(255, 212, 212, 1) 100%
+  );
+}
+body {
+  margin: 0;
+  font-family: "Montserrat", "Helvetica Neue", sans-serif;
+}
