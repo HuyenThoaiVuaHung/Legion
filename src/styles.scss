@@ -5,6 +5,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -25,7 +27,7 @@ $m3-dark-theme: matx.define-theme(
     color: (
       theme-type: light,
       primary: matx.$m3-rose-palette,
-      tertiary: matx.$m3-blue-palette,
+      tertiary: matx.$m3-green-palette,
     ),
     typography: (
       brand-family: "Montserrat",
@@ -39,7 +41,7 @@ $m3-light-theme: matx.define-theme(
   (
     color: (
       primary: matx.$m3-rose-palette,
-      tertiary: matx.$m3-blue-palette,
+      tertiary: matx.$m3-green-palette,
     ),
   )
 );

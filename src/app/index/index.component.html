@@ -1,26 +1,85 @@
 <div class="w-screen h-screen flex justify-center items-center">
   <div class="w-[70rem] h-[30rem] flex flex-row">
     <div class="w-1/2 h-full flex flex-col justify-center">
-      <img src="../../assets/misc/legion.png" alt="Legion" class="object-cover w-96" />
+      <img
+        src="../../assets/misc/legion.png"
+        alt="Legion"
+        class="object-cover w-96"
+      />
       <div>
-        <h1 class="">
-          Please connect to Legendary.
-        </h1>
+        <h1 class="">Please connect to Legendary.</h1>
         <h3 class="font-semibold opacity-70">
-          Or get Legendary <a class="text-black" href="https://github.com/huyenthoaivuahung/legendary">here</a>.
+          Or get Legendary
+          <a
+            class="text-black"
+            href="https://github.com/huyenthoaivuahung/legendary"
+            >here</a
+          >.
         </h3>
       </div>
     </div>
     <div class="w-1/2 h-full flex flex-col gap-5 justify-center">
-      <mat-form-field appearance="outline" class="w-96 h-max">
-        <mat-label>Address</mat-label>
-        <input matInput placeholder="http://ip.address:port">
-        <mat-hint>Enter Legendary's IP Address with the port here.</mat-hint>
-      </mat-form-field>
-      <button mat-raised-button class="w-max">
-        <mat-icon>arrow_right</mat-icon>
-        Connect
-      </button>
+      <mat-stepper [linear]="true" #stepper>
+        <mat-step
+          [stepControl]="urlFormGroup"
+          label="Connect to Legendary"
+          state="connect"
+        >
+          <form [formGroup]="urlFormGroup">
+            <mat-form-field class="mt-5 w-96" appearance="outline">
+              <input
+                matInput
+                formControlName="legendaryUrl"
+                placeholder="http://legendary.com"
+                required
+              />
+              <mat-label>Legendary URL</mat-label>
+            </mat-form-field>
+          </form>
+          <div>
+            <button (click)="connect()" mat-button>
+              <mat-icon>arrow_right</mat-icon>
+              @if (network.networkStatus == _networkStatus.CONNECTION_ERROR) {
+              Could not reach server. } @else if (network.networkStatus ==
+              _networkStatus.CONNECTING) {
+              <mat-spinner [diameter]="25"></mat-spinner>
+              }
+              @else if (network.networkStatus === _networkStatus.CONNECTED) {
+                Connected
+              } @else { Connect }
+            </button>
+            <button mat-button [disabled]="network.networkStatus != _networkStatus.CONNECTED" matStepperNext>Next</button>
+          </div>
+        </mat-step>
+        <mat-step label="Login" state="login">
+          <form [formGroup]="tokenFormGroup">
+            <mat-form-field class="mt-5 w-96" appearance="outline">
+              <input
+                matInput
+                formControlName="loginToken"
+                placeholder="Enter the token provided during setup here."
+                required
+              />
+              <mat-label>Login token</mat-label>
+            </mat-form-field>
+          </form>
+
+          <div>
+            <button mat-button matStepperPrevious>Login</button>
+          </div>
+        </mat-step>
+
+        <!-- Icon overrides. -->
+        <ng-template matStepperIcon="connect">
+          <mat-icon>leak_add</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="edit">
+          <mat-icon></mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="login">
+          <mat-icon>key</mat-icon>
+        </ng-template>
+      </mat-stepper>
     </div>
   </div>
 </div>
