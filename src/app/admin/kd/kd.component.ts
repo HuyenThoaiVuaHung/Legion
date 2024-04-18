@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './kd.component.html',
   styleUrl: './kd.component.scss'
 })
-export class KdComponent {
+export class AdminKdComponent {
 
 }

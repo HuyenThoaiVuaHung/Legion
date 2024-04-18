@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './tt.component.html',
   styleUrl: './tt.component.scss'
 })
-export class TtComponent {
+export class AdminTtComponent {
 
 }

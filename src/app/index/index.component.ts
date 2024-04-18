@@ -6,6 +6,9 @@ import {
   Validators,
   FormsModule,
   ReactiveFormsModule,
+  PatternValidator,
+  AbstractControl,
+  ValidatorFn
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatStepperModule } from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { NetworkStatus } from '../services/networking.enum';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-index',
@@ -40,26 +43,30 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 export class IndexComponent implements OnInit {
   errorMsg: string = '';
   urlFormGroup = this._formBuilder.group({
-    legendaryUrl: ['', [Validators.required]]
+    legendaryUrl: ['http://', [Validators.pattern(/(http:\x2f\x2f)[A-Za-z0-9.\x2f:]+/)]]
   });
   tokenFormGroup = this._formBuilder.group({
     token: ['', [Validators.required]]
   });
+
   _networkStatus = NetworkStatus;
-  constructor(private _formBuilder: FormBuilder,public network: NetworkingService) {}
+  constructor(private _formBuilder: FormBuilder, public network: NetworkingService) { }
   ngOnInit(): void {
     if (localStorage.getItem('defaultUrl')) {
       this.urlFormGroup.setValue({
-        legendaryUrl: localStorage.getItem('defaultUrl'),
+        legendaryUrl: localStorage.getItem('defaultUrl')
       });
       this.network.connect(localStorage.getItem('defaultUrl')!);
     }
   }
   connect() {
-
-    this.network.connect(this.urlFormGroup.value.legendaryUrl!);
+    if (localStorage.getItem('defaultUrl') !== this.urlFormGroup.value.legendaryUrl) {
+      this.network.connect(this.urlFormGroup.value.legendaryUrl!);
+    }
   }
-  login(){
+  login() {
 
   }
 }
+
+

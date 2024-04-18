@@ -1,5 +1,5 @@
 <div class="w-screen h-screen flex justify-center items-center">
-  <div class="w-[70rem] h-[30rem] flex flex-row">
+  <div class="w-[72rem] h-[30rem] flex flex-row">
     <div class="w-1/2 h-full flex flex-col justify-center">
       <img
         src="../../assets/misc/legion.png"
@@ -7,22 +7,27 @@
         class="object-cover w-96"
       />
       <div>
-        <h1 class="">Please connect to Legendary.</h1>
+        <h1 class="">
+          @if(stepper.selectedIndex == 0) { Hãy kết nối với Legendary. }
+          @else if (stepper.selectedIndex == 1) { Cung cấp mã đăng nhập của bạn. }
+          </h1>
         <h3 class="font-semibold opacity-70">
-          Or get Legendary
-          <a
+          @if(stepper.selectedIndex == 0) { hoặc tải Legendary          <a
             class="text-black"
             href="https://github.com/huyenthoaivuahung/legendary"
-            >here</a
-          >.
+            >tại đây</a
+          >.}
+          @else if (stepper.selectedIndex == 1) { Được thiết lập trong khi khởi động Legendary. }
+
         </h3>
       </div>
     </div>
     <div class="w-1/2 h-full flex flex-col gap-5 justify-center">
       <mat-stepper [linear]="true" #stepper>
         <mat-step
-          [stepControl]="urlFormGroup"
-          label="Connect to Legendary"
+
+          label="Kết nối tới Legendary"
+          [completed]="network.networkStatus === _networkStatus.CONNECTED"
           state="connect"
         >
           <form [formGroup]="urlFormGroup">
@@ -33,39 +38,46 @@
                 placeholder="http://legendary.com"
                 required
               />
-              <mat-label>Legendary URL</mat-label>
+              <mat-label>Đường dẫn tới Legendary</mat-label>
             </mat-form-field>
           </form>
           <div>
-            <button (click)="connect()" mat-button>
+            <button [disabled]="urlFormGroup.controls.legendaryUrl.errors?.['pattern']" (click)="connect()" mat-button>
               <mat-icon>arrow_right</mat-icon>
               @if (network.networkStatus == _networkStatus.CONNECTION_ERROR) {
-              Could not reach server. } @else if (network.networkStatus ==
+              Không thể kết nối với máy chủ. } @else if (network.networkStatus ==
               _networkStatus.CONNECTING) {
-              <mat-spinner [diameter]="25"></mat-spinner>
-              }
-              @else if (network.networkStatus === _networkStatus.CONNECTED) {
-                Connected
-              } @else { Connect }
+              <mat-spinner [diameter]="23"></mat-spinner>
+              } @else if (network.networkStatus === _networkStatus.CONNECTED) {
+              Đã kết nối } @else { Kết nối }
             </button>
-            <button mat-button [disabled]="network.networkStatus != _networkStatus.CONNECTED" matStepperNext>Next</button>
+            <button
+              mat-button
+              [disabled]="network.networkStatus != _networkStatus.CONNECTED"
+              matStepperNext
+            >
+              Tiếp tục
+            </button>
           </div>
         </mat-step>
-        <mat-step label="Login" state="login">
+        <mat-step label="Đăng nhập" state="login">
           <form [formGroup]="tokenFormGroup">
             <mat-form-field class="mt-5 w-96" appearance="outline">
               <input
                 matInput
-                formControlName="loginToken"
-                placeholder="Enter the token provided during setup here."
+                formControlName="token"
+                placeholder="Nhập mã đăng nhập của bạn."
                 required
               />
-              <mat-label>Login token</mat-label>
+              <mat-label>Mã đăng nhập</mat-label>
             </mat-form-field>
           </form>
 
           <div>
-            <button mat-button matStepperPrevious>Login</button>
+            <button mat-button matStepperPrevious>
+              <mat-icon>arrow_right</mat-icon>
+              Đăng nhập
+            </button>
           </div>
         </mat-step>
 

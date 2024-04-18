@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './chp.component.html',
   styleUrl: './chp.component.scss'
 })
-export class ChpComponent {
+export class AdminChpComponent {
 
 }

@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './vcnv.component.html',
   styleUrl: './vcnv.component.scss'
 })
-export class VcnvComponent {
+export class AdminVcnvComponent {
 
 }

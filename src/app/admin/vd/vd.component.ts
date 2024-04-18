@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './vd.component.html',
   styleUrl: './vd.component.scss'
 })
-export class VdComponent {
+export class AdminVdComponent {
 
 }

@@ -65,6 +65,15 @@ body {
     rgba(255, 255, 255, 1) 77%,
     rgba(255, 212, 212, 1) 100%
   );
+  --mat-menu-item-label-text-font: 'Noto Sans';
+  --mdc-list-list-item-label-text-font: 'Noto Sans';
+  --mat-tree-node-text-font: 'Noto Sans';
+  --mat-toolbar-title-text-font: 'Noto Sans';
+  --mat-stepper-container-text-font: 'Noto Sans';
+  --mat-stepper-header-label-text-font: 'Noto Sans';
+  --mat-expansion-header-text-font: 'Noto Sans';
+  --mat-expansion-container-text-font: 'Noto Sans';
+
 }
 body {
   margin: 0;
