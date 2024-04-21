@@ -1,0 +1,45 @@
+<div class="w-full h-full p-10 box-border flex flex-col">
+  <div class="w-full h-[8%] flex">
+    <h3 class="w-[25rem]">
+      <strong> Quản lý thông tin </strong>
+    </h3>
+  </div>
+  <div class="w-full h-[92%] gap-10 flex">
+    <div class="w-[25rem] h-full flex">
+      <mat-card class="w-full" appearance="outlined">
+        <mat-card-content class="h-full">
+          <div class="w-full h-4/6 relative flex flex-col gap-4">
+            @for (item of menus; track $index) {
+            <button class="w-full !justify-start" mat-stroked-button>
+              <mat-icon>{{ item.icon }}</mat-icon>
+              {{ item.name }}
+            </button>
+            <mat-divider></mat-divider>
+            }
+          </div>
+          <div class="flex gap-4 flex-col w-full h-2/6 justify-end">
+            <mat-divider></mat-divider>
+            <button class="w-full !justify-start" mat-stroked-button>
+              <mat-icon>save</mat-icon>
+              Lưu về máy tính
+            </button>
+            <mat-divider></mat-divider>
+            <button class="w-full !justify-start" mat-stroked-button>
+              <mat-icon>delete</mat-icon>
+              Xoá dữ liệu
+            </button>
+            <mat-divider></mat-divider>
+            <mat-card appearance="outlined">
+              <mat-card-content>
+                Tự động lưu thành công
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="w-[calc(100%-27.5rem)] h-full px-10">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

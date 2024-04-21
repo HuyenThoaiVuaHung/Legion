@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-vcnv',
   standalone: true,
   templateUrl: './vcnv.component.html',
-  styleUrls: ['./vcnv.component.css']
+  styleUrls: ['./vcnv.component.scss']
 })
 export class PlayerVcnvComponent implements OnInit {
 

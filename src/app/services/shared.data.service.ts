@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { MatchData, UserInfo } from './interfaces/user.interface';
+import { IMatchData, IUserInfo } from './interfaces/game.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharedDataService {
-  public matchData : MatchData = {} as MatchData;
-  public userInfo :UserInfo = {
+  public matchData : IMatchData = {} as IMatchData;
+  public userInfo :IUserInfo = {
     roleId: -1,
     index: -1,
     socketId: "",

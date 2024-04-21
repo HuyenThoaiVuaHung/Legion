@@ -1,11 +1,16 @@
-export interface QuestionInterface {
+import { SetType } from "./game.interface";
+
+export interface IQuestion {
   question: string,
   answer: string,
   type: QuestionType,
-  questionValue: number
+  ofSet: SetType,
+  questionValue: number,
+  mediaSrc?: string,
 }
 export enum QuestionType {
   TEXT,
   IMAGE,
-  AUDIO
+  AUDIO,
+  VIDEO
 }

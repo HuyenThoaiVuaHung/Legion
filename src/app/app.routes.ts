@@ -20,6 +20,12 @@ export const routes: Routes = [
   {
     path: 'player',
     loadComponent: () => import('./player/player.component').then(m => m.PlayerComponent),
+    loadChildren: () => import('./player/player.routing').then(m => m.routes),
+  },
+  {
+    path: 'editor',
+    loadComponent: () => import('./editor/editor.component').then(m => m.EditorComponent),
+    loadChildren: () => import('./editor/editor.routing').then(m => m.routes),
   },
   {
     path: 'misc',
@@ -27,7 +33,7 @@ export const routes: Routes = [
   },
   {
     path: '404',
-    loadComponent: () => import('./not-found/not-found.component').then(m => m.NotFoundComponent),
+    loadComponent: () => import('./misc/not-found/not-found.component').then(m => m.NotFoundComponent),
   },
   {
     path: '**',

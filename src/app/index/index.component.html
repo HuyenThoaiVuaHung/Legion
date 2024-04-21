@@ -7,25 +7,24 @@
         class="object-cover w-96"
       />
       <div>
-        <h1 class="">
-          @if(stepper.selectedIndex == 0) { Hãy kết nối với Legendary. }
-          @else if (stepper.selectedIndex == 1) { Cung cấp mã đăng nhập của bạn. }
-          </h1>
-        <h3 class="font-semibold opacity-70">
-          @if(stepper.selectedIndex == 0) { hoặc tải Legendary          <a
-            class="text-black"
-            href="https://github.com/huyenthoaivuahung/legendary"
-            >tại đây</a
-          >.}
-          @else if (stepper.selectedIndex == 1) { Được thiết lập trong khi khởi động Legendary. }
-
+        <h3 class="">
+          <strong>
+            @if(stepper.selectedIndex == 0) { Hãy kết nối với Legendary. }
+            @else if (stepper.selectedIndex == 1) { Cung cấp mã đăng nhập của bạn. }
+          </strong>
         </h3>
+        <h6 class="font-semibold opacity-70">
+          @if(stepper.selectedIndex == 0) { hoặc tải Legendary
+          <a href="https://github.com/huyenthoaivuahung/legendary"
+            >tại đây</a
+          >.} @else if (stepper.selectedIndex == 1) { Được thiết lập trong khi
+          khởi động Legendary. }
+        </h6>
       </div>
     </div>
     <div class="w-1/2 h-full flex flex-col gap-5 justify-center">
       <mat-stepper [linear]="true" #stepper>
         <mat-step
-
           label="Kết nối tới Legendary"
           [completed]="network.networkStatus === _networkStatus.CONNECTED"
           state="connect"
@@ -42,11 +41,15 @@
             </mat-form-field>
           </form>
           <div>
-            <button [disabled]="urlFormGroup.controls.legendaryUrl.errors?.['pattern']" (click)="connect()" mat-button>
+            <button
+              [disabled]="urlFormGroup.controls.legendaryUrl.errors?.['pattern']"
+              (click)="connect()"
+              mat-button
+            >
               <mat-icon>arrow_right</mat-icon>
               @if (network.networkStatus == _networkStatus.CONNECTION_ERROR) {
-              Không thể kết nối với máy chủ. } @else if (network.networkStatus ==
-              _networkStatus.CONNECTING) {
+              Không thể kết nối với máy chủ. } @else if (network.networkStatus
+              == _networkStatus.CONNECTING) {
               <mat-spinner [diameter]="23"></mat-spinner>
               } @else if (network.networkStatus === _networkStatus.CONNECTED) {
               Đã kết nối } @else { Kết nối }

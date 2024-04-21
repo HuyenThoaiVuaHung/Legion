@@ -2,10 +2,10 @@
 // For more information: https://material.angular.io/guide/theming
 @use "@angular/material" as mat;
 @use "@angular/material-experimental" as matx;
+@use "./components/image-input/image-input-theme" as image-input;
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 
 // Plus imports for other components in your app.
 
@@ -22,60 +22,73 @@
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 
-$m3-dark-theme: matx.define-theme(
+$m3-theme: matx.define-theme(
   (
     color: (
-      theme-type: light,
+      theme-type: dark,
       primary: matx.$m3-rose-palette,
-      tertiary: matx.$m3-green-palette,
     ),
     typography: (
       brand-family: "Montserrat",
       plain-family: "Noto Sans",
-      bold-weight: 900,
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
     ),
+
   )
 );
 
 $m3-light-theme: matx.define-theme(
   (
     color: (
+      theme-type: light,
       primary: matx.$m3-rose-palette,
       tertiary: matx.$m3-green-palette,
     ),
   )
 );
-.light-theme {
-  @include mat.all-component-themes($m3-dark-theme);
-  height: 100%;
-}
+html {
+  // Apply the base theme at the root, so it will be inherited by the whole app.
+  @include mat.all-component-themes($m3-theme);
+  @include mat.typography-hierarchy($m3-theme);
+  @include image-input.color($m3-theme);
+  @if mat.get-theme-type($m3-theme) == dark {
+    background: linear-gradient(
+      135deg,
+      mat.get-theme-color($m3-theme, surface) 0%,
+      mat.get-theme-color($m3-theme, surface) 77%,
+      mat.get-theme-color($m3-theme, primary, 10) 100%
+    );
+  } @else {
+    background: linear-gradient(
+      135deg,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,0) 77%,
+      mat.get-theme-color($m3-theme, primary, 90) 100%
+    );
+  }
 
+  color: mat.get-theme-color($m3-theme, on-surface);
+  a {
+    @if mat.get-theme-type($m3-theme) == dark {
+      color: mat.get-theme-color($m3-theme, primary, 50);
+    } @else {
+      color: mat.get-theme-color($m3-theme, primary, 70);
+    }
+  }
+}
 //.light-theme {
 //  @include mat.all-component-themes($m3-light-theme);
 //}
 
 /* You can add global styles to this file, and also import other style files */
-
 html,
 body {
   height: 100%;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 1) 77%,
-    rgba(255, 212, 212, 1) 100%
-  );
-  --mat-menu-item-label-text-font: 'Noto Sans';
-  --mdc-list-list-item-label-text-font: 'Noto Sans';
-  --mat-tree-node-text-font: 'Noto Sans';
-  --mat-toolbar-title-text-font: 'Noto Sans';
-  --mat-stepper-container-text-font: 'Noto Sans';
-  --mat-stepper-header-label-text-font: 'Noto Sans';
-  --mat-expansion-header-text-font: 'Noto Sans';
-  --mat-expansion-container-text-font: 'Noto Sans';
+  margin: 0;
 
 }
-body {
-  margin: 0;
-  font-family: "Montserrat", "Helvetica Neue", sans-serif;
+strong {
+  font-weight: 600 !important;
 }

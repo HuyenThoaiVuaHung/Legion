@@ -1,1 +1,5 @@
-<p>player-table works!</p>
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+  @for (player of players; track player) {
+    <div class="example-box" cdkDrag>{{player.name}}</div>
+  }
+</div>

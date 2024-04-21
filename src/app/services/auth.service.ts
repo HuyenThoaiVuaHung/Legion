@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NetworkingService } from './networking.service';
-import { MatchData, UserInfo } from './interfaces/user.interface';
+import { IMatchData, MatchPosition, IUserInfo } from './interfaces/game.interface';
 import { Route, Router } from '@angular/router';
 import { SharedDataService } from './shared.data.service';
 
@@ -34,7 +34,7 @@ export class AuthService {
     });
     this.network.socket.on(
       'authentication',
-      (_matchData: MatchData, _userInfo: UserInfo) => {
+      (_matchData: IMatchData, _userInfo: IUserInfo) => {
         this.sharedData.matchData = _matchData;
         this.sharedData.userInfo = _userInfo;
         this.socketHook();
@@ -71,33 +71,34 @@ export class AuthService {
       this.sharedData.userInfo.roleId == 2
     )
       return;
+    const matchPos = MatchPosition;
     console.log(this.sharedData.matchData.matchPos + 'nav');
     switch (this.sharedData.matchData.matchPos) {
-      case 'KD':
+      case matchPos.KD:
         this.router.navigate(['/player/kd']);
         break;
-      case 'VCNV_Q':
+      case matchPos.VCNV_QUES:
         this.router.navigate(['/player/vcnv-q']);
         break;
-      case 'VCNV_A':
+      case matchPos.VCNV_ANS:
         this.router.navigate(['/player/vcnv-a']);
         break;
-      case 'TT_Q':
+      case matchPos.TT_QUES:
         this.router.navigate(['/player/tangtoc-q']);
         break;
-      case 'TT_A':
+      case matchPos.TT_ANS:
         this.router.navigate(['/player/tangtoc-a']);
         break;
-      case 'VD':
+      case matchPos.VD:
         this.router.navigate(['player/vd']);
         break;
-      case 'H':
+      case matchPos.IDLE:
         this.router.navigate(['']);
         break;
-      case 'PNTS':
+      case matchPos.POINTS:
         this.router.navigate(['/pnts']);
         break;
-      case 'CHP':
+      case matchPos.CHP:
         this.router.navigate(['/player/chp']);
     }
   }

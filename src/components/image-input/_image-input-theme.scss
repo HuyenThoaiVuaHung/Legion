@@ -1,0 +1,14 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+@mixin color($theme) {
+  .border-theme {
+      border-color: mat.get-theme-color($theme, on-surface);
+  }
+  .base-theme {
+    background-color:  mat.get-theme-color($theme, surface);
+  }
+  .bg-theme {
+    background-color: rgba(mat.get-theme-color($theme, on-surface), 0.1);
+  }
+}

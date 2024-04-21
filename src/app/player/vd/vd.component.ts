@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-vd',
   standalone: true,
   templateUrl: './vd.component.html',
-  styleUrls: ['./vd.component.css']
+  styleUrls: ['./vd.component.scss']
 })
 export class PlayerVdComponent implements OnInit {
 

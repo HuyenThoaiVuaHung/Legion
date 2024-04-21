@@ -1,0 +1,14 @@
+<mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Thông tin thí sinh
+      </mat-panel-title>
+      <mat-panel-description>
+        Thông tin cơ bản về thí sinh
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <player-table [players]="this.editorData.editorData!.matchData!.players">
+    </player-table>
+  </mat-expansion-panel>
+</mat-accordion>

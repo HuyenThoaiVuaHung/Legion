@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-tt',
   standalone: true,
   templateUrl: './tt.component.html',
-  styleUrls: ['./tt.component.css']
+  styleUrls: ['./tt.component.scss']
 })
 export class PlayerTtComponent implements OnInit {
 
