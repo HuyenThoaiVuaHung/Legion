@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { IQuestion } from '../../app/services/interfaces/question.interface';
 
 @Component({
   selector: 'app-question-table',
@@ -8,5 +9,5 @@ import { Component } from '@angular/core';
   styleUrl: './question-table.component.scss'
 })
 export class QuestionTableComponent {
-
+  @Input({required: true}) questions!: IQuestion[];
 }

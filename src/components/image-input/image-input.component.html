@@ -1,21 +1,34 @@
-<div class="w-max min-w-[25rem] h-[30rem]">
-  <div class="w-full max-w-full h-16 flex flex-col gap-0">
-    <h6 class="!mb-0">
+<div class="w-min min-w-[15rem] max-h-[30rem]">
+  <div
+    [ngClass]="{
+    'h-16': description,
+    'h-6': !description,
+  }"
+    class="w-fit"
+  >
+    <h6 class="">
       <strong>
-        Image title
+        {{ title }}
       </strong>
     </h6>
-    <div class="">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+    @if (description){
+    <div class="text-wrap">
+      {{ description }}
     </div>
+    }
   </div>
-  <div mat-ripple class="border base-theme border-theme group rounded-xl relative h-[15rem] w-max min-w-[25rem] border-solid mt-5">
-    <div class="w-full bg-theme bg-opacity-10 absolute grid gap-2 place-items-center top-0 left-0 transition-opacity rounded-xl h-full opacity-0 group-hover:opacity-100 cursor-pointer">
+  <div
+    mat-ripple
+    class="border-[0.1px] base-theme border-theme group rounded-xl relative h-[15rem] w-max min-w-[15rem] border-solid mt-5"
+  >
+    <div
+      class="w-full bg-theme bg-opacity-10 absolute grid gap-2 place-items-center top-0 left-0 transition-opacity rounded-xl h-full opacity-0 group-hover:opacity-100 cursor-pointer"
+    >
       <button mat-button>
         <mat-icon>upload_file</mat-icon>
         Tải ảnh mới
       </button>
     </div>
-    <img src="../../assets/misc/legion.png" class="object-cover h-full w-max">
+    <img src="{{ src }}" class="object-cover h-full w-max" />
   </div>
 </div>

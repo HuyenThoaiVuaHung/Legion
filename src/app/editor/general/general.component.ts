@@ -8,9 +8,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ImageInputComponent } from '../../../components/image-input/image-input.component';
-import { MatTableModule } from '@angular/material/table';
 import { EditorDataService } from '../services/editor.data.service';
 import { PlayerTableComponent } from '../../../components/player-table/player-table.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { CommonModule } from '@angular/common';
+import { EditorItemComponent } from '../../../components/editor-item/editor-item.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-general',
@@ -25,16 +28,22 @@ import { PlayerTableComponent } from '../../../components/player-table/player-ta
     MatInputModule,
     MatSlideToggleModule,
     ImageInputComponent,
-    PlayerTableComponent
+    PlayerTableComponent,
+    MatDividerModule,
+    CommonModule,
+    MatSelectModule,
+    EditorItemComponent,
+    MatIconModule
   ],
   templateUrl: './general.component.html',
   styleUrl: './general.component.scss'
 })
 export class EditorGeneralComponent {
   displayedColumns: string[] = ['name', 'score', 'isReady'];
-  constructor(
-    public editorData: EditorDataService
-  ) {
 
+
+  constructor(
+    public editorData: EditorDataService,
+  ) {
   }
 }

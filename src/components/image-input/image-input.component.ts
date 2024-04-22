@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, Input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import {MatRippleModule} from '@angular/material/core';
+import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -9,11 +10,14 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [
     MatRippleModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    CommonModule
   ],
   templateUrl: './image-input.component.html',
   styleUrls: ['./image-input.component.scss', './_image-input-theme.scss']
 })
 export class ImageInputComponent {
-
+  @Input({ required: true }) title: string = 'Placeholder'
+  @Input() description: string | undefined;
+  @Input() src: string = '../../assets/misc/logo.png';
 }

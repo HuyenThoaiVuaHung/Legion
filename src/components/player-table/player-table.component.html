@@ -1,5 +1,78 @@
-<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+<div
+  class="player-header w-full mb-2 rounded-xl box-border h-16 items-center justify-center pl-5 flex flex-row"
+>
+  <div class="w-5/12 flex items-center h-full">
+    <strong>
+      Tên người chơi
+    </strong>
+  </div>
+  <div class="w-3/12 flex items-center h-full">
+    <strong>
+      Điểm số
+    </strong>
+  </div>
+  <div class="w-2/12 grid place-items-center h-full">
+    <strong>Trạng thái</strong>
+  </div>
+  <div class="w-2/12 grid place-items-center h-full">
+    <strong>Đổi vị trí</strong>
+  </div>
+</div>
+<div
+  cdkDropList
+  class="w-full player-list min-h-16"
+  (cdkDropListDropped)="drop($event)"
+>
   @for (player of players; track player) {
-    <div class="example-box" cdkDrag>{{player.name}}</div>
+  <div
+    class="player-item w-full mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
+    cdkDrag
+  >
+    <div class="w-5/12 flex items-center h-full">
+      <editable (save)="save()" (cancel)="cancel()">
+        <ng-template viewMode>
+          {{player.name}}
+        </ng-template>
+        <ng-template editMode>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <input matInput
+              editableOnEnter editableOnEscape [(ngModel)]="player.name"
+            >
+          </mat-form-field>
+        </ng-template>
+      </editable>
+    </div>
+    <div class="w-3/12 flex items-center h-full">
+      <strong>
+        <editable>
+          <ng-template viewMode>
+            {{ player.score }}
+          </ng-template>
+          <ng-template editMode>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <input matInput type="number"
+                editableOnEnter editableOnEscape [(ngModel)]="player.score"
+              >
+            </mat-form-field>
+          </ng-template>
+        </editable>
+      </strong>
+    </div>
+    <div class="w-2/12 grid place-items-center h-full">
+      <span
+        class="w-5 h-5 flex rounded-full"
+        [ngClass]="{
+            'bg-green-300': player.isReady,
+            'error': !player.isReady,
+          }"
+      ></span>
+    </div>
+    <div
+      class="w-2/12 grid place-items-center cursor-move h-full"
+      cdkDragHandle
+    >
+      <mat-icon> drag_handle </mat-icon>
+    </div>
+  </div>
   }
 </div>

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { EditorDataService } from '../services/editor.data.service';
 
 @Component({
   selector: 'app-kd',
@@ -8,5 +9,9 @@ import { Component } from '@angular/core';
   styleUrl: './kd.component.scss'
 })
 export class EditorKdComponent {
+  constructor (
+    public editorData: EditorDataService
+  ) {
 
+  }
 }

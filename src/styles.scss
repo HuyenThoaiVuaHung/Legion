@@ -3,6 +3,7 @@
 @use "@angular/material" as mat;
 @use "@angular/material-experimental" as matx;
 @use "./components/image-input/image-input-theme" as image-input;
+@use "./components/player-table/player-table-theme" as player-table;
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,17 +26,17 @@
 $m3-theme: matx.define-theme(
   (
     color: (
-      theme-type: dark,
-      primary: matx.$m3-rose-palette,
+      theme-type: light,
+      primary: matx.$m3-orange-palette,
+      tertiary: matx.$m3-green-palette,
     ),
     typography: (
-      brand-family: "Montserrat",
+      brand-family: "Lexend",
       plain-family: "Noto Sans",
       bold-weight: 700,
       medium-weight: 500,
       regular-weight: 400,
     ),
-
   )
 );
 
@@ -53,21 +54,13 @@ html {
   @include mat.all-component-themes($m3-theme);
   @include mat.typography-hierarchy($m3-theme);
   @include image-input.color($m3-theme);
-  @if mat.get-theme-type($m3-theme) == dark {
-    background: linear-gradient(
-      135deg,
-      mat.get-theme-color($m3-theme, surface) 0%,
-      mat.get-theme-color($m3-theme, surface) 77%,
-      mat.get-theme-color($m3-theme, primary, 10) 100%
-    );
-  } @else {
-    background: linear-gradient(
-      135deg,
-      rgba(0,0,0,0) 0%,
-      rgba(0,0,0,0) 77%,
-      mat.get-theme-color($m3-theme, primary, 90) 100%
-    );
-  }
+  @include player-table.color($m3-theme);
+  background: linear-gradient(
+    135deg,
+    mat.get-theme-color($m3-theme, surface) 0%,
+    mat.get-theme-color($m3-theme, surface) 80%,
+    mat.get-theme-color($m3-theme, primary-container) 100%
+  );
 
   color: mat.get-theme-color($m3-theme, on-surface);
   a {
@@ -78,6 +71,32 @@ html {
     }
   }
 }
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: mat.get-theme-color($m3-theme, surface-dim);
+  border-radius: 12px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: mat.get-theme-color($m3-theme, on-surface);
+  border-radius: 12px;
+  @apply transition-colors;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: mat.get-theme-color($m3-theme, primary);
+}
 //.light-theme {
 //  @include mat.all-component-themes($m3-light-theme);
 //}
@@ -87,7 +106,6 @@ html,
 body {
   height: 100%;
   margin: 0;
-
 }
 strong {
   font-weight: 600 !important;

@@ -15,6 +15,7 @@ export interface IPlayer {
   name: string;
   score: number;
   isReady: boolean;
+  pic_uid?: string;
 }
 export enum MatchPosition {
   IDLE,

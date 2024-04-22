@@ -1,12 +1,12 @@
 <div class="w-full h-full p-10 box-border flex flex-col">
-  <div class="w-full h-[8%] flex">
+  <div class="w-full ml-4 h-[8%] flex">
     <h3 class="w-[25rem]">
       <strong> Quản lý thông tin </strong>
     </h3>
   </div>
   <div class="w-full h-[92%] gap-10 flex">
     <div class="w-[25rem] h-full flex">
-      <mat-card class="w-full" appearance="outlined">
+      <mat-card class="w-full" appearance="raised">
         <mat-card-content class="h-full">
           <div class="w-full h-4/6 relative flex flex-col gap-4">
             @for (item of menus; track $index) {
@@ -30,15 +30,13 @@
             </button>
             <mat-divider></mat-divider>
             <mat-card appearance="outlined">
-              <mat-card-content>
-                Tự động lưu thành công
-              </mat-card-content>
+              <mat-card-content> Tự động lưu thành công </mat-card-content>
             </mat-card>
           </div>
         </mat-card-content>
       </mat-card>
     </div>
-    <div class="w-[calc(100%-27.5rem)] h-full px-10">
+    <div class="w-[calc(100%-27.5rem)] overflow-y-auto h-full px-10">
       <router-outlet></router-outlet>
     </div>
   </div>
