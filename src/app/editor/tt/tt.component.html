@@ -1,1 +1,53 @@
-<p>tt works!</p>
+@if (editorDataService.editorData) {
+<h3 class="mb-6 flex items-center gap-5">
+  <strong>Câu hỏi số</strong>
+  @for (questionIndex of [0,1,2,3]; track questionIndex) {
+  <button
+    mat-stroked-button
+    [disabled]="this.selectedQuestionIndex == questionIndex"
+    (click)="this.selectedQuestionIndex = questionIndex"
+  >
+    {{ questionIndex + 1 }}
+  </button>
+  }
+</h3>
+<div class="flex flex-col h-[80%]">
+  <div class="h-max w-full flex justify-between">
+    <div>
+      <strong>Câu hỏi:</strong>
+      {{ questionData[this.selectedQuestionIndex].question }} <br>
+      <strong>Đáp án:</strong>
+      {{ questionData[this.selectedQuestionIndex].answer }}
+    </div>
+    <button mat-stroked-button matTooltip="Nhập ảnh mới">
+      <mat-icon>attach_file</mat-icon>
+      Nhập file mới
+    </button>
+  </div>
+  <div class="w-full h-full flex items-center justify-center box-border px-10 py-5">
+    @if (
+      questionData[this.selectedQuestionIndex].mediaSrc
+    ) {
+      @if (questionData[selectedQuestionIndex].type === questionType.IMAGE) {
+        <img
+          class="h-full max-h-[50rem] rounded-xl"
+          src="{{ questionData[selectedQuestionIndex].mediaSrc }}"
+        />
+      }
+      @else if (questionData[selectedQuestionIndex].type === questionType.VIDEO) {
+        <video
+          class="h-full max-h-[50rem] rounded-xl"
+          controls
+          src="{{ questionData[selectedQuestionIndex].mediaSrc }}"></video>
+      }
+      @else {
+        <h5 class="w-full h-full text-center">Định dạng câu hỏi không được hỗ trợ.</h5>
+      }
+    }
+    @else {
+      <h5 class="w-full h-full text-center">Vui lòng nhập hình ảnh/video cho câu hỏi.</h5>
+    }
+  </div>
+</div>
+
+}

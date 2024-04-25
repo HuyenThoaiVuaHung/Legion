@@ -27,7 +27,8 @@ this.editorDataService.editorData.matchData.matchVersion == 24 ) {
   <strong>Gói câu hỏi</strong>
   @for (o23QuestionPackIndex of [0,1,2]; track o23QuestionPackIndex) {
   <button
-    mat-stroked-button [disabled]="this.selectedO23QuestionPack == o23QuestionPackIndex"
+    mat-stroked-button
+    [disabled]="this.selectedO23QuestionPack == o23QuestionPackIndex"
     (click)="this.selectedO23QuestionPack = o23QuestionPackIndex"
   >
     {{ 8 + o23QuestionPackIndex * 4 }}

@@ -36,6 +36,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 })
 export class QuestionTableComponent {
   @Input({required: true}) questions!: IQuestion[];
+  @Input() allowDelete = true;
   @Output() questionsChangeEvent = new EventEmitter<IQuestion[]>();
   public readonly questionType = QuestionType;
   save(){

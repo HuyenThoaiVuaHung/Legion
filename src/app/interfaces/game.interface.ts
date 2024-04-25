@@ -21,14 +21,14 @@ export interface IPlayer {
 }
 
 export interface IQuestionBank {
-  kd: IQuestion[][] | O24QuestionData,
+  kd: IQuestion[][] | O24KdQuestionData,
   vcnv: IQuestion[],
   tt: IQuestion[],
   vd: IQuestion[][],
   chp: IQuestion[]
 
 }
-export interface O24QuestionData {
+export interface O24KdQuestionData {
   [O24ControlType.SINGLEPLAYER]: IQuestion[][],
   [O24ControlType.MULTIPLAYER]: IQuestion[]
 }

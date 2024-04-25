@@ -17,7 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./image-input.component.scss', './_image-input-theme.scss']
 })
 export class ImageInputComponent {
-  @Input() title: string = 'Placeholder'
+  @Input() title: string | undefined;
   @Input() description: string | undefined;
   @Input() src: string = '../../assets/misc/logo.png';
 }
