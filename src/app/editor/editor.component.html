@@ -1,0 +1,56 @@
+<div class="w-full h-full p-10 box-border flex flex-col">
+  <div class="w-full ml-4 h-[8%] flex flex-col">
+    <h4 class="w-[25rem] !mb-0">
+      <strong> Quản lý thông tin </strong>
+    </h4>
+    <h6 class="hidden xl:block">Luật chơi: O{{editorDataService.editorData?.matchData?.matchVersion}}</h6>
+  </div>
+  <div class="w-full h-[92%] gap-10 flex xl:mt-0 mt-5">
+    <div class="w-[25rem] hidden xl:flex h-full">
+      <mat-card class="w-full" appearance="raised">
+        <mat-card-content class="h-full">
+          <div class="w-full h-4/6 relative flex flex-col gap-4">
+            @for (item of menus; track $index) {
+            <a routerLinkActive #rla="routerLinkActive" [disabled]="rla.isActive" [routerLink]="item.nav" class="w-full !justify-start" mat-stroked-button>
+              <mat-icon>{{ item.icon }}</mat-icon>
+              {{ item.name }}
+            </a>
+            <mat-divider></mat-divider>
+            }
+          </div>
+          <div class="flex gap-4 flex-col w-full h-2/6 justify-end">
+            <mat-divider></mat-divider>
+            <button class="w-full !justify-start" mat-stroked-button [matMenuTriggerFor]="files" dir="ltr">
+              <mat-icon>draft</mat-icon>
+              <div class="flex justify-between">
+                Tệp
+                <mat-icon>chevron_right</mat-icon>
+              </div>
+            </button>
+            <mat-menu #files="matMenu" xPosition="after">
+              <button mat-menu-item>
+                <mat-icon>file_open</mat-icon>
+                Mở
+              </button>
+              <button mat-menu-item>
+                <mat-icon>download</mat-icon>
+                Tải xuống
+              </button>
+              <button mat-menu-item>
+                <mat-icon>delete</mat-icon>
+                Xoá dữ liệu
+              </button>
+            </mat-menu>
+            <mat-divider></mat-divider>
+            <mat-card appearance="outlined">
+              <mat-card-content> Tự động lưu thành công </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="xl:w-[calc(100%-27.5rem)] w-full overflow-y-auto relative h-full xl:px-10 px-4">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
