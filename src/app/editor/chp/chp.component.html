@@ -1,1 +1,9 @@
-<p>chp works!</p>
+@if (
+  editorDataService.editorData
+) {
+
+}
+<h3>
+  <strong> Danh sách câu hỏi </strong>
+</h3>
+<question-table [allowDelete]="false" [questions]="this.placeholderQuestionData"></question-table>

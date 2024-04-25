@@ -22,7 +22,8 @@
     cdkDrag
   >
     <div
-      class="w-6/12 flex justify-between items-center pr-10 box-border h-full"
+      [ngClass]="{'justify-between items-center': mediaPlacement === 'inline', 'flex-col': mediaPlacement === 'under'}"
+      class="w-6/12 flex pr-10 box-border h-full"
     >
       <editable
         class="flex-grow"

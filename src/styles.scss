@@ -105,28 +105,7 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
-app-root{
-  @media screen and (max-width: 1280px){
-    display: none;
-  }
-}
-.mobile-block {
-  display: none;
-  @media screen and (max-width: 1280px){
-    display: inline !important;
-    position: fixed;
-    top: calc(50% - 90px);
-    padding-left: 10vw;
-    padding-right: 10vw;
-    text-align: center;
-    box-sizing: border-box;
-    width: 100vw;
-    height: 100vh;
-    justify-items: center;
-    align-items: center;
-    font-family: 'Lexend';
-  }
-}
+
 //.light-theme {
 //  @include mat.all-component-themes($m3-light-theme);
 //}

@@ -1,1 +1,15 @@
-<p>vd works!</p>
+@if (editorDataService.editorData) {
+<h3 class="mb-6 flex items-center gap-5">
+  <strong>Thí sinh số</strong>
+  @for (playerIndex of [0,1,2,3]; track playerIndex) {
+  <button
+    mat-stroked-button
+    [disabled]="this.selectedPlayerIndex == playerIndex"
+    (click)="this.selectedPlayerIndex = playerIndex"
+  >
+    {{ playerIndex + 1 }}
+  </button>
+  }
+</h3>
+<question-table mediaPlacement="inline" [questions]="placeholderQuestions[selectedPlayerIndex]"></question-table>
+}

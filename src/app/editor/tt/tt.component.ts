@@ -19,25 +19,25 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class EditorTtComponent {
   // View controls
   public selectedQuestionIndex = 0;
-  public questionData : IQuestion[] = [
+  public questionData: IQuestion[] = [
     {
       question: 'What is the capital of France?',
       answer: 'Paris',
       questionValue: 10,
       type: QuestionType.IMAGE,
-      mediaSrc: 'https://picsum.photos/300/200'
-    },  {
+      mediaSrc: 'https://picsum.photos/1920/1080'
+    }, {
       question: 'What is the capital of France?',
       answer: 'Paris',
       questionValue: 10,
       type: QuestionType.IMAGE,
-      mediaSrc: 'https://picsum.photos/300/200'
-    },  {
+      mediaSrc: 'https://picsum.photos/1920/1080'
+    }, {
       question: 'What is the capital of France?',
       answer: 'Paris',
       questionValue: 10,
-      type: QuestionType.TEXT,
-      mediaSrc: 'https://picsum.photos/300/200'
+      type: QuestionType.IMAGE,
+      mediaSrc: 'https://picsum.photos/1920/1080'
     },
     {
       question: 'What is the capital of Germany?',
@@ -52,7 +52,7 @@ export class EditorTtComponent {
   public readonly questionType = QuestionType;
   constructor(
     public editorDataService: EditorDataService
-  ){
+  ) {
 
   }
 }
