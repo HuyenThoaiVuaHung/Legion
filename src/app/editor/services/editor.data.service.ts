@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { IEditorData } from '../../services/interfaces/editor.interface';
-import { Pallette } from '../../services/interfaces/config.interface';
-import { MatchPosition } from '../../services/interfaces/game.interface';
+import { IEditorData } from '../../interfaces/editor.interface';
+import { Pallette } from '../../interfaces/config.interface';
+import { IQuestionBank, MatchPosition } from '../../interfaces/game.interface';
 import { NetworkingService } from '../../services/networking.service';
-import { IQuestion } from '../../services/interfaces/question.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -12,19 +11,19 @@ export class EditorDataService {
   constructor(
     private network: NetworkingService
   ) {
-    this.initializeNewEditorData();
+    //TEMP: For now, we will just provide a new editor data.
+    this.editorData = this.provideNewEditorData();
   }
-  public editorData?: IEditorData;
-  public initializeNewEditorData(){
-    this.editorData = {
-      config: {
+  public editorData: IEditorData | undefined = undefined;
+  private provideNewEditorData(): IEditorData{
+    return {
+      uiConfig: {
         darkMode: true,
         pallette: Pallette.ROSE,
-        useBackground: false
       },
       matchData: {
         matchName: "Welcome to Legion",
-        matchVersion: 24,
+        matchVersion: 23,
         matchPos: MatchPosition.IDLE,
         players: [
           {
@@ -49,8 +48,15 @@ export class EditorDataService {
           }
         ]
       },
-      questionBank: Array<IQuestion[]>(5)
+      questionBank: {} as IQuestionBank
     }
   }
-
+  public async saveEditorData(data: IEditorData){
+    this.editorData = data;
+    //TODO: Implement saving to localstorage.
+  }
+  public async getEditorData(){
+    //Future: Maybe add loading from Firebase storage.
+    return this.editorData;
+  }
 }

@@ -3,14 +3,17 @@
     [ngClass]="{
     'h-16': description,
     'h-6': !description,
+    'h-0': !title
   }"
     class="w-fit"
   >
-    <h6 class="">
-      <strong>
-        {{ title }}
-      </strong>
-    </h6>
+    @if (title) {
+      <h6 class="">
+        <strong>
+          {{ title }}
+        </strong>
+      </h6>
+    }
     @if (description){
     <div class="text-wrap">
       {{ description }}

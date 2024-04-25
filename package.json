@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^17.3.5",
     "@angular/platform-browser-dynamic": "^17.3.5",
     "@angular/router": "^17.3.5",
+    "@angular/service-worker": "^17.3.5",
     "@ngneat/edit-in-place": "^1.9.0",
     "animate.css": "^4.1.1",
     "rxjs": "~7.8.0",

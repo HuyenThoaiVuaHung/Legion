@@ -1,1 +1,99 @@
-<p>question-table works!</p>
+<div
+  class="table-header sticky top-0 w-full mb-2 rounded-xl box-border h-16 items-center justify-center pl-5 flex flex-row"
+>
+  <div class="w-5/12 flex items-center h-full">
+    <strong> Câu hỏi </strong>
+  </div>
+  <div class="w-4/12 flex items-center h-full">
+    <strong> Đáp án </strong>
+  </div>
+  <div class="flex flex-grow justify-start items-center h-full">
+    <strong>Hành động</strong>
+  </div>
+</div>
+<div
+  cdkDropList
+  class="w-full table-list min-h-16"
+  (cdkDropListDropped)="drop($event)"
+>
+  @for (question of questions; track question) {
+  <div
+    class="w-full group table-item border border-solid item-border mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
+    cdkDrag
+  >
+    <div class="w-5/12 flex flex-col justify-center-center h-full">
+      <editable openBindingEvent="dblclick" (save)="save()" (cancel)="cancel()">
+        <ng-template viewMode>
+          {{ question.question }}
+        </ng-template>
+        <ng-template editMode>
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-96"
+          >
+            <textarea
+              matInput
+              editableOnEnter
+              editableOnEscape
+              [(ngModel)]="question.question"
+            ></textarea>
+          </mat-form-field>
+        </ng-template>
+      </editable>
+      @if(question.type === questionType.VIDEO){
+      <video
+        class="w-96 rounded-xl mt-2"
+        controls
+        src="{{ question.mediaSrc }}"
+      ></video>
+      } @if (question.type === questionType.IMAGE){
+      <img class="w-96 rounded-xl mt-2" src="{{ question.mediaSrc }}" />
+      } @if (question.type === questionType.AUDIO) {
+      <audio
+        class="w-96 rounded-xl mt-2"
+        controls
+        src="{{ question.mediaSrc }}"
+      ></audio>
+      }
+    </div>
+    <div class="w-4/12 flex items-center h-full">
+      <strong>
+        <editable>
+          <ng-template viewMode>
+            {{ question.answer }}
+          </ng-template>
+          <ng-template editMode>
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-96"
+            >
+              <textarea
+                matInput
+                editableOnEnter
+                editableOnEscape
+                [(ngModel)]="question.answer"
+              ></textarea>
+            </mat-form-field>
+          </ng-template>
+        </editable>
+      </strong>
+    </div>
+    <div class="w-2/12 group-hover:opacity-100 opacity-0 transition-opacity">
+      <button mat-icon-button matTooltip="Xoá câu hỏi">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Đính kèm media">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+    </div>
+    <div
+      cdkDragHandle
+      class="flex-grow opacity-0 transition-opacity flex group-hover:opacity-100 justify-end pr-10 cursor-move h-full"
+    >
+      <mat-icon matTooltip="Kéo để di chuyển vị trí câu hỏi">drag_indicator</mat-icon>
+    </div>
+  </div>
+  }
+</div>

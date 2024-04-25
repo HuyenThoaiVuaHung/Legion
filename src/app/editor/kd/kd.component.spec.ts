@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { KdComponent } from './kd.component';
+import { EditorKdComponent } from './kd.component';
 
 describe('KdComponent', () => {
-  let component: KdComponent;
-  let fixture: ComponentFixture<KdComponent>;
+  let component: EditorKdComponent;
+  let fixture: ComponentFixture<EditorKdComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [KdComponent]
+      imports: [component]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(KdComponent);
+
+    fixture = TestBed.createComponent(component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

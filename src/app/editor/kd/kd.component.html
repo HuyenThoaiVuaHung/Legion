@@ -1,1 +1,41 @@
-<p>kd works!</p>
+@if (this.editorDataService.editorData) { @if (
+this.editorDataService.editorData.matchData.matchVersion == 24 ) {
+<h3 class="mb-6 flex items-center gap-5">
+  <strong>Phần thi</strong>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-select [(value)]="selectedO24Control">
+      <mat-option [value]="controlType.SINGLEPLAYER"> Cá nhân </mat-option>
+      <mat-option [value]="controlType.MULTIPLAYER"> Đối kháng </mat-option>
+    </mat-select>
+  </mat-form-field>
+  @if (this.selectedO24Control == this.controlType.SINGLEPLAYER) {
+  <strong>Thí sinh</strong>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-select [(value)]="selectedO24SingleplayerPlayerIndex">
+      @for (player of this.editorDataService.editorData.matchData.players; track
+      $index) {
+      <mat-option [value]="$index">
+        {{ player.name }}
+      </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  }
+</h3>
+} @else if(this.editorDataService.editorData.matchData.matchVersion == 23) {
+<h3 class="mb-6 flex items-center gap-5">
+  <strong>Gói câu hỏi</strong>
+  @for (o23QuestionPackIndex of [0,1,2]; track o23QuestionPackIndex) {
+  <button
+    mat-stroked-button [disabled]="this.selectedO23QuestionPack == o23QuestionPackIndex"
+    (click)="this.selectedO23QuestionPack = o23QuestionPackIndex"
+  >
+    {{ 8 + o23QuestionPackIndex * 4 }}
+  </button>
+  }
+</h3>
+}
+<div class="w-full h-max">
+  <question-table [questions]="questionData"></question-table>
+</div>
+}

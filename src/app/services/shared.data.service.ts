@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IMatchData, IUserInfo } from './interfaces/game.interface';
+import { IMatchData, IUserInfo } from '../interfaces/game.interface';
 
 @Injectable({
   providedIn: 'root'

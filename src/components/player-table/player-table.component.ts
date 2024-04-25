@@ -1,4 +1,4 @@
-import { IPlayer } from './../../app/services/interfaces/game.interface';
+import { IPlayer } from '../../app/interfaces/game.interface';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   CdkDragDrop,
@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDividerModule } from '@angular/material/divider';
 @Component({
   selector: 'player-table',
   standalone: true,
@@ -31,10 +32,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     CdkDragHandle,
     MatInputModule,
     FormsModule,
-    MatFormFieldModule
+    MatFormFieldModule,
   ],
   templateUrl: './player-table.component.html',
-  styleUrls: ['./player-table.component.scss', './_player-table-theme.scss'],
+  styleUrls: ['./player-table.component.scss', '../themes/_table-theme.scss'],
 })
 export class PlayerTableComponent {
   @Input({ required: true }) players!: IPlayer[];

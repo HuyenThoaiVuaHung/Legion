@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NetworkingService } from './networking.service';
-import { IMatchData, MatchPosition, IUserInfo } from './interfaces/game.interface';
+import { IMatchData, MatchPosition, IUserInfo } from '../interfaces/game.interface';
 import { Route, Router } from '@angular/router';
 import { SharedDataService } from './shared.data.service';
 

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NetworkingService } from './services/networking.service';
 import { NetworkStatus } from './services/networking.enum';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 
@@ -19,8 +19,8 @@ import { CommonModule } from '@angular/common';
 export class AppComponent {
   title = 'relegion';
   readonly NETWORK_STATUS = NetworkStatus;
-  constructor(public network: NetworkingService){
-
+  constructor(public network: NetworkingService, maticon: MatIconRegistry){
+    maticon.setDefaultFontSetClass('material-symbols-outlined')
   }
   disconnect() {
     this.network.disconnect();

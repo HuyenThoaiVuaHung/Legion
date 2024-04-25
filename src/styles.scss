@@ -3,7 +3,8 @@
 @use "@angular/material" as mat;
 @use "@angular/material-experimental" as matx;
 @use "./components/image-input/image-input-theme" as image-input;
-@use "./components/player-table/player-table-theme" as player-table;
+@use "./components/themes/table-theme" as table;
+@use "sass:map";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -22,13 +23,12 @@
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-
+$typography-base: matx.define-typography();
 $m3-theme: matx.define-theme(
   (
     color: (
       theme-type: light,
       primary: matx.$m3-orange-palette,
-      tertiary: matx.$m3-green-palette,
     ),
     typography: (
       brand-family: "Lexend",
@@ -54,7 +54,7 @@ html {
   @include mat.all-component-themes($m3-theme);
   @include mat.typography-hierarchy($m3-theme);
   @include image-input.color($m3-theme);
-  @include player-table.color($m3-theme);
+  @include table.color($m3-theme);
   background: linear-gradient(
     135deg,
     mat.get-theme-color($m3-theme, surface) 0%,
@@ -70,37 +70,74 @@ html {
       color: mat.get-theme-color($m3-theme, primary, 70);
     }
   }
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: mat.get-theme-color($m3-theme, surface-dim);
+    border-radius: 12px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: mat.get-theme-color($m3-theme, on-surface);
+    border-radius: 12px;
+    @apply transition-all;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: mat.get-theme-color($m3-theme, primary);
+  }
+  ::selection {
+    background: mat.get-theme-color($m3-theme, primary);
+    color: mat.get-theme-color($m3-theme, on-primary);
+  }
+  ::-moz-selection {
+    background: mat.get-theme-color($m3-theme, primary);
+    color: mat.get-theme-color($m3-theme, on-primary);
+  }
 }
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
-/* Track */
-::-webkit-scrollbar-track {
-  background: mat.get-theme-color($m3-theme, surface-dim);
-  border-radius: 12px;
+app-root{
+  @media screen and (max-width: 1280px){
+    display: none;
+  }
 }
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: mat.get-theme-color($m3-theme, on-surface);
-  border-radius: 12px;
-  @apply transition-colors;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: mat.get-theme-color($m3-theme, primary);
+.mobile-block {
+  display: none;
+  @media screen and (max-width: 1280px){
+    display: inline !important;
+    position: fixed;
+    top: calc(50% - 90px);
+    padding-left: 10vw;
+    padding-right: 10vw;
+    text-align: center;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    justify-items: center;
+    align-items: center;
+    font-family: 'Lexend';
+  }
 }
 //.light-theme {
 //  @include mat.all-component-themes($m3-light-theme);
 //}
-
+noscript {
+  width: 100vw !important;
+  height: 100vh !important;
+  display: grid !important;
+  place-items: center !important;
+  font-family: "Noto Sans", sans-serif !important;
+  text-align: center !important;
+}
 /* You can add global styles to this file, and also import other style files */
 html,
 body {

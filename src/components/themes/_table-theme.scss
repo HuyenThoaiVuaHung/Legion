@@ -1,0 +1,41 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+@mixin color($theme) {
+  .table-item-color {
+    background-color: mat.get-theme-color($theme, secondary-container);
+    color: mat.get-theme-color($theme, on-secondary-container);
+  }
+  .table-header {
+    background-color: mat.get-theme-color($theme, secondary-fixed);
+    color: mat.get-theme-color($theme, on-secondary-fixed);
+  }
+  .cdk-drag-preview {
+    font: mat.get-theme-typography($theme, body-large, font) !important;
+    letter-spacing: mat.get-theme-typography($theme, body-large, letter-spacing) !important;
+    background-color: mat.get-theme-color($theme, surface);
+  }
+  .error {
+    background-color: mat.get-theme-color($theme, error);
+  }
+  .cdk-drag-preview {
+    box-sizing: border-box;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    cursor: move;
+  }
+
+
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+
+  .table-list.cdk-drop-list-dragging .table-item:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  .item-border {
+    border-color: mat.get-theme-color($theme, on-secondary-container);
+  }
+}

@@ -1,7 +1,6 @@
-export interface IConfig {
+export interface IInterfaceConfig {
   darkMode: boolean;
   pallette: Pallette;
-  useBackground: boolean;
 }
 
 export enum Pallette {
