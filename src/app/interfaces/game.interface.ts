@@ -38,6 +38,7 @@ export interface IQuestion {
   type: QuestionType,
   questionValue: number,
   mediaSrc?: string,
+  mediaSrcName?: string,
 }
 
 export enum QuestionType {

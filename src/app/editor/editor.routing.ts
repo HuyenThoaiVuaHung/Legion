@@ -5,12 +5,12 @@ import { EditorVcnvComponent } from './vcnv/vcnv.component';
 import { EditorTtComponent } from './tt/tt.component';
 import { EditorVdComponent } from './vd/vd.component';
 import { EditorChpComponent } from './chp/chp.component';
+import { EditorDashboardComponent } from './dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/editor/general',
-    pathMatch: 'full'
+    component: EditorDashboardComponent
    },
    {
     path: 'general',

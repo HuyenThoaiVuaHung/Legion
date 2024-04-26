@@ -5,5 +5,6 @@ import { IMatchData, IQuestionBank } from "./game.interface";
 export interface IEditorData {
   uiConfig: IInterfaceConfig,
   matchData: IMatchData,
-  questionBank: IQuestionBank
+  questionBank: IQuestionBank,
+  uid: string
 }

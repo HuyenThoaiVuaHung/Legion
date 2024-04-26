@@ -61,7 +61,7 @@ html {
     mat.get-theme-color($m3-theme, surface) 80%,
     mat.get-theme-color($m3-theme, primary-container) 100%
   );
-
+  view-transition-name: main;
   color: mat.get-theme-color($m3-theme, on-surface);
   a {
     @if mat.get-theme-type($m3-theme) == dark {
