@@ -4,18 +4,22 @@ import { Pallette } from '../../interfaces/config.interface';
 import { IQuestion, IQuestionBank, MatchPosition, QuestionType } from '../../interfaces/game.interface';
 import { NetworkingService } from '../../services/networking.service';
 import { FsService } from './fs.service';
+import { DialogService } from '../../services/dialog.service';
+import { EditorStatus } from './enums/editor.enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EditorDataService {
   constructor(
-    private fs: FsService
+    private fs: FsService,
+    private dialogService: DialogService
   ) {
     //TEMP: For now, we will just provide a new editor data.
     this.editorData = this.provideNewEditorData();
   }
   public editorData: IEditorData | undefined = undefined;
+  public editorStatus: EditorStatus = EditorStatus.UNLOADED;
   private provideNewEditorData(): IEditorData {
     return {
       uiConfig: {
@@ -53,7 +57,16 @@ export class EditorDataService {
       uid: crypto.randomUUID()
     }
   }
-
+  public async createNewEditorDataInstance() {
+    const editorData = this.provideNewEditorData();
+    if (this.editorData) {
+      if (await this.dialogService.confirmationDialog('Unsaved Changes', 'You have unsaved changes. Do you want to save them?')) {
+        await this.saveEditorData(this.editorData);
+      }
+    }
+    this.editorData = editorData;
+    return;
+  }
   public async setEditorData(data: IEditorData) {
     this.editorData = data;
     //TODO: Implement saving to localstorage.
@@ -61,6 +74,12 @@ export class EditorDataService {
   public async getEditorData() {
     //Future: Maybe add loading from Firebase storage.
     return this.editorData;
+  }
+  public getAvailableEditorDataUids(): string[] {
+    if (!localStorage.getItem('localEditorDataUids')) {
+      return [];
+    }
+    return JSON.parse(localStorage.getItem('localEditorDataUids') as string) as string[];
   }
   public async saveEditorData(editorData: IEditorData) {
     if (!localStorage.getItem('localEditorDataUids')) {

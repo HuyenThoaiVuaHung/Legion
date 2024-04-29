@@ -30,7 +30,7 @@
     ) {
       @if (questionData[selectedQuestionIndex].type === questionType.IMAGE) {
         <img
-          class="h-full max-h-[50rem] rounded-xl"
+          class="max-w-max w-full max-h-[100%] rounded-xl"
           src="{{ questionData[selectedQuestionIndex].mediaSrc }}"
         />
       }

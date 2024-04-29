@@ -1,6 +1,6 @@
 import { EditorDataService } from './services/editor.data.service';
 import { Component, Input, OnInit } from '@angular/core';
-import { RouterLinkActive, RouterModule } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Router, RouterLinkActive, RouterModule } from '@angular/router';
 import { IEditorData } from '../interfaces/editor.interface';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-editor',
@@ -23,7 +24,8 @@ import { MatMenuModule } from '@angular/material/menu';
     MatIconModule,
     MatSelectModule,
     MatDividerModule,
-    MatMenuModule
+    MatMenuModule,
+    MatTooltipModule
   ],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss'
@@ -32,20 +34,29 @@ export class EditorComponent implements OnInit {
   @Input() editorData?: IEditorData;
   constructor(
     public editorDataService: EditorDataService,
-  ){}
-  readonly menus: Array<{name: string, icon: string, nav: string}> = [
-    {name: 'Cài đặt chung', icon: 'settings', nav: 'general'},
-    {name: 'Khởi động', icon: 'grass', nav: 'kd'},
-    {name: 'Vượt chướng ngại vật', icon: 'landscape', nav: 'vcnv'},
-    {name: 'Tăng tốc', icon: 'rocket_launch', nav: 'tt'},
-    {name: 'Về đích', icon: 'military_tech', nav: 'vd'},
-    {name: 'Câu hỏi phụ', icon: 'workspaces', nav: 'chp'}
+    public router: Router
+  ) { }
+  readonly menus: Array<{ name: string, icon: string, nav: string }> = [
+    { name: 'Cài đặt chung', icon: 'settings', nav: 'general' },
+    { name: 'Khởi động', icon: 'grass', nav: 'kd' },
+    { name: 'Vượt chướng ngại vật', icon: 'landscape', nav: 'vcnv' },
+    { name: 'Tăng tốc', icon: 'rocket_launch', nav: 'tt' },
+    { name: 'Về đích', icon: 'military_tech', nav: 'vd' },
+    { name: 'Câu hỏi phụ', icon: 'workspaces', nav: 'chp' }
   ]
   ngOnInit(): void {
-    if (this.editorData){
+    if (this.editorData) {
       this.editorDataService.editorData = this.editorData;
     } else {
 
     }
+  }
+  public readonly routeNameMap: { [key: string]: string } = {
+    general: 'Cài đặt chung',
+    kd: 'Khởi động',
+    vcnv: 'Vượt chướng ngại vật',
+    tt: 'Tăng tốc',
+    vd: 'Về đích',
+    chp: 'Câu hỏi phụ'
   }
 }

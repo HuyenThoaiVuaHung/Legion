@@ -12,6 +12,7 @@
   }
   .cdk-drag-preview {
     font: mat.get-theme-typography($theme, body-large, font) !important;
+    color: mat.get-theme-color($theme, on-surface);
     letter-spacing: mat.get-theme-typography($theme, body-large, letter-spacing) !important;
     background-color: mat.get-theme-color($theme, surface);
   }
