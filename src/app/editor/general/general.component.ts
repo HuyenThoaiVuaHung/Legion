@@ -14,8 +14,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
 import { EditorItemComponent } from '../../../components/editor-item/editor-item.component';
 import { MatIconModule } from '@angular/material/icon';
-import { IInterfaceConfig } from '../../interfaces/config.interface';
-import { IEditorData } from '../../interfaces/editor.interface';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({

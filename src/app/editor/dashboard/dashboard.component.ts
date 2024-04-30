@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
+import { FsService } from '../services/fs.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,13 +22,29 @@ import { Router } from '@angular/router';
 export class EditorDashboardComponent {
   constructor(
     public editorDataService: EditorDataService,
-    private router: Router
+    private router: Router,
+    private fsService: FsService
   ){
     this.editorDataService.loadAvailableEditorDataUids();
 
   }
   public async createNewEditorData(): Promise<void> {
-    await this.editorDataService.createNewEditorDataInstance();
+    await this.editorDataService.saveLocalEditorData(await this.editorDataService.createNewEditorDataInstance());
     this.editorDataService.loadAvailableEditorDataUids();
+  }
+  public async processEditorDataFile(){
+    // const input = document.getElementById('editorFileInput');
+    // if (input){
+    //   const file = (input as HTMLInputElement).files?.[0];
+    //   if (file){
+    //     const reader = new FileReader();
+    //     reader.onload = async (e) => {
+    //       const result = e.target?.result as string;
+    //       await
+    //       this.editorDataService.loadAvailableEditorDataUids();
+    //     };
+    //     reader.readAsText(file);
+    //   }
+    // }
   }
 }

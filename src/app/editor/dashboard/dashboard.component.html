@@ -3,11 +3,16 @@
   <editor-card class="transition-all" [uid]="uid"> </editor-card>
   }
   <mat-card appearance="outlined" class="flex min-h-96 flex-grow">
-    <div class="w-full h-full grid place-items-center">
+    <div class="w-full h-full flex justify-center items-center gap-5 flex-col">
       <button mat-stroked-button (click)="createNewEditorData()">
         <mat-icon>add</mat-icon>
-        Tạo trận đấu mới
+        Thêm trận đấu mới
       </button>
+      <button mat-stroked-button (click)="editorFileInput.click()">
+        <mat-icon>file_open</mat-icon>
+        Mở trận đấu
+      </button>
+      <input type="file" accept=".lg" (change)="processEditorDataFile()" #editorFileInput style="display: none"/>
     </div>
   </mat-card>
 </div>
