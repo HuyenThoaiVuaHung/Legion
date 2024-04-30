@@ -24,6 +24,7 @@
     "@angular/service-worker": "^17.3.6",
     "@ngneat/edit-in-place": "^1.9.0",
     "animate.css": "^4.1.1",
+    "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "rxjs": "~7.8.0",
     "socket.io": "^4.7.5",

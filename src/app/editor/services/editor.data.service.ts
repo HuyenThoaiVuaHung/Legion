@@ -1,22 +1,28 @@
+import { O24ControlType } from './../kd/kd.component';
 import { Injectable } from '@angular/core';
 import { IEditorData } from '../../interfaces/editor.interface';
 import { Pallette } from '../../interfaces/config.interface';
-import { IQuestion, IQuestionBank, MatchPosition, QuestionType } from '../../interfaces/game.interface';
+import {
+  IQuestion,
+  IQuestionBank,
+  MatchPosition,
+  QuestionType,
+} from '../../interfaces/game.interface';
 import { FsService } from './fs.service';
 import { DialogService } from '../../services/dialog.service';
 import { EditorStatus } from './enums/editor.enum';
 import { EditorMediaService } from './editor.media.service';
+import { MatSelectChange } from '@angular/material/select';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class EditorDataService {
+export class 1EditorDataService {
   constructor(
     private fs: FsService,
     private dialogService: DialogService,
     private media: EditorMediaService
-  ) {
-  }
+  ) {}
 
   /**
    * The working editor data.
@@ -51,41 +57,54 @@ export class EditorDataService {
         pallette: Pallette.ROSE,
       },
       matchData: {
-        matchName: "Welcome to Legion",
-        matchVersion: 23,
+        matchName: 'Welcome to Legion',
+        matchVersion: 24,
         matchPos: MatchPosition.IDLE,
         players: [
           {
             name: 'Nguyễn Văn A',
             score: 0,
-            isReady: false
+            isReady: false,
           },
           {
             name: 'Trần Thị B',
             score: 0,
-            isReady: false
+            isReady: false,
           },
           {
             name: 'Phạm Văn C',
             score: 0,
-            isReady: false
+            isReady: false,
           },
           {
             name: 'Nguyễn Thị D',
             score: 0,
-            isReady: false
-          }
-        ]
+            isReady: false,
+          },
+        ],
       },
       questionBank: {
-        kd: [],
-        vcnv: [],
-        tt: [],
-        vd: Array(4).fill([]),
-        chp: []
+        kd: {
+          o24Questions: {
+            [O24ControlType.MULTIPLAYER]: [],
+            [O24ControlType.SINGLEPLAYER]: Array(4).fill([]),
+          },
+        },
+        vcnv: {
+          questions: [],
+        },
+        tt: {
+          questions: [],
+        },
+        vd: {
+          questions: [],
+        },
+        chp: {
+          questions: [],
+        },
       },
-      uid: crypto.randomUUID()
-    }
+      uid: crypto.randomUUID(),
+    };
   }
   /**
    *
@@ -94,11 +113,47 @@ export class EditorDataService {
   public async createNewEditorDataInstance() {
     const editorData = this.provideNewEditorData();
     if (this.editorData && this.editorStatus === EditorStatus.UNSAVED) {
-      if (await this.dialogService.confirmationDialog('Unsaved Changes', 'You have unsaved changes. Do you want to save them?')) {
+      if (
+        await this.dialogService.confirmationDialog(
+          'Unsaved Changes',
+          'You have unsaved changes. Do you want to save them?'
+        )
+      ) {
         await this.saveLocalEditorData(this.editorData);
       }
     }
     return editorData;
+  }
+  private readonly matchVersionChangeMessage = {
+    title: 'Bạn có chắc không?',
+    message: 'Điều này sẽ xoá toàn bộ dữ liệu của phần thi khởi động hiện tại.',
+  };
+  public async handleMatchVersionChange(snapshot: 23 | 24) {
+    if (this.editorData) {
+      if (
+        await this.dialogService.confirmationDialog(
+          this.matchVersionChangeMessage.title,
+          this.matchVersionChangeMessage.message
+        )
+      ) {
+        this.editorData.questionBank.kd = {};
+        if (this.editorData.matchData.matchVersion === 23) {
+          this.editorData.questionBank.kd.o23Questions = Array(3).fill([]);
+        } else if (this.editorData.matchData.matchVersion === 24) {
+          {
+            this.editorData.questionBank.kd.o24Questions = {
+              [O24ControlType.MULTIPLAYER]: [],
+              [O24ControlType.SINGLEPLAYER]: Array(4).fill([]),
+            };
+          }
+          this.editorStatus = EditorStatus.UNSAVED;
+          await this.saveLocalEditorData(this.editorData);
+        }
+        //TODO: Implement value change for VCNV questions.
+      } else {
+        this.editorData.matchData.matchVersion = snapshot;
+      }
+    }
   }
   /**
    * Reload available editor data uids from local storage.
@@ -133,7 +188,9 @@ export class EditorDataService {
     if (!localStorage.getItem('localEditorDataUids')) {
       return [];
     }
-    return JSON.parse(localStorage.getItem('localEditorDataUids') as string) as string[];
+    return JSON.parse(
+      localStorage.getItem('localEditorDataUids') as string
+    ) as string[];
   }
   /**
    *
@@ -144,12 +201,21 @@ export class EditorDataService {
     if (!localStorage.getItem('localEditorDataUids')) {
       localStorage.setItem('localEditorDataUids', JSON.stringify([]));
     }
-    const uids = JSON.parse(localStorage.getItem('localEditorDataUids') as string) as string[];
+    const uids = JSON.parse(
+      localStorage.getItem('localEditorDataUids') as string
+    ) as string[];
     if (!uids.includes(editorData.uid)) {
       uids.push(editorData.uid);
       localStorage.setItem('localEditorDataUids', JSON.stringify(uids));
     }
-    return await this.fs.writeLocalFile(new Blob([JSON.stringify(editorData)]), `${editorData.uid}/editor_data.json`);
+    this.fs
+      .writeLocalFile(
+        new Blob([JSON.stringify(editorData)]),
+        `${editorData.uid}/editor_data.json`
+      )
+      .then((val) => {
+        return val;
+      });
   }
   /**
    *
@@ -157,9 +223,15 @@ export class EditorDataService {
    * @returns The editor data.
    */
   public async loadLocalEditorData(uid: string) {
-    const editorData: IEditorData = JSON.parse(await (await this.fs.getFile(`${uid}/editor_data.json`)).text()) as IEditorData;
+    const editorData: IEditorData = JSON.parse(
+      await (await this.fs.getFile(`${uid}/editor_data.json`)).text()
+    ) as IEditorData;
     console.log(editorData);
-    editorData.questionBank = await this.media.resolveQuestionBankMediaSrc(editorData.questionBank, editorData.uid, editorData.matchData.matchVersion);
+    editorData.questionBank = await this.media.resolveQuestionBankMediaSrc(
+      editorData.questionBank,
+      editorData.uid,
+      editorData.matchData.matchVersion
+    );
     return editorData;
   }
   /**
@@ -169,11 +241,20 @@ export class EditorDataService {
    */
   public async deleteLocalEditorData(uid: string) {
     const editorData = await this.loadLocalEditorData(uid);
-    if (await this.dialogService.confirmationDialog('Xoá trận đấu?', `Bạn có muốn xoá trận đấu ${editorData.matchData.matchName} không?`)) {
+    if (
+      await this.dialogService.confirmationDialog(
+        'Xoá trận đấu?',
+        `Bạn có muốn xoá trận đấu ${editorData.matchData.matchName} không?`
+      )
+    ) {
       await this.fs.deleteDirectory(uid);
-      const uids = JSON.parse(localStorage.getItem('localEditorDataUids') as string) as string[];
-      localStorage.setItem('localEditorDataUids', JSON.stringify(uids.filter((id: string) => id !== uid)));
+      const uids = JSON.parse(
+        localStorage.getItem('localEditorDataUids') as string
+      ) as string[];
+      localStorage.setItem(
+        'localEditorDataUids',
+        JSON.stringify(uids.filter((id: string) => id !== uid))
+      );
     }
   }
-
 }

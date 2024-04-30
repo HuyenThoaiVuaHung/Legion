@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -35,7 +35,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatSelectModule,
     EditorItemComponent,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    FormsModule
   ],
   templateUrl: './general.component.html',
   styleUrl: './general.component.scss'
@@ -44,5 +45,9 @@ export class EditorGeneralComponent {
   constructor(
     public editorDataService: EditorDataService,
   ) {
+  }
+  public matchVersionSnapshot = this.editorDataService.editorData?.matchData.matchVersion!;
+  async save(){
+    await this.editorDataService.saveLocalEditorData(this.editorDataService.editorData!);
   }
 }

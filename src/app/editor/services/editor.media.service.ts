@@ -85,38 +85,39 @@ export class EditorMediaService {
     dataUid: string,
     ver?: number
   ): Promise<IQuestionBank> {
-    questionBank.vcnv = await this.resolveQuestionsMediaSrc(
-      questionBank.vcnv,
+    questionBank.vcnv.questions = await this.resolveQuestionsMediaSrc(
+      questionBank.vcnv.questions,
       'vcnv',
       dataUid
     );
-    questionBank.tt = await this.resolveQuestionsMediaSrc(
-      questionBank.tt,
+    questionBank.tt.questions = await this.resolveQuestionsMediaSrc(
+      questionBank.tt.questions,
       'tt',
       dataUid
     );
-    for (let questions of questionBank.vd) {
+    for (let questions of questionBank.vd.questions) {
       questions = await this.resolveQuestionsMediaSrc(questions, 'vd', dataUid);
     }
     if (ver) {
       if (ver === 23) {
-        if (Array.isArray(questionBank.kd)) {
-          questionBank.kd = await Promise.all(
-            questionBank.kd.map(
+        if (questionBank.kd.o23Questions) {
+          questionBank.kd.o23Questions = await Promise.all(
+            questionBank.kd.o23Questions.map(
               async (questions) =>
                 await this.resolveQuestionsMediaSrc(questions, 'kd', dataUid)
             )
           );
         } else throw new Error('Invalid question bank version');
       } else if (ver === 24) {
-        if (!Array.isArray(questionBank.kd)) {
-          questionBank.kd.MULTIPLAYER = await this.resolveQuestionsMediaSrc(
-            questionBank.kd.MULTIPLAYER,
-            'kd',
-            dataUid
-          );
+        if (questionBank.kd.o24Questions) {
+          questionBank.kd.o24Questions.MULTIPLAYER =
+            await this.resolveQuestionsMediaSrc(
+              questionBank.kd.o24Questions.MULTIPLAYER,
+              'kd',
+              dataUid
+            );
           await Promise.all(
-            questionBank.kd.SINGLEPLAYER.map(
+            questionBank.kd.o24Questions.SINGLEPLAYER.map(
               async (questions) =>
                 await this.resolveQuestionsMediaSrc(questions, 'kd', dataUid)
             )
@@ -137,24 +138,28 @@ export class EditorMediaService {
     questionBank: IQuestionBank,
     ver?: number
   ): IQuestionBank {
-    questionBank.vcnv = this.stripQuestionsMediaSrc(questionBank.vcnv);
-    questionBank.tt = this.stripQuestionsMediaSrc(questionBank.tt);
-    for (let questions of questionBank.vd) {
+    questionBank.vcnv.questions = this.stripQuestionsMediaSrc(
+      questionBank.vcnv.questions
+    );
+    questionBank.tt.questions = this.stripQuestionsMediaSrc(
+      questionBank.tt.questions
+    );
+    for (let questions of questionBank.vd.questions) {
       questions = this.stripQuestionsMediaSrc(questions);
     }
     if (ver) {
       if (ver === 23) {
-        if (Array.isArray(questionBank.kd)) {
-          questionBank.kd = questionBank.kd.map((questions) =>
+        if (questionBank.kd.o23Questions) {
+          questionBank.kd.o23Questions = questionBank.kd.o23Questions.map((questions) =>
             this.stripQuestionsMediaSrc(questions)
           );
         } else throw new Error('Invalid question bank version');
       } else if (ver === 24) {
-        if (!Array.isArray(questionBank.kd)) {
-          questionBank.kd.MULTIPLAYER = this.stripQuestionsMediaSrc(
-            questionBank.kd.MULTIPLAYER
+        if (questionBank.kd.o24Questions) {
+          questionBank.kd.o24Questions.MULTIPLAYER = this.stripQuestionsMediaSrc(
+            questionBank.kd.o24Questions.MULTIPLAYER
           );
-          questionBank.kd.SINGLEPLAYER.map((questions) =>
+          questionBank.kd.o24Questions.SINGLEPLAYER.map((questions) =>
             this.stripQuestionsMediaSrc(questions)
           );
         } else throw new Error('Invalid question bank version');

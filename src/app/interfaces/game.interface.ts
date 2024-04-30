@@ -1,4 +1,4 @@
-import { O24ControlType } from "../editor/kd/kd.component";
+import { O24ControlType } from '../editor/kd/kd.component';
 
 export interface IUserInfo {
   sessionId: string;
@@ -21,33 +21,49 @@ export interface IPlayer {
 }
 
 export interface IQuestionBank {
-  kd: IQuestion[][] | O24KdQuestionData,
-  vcnv: IQuestion[],
-  tt: IQuestion[],
-  vd: IQuestion[][],
-  chp: IQuestion[]
-
+  kd: KdQuestionsData;
+  vcnv: VcnvQuestionsData;
+  tt: TtQuestionData;
+  vd: VdQuestionsData;
+  chp: ChpQuestionsData;
 }
-export interface O24KdQuestionData {
-  [O24ControlType.SINGLEPLAYER]: IQuestion[][],
-  [O24ControlType.MULTIPLAYER]: IQuestion[]
+
+export interface KdQuestionsData {
+  o24Questions?: {
+    [O24ControlType.MULTIPLAYER]: IQuestion[];
+    [O24ControlType.SINGLEPLAYER]: IQuestion[][];
+  };
+  o23Questions?: IQuestion[][];
+}
+
+export interface VcnvQuestionsData {
+  questions: IQuestion[];
+}
+
+export interface TtQuestionData {
+  questions: IQuestion[];
+}
+export interface VdQuestionsData {
+  questions: IQuestion[][];
+}
+export interface ChpQuestionsData {
+  questions: IQuestion[];
 }
 export interface IQuestion {
-  question: string,
-  answer: string,
-  type: QuestionType,
-  questionValue: number,
-  mediaSrc?: string,
-  mediaSrcName?: string,
+  question: string;
+  answer: string;
+  type: QuestionType;
+  value: number;
+  mediaSrc?: string;
+  mediaSrcName?: string;
 }
 
 export enum QuestionType {
   TEXT,
   IMAGE,
   AUDIO,
-  VIDEO
+  VIDEO,
 }
-
 
 export enum MatchPosition {
   IDLE,
@@ -60,4 +76,3 @@ export enum MatchPosition {
   CHP,
   POINTS,
 }
-

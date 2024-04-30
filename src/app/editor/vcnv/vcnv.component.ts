@@ -19,31 +19,31 @@ export class EditorVcnvComponent {
     {
       question: 'What is the capital of France?',
       answer: 'Paris',
-      questionValue: 10,
+      value: 10,
       type: QuestionType.TEXT,
     },
     {
       question: 'What is the capital of France?',
       answer: 'Paris',
-      questionValue: 10,
+      value: 10,
       type: QuestionType.TEXT,
     },
     {
       question: 'What is the capital of France?',
       answer: 'Paris',
-      questionValue: 10,
+      value: 10,
       type: QuestionType.TEXT,
     },
     {
       question: 'What is the capital of France?',
       answer: 'Paris',
-      questionValue: 10,
+      value: 10,
       type: QuestionType.TEXT,
     },
     {
       question: 'What is the capital of France?',
       answer: 'Paris',
-      questionValue: 10,
+      value: 10,
       type: QuestionType.TEXT,
     },
   ]

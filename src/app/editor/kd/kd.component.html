@@ -37,6 +37,32 @@ this.editorDataService.editorData.matchData.matchVersion == 24 ) {
 </h3>
 }
 <div class="w-full h-max">
-  <question-table [questions]="questionData"></question-table>
+  @if (this.editorDataService.editorData.matchData.matchVersion === 24) { @if
+  (this.selectedO24Control === controlType.MULTIPLAYER){
+  <question-table
+    [questions]="
+      this.editorDataService.editorData.questionBank.kd.o24Questions![
+        controlType.MULTIPLAYER
+      ]
+    "
+  ></question-table>
+  } @else {
+  <question-table
+    [questions]="
+      this.editorDataService.editorData.questionBank.kd.o24Questions![
+        controlType.SINGLEPLAYER
+      ][selectedO24SingleplayerPlayerIndex]
+    "
+  ></question-table>
+  } } @else if (this.editorDataService.editorData.matchData.matchVersion === 23)
+  {
+  <question-table
+    [questions]="
+      this.editorDataService.editorData.questionBank.kd.o23Questions![
+        this.selectedO23QuestionPack
+      ]
+    "
+  ></question-table>
+  }
 </div>
 }

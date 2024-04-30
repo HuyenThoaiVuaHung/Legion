@@ -23,26 +23,26 @@ export class EditorTtComponent {
     {
       question: 'What is the capital of France?',
       answer: 'Paris',
-      questionValue: 10,
+      value: 10,
       type: QuestionType.IMAGE,
       mediaSrc: 'https://picsum.photos/1920/1080'
     }, {
       question: 'What is the capital of France?',
       answer: 'Paris',
-      questionValue: 10,
+      value: 10,
       type: QuestionType.IMAGE,
       mediaSrc: 'https://picsum.photos/1920/1080'
     }, {
       question: 'What is the capital of France?',
       answer: 'Paris',
-      questionValue: 10,
+      value: 10,
       type: QuestionType.IMAGE,
       mediaSrc: 'https://picsum.photos/1920/1080'
     },
     {
       question: 'What is the capital of Germany?',
       answer: 'Berlin',
-      questionValue: 10,
+      value: 10,
       type: QuestionType.VIDEO,
       mediaSrc: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
     },
