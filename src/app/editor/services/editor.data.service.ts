@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { IEditorData } from '../../interfaces/editor.interface';
 import { Pallette } from '../../interfaces/config.interface';
 import { IQuestion, IQuestionBank, MatchPosition, QuestionType } from '../../interfaces/game.interface';
-import { NetworkingService } from '../../services/networking.service';
 import { FsService } from './fs.service';
 import { DialogService } from '../../services/dialog.service';
 import { EditorStatus } from './enums/editor.enum';
+import { EditorMediaService } from './editor.media.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +13,37 @@ import { EditorStatus } from './enums/editor.enum';
 export class EditorDataService {
   constructor(
     private fs: FsService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private media: EditorMediaService
   ) {
-    //TEMP: For now, we will just provide a new editor data.
-    this.editorData = this.provideNewEditorData();
   }
+
+  /**
+   * The working editor data.
+   * Default value is undefined.
+   */
   public editorData: IEditorData | undefined = undefined;
+  /**
+   * The status of the editor.
+   * Possible values are:
+   * - UNLOADED: The editor is not loaded.
+   * - LOADED: The editor is loaded.
+   * - UNSAVED: The editor has unsaved changes.
+   * - SAVED: The editor has saved changes.
+   * - ERROR: The editor has an error.
+   * - WORKING: The editor is working.
+   * Default value is UNLOADED.
+   */
   public editorStatus: EditorStatus = EditorStatus.UNLOADED;
+  /**
+   * The available editor data uids.
+   * Default value is an empty array.
+   */
+  public availableEditorDataUids: string[] = [];
+  /**
+   *
+   * @returns A new instance of IEditorData with default values.
+   */
   private provideNewEditorData(): IEditorData {
     return {
       uiConfig: {
@@ -53,35 +77,70 @@ export class EditorDataService {
           }
         ]
       },
-      questionBank: {} as IQuestionBank,
+      questionBank: {
+        kd: [],
+        vcnv: [],
+        tt: [],
+        vd: Array(4).fill([]),
+        chp: []
+      },
       uid: crypto.randomUUID()
     }
   }
+  /**
+   *
+   * @returns Creates a new instance of IQuestion with default values.
+   */
   public async createNewEditorDataInstance() {
     const editorData = this.provideNewEditorData();
-    if (this.editorData) {
+    if (this.editorData && this.editorStatus === EditorStatus.UNSAVED) {
       if (await this.dialogService.confirmationDialog('Unsaved Changes', 'You have unsaved changes. Do you want to save them?')) {
-        await this.saveEditorData(this.editorData);
+        await this.saveLocalEditorData(this.editorData);
       }
     }
-    this.editorData = editorData;
-    return;
+    return editorData;
   }
+  /**
+   * Reload available editor data uids from local storage.
+   */
+  public loadAvailableEditorDataUids() {
+    this.availableEditorDataUids = this.getAvailableEditorDataUids();
+  }
+  /**
+   *
+   * @param data The data to be set to the editor.
+   */
   public async setEditorData(data: IEditorData) {
     this.editorData = data;
+    this.editorStatus = EditorStatus.UNSAVED;
+    await this.saveLocalEditorData(data);
+    this.editorStatus = EditorStatus.SAVED;
     //TODO: Implement saving to localstorage.
   }
+  /**
+   *
+   * @returns The editor data.
+   */
   public async getEditorData() {
     //Future: Maybe add loading from Firebase storage.
     return this.editorData;
   }
+  /**
+   *
+   * @returns The available editor data uids from local storage.
+   */
   public getAvailableEditorDataUids(): string[] {
     if (!localStorage.getItem('localEditorDataUids')) {
       return [];
     }
     return JSON.parse(localStorage.getItem('localEditorDataUids') as string) as string[];
   }
-  public async saveEditorData(editorData: IEditorData) {
+  /**
+   *
+   * @param editorData The editor data to be saved to local storage.
+   * @returns A promise that resolves when the data is saved.
+   */
+  public async saveLocalEditorData(editorData: IEditorData) {
     if (!localStorage.getItem('localEditorDataUids')) {
       localStorage.setItem('localEditorDataUids', JSON.stringify([]));
     }
@@ -92,115 +151,29 @@ export class EditorDataService {
     }
     return await this.fs.writeLocalFile(new Blob([JSON.stringify(editorData)]), `${editorData.uid}/editor_data.json`);
   }
+  /**
+   *
+   * @param uid The uid of the editor data to be loaded.
+   * @returns The editor data.
+   */
   public async loadLocalEditorData(uid: string) {
     const editorData: IEditorData = JSON.parse(await (await this.fs.getFile(`${uid}/editor_data.json`)).text()) as IEditorData;
-    editorData.questionBank = await this.resolveQuestionBankMediaSrc(editorData.questionBank, editorData.uid, editorData.matchData.matchVersion);
+    console.log(editorData);
+    editorData.questionBank = await this.media.resolveQuestionBankMediaSrc(editorData.questionBank, editorData.uid, editorData.matchData.matchVersion);
     return editorData;
   }
-
   /**
    *
-   * @param question The question to be resolved.
-   * @param kind The kind of question, possible values are 'kd', 'vcnv', 'tt', 'vd'.
-   * @param dataUid The uid of the editor data.
-   * @returns The question with mediaSrc resolved as blob URL.
+   * @param uid The uid of the editor data to be deleted.
+   * @returns A promise that resolves when the data is deleted.
    */
-  private async resolveQuestionMediaSrc(question: IQuestion, kind: 'kd' | 'vcnv' | 'tt' | 'vd', dataUid: string): Promise<IQuestion> {
-    if (question.type !== QuestionType.TEXT) {
-      question.mediaSrc = await this.fs.getBlobUrl(`${dataUid}/${kind}/${question.mediaSrcName}`);
+  public async deleteLocalEditorData(uid: string) {
+    const editorData = await this.loadLocalEditorData(uid);
+    if (await this.dialogService.confirmationDialog('Xoá trận đấu?', `Bạn có muốn xoá trận đấu ${editorData.matchData.matchName} không?`)) {
+      await this.fs.deleteDirectory(uid);
+      const uids = JSON.parse(localStorage.getItem('localEditorDataUids') as string) as string[];
+      localStorage.setItem('localEditorDataUids', JSON.stringify(uids.filter((id: string) => id !== uid)));
     }
-    return question;
-  }
-
-  /**
-   *
-   * @param questions The questions to be resolved.
-   * @param kind The kind of questions, possible values are 'kd', 'vcnv', 'tt', 'vd'.
-   * @param dataUid The uid of the editor data.
-   * @returns The questions with mediaSrc resolved as blob URLs.
-   */
-  private async resolveQuestionsMediaSrc(questions: IQuestion[], kind: 'kd' | 'vcnv' | 'tt' | 'vd', dataUid: string): Promise<IQuestion[]> {
-    return Promise.all(questions.map(async (question) => await this.resolveQuestionMediaSrc(question, kind, dataUid)));
-  }
-
-  /**
-   *
-   * @param questionBank The question bank to be resolved.
-   * @param ver Version of the matchData.
-   * @param dataUid The uid of the editor data.
-   * @returns The question bank with mediaSrc resolved as blob URLs.
-   */
-  private async resolveQuestionBankMediaSrc(questionBank: IQuestionBank, dataUid: string, ver?: number): Promise<IQuestionBank> {
-    questionBank.vcnv = await this.resolveQuestionsMediaSrc(questionBank.vcnv, 'vcnv', dataUid);
-    questionBank.tt = await this.resolveQuestionsMediaSrc(questionBank.tt, 'tt', dataUid);
-    for (let questions of questionBank.vd) {
-      questions = await this.resolveQuestionsMediaSrc(questions, 'vd', dataUid);
-    }
-    if (ver) {
-      if (ver === 23) {
-        if (Array.isArray(questionBank.kd)) {
-          questionBank.kd = await Promise.all(questionBank.kd.map(async (questions) => await this.resolveQuestionsMediaSrc(questions, 'kd', dataUid)));
-        }
-        else throw new Error('Invalid question bank version');
-      }
-      else if (ver === 24) {
-        if (!Array.isArray(questionBank.kd)) {
-          questionBank.kd.MULTIPLAYER = await this.resolveQuestionsMediaSrc(questionBank.kd.MULTIPLAYER, 'kd', dataUid);
-          await Promise.all(questionBank.kd.SINGLEPLAYER.map(async (questions) => await this.resolveQuestionsMediaSrc(questions, 'kd', dataUid)));
-        }
-        else throw new Error('Invalid question bank version');
-      }
-    }
-    return questionBank;
-  }
-
-  /**
-   *
-   * @param questionBank The question bank to be stripped of blob URLs.
-   * @param ver Version of the matchData.
-   * @returns The question bank with mediaSrc | Blob URLs stripped.
-   */
-  private stripQuestionBankMediaSrc(questionBank: IQuestionBank, ver?: number): IQuestionBank {
-    questionBank.vcnv = this.stripQuestionsMediaSrc(questionBank.vcnv);
-    questionBank.tt = this.stripQuestionsMediaSrc(questionBank.tt);
-    for (let questions of questionBank.vd) {
-      questions = this.stripQuestionsMediaSrc(questions);
-    }
-    if (ver) {
-      if (ver === 23) {
-        if (Array.isArray(questionBank.kd)) {
-          questionBank.kd = questionBank.kd.map((questions) => this.stripQuestionsMediaSrc(questions));
-        }
-        else throw new Error('Invalid question bank version');
-      }
-      else if (ver === 24) {
-        if (!Array.isArray(questionBank.kd)) {
-          questionBank.kd.MULTIPLAYER = this.stripQuestionsMediaSrc(questionBank.kd.MULTIPLAYER);
-          questionBank.kd.SINGLEPLAYER.map((questions) => this.stripQuestionsMediaSrc(questions));
-        }
-        else throw new Error('Invalid question bank version');
-      }
-    }
-    return questionBank;
-  }
-
-  /**
-   *
-   * @param questions The questions to be stripped of blob URLs.
-   * @returns The questions with mediaSrc | Blob URLs stripped.
-   */
-  private stripQuestionsMediaSrc(questions: IQuestion[]): IQuestion[] {
-    return questions.map((question) => this.stripQuestionMediaSrc(question));
-  }
-
-  /**
-   *
-   * @param question The question to be stripped of blob URL.
-   * @returns The question with mediaSrc | Blob URL stripped.
-   */
-  private stripQuestionMediaSrc(question: IQuestion): IQuestion {
-    question.mediaSrc = undefined;
-    return question;
   }
 
 }

@@ -11,11 +11,11 @@ export class DialogService {
   constructor(
     private dialog: MatDialog
   ) { }
-  public async confirmationDialog(title?: string, message?: string): Promise<boolean> {
+  public async confirmationDialog(title?: string, description?: string): Promise<boolean> {
     const dialogRef = this.dialog.open(ConfirmationDialog, {
       data: {
         title: title,
-        message: message
+        description: description
       }
     });
     return firstValueFrom<boolean>(dialogRef.afterClosed());

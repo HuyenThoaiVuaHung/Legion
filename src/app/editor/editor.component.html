@@ -21,6 +21,11 @@
       </button>
     </h6>
     }
+    @else {
+      <h6>
+        Hãy chọn một trận đấu để chỉnh sửa
+      </h6>
+    }
   </div>
   <div class="w-full h-[calc(100%-6rem)] gap-10 flex-grow flex 2xl:mt-0 mt-5">
     <div class="min-w-[20rem] hidden 2xl:flex h-full">
@@ -34,7 +39,7 @@
             <a
               routerLinkActive
               #rla="routerLinkActive"
-              [disabled]="rla.isActive"
+              [disabled]="rla.isActive || !this.editorDataService.editorData"
               [routerLink]="item.nav"
               class="w-full !justify-start"
               mat-stroked-button
@@ -46,10 +51,13 @@
             <mat-divider></mat-divider>
             } }
           </div>
-          <div class="flex flex-grow items-end">
+          <div class="flex flex-col flex-grow justify-end">
+            <h6>
+              <strong>Trạng thái</strong>
+            </h6>
             <mat-card appearance="outlined">
               <mat-card-content>
-              Placeholder for status updator
+              {{this.editorStatusNameMap[editorDataService.editorStatus]}}
               </mat-card-content>
             </mat-card>
           </div>

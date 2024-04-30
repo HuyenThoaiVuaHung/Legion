@@ -19,13 +19,22 @@ export class FsService {
    * @returns {string} Blob URL of the file.
    */
   public async writeLocalFile(file: Blob, directory: string): Promise<string> {
-    const fsObject = ((await (await this.opfsRoot).getFileHandle(directory, { create: true })));
+
+    const fsObject = await this.getFileHandle(directory);
     const writeStream = (await fsObject.createWritable());
     await writeStream.write(file);
     await writeStream.close();
     return URL.createObjectURL((await fsObject.getFile()));
   }
 
+  public async deleteFile(directory: string): Promise<void> {
+    const parentDir = await this.getDirectoryHandle(directory.split('/').slice(0, -1).join('/'));
+    await parentDir.removeEntry(directory.split('/')[directory.split('/').length - 1]);
+  }
+  public async deleteDirectory(directory: string): Promise<void> {
+    const parentDir = await this.getDirectoryHandle(directory.split('/').slice(0, -1).join('/'));
+    await parentDir.removeEntry(directory.split('/')[directory.split('/').length - 1], { recursive: true });
+  }
 
   /**
    *
@@ -33,7 +42,7 @@ export class FsService {
    * @returns The Blob URL of specified file.
    */
   public async getBlobUrl(directory: string): Promise<string> {
-    const fsObject = ((await (await this.opfsRoot).getFileHandle(directory)));
+    const fsObject = await this.getFileHandle(directory);
     return URL.createObjectURL((await fsObject.getFile()));
   }
 
@@ -41,7 +50,24 @@ export class FsService {
    *
    */
   public async getFile(directory: string): Promise<File> {
-    const fsObject = ((await (await this.opfsRoot).getFileHandle(directory)));
+    const fsObject = await this.getFileHandle(directory);
     return (await fsObject.getFile());
+  }
+
+  private async getFileHandle(directory: string): Promise<FileSystemFileHandle> {
+    const tokens = directory.split('/');
+    let workingDir = await this.opfsRoot;
+    for (let i = 0; i < tokens.length - 2; i++) {
+      workingDir = await workingDir.getDirectoryHandle(tokens[i], { create: true });
+    }
+    return await workingDir.getFileHandle(tokens[tokens.length - 1], { create: true });
+  }
+  private async getDirectoryHandle(directory: string): Promise<FileSystemDirectoryHandle> {
+    const tokens = directory.split('/');
+    let workingDir = await this.opfsRoot;
+    for (let i = 0; i < tokens.length - 1; i++) {
+      workingDir = await workingDir.getDirectoryHandle(tokens[i], { create: true });
+    }
+    return workingDir;
   }
 }

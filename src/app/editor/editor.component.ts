@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { EditorStatus } from './services/enums/editor.enum';
 
 @Component({
   selector: 'app-editor',
@@ -58,5 +59,14 @@ export class EditorComponent implements OnInit {
     tt: 'Tăng tốc',
     vd: 'Về đích',
     chp: 'Câu hỏi phụ'
+  }
+  public readonly editorStatusEnum = EditorStatus;
+  public readonly editorStatusNameMap: { [key: string]: string } = {
+    [this.editorStatusEnum.UNLOADED]: 'Chưa tải dữ liệu',
+    [this.editorStatusEnum.LOADED]: 'Đã tải dữ liệu',
+    [this.editorStatusEnum.WORKING]: 'Đang lưu',
+    [this.editorStatusEnum.SAVED]: 'Đã lưu',
+    [this.editorStatusEnum.ERROR]: 'Lỗi',
+    [this.editorStatusEnum.UNSAVED]: 'Chưa lưu'
   }
 }

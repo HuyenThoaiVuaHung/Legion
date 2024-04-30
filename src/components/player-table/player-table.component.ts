@@ -39,6 +39,7 @@ import { MatDividerModule } from '@angular/material/divider';
 })
 export class PlayerTableComponent {
   @Input({ required: true }) players!: IPlayer[];
+  @Input() editable = true;
   @Output() playersChangeEvent = new EventEmitter<IPlayer[]>();
   save(){
     // TODO: Implement this method

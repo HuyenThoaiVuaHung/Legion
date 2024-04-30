@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { Router, Routes } from '@angular/router';
 import { EditorGeneralComponent } from './general/general.component';
 import { EditorKdComponent } from './kd/kd.component';
 import { EditorVcnvComponent } from './vcnv/vcnv.component';
@@ -6,39 +6,57 @@ import { EditorTtComponent } from './tt/tt.component';
 import { EditorVdComponent } from './vd/vd.component';
 import { EditorChpComponent } from './chp/chp.component';
 import { EditorDashboardComponent } from './dashboard/dashboard.component';
+import type { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { EditorDataService } from './services/editor.data.service';
+
+export const editorRouteGuard: CanActivateFn = (route, state,) => {
+  const editorDataSvc = inject(EditorDataService);
+  if (!editorDataSvc.editorData) {
+    const router = inject(Router);
+    router.navigate(['/editor'])
+    return false;
+  }
+  return true;
+};
 
 export const routes: Routes = [
   {
     path: '',
     component: EditorDashboardComponent
-   },
-   {
+  },
+  {
     path: 'general',
-    component: EditorGeneralComponent
-   },
-   {
+    component: EditorGeneralComponent,
+    canActivate: [editorRouteGuard]
+  },
+  {
     path: 'kd',
-    component: EditorKdComponent
-   },
-   {
+    component: EditorKdComponent,
+    canActivate: [editorRouteGuard]
+  },
+  {
     path: 'vcnv',
-    component: EditorVcnvComponent
-   },
-   {
+    component: EditorVcnvComponent,
+    canActivate: [editorRouteGuard]
+  },
+  {
     path: 'tt',
-    component: EditorTtComponent
-   },
-   {
+    component: EditorTtComponent,
+    canActivate: [editorRouteGuard]
+  },
+  {
     path: 'vd',
-    component: EditorVdComponent
-   },
-   {
+    component: EditorVdComponent,
+    canActivate: [editorRouteGuard]
+  },
+  {
     path: 'chp',
-    component: EditorChpComponent
-   },
-    {
-      path: '**',
-      redirectTo: '/404'
-    }
+    component: EditorChpComponent,
+    canActivate: [editorRouteGuard]
+  },
+  {
+    path: '**',
+    redirectTo: '/404'
+  }
 ];
-

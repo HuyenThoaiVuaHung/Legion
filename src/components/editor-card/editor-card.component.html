@@ -1,0 +1,30 @@
+@if (editorData) {
+<mat-card @fade appearance="outlined" class="group">
+  <mat-card-content>
+    <h6>
+      {{ editorData.matchData.matchName }}
+    </h6>
+    <player-table
+      [players]="editorData.matchData.players"
+      [editable]="false"
+    ></player-table>
+    <small>DEV {{ uid }}</small>
+  </mat-card-content>
+  <div
+    class="w-full z-50 bg-theme bg-opacity-10 !absolute flex justify-end items-end box-border p-2 gap-2 top-0 left-0 transition-opacity rounded-xl h-full opacity-0 group-hover:opacity-100"
+  >
+    <button mat-raised-button (click)="this.delete()">
+      <mat-icon>delete</mat-icon>
+      Xoá
+    </button>
+    <button mat-raised-button (click)="this.download()">
+      <mat-icon>file_download</mat-icon>
+      Lưu
+    </button>
+    <button mat-raised-button (click)="this.load()">
+      <mat-icon>file_open</mat-icon>
+      Mở
+    </button>
+  </div>
+</mat-card>
+}
