@@ -26,7 +26,15 @@
       <div class="w-full my-5 grid grid-flow-col">
         @for (player of this.editorDataService.editorData.matchData.players;
         track $index) {
-        <image-input class="border" [title]="player.name"> </image-input>
+        <image-input
+          class="border"
+          [src]="
+            editorDataService.editorData.uiConfig.miscImageSrc?.players? editorDataService.editorData.uiConfig.miscImageSrc?.players![$index] || '../../assets/misc/logo.png' : '../../assets/misc/logo.png'
+          "
+          (imageChangeEvent)="handleImageChange($event, 'players', $index)"
+          [title]="player.name"
+        >
+        </image-input>
         }
       </div>
     </div>
@@ -51,7 +59,12 @@
           class="w-[30rem]"
           subscriptSizing="dynamic"
         >
-          <input (change)="save()" [(ngModel)]="editorDataService.editorData.matchData.matchName" matInput placeholder="Tên trận đấu" />
+          <input
+            (ngModelChange)="save()"
+            [(ngModel)]="editorDataService.editorData.matchData.matchName"
+            matInput
+            placeholder="Tên trận đấu"
+          />
           <mat-label>Tên trận đấu</mat-label>
         </mat-form-field>
       </editor-item>
@@ -71,12 +84,14 @@
               this.matchVersionSnapshot =
                 this.editorDataService.editorData.matchData.matchVersion
             "
-            (selectionChange)="
+            (ngModelChange)="
               this.editorDataService.handleMatchVersionChange(
                 matchVersionSnapshot
               )
             "
-            [(ngModel)]="this.editorDataService.editorData.matchData.matchVersion"
+            [(ngModel)]="
+              this.editorDataService.editorData.matchData.matchVersion
+            "
           >
             <mat-option [value]="23">O23</mat-option>
             <mat-option [value]="24">O24</mat-option>
@@ -106,17 +121,21 @@
           class="w-[30rem]"
           subscriptSizing="dynamic"
         >
-          <mat-select matInput value="orange">
-            <mat-option value="red">Đỏ</mat-option>
-            <mat-option value="green">Xanh lá</mat-option>
-            <mat-option value="blue">Xanh biển</mat-option>
-            <mat-option value="yellow">Vàng</mat-option>
-            <mat-option value="cyan">Hatsune Miku</mat-option>
-            <mat-option value="magenta">Đỏ sậm</mat-option>
-            <mat-option value="orange">Cam</mat-option>
-            <mat-option value="chartreuse">Lục nhạt</mat-option>
-            <mat-option value="azure">Xanh ngọc</mat-option>
-            <mat-option value="violet">Violet</mat-option>
+          <mat-select
+            [(ngModel)]="editorDataService.editorData.uiConfig.pallette"
+            (ngModelChange)="save()"
+            matInput
+          >
+            <mat-option [value]="palettes.RED">Đỏ</mat-option>
+            <mat-option [value]="palettes.GREEN">Xanh lá</mat-option>
+            <mat-option [value]="palettes.BLUE">Xanh biển</mat-option>
+            <mat-option [value]="palettes.YELLOW">Vàng</mat-option>
+            <mat-option [value]="palettes.CYAN">Hatsune Miku</mat-option>
+            <mat-option [value]="palettes.MAGENTA">Đỏ sậm</mat-option>
+            <mat-option [value]="palettes.ORANGE">Cam</mat-option>
+            <mat-option [value]="palettes.CHARTREUSE">Lục nhạt</mat-option>
+            <mat-option [value]="palettes.AZURE">Xanh ngọc</mat-option>
+            <mat-option [value]="palettes.VIOLET">Violet</mat-option>
           </mat-select>
           <mat-label>Bảng màu chủ đạo</mat-label>
         </mat-form-field>
@@ -127,7 +146,10 @@
         description="Bật hoặc tắt chế độ tối cho giao diện trận đấu."
       >
         <div class="grid place-items-center w-max">
-          <mat-slide-toggle />
+          <mat-slide-toggle
+            (ngModelChange)="save()"
+            [(ngModel)]="editorDataService.editorData.uiConfig.darkMode"
+          />
         </div>
       </editor-item>
     </div>
@@ -135,24 +157,47 @@
       <image-input
         title="Logo"
         description="Sẽ xuất hiện như Watermark ở trong các câu hỏi."
-        src="../../assets/misc/logo.png"
+        [src]="
+          this.editorDataService.editorData.uiConfig.miscImageSrc?.logo
+            ? this.editorDataService.editorData.uiConfig.miscImageSrc?.logo!
+            : '../../assets/misc/logo.png'
+        "
+        (imageChangeEvent)="handleImageChange($event, 'logo')"
       />
       <image-input
         title="Logo dài"
         description="Sẽ xuất hiện ở màn hình chào."
-        src="../../assets/misc/legion.png"
+        [src]="
+          this.editorDataService.editorData.uiConfig.miscImageSrc?.['logo-long']
+            ? this.editorDataService.editorData.uiConfig.miscImageSrc
+                ?.['logo-long']!
+            : '../../assets/misc/legion.png'
+        "
+        (imageChangeEvent)="handleImageChange($event, 'logo-long')"
       />
     </div>
     <div class="mt-10 flex gap-6">
       <image-input
         title="Placeholder"
         description="Sẽ xuất hiện để che hình ảnh và video trước khi hiện trong phần thi Tăng Tốc và Về Đích."
-        src="../../assets/misc/placeholder.png"
+        [src]="
+          this.editorDataService.editorData.uiConfig.miscImageSrc?.placeholder
+            ? this.editorDataService.editorData.uiConfig.miscImageSrc
+                ?.placeholder!
+            : '../../assets/misc/placeholder.png'
+        "
+        (imageChangeEvent)="handleImageChange($event, 'placeholder')"
       />
       <image-input
         title="Hình nền"
         description="Sẽ xuất hiện xuyên suốt trong ứng dụng."
-        src="../../assets/misc/placeholder.png"
+        [src]="
+          this.editorDataService.editorData.uiConfig.miscImageSrc?.background
+            ? this.editorDataService.editorData.uiConfig.miscImageSrc
+                ?.background!
+            : '../../assets/misc/placeholder.png'
+        "
+        (imageChangeEvent)="handleImageChange($event, 'background')"
       />
     </div>
   </mat-expansion-panel>

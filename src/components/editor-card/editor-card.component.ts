@@ -37,24 +37,25 @@ import { Router } from '@angular/router';
 })
 export class EditorCardComponent implements OnInit {
   @Input({ required: true }) uid = '';
-  public editorData: IEditorData | undefined = undefined;
+  @Input() editorData: IEditorData | undefined = undefined;
   constructor(
     private editorDataService: EditorDataService,
     private router: Router
   ) {
+
   }
   async ngOnInit(): Promise<void> {
-    this.editorData = (await this.editorDataService.loadLocalEditorData(this.uid));
+    await this.editorDataService.loadLocalEditorData(this.uid).then((data) => this.editorData = data);
   }
   load() {
     if (this.editorData) this.editorDataService.setEditorData(this.editorData);
     if (this.editorDataService.editorData) this.router.navigate(['/editor/general']);
   }
-  async delete(){
+  async delete() {
     await this.editorDataService.deleteLocalEditorData(this.uid);
     this.editorDataService.loadAvailableEditorDataUids();
   }
-  download(){
+  download() {
     //TODO: Implement this method
     //this.editorDataService.downloadLocalEditorData(this.uid);
   }

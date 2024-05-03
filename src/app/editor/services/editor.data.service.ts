@@ -1,5 +1,5 @@
 import { O24ControlType } from './../kd/kd.component';
-import { Injectable } from '@angular/core';
+import { effect, Injectable } from '@angular/core';
 import { IEditorData } from '../../interfaces/editor.interface';
 import { Pallette } from '../../interfaces/config.interface';
 import {
@@ -17,12 +17,14 @@ import { MatSelectChange } from '@angular/material/select';
 @Injectable({
   providedIn: 'root',
 })
-export class 1EditorDataService {
+export class EditorDataService {
   constructor(
     private fs: FsService,
     private dialogService: DialogService,
     private media: EditorMediaService
-  ) {}
+  ) {
+    this.loadAvailableEditorDataUids();
+  }
 
   /**
    * The working editor data.
@@ -50,11 +52,12 @@ export class 1EditorDataService {
    *
    * @returns A new instance of IEditorData with default values.
    */
-  private provideNewEditorData(): IEditorData {
-    return {
+  public provideNewEditorData(): IEditorData {
+    const newEditorData: IEditorData = {
       uiConfig: {
         darkMode: true,
         pallette: Pallette.ROSE,
+        miscImageSrcNames: {}
       },
       matchData: {
         matchName: 'Welcome to Legion',
@@ -104,26 +107,15 @@ export class 1EditorDataService {
         },
       },
       uid: crypto.randomUUID(),
+      dateModified: Date.now(),
     };
+    return newEditorData;
   }
   /**
    *
    * @returns Creates a new instance of IQuestion with default values.
    */
-  public async createNewEditorDataInstance() {
-    const editorData = this.provideNewEditorData();
-    if (this.editorData && this.editorStatus === EditorStatus.UNSAVED) {
-      if (
-        await this.dialogService.confirmationDialog(
-          'Unsaved Changes',
-          'You have unsaved changes. Do you want to save them?'
-        )
-      ) {
-        await this.saveLocalEditorData(this.editorData);
-      }
-    }
-    return editorData;
-  }
+
   private readonly matchVersionChangeMessage = {
     title: 'Bạn có chắc không?',
     message: 'Điều này sẽ xoá toàn bộ dữ liệu của phần thi khởi động hiện tại.',
@@ -131,10 +123,10 @@ export class 1EditorDataService {
   public async handleMatchVersionChange(snapshot: 23 | 24) {
     if (this.editorData) {
       if (
-        await this.dialogService.confirmationDialog(
+        await this.dialogService.openConfirmationDialog(
           this.matchVersionChangeMessage.title,
           this.matchVersionChangeMessage.message
-        )
+        ) == true
       ) {
         this.editorData.questionBank.kd = {};
         if (this.editorData.matchData.matchVersion === 23) {
@@ -146,9 +138,8 @@ export class 1EditorDataService {
               [O24ControlType.SINGLEPLAYER]: Array(4).fill([]),
             };
           }
-          this.editorStatus = EditorStatus.UNSAVED;
-          await this.saveLocalEditorData(this.editorData);
         }
+        this.saveCurrentEditorData();
         //TODO: Implement value change for VCNV questions.
       } else {
         this.editorData.matchData.matchVersion = snapshot;
@@ -192,30 +183,45 @@ export class 1EditorDataService {
       localStorage.getItem('localEditorDataUids') as string
     ) as string[];
   }
+
+  private ioWorker: undefined | ReturnType<typeof setTimeout> = undefined;
+
   /**
-   *
-   * @param editorData The editor data to be saved to local storage.
-   * @returns A promise that resolves when the data is saved.
+   * Save the current editor data to local storage with debouncing.
    */
-  public async saveLocalEditorData(editorData: IEditorData) {
-    if (!localStorage.getItem('localEditorDataUids')) {
+  public  saveCurrentEditorData() {
+    //implement debouncing
+    if (this.editorData) {
+      clearInterval(this.ioWorker);
+      this.editorStatus = EditorStatus.WORKING;
+      this.ioWorker = setTimeout(async () => {
+        if (this.editorData) {
+          this.editorData.dateModified = Date.now();
+          await this.saveLocalEditorData(this.editorData);
+        }
+        else {
+          this.editorStatus = EditorStatus.ERROR;
+        }
+        this.editorStatus = EditorStatus.SAVED;
+      }, 500);
+    }
+  }
+  /**
+ *
+ * @param _editorData The editor data to be saved to local storage.
+ * @returns A promise that resolves when the data is saved.
+ */
+  public async saveLocalEditorData(_editorData: IEditorData) {
+    this.editorStatus = EditorStatus.WORKING;
+    await this.fs.writeLocalFile(new Blob([JSON.stringify(_editorData)]), `${_editorData.uid}/editor_data.json`);
+    if (!this.availableEditorDataUids) {
       localStorage.setItem('localEditorDataUids', JSON.stringify([]));
     }
-    const uids = JSON.parse(
-      localStorage.getItem('localEditorDataUids') as string
-    ) as string[];
-    if (!uids.includes(editorData.uid)) {
-      uids.push(editorData.uid);
-      localStorage.setItem('localEditorDataUids', JSON.stringify(uids));
+    if (!this.availableEditorDataUids.includes(_editorData.uid)) {
+      this.availableEditorDataUids.push(_editorData.uid);
+      localStorage.setItem('localEditorDataUids', JSON.stringify(this.availableEditorDataUids));
     }
-    this.fs
-      .writeLocalFile(
-        new Blob([JSON.stringify(editorData)]),
-        `${editorData.uid}/editor_data.json`
-      )
-      .then((val) => {
-        return val;
-      });
+    this.editorStatus = EditorStatus.SAVED;
   }
   /**
    *
@@ -226,12 +232,17 @@ export class 1EditorDataService {
     const editorData: IEditorData = JSON.parse(
       await (await this.fs.getFile(`${uid}/editor_data.json`)).text()
     ) as IEditorData;
-    console.log(editorData);
+    return this.resolveMediaSrcs(editorData);
+  }
+  public async resolveMediaSrcs(editorData: IEditorData) {
     editorData.questionBank = await this.media.resolveQuestionBankMediaSrc(
       editorData.questionBank,
       editorData.uid,
       editorData.matchData.matchVersion
     );
+    editorData.uiConfig.miscImageSrc = await this.media.resolveMiscMediaSrc(
+      editorData.uid,
+      editorData.uiConfig.miscImageSrcNames);
     return editorData;
   }
   /**
@@ -242,7 +253,7 @@ export class 1EditorDataService {
   public async deleteLocalEditorData(uid: string) {
     const editorData = await this.loadLocalEditorData(uid);
     if (
-      await this.dialogService.confirmationDialog(
+      await this.dialogService.openConfirmationDialog(
         'Xoá trận đấu?',
         `Bạn có muốn xoá trận đấu ${editorData.matchData.matchName} không?`
       )

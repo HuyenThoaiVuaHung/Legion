@@ -18,6 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDividerModule } from '@angular/material/divider';
+import { EditorDataService } from '../../app/editor/services/editor.data.service';
 @Component({
   selector: 'player-table',
   standalone: true,
@@ -42,12 +43,12 @@ export class PlayerTableComponent {
   @Input() editable = true;
   @Output() playersChangeEvent = new EventEmitter<IPlayer[]>();
   save(){
-    // TODO: Implement this method
+    this.editorDataService.saveCurrentEditorData();
   }
-  cancel(){
-    // TODO: Implement this method
-  }
-  constructor() { }
+
+  constructor(
+    private editorDataService: EditorDataService,
+  ) { }
   drop(event: CdkDragDrop<IPlayer[]>) {
     moveItemInArray(this.players, event.previousIndex, event.currentIndex);
     this.playersChangeEvent.emit(this.players);

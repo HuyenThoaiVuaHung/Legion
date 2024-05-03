@@ -1,20 +1,19 @@
 <div class="w-min min-w-[15rem] max-h-[30rem]">
   <div
     [ngClass]="{
-    'h-16': description,
-    'h-6': !description,
-    'h-0': !title
-  }"
+      'h-16': description,
+      'h-6': !description,
+      'h-0': !title
+    }"
     class="w-fit"
   >
     @if (title) {
-      <h6 class="">
-        <strong>
-          {{ title }}
-        </strong>
-      </h6>
-    }
-    @if (description){
+    <h6 class="">
+      <strong>
+        {{ title }}
+      </strong>
+    </h6>
+    } @if (description){
     <div class="text-wrap">
       {{ description }}
     </div>
@@ -34,4 +33,7 @@
     </div>
     <img src="{{ src }}" class="object-cover h-full w-max" />
   </div>
+  <small class="error-text">
+    {{ error }}
+  </small>
 </div>

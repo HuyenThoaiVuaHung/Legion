@@ -1,1 +1,9 @@
-<p>question-dialog works!</p>
+<h3 mat-dialog-title>
+  Tạo câu hỏi mới
+</h3>
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="w-full">
+    <input matInput placeholder="Nội dung câu hỏi" [(ngModel)]="data.question" />
+    <mat-label>Nội dung câu hỏi</mat-label>
+  </mat-form-field>
+</mat-dialog-content>

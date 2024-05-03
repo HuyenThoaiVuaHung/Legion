@@ -5,12 +5,13 @@ import {
   IQuestionBank,
 } from '../../interfaces/game.interface';
 import { FsService } from './fs.service';
+import { IMiscMedia } from '../../interfaces/config.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EditorMediaService {
-  constructor(public fs: FsService) {}
+  constructor(public fs: FsService) { }
   private getMediaType(ext: string): QuestionType {
     if (ext === 'mp4' || ext === 'webm' || ext === 'ogg')
       return QuestionType.VIDEO;
@@ -185,5 +186,35 @@ export class EditorMediaService {
   public stripQuestionMediaSrc(question: IQuestion): IQuestion {
     question.mediaSrc = undefined;
     return question;
+  }
+
+  public async resolveMiscMediaSrc(uid: string, mediaSrcName: IMiscMedia): Promise<IMiscMedia> {
+    const mediaSrc: IMiscMedia = { ...mediaSrcName, players: [...(mediaSrcName.players || [])] };
+
+    if (mediaSrcName['logo-long']) mediaSrc['logo-long'] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName['logo-long']}`);
+    if (mediaSrcName['logo']) mediaSrc['logo'] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName['logo']}`);
+    if (mediaSrcName['placeholder']) mediaSrc['placeholder'] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName['placeholder']}`);
+    if (mediaSrcName['background']) mediaSrc['background'] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName['background']}`);
+    if (mediaSrcName.players) {
+      for (let i = 0; i < Object.keys(mediaSrcName.players).length; i++) {
+        console.log(mediaSrcName.players[i],'resolving');
+        const blobUrl = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName.players[i]}`);
+        if (blobUrl && mediaSrc.players) mediaSrc.players[i] = blobUrl;
+      }
+    }
+    console.log(mediaSrc,'resolved');
+    return mediaSrc;
+  }
+  /**
+   *
+   * @param uid The uid of the editor data.
+   * @param key The key of the misc media.
+   * @param media The media to be set.
+   * @returns The mediaSrcName of the set media.
+   */
+  public async setMiscMedia(uid: string, media: File): Promise<string> {
+    const mediaSrcName = crypto.randomUUID() + '.' + media.name.split('.').pop();
+    await this.fs.writeLocalFile(media, `${uid}/misc/${mediaSrcName}`);
+    return mediaSrcName;
   }
 }

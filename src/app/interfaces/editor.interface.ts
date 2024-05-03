@@ -6,5 +6,7 @@ export interface IEditorData {
   uiConfig: IInterfaceConfig,
   matchData: IMatchData,
   questionBank: IQuestionBank,
-  uid: string
+  uid: string,
+  dateModified: number,
+
 }

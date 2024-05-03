@@ -25,12 +25,10 @@ export class EditorDashboardComponent {
     private router: Router,
     private fsService: FsService
   ){
-    this.editorDataService.loadAvailableEditorDataUids();
 
   }
   public async createNewEditorData(): Promise<void> {
-    await this.editorDataService.saveLocalEditorData(await this.editorDataService.createNewEditorDataInstance());
-    this.editorDataService.loadAvailableEditorDataUids();
+    await this.editorDataService.saveLocalEditorData(this.editorDataService.provideNewEditorData());
   }
   public async processEditorDataFile(){
     // const input = document.getElementById('editorFileInput');

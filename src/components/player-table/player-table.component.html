@@ -26,7 +26,7 @@
     [cdkDragDisabled]="!editable"
   >
     <div class="w-5/12 flex items-center h-full">
-      <editable [enabled]="editable" (save)="save()" (cancel)="cancel()">
+      <editable [enabled]="editable" (save)="save()">
         <ng-template viewMode>
           {{ player.name }}
         </ng-template>
@@ -44,7 +44,7 @@
     </div>
     <div class="w-3/12 flex items-center h-full">
       <strong>
-        <editable [enabled]="editable">
+        <editable [enabled]="editable" (save)="save()">
           <ng-template viewMode>
             {{ player.score }}
           </ng-template>
