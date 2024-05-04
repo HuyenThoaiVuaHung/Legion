@@ -1,9 +1,70 @@
-<h3 mat-dialog-title>
-  Tạo câu hỏi mới
-</h3>
-<mat-dialog-content>
-  <mat-form-field appearance="outline" class="w-full">
-    <input matInput placeholder="Nội dung câu hỏi" [(ngModel)]="data.question" />
-    <mat-label>Nội dung câu hỏi</mat-label>
-  </mat-form-field>
+<h3 mat-dialog-title>Tạo câu hỏi mới</h3>
+<mat-dialog-content class="box-border">
+  <div class="w-max flex flex-col 2xl:gap-3 2xl:flex-row h-full">
+    <!-- Question content -->
+    <form [formGroup]="questionForm" class="flex flex-col min-w-[20vw] gap-3">
+      <h3>Nội dung</h3>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Nội dung câu hỏi</mat-label>
+        <textarea matInput formControlName="question"></textarea>
+        <mat-error> Câu hỏi không được để trống. </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Đáp án</mat-label>
+        <textarea matInput formControlName="answer"></textarea>
+        <mat-error> Đáp án không được để trống. </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Điểm số</mat-label>
+        <input matInput type="number" formControlName="value" />
+      </mat-form-field>
+    </form>
+    <!-- Media attachments -->
+    <div class="w-full h-full min-w-80 max-w-96">
+      <h3 class="flex items-center justify-between">
+        Media
+        <button
+          (click)="uploadMedia()"
+          mat-stroked-button
+          matTooltip="Đính kèm media"
+        >
+          Đính kèm file mới
+          <mat-icon>attach_file</mat-icon>
+        </button>
+      </h3>
+
+      @if(media){
+      <div class="w-full">
+        @if(media.type.startsWith("video")){
+        <video
+          class="w-full rounded-xl"
+          controls
+          src="{{ mediaBlobUrl }}"
+        ></video>
+        } @if (media.type.startsWith("image")){
+        <img class="w-full bg-cover rounded-xl" src="{{ mediaBlobUrl }}" />
+        } @if (media.type.startsWith("audio")){
+        <audio
+          class="w-full rounded-xl"
+          controls
+          src="{{ mediaBlobUrl }}"
+        ></audio>
+        }
+      </div>
+      }
+    </div>
+  </div>
 </mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="undefined">Đóng</button>
+  <button
+    mat-button
+    [disabled]="questionForm.invalid"
+    [mat-dialog-close]="{
+      question: this.questionForm.value,
+      media: this.media,
+    }"
+  >
+    Tạo
+  </button>
+</mat-dialog-actions>

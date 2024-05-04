@@ -21,14 +21,14 @@ export interface IPlayer {
 }
 
 export interface IQuestionBank {
-  kd: KdQuestionsData;
-  vcnv: VcnvQuestionsData;
-  tt: TtQuestionData;
-  vd: VdQuestionsData;
-  chp: ChpQuestionsData;
+  kd: IKdQuestionsData;
+  vcnv: IVcnvQuestionData;
+  tt: ITtQuestionData;
+  vd: IVdQuestionData;
+  chp: IChpQuestionData;
 }
 
-export interface KdQuestionsData {
+export interface IKdQuestionsData {
   o24Questions?: {
     [O24ControlType.MULTIPLAYER]: IQuestion[];
     [O24ControlType.SINGLEPLAYER]: IQuestion[][];
@@ -36,17 +36,19 @@ export interface KdQuestionsData {
   o23Questions?: IQuestion[][];
 }
 
-export interface VcnvQuestionsData {
+export interface IVcnvQuestionData {
   questions: IQuestion[];
+  cnvMediaSrc?: string;
+  cnvMediaSrcName: string;
 }
 
-export interface TtQuestionData {
+export interface ITtQuestionData {
   questions: IQuestion[];
 }
-export interface VdQuestionsData {
+export interface IVdQuestionData {
   questions: IQuestion[][];
 }
-export interface ChpQuestionsData {
+export interface IChpQuestionData {
   questions: IQuestion[];
 }
 export interface IQuestion {

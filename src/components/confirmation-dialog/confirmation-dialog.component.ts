@@ -17,6 +17,6 @@ import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContainer, 
 })
 export class ConfirmationDialog {
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: {title: string, description?: string} = {title:'Bạn có chắc không?'}) { }
+    @Inject(MAT_DIALOG_DATA) public data: { title: string, description?: string } = { title: 'Bạn có chắc không?' }) { }
 
 }

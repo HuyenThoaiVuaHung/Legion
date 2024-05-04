@@ -1,5 +1,5 @@
 import { O24ControlType } from './../kd/kd.component';
-import { effect, Injectable } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 import { IEditorData } from '../../interfaces/editor.interface';
 import { Pallette } from '../../interfaces/config.interface';
 import {
@@ -95,6 +95,7 @@ export class EditorDataService {
         },
         vcnv: {
           questions: [],
+          cnvMediaSrcName: '',
         },
         tt: {
           questions: [],
@@ -189,7 +190,7 @@ export class EditorDataService {
   /**
    * Save the current editor data to local storage with debouncing.
    */
-  public  saveCurrentEditorData() {
+  public saveCurrentEditorData() {
     //implement debouncing
     if (this.editorData) {
       clearInterval(this.ioWorker);
@@ -268,4 +269,5 @@ export class EditorDataService {
       );
     }
   }
+
 }

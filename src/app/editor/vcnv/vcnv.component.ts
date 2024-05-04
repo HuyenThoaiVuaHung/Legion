@@ -15,41 +15,12 @@ import { ImageInputComponent } from '../../../components/image-input/image-input
   styleUrl: './vcnv.component.scss'
 })
 export class EditorVcnvComponent {
-  public questionData : IQuestion[] = [
-    {
-      question: 'What is the capital of France?',
-      answer: 'Paris',
-      value: 10,
-      type: QuestionType.TEXT,
-    },
-    {
-      question: 'What is the capital of France?',
-      answer: 'Paris',
-      value: 10,
-      type: QuestionType.TEXT,
-    },
-    {
-      question: 'What is the capital of France?',
-      answer: 'Paris',
-      value: 10,
-      type: QuestionType.TEXT,
-    },
-    {
-      question: 'What is the capital of France?',
-      answer: 'Paris',
-      value: 10,
-      type: QuestionType.TEXT,
-    },
-    {
-      question: 'What is the capital of France?',
-      answer: 'Paris',
-      value: 10,
-      type: QuestionType.TEXT,
-    },
-  ]
   constructor(
     public editorDataService : EditorDataService
   ){
 
+  }
+  save(){
+    this.editorDataService.saveCurrentEditorData();
   }
 }

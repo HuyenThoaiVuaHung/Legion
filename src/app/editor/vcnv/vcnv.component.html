@@ -1,3 +1,4 @@
+@if (editorDataService.editorData){
 <div class="w-full h-full gap-5 flex">
   <div class="flex flex-col flex-grow h-full">
     <h3>
@@ -5,15 +6,19 @@
     </h3>
     <question-table
       [allowDelete]="false"
-      [questions]="questionData"
+      [questions]="editorDataService.editorData.questionBank.vcnv.questions"
+      [allowCreate]="false"
+      (questionsChangeEvent)="save()"
     ></question-table>
   </div>
   <div class="min-w-[30rem]">
     <h3>
       <strong> Hình ảnh CNV </strong>
     </h3>
-    <div class=" min-h-[18rem] rounded-xl">
+    <div class="min-h-[18rem] rounded-xl">
       <image-input src="https://picsum.photos/1920/1080"></image-input>
     </div>
   </div>
 </div>
+
+}

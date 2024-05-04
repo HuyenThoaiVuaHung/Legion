@@ -12,26 +12,24 @@ import { IMiscMedia } from '../../interfaces/config.interface';
 })
 export class EditorMediaService {
   constructor(public fs: FsService) { }
-  private getMediaType(ext: string): QuestionType {
-    if (ext === 'mp4' || ext === 'webm' || ext === 'ogg')
-      return QuestionType.VIDEO;
-    if (ext === 'png' || ext === 'jpg' || ext === 'jpeg' || ext === 'gif')
-      return QuestionType.IMAGE;
-    if (ext === 'mp3' || ext === 'wav' || ext === 'ogg')
-      return QuestionType.AUDIO;
+  private getMediaType(filetype: string): QuestionType {
+    if (filetype.startsWith('image')) return QuestionType.IMAGE;
+    if (filetype.startsWith('video')) return QuestionType.VIDEO;
+    if (filetype.startsWith('audio')) return QuestionType.AUDIO;
     return QuestionType.TEXT;
   }
   public async handleQuestionMedia(
     question: IQuestion,
-    kind: 'kd' | 'vcnv' | 'tt' | 'vd',
-    media: File
+    media: File,
+    kind: 'kd' | 'vcnv' | 'tt' | 'vd' | 'chp',
+    uid: string
   ): Promise<IQuestion> {
     const ext = media.name.split('.').pop();
-    if (!ext) return question;
-    const mediaType = this.getMediaType(ext);
-    if (mediaType === QuestionType.TEXT) return question;
+    question.type = this.getMediaType(media.type);
+    console.log(question.type, media.type, 'type');
+    if (question.type === QuestionType.TEXT) return question;
     question.mediaSrcName = crypto.randomUUID() + '.' + ext;
-    this.fs.writeLocalFile(media, `${kind}/${question.mediaSrcName}`);
+    await this.fs.writeLocalFile(media, `${uid}/${kind}/${question.mediaSrcName}`);
     return question;
   }
   /**
@@ -91,6 +89,9 @@ export class EditorMediaService {
       'vcnv',
       dataUid
     );
+    questionBank.vcnv.cnvMediaSrc = await this.fs.getBlobUrl(
+      `${dataUid}/vcnv/${questionBank.vcnv.cnvMediaSrcName}`
+    );
     questionBank.tt.questions = await this.resolveQuestionsMediaSrc(
       questionBank.tt.questions,
       'tt',
@@ -108,6 +109,7 @@ export class EditorMediaService {
                 await this.resolveQuestionsMediaSrc(questions, 'kd', dataUid)
             )
           );
+          console.log(questionBank.kd.o23Questions, 'resolved');
         } else throw new Error('Invalid question bank version');
       } else if (ver === 24) {
         if (questionBank.kd.o24Questions) {
@@ -197,12 +199,12 @@ export class EditorMediaService {
     if (mediaSrcName['background']) mediaSrc['background'] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName['background']}`);
     if (mediaSrcName.players) {
       for (let i = 0; i < Object.keys(mediaSrcName.players).length; i++) {
-        console.log(mediaSrcName.players[i],'resolving');
+        console.log(mediaSrcName.players[i], 'resolving');
         const blobUrl = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName.players[i]}`);
         if (blobUrl && mediaSrc.players) mediaSrc.players[i] = blobUrl;
       }
     }
-    console.log(mediaSrc,'resolved');
+    console.log(mediaSrc, 'resolved');
     return mediaSrc;
   }
   /**

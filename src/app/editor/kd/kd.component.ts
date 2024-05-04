@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { EditorDataService } from '../services/editor.data.service';
 import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +18,7 @@ import { IQuestion, QuestionType } from '../../interfaces/game.interface';
     MatButtonModule,
     MatIconModule,
     QuestionTableComponent,
+    MatIconModule
   ],
   templateUrl: './kd.component.html',
   styleUrl: './kd.component.scss',
@@ -36,6 +37,13 @@ export class EditorKdComponent {
   public readonly controlType = O24ControlType;
 
   constructor(public editorDataService: EditorDataService) {}
+  public save(){
+    this.editorDataService.saveCurrentEditorData();
+  }
+  public changeO23QuestionPackIndex(index: number){
+    this.selectedO23QuestionPack = index;
+
+  }
 }
 export enum O24ControlType {
   SINGLEPLAYER = 'SINGLEPLAYER',

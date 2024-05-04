@@ -18,11 +18,14 @@
 >
   @for (question of questions; track $index) {
   <div
-    class="w-full flex-1 group table-item item-border mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
+    class="w-full flex-1 group table-item item-shadow mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
     cdkDrag
   >
     <div
-      [ngClass]="{'justify-between items-center': mediaPlacement === 'inline', 'flex-col': mediaPlacement === 'under'}"
+      [ngClass]="{
+        'justify-between items-center': mediaPlacement === 'inline',
+        'flex-col': mediaPlacement === 'under'
+      }"
       class="w-6/12 flex pr-10 box-border h-full"
     >
       <editable
@@ -95,7 +98,9 @@
         </ng-template>
       </editable>
     </div>
-    <div class="flex flex-grow items-center group-hover:opacity-100 opacity-0 transition-opacity">
+    <div
+      class="flex flex-grow items-center group-hover:opacity-100 opacity-0 transition-opacity"
+    >
       <button *ngIf="allowDelete" mat-icon-button matTooltip="Xoá câu hỏi">
         <mat-icon>delete</mat-icon>
       </button>
@@ -103,10 +108,23 @@
         <mat-icon>attach_file</mat-icon>
       </button>
       <div class="flex flex-grow"></div>
-      <mat-icon class="cursor-move" cdkDragHandle matTooltip="Kéo để di chuyển vị trí câu hỏi"
+      <mat-icon
+        class="cursor-move"
+        cdkDragHandle
+        matTooltip="Kéo để di chuyển vị trí câu hỏi"
         >drag_indicator</mat-icon
       >
     </div>
   </div>
   }
+  <div
+    class="w-full flex-1 table-item mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
+  >
+    <div class="w-full h-full flex justify-end items-center">
+      <button mat-button (click)="add()">
+        <mat-icon>add</mat-icon>
+        Tạo câu hỏi mới
+      </button>
+    </div>
+  </div>
 </div>

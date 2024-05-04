@@ -22,8 +22,13 @@ export class DialogService {
     });
     return lastValueFrom<boolean>(dialogRef.afterClosed());
   }
-  public async openQuestionDialog(): Promise<IQuestion | undefined> {
-    const dialogRef = this.dialog.open(QuestionDialog);
-    return lastValueFrom<IQuestion | undefined>(dialogRef.afterClosed());
+  public async openQuestionDialog(question?: IQuestion): Promise<{question: IQuestion; media: File} | undefined> {
+    const dialogRef = this.dialog.open(QuestionDialog, {
+      data: question,
+      maxWidth: 'max-content',
+    });
+    const result = await lastValueFrom<{question: IQuestion; media: File} | undefined>(dialogRef.afterClosed());
+    console.log(result);
+    return result;
   }
 }
