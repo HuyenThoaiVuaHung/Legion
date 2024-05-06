@@ -8,6 +8,7 @@
       [allowDelete]="false"
       [questions]="editorDataService.editorData.questionBank.vcnv.questions"
       [allowCreate]="false"
+      context="vcnv"
       (questionsChangeEvent)="save()"
     ></question-table>
   </div>
@@ -16,7 +17,11 @@
       <strong> Hình ảnh CNV </strong>
     </h3>
     <div class="min-h-[18rem] rounded-xl">
-      <image-input src="https://picsum.photos/1920/1080"></image-input>
+      <image-input
+        [src]="editorDataService.editorData.questionBank.vcnv.cnvMediaSrc"
+        (imageChangeEvent)="handleImageChange($event)"
+      ></image-input>
+
     </div>
   </div>
 </div>

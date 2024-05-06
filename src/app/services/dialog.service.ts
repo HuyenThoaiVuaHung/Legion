@@ -4,6 +4,7 @@ import { ConfirmationDialog } from '../../components/confirmation-dialog/confirm
 import { lastValueFrom } from 'rxjs';
 import { IQuestion } from '../interfaces/game.interface';
 import { QuestionDialog } from '../../components/question-dialog/question-dialog.component';
+import { ImageCropDialog } from '../../components/image-crop-dialog/image-crop-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -30,5 +31,15 @@ export class DialogService {
     const result = await lastValueFrom<{question: IQuestion; media: File} | undefined>(dialogRef.afterClosed());
     console.log(result);
     return result;
+  }
+  public async openCropDialog(image: File, aspectRatioX: number = 16, aspectRatioY: number = 9): Promise<File | undefined> {
+    const dialogRef = this.dialog.open(ImageCropDialog, {
+      data: {
+        image: image,
+        aspectRatioX: aspectRatioX,
+        aspectRatioY: aspectRatioY
+      }
+    });
+    return lastValueFrom<File | undefined>(dialogRef.afterClosed());
   }
 }

@@ -56,11 +56,11 @@ export class EditorGeneralComponent {
   }
   public async handleImageChange(file: File, type: keyof IMiscMedia, index?: number) {
     if (this.editorDataService.editorData) {
-      if (type !== 'players') this.editorDataService.editorData.uiConfig.miscImageSrcNames[type] = await this.mediaService.setMiscMedia(this.editorDataService.editorData?.uid!, file);
+      if (type !== 'players') this.editorDataService.editorData.uiConfig.miscImageSrcNames[type] = await this.mediaService.setMedia(this.editorDataService.editorData?.uid!, file, 'misc');
       else {
         if (!this.editorDataService.editorData.uiConfig.miscImageSrcNames.players) this.editorDataService.editorData.uiConfig.miscImageSrcNames.players = new Array(this.editorDataService.editorData.matchData.players.length).fill('');
 
-        const fn = await this.mediaService.setMiscMedia(this.editorDataService.editorData?.uid!, file);
+        const fn = await this.mediaService.setMedia(this.editorDataService.editorData?.uid!, file, 'misc');
         this.editorDataService.editorData.uiConfig.miscImageSrcNames.players[index!] = fn;
         console.log(fn, type, index, 'check')
         console.log(this.editorDataService.editorData.uiConfig.miscImageSrcNames, 'check');

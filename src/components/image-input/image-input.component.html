@@ -31,7 +31,7 @@
         Tải ảnh mới
       </button>
     </div>
-    <img src="{{ src }}" class="object-cover h-full w-max" />
+    <img src="{{ src? src : '../../assets/misc/logo.png' }}" class="object-cover h-full w-max" />
   </div>
   <small class="error-text">
     {{ error }}

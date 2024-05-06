@@ -15,9 +15,11 @@ import { MatInputModule } from '@angular/material/input';
 export class ImageInputComponent {
   @Input() title: string | undefined;
   @Input() description: string | undefined;
-  @Input() src: string = '../../assets/misc/logo.png';
+  @Input() src: string | undefined;
   @Output() imageChangeEvent = new EventEmitter<File>();
-  public error : string | undefined;
+  constructor() {
+  }
+  public error: string | undefined;
   public handleImageInput() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -25,7 +27,7 @@ export class ImageInputComponent {
     input.onchange = () => {
       const file = input.files?.[0];
       if (file) {
-        if(['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].indexOf(file.type) === -1){
+        if (['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].indexOf(file.type) === -1) {
           this.error = 'Invalid file type. Please upload a valid image file.';
           return;
         }

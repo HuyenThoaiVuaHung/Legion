@@ -28,8 +28,7 @@ export class EditorMediaService {
     question.type = this.getMediaType(media.type);
     console.log(question.type, media.type, 'type');
     if (question.type === QuestionType.TEXT) return question;
-    question.mediaSrcName = crypto.randomUUID() + '.' + ext;
-    await this.fs.writeLocalFile(media, `${uid}/${kind}/${question.mediaSrcName}`);
+    question.mediaSrcName = await this.setMedia(uid, media, kind);
     return question;
   }
   /**
@@ -89,7 +88,7 @@ export class EditorMediaService {
       'vcnv',
       dataUid
     );
-    questionBank.vcnv.cnvMediaSrc = await this.fs.getBlobUrl(
+    if (questionBank.vcnv.cnvMediaSrcName != '') questionBank.vcnv.cnvMediaSrc = await this.fs.getBlobUrl(
       `${dataUid}/vcnv/${questionBank.vcnv.cnvMediaSrcName}`
     );
     questionBank.tt.questions = await this.resolveQuestionsMediaSrc(
@@ -210,13 +209,12 @@ export class EditorMediaService {
   /**
    *
    * @param uid The uid of the editor data.
-   * @param key The key of the misc media.
    * @param media The media to be set.
    * @returns The mediaSrcName of the set media.
    */
-  public async setMiscMedia(uid: string, media: File): Promise<string> {
+  public async setMedia(uid: string, media: File, kind: 'kd' | 'vcnv' | 'tt' | 'vd' | 'chp' | 'misc'): Promise<string> {
     const mediaSrcName = crypto.randomUUID() + '.' + media.name.split('.').pop();
-    await this.fs.writeLocalFile(media, `${uid}/misc/${mediaSrcName}`);
+    await this.fs.writeLocalFile(media, `${uid}/${kind}/${mediaSrcName}`);
     return mediaSrcName;
   }
 }

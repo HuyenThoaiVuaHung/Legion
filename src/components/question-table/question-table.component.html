@@ -111,12 +111,13 @@
       <mat-icon
         class="cursor-move"
         cdkDragHandle
+        [cdkDragHandleDisabled]="($index === 4 && context === 'vcnv')"
         matTooltip="Kéo để di chuyển vị trí câu hỏi"
         >drag_indicator</mat-icon
       >
     </div>
   </div>
-  }
+  } @if(allowCreate){
   <div
     class="w-full flex-1 table-item mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
   >
@@ -127,4 +128,5 @@
       </button>
     </div>
   </div>
+  }
 </div>

@@ -94,11 +94,29 @@ export class EditorDataService {
           },
         },
         vcnv: {
-          questions: [],
+          questions: [
+            ...Array(4).fill(null).map(() => ({
+              question: '',
+              answer: '',
+              type: QuestionType.TEXT,
+              value: 10,
+            })),
+            {
+              question: 'Nhập chướng ngại vật bằng cách sửa đáp án câu hỏi này.',
+              answer: '',
+              type: QuestionType.TEXT,
+              value: 0,
+            }
+          ],
           cnvMediaSrcName: '',
         },
         tt: {
-          questions: [],
+          questions: Array(4).fill(null).map(() => ({
+            question: '',
+            answer: '',
+            type: QuestionType.IMAGE,
+            value: 10,
+          })),
         },
         vd: {
           questions: [],

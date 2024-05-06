@@ -1,6 +1,6 @@
 {
-  "name": "relegion",
-  "version": "0.0.0",
+  "name": "legion",
+  "version": "2.0.0b0.1.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -26,6 +26,7 @@
     "animate.css": "^4.1.1",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
+    "ngx-image-cropper": "^7.2.1",
     "rxjs": "~7.8.0",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
