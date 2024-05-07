@@ -11,7 +11,7 @@ import { IMiscMedia } from '../../interfaces/config.interface';
   providedIn: 'root',
 })
 export class EditorMediaService {
-  constructor(public fs: FsService) { }
+  constructor(public fs: FsService) {}
   private getMediaType(filetype: string): QuestionType {
     if (filetype.startsWith('image')) return QuestionType.IMAGE;
     if (filetype.startsWith('video')) return QuestionType.VIDEO;
@@ -88,9 +88,12 @@ export class EditorMediaService {
       'vcnv',
       dataUid
     );
-    if (questionBank.vcnv.cnvMediaSrcName != '') questionBank.vcnv.cnvMediaSrc = await this.fs.getBlobUrl(
-      `${dataUid}/vcnv/${questionBank.vcnv.cnvMediaSrcName}`
-    );
+    questionBank.vcnv.cnvMediaSrcs = [];
+    for (let src of questionBank.vcnv.cnvMediaSrcNames) {
+      questionBank.vcnv.cnvMediaSrcs.push(
+        (await this.fs.getBlobUrl(`${dataUid}/vcnv/${src}`)) || ''
+      );
+    }
     questionBank.tt.questions = await this.resolveQuestionsMediaSrc(
       questionBank.tt.questions,
       'tt',
@@ -129,7 +132,90 @@ export class EditorMediaService {
     }
     return questionBank;
   }
+  public async handleCnvMedia(file: File, uid: string): Promise<string[]> {
+    const mediaSrcNames: string[] = [];
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.setAttribute('crossorigin', 'anonymous');
+    const width = (canvas.width = 1920);
+    const height = (canvas.height = 1080);
+    const canvasImgBlob = async () => {
+      return await new Promise<Blob>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob!));
+      });
+    };
+    // First corner
+    await this.wait(500);
+    ctx.drawImage(img, 0, 0, width, height);
+    ctx.clearRect(width / 4, height / 4, (width * 3) / 4, (height * 3) / 4);
+    ctx.clearRect(0, height / 2, (width * 3) / 4, (height * 3) / 4);
+    ctx.clearRect(width / 2, 0, (width * 3) / 4, (height * 3) / 4);
+    mediaSrcNames.push(
+      await this.setMedia(
+        uid,
+        new File([await canvasImgBlob()], crypto.randomUUID() + '.png'),
+        'vcnv'
+      )
+    );
+    // Second corner
+    ctx.drawImage(img, 0, 0, width, height);
+    ctx.clearRect(0, height / 4, (width * 3) / 4, (height * 3) / 4);
+    ctx.clearRect(0, 0, (width * 2) / 4, (height * 3) / 4);
+    ctx.clearRect((width * 3) / 4, height / 2, width, (height * 3) / 4);
+    mediaSrcNames.push(
+      await this.setMedia(
+        uid,
+        new File([await canvasImgBlob()], crypto.randomUUID() + '.png'),
+        'vcnv'
+      )
+    );
+    ctx.drawImage(img, 0, 0, width, height);
 
+    // Third corner
+    ctx.clearRect(0, 0, (width * 3) / 4, (height * 3) / 4);
+    ctx.clearRect(0, (height * 3) / 4, (width * 2) / 4, (height * 3) / 4);
+    ctx.clearRect((width * 3) / 4, 0, width / 4, (height * 1) / 2);
+    mediaSrcNames.push(
+      await this.setMedia(
+        uid,
+        new File([await canvasImgBlob()], crypto.randomUUID() + '.png'),
+        'vcnv'
+      )
+    );
+    ctx.drawImage(img, 0, 0, width, height);
+
+    // Fourth corner
+    ctx.clearRect(width / 4, 0, (width * 3) / 4, (height * 3) / 4);
+    ctx.clearRect(0, 0, width / 4, height / 2);
+    ctx.clearRect(width / 2, (height * 3) / 4, width / 2, height / 4);
+    mediaSrcNames.push(
+      await this.setMedia(
+        uid,
+        new File([await canvasImgBlob()], crypto.randomUUID() + '.png'),
+        'vcnv'
+      )
+    );
+
+    ctx.drawImage(img, 0, 0, width, height);
+
+    // Middle piece
+    ctx.clearRect(0, 0, width, height);
+    ctx.beginPath();
+    ctx.rect((width * 1) / 4, (height * 1) / 4, width / 2, height / 2);
+    ctx.clip();
+    ctx.drawImage(img, 0, 0, width, height);
+    mediaSrcNames.push(
+      await this.setMedia(
+        uid,
+        new File([await canvasImgBlob()], crypto.randomUUID + '.png'),
+        'vcnv'
+      )
+    );
+
+    return mediaSrcNames;
+  }
   /**
    *
    * @param questionBank The question bank to be stripped of blob URLs.
@@ -152,15 +238,16 @@ export class EditorMediaService {
     if (ver) {
       if (ver === 23) {
         if (questionBank.kd.o23Questions) {
-          questionBank.kd.o23Questions = questionBank.kd.o23Questions.map((questions) =>
-            this.stripQuestionsMediaSrc(questions)
+          questionBank.kd.o23Questions = questionBank.kd.o23Questions.map(
+            (questions) => this.stripQuestionsMediaSrc(questions)
           );
         } else throw new Error('Invalid question bank version');
       } else if (ver === 24) {
         if (questionBank.kd.o24Questions) {
-          questionBank.kd.o24Questions.MULTIPLAYER = this.stripQuestionsMediaSrc(
-            questionBank.kd.o24Questions.MULTIPLAYER
-          );
+          questionBank.kd.o24Questions.MULTIPLAYER =
+            this.stripQuestionsMediaSrc(
+              questionBank.kd.o24Questions.MULTIPLAYER
+            );
           questionBank.kd.o24Questions.SINGLEPLAYER.map((questions) =>
             this.stripQuestionsMediaSrc(questions)
           );
@@ -169,7 +256,9 @@ export class EditorMediaService {
     }
     return questionBank;
   }
-
+  async wait(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
   /**
    *
    * @param questions The questions to be stripped of blob URLs.
@@ -189,17 +278,37 @@ export class EditorMediaService {
     return question;
   }
 
-  public async resolveMiscMediaSrc(uid: string, mediaSrcName: IMiscMedia): Promise<IMiscMedia> {
-    const mediaSrc: IMiscMedia = { ...mediaSrcName, players: [...(mediaSrcName.players || [])] };
+  public async resolveMiscMediaSrc(
+    uid: string,
+    mediaSrcName: IMiscMedia
+  ): Promise<IMiscMedia> {
+    const mediaSrc: IMiscMedia = {
+      ...mediaSrcName,
+      players: [...(mediaSrcName.players || [])],
+    };
 
-    if (mediaSrcName['logo-long']) mediaSrc['logo-long'] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName['logo-long']}`);
-    if (mediaSrcName['logo']) mediaSrc['logo'] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName['logo']}`);
-    if (mediaSrcName['placeholder']) mediaSrc['placeholder'] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName['placeholder']}`);
-    if (mediaSrcName['background']) mediaSrc['background'] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName['background']}`);
+    if (mediaSrcName['logo-long'])
+      mediaSrc['logo-long'] = await this.fs.getBlobUrl(
+        `${uid}/misc/${mediaSrcName['logo-long']}`
+      );
+    if (mediaSrcName['logo'])
+      mediaSrc['logo'] = await this.fs.getBlobUrl(
+        `${uid}/misc/${mediaSrcName['logo']}`
+      );
+    if (mediaSrcName['placeholder'])
+      mediaSrc['placeholder'] = await this.fs.getBlobUrl(
+        `${uid}/misc/${mediaSrcName['placeholder']}`
+      );
+    if (mediaSrcName['background'])
+      mediaSrc['background'] = await this.fs.getBlobUrl(
+        `${uid}/misc/${mediaSrcName['background']}`
+      );
     if (mediaSrcName.players) {
       for (let i = 0; i < Object.keys(mediaSrcName.players).length; i++) {
         console.log(mediaSrcName.players[i], 'resolving');
-        const blobUrl = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName.players[i]}`);
+        const blobUrl = await this.fs.getBlobUrl(
+          `${uid}/misc/${mediaSrcName.players[i]}`
+        );
         if (blobUrl && mediaSrc.players) mediaSrc.players[i] = blobUrl;
       }
     }
@@ -212,8 +321,13 @@ export class EditorMediaService {
    * @param media The media to be set.
    * @returns The mediaSrcName of the set media.
    */
-  public async setMedia(uid: string, media: File, kind: 'kd' | 'vcnv' | 'tt' | 'vd' | 'chp' | 'misc'): Promise<string> {
-    const mediaSrcName = crypto.randomUUID() + '.' + media.name.split('.').pop();
+  public async setMedia(
+    uid: string,
+    media: File,
+    kind: 'kd' | 'vcnv' | 'tt' | 'vd' | 'chp' | 'misc'
+  ): Promise<string> {
+    const mediaSrcName =
+      crypto.randomUUID() + '.' + media.name.split('.').pop();
     await this.fs.writeLocalFile(media, `${uid}/${kind}/${mediaSrcName}`);
     return mediaSrcName;
   }

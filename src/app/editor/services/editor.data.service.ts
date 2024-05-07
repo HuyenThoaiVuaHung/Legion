@@ -57,7 +57,7 @@ export class EditorDataService {
       uiConfig: {
         darkMode: true,
         pallette: Pallette.ROSE,
-        miscImageSrcNames: {}
+        miscImageSrcNames: {},
       },
       matchData: {
         matchName: 'Welcome to Legion',
@@ -95,28 +95,35 @@ export class EditorDataService {
         },
         vcnv: {
           questions: [
-            ...Array(4).fill(null).map(() => ({
-              question: '',
-              answer: '',
-              type: QuestionType.TEXT,
-              value: 10,
-            })),
+            ...Array(4)
+              .fill(null)
+              .map(() => ({
+                question: '',
+                answer: '',
+                type: QuestionType.TEXT,
+                value: 10,
+              })),
             {
-              question: 'Nhập chướng ngại vật bằng cách sửa đáp án câu hỏi này.',
+              question:
+                'Nhập chướng ngại vật bằng cách sửa đáp án câu hỏi này.',
               answer: '',
               type: QuestionType.TEXT,
               value: 0,
-            }
+            },
           ],
-          cnvMediaSrcName: '',
+          cnvMediaSrcNames: Array(5)
+            .fill(null)
+            .map(() => ''),
         },
         tt: {
-          questions: Array(4).fill(null).map(() => ({
-            question: '',
-            answer: '',
-            type: QuestionType.IMAGE,
-            value: 10,
-          })),
+          questions: Array(4)
+            .fill(null)
+            .map(() => ({
+              question: '',
+              answer: '',
+              type: QuestionType.IMAGE,
+              value: 10,
+            })),
         },
         vd: {
           questions: [],
@@ -142,10 +149,10 @@ export class EditorDataService {
   public async handleMatchVersionChange(snapshot: 23 | 24) {
     if (this.editorData) {
       if (
-        await this.dialogService.openConfirmationDialog(
+        (await this.dialogService.openConfirmationDialog(
           this.matchVersionChangeMessage.title,
           this.matchVersionChangeMessage.message
-        ) == true
+        )) == true
       ) {
         this.editorData.questionBank.kd = {};
         if (this.editorData.matchData.matchVersion === 23) {
@@ -217,8 +224,7 @@ export class EditorDataService {
         if (this.editorData) {
           this.editorData.dateModified = Date.now();
           await this.saveLocalEditorData(this.editorData);
-        }
-        else {
+        } else {
           this.editorStatus = EditorStatus.ERROR;
         }
         this.editorStatus = EditorStatus.SAVED;
@@ -226,19 +232,25 @@ export class EditorDataService {
     }
   }
   /**
- *
- * @param _editorData The editor data to be saved to local storage.
- * @returns A promise that resolves when the data is saved.
- */
+   *
+   * @param _editorData The editor data to be saved to local storage.
+   * @returns A promise that resolves when the data is saved.
+   */
   public async saveLocalEditorData(_editorData: IEditorData) {
     this.editorStatus = EditorStatus.WORKING;
-    await this.fs.writeLocalFile(new Blob([JSON.stringify(_editorData)]), `${_editorData.uid}/editor_data.json`);
+    await this.fs.writeLocalFile(
+      new Blob([JSON.stringify(_editorData)]),
+      `${_editorData.uid}/editor_data.json`
+    );
     if (!this.availableEditorDataUids) {
       localStorage.setItem('localEditorDataUids', JSON.stringify([]));
     }
     if (!this.availableEditorDataUids.includes(_editorData.uid)) {
       this.availableEditorDataUids.push(_editorData.uid);
-      localStorage.setItem('localEditorDataUids', JSON.stringify(this.availableEditorDataUids));
+      localStorage.setItem(
+        'localEditorDataUids',
+        JSON.stringify(this.availableEditorDataUids)
+      );
     }
     this.editorStatus = EditorStatus.SAVED;
   }
@@ -261,7 +273,8 @@ export class EditorDataService {
     );
     editorData.uiConfig.miscImageSrc = await this.media.resolveMiscMediaSrc(
       editorData.uid,
-      editorData.uiConfig.miscImageSrcNames);
+      editorData.uiConfig.miscImageSrcNames
+    );
     return editorData;
   }
   /**
@@ -287,5 +300,4 @@ export class EditorDataService {
       );
     }
   }
-
 }

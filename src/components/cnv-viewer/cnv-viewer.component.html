@@ -1,0 +1,14 @@
+@if(valid){
+<div class="!aspect-video w-full min-w-96 relative">
+  @for (_ of [1,2,3,4,5]; track $index) {
+  <div class="absolute w-full h-full top-0 left-0 !aspect-video">
+    @if(cnvMediaSrcs[_-1] !== '') {
+      <img
+      [src]="cnvMediaSrcs[_ - 1]"
+      class="w-full h-full object-cover"
+    />}
+  </div>
+  }
+</div>
+
+}

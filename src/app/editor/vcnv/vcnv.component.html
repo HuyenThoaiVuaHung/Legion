@@ -15,13 +15,25 @@
   <div class="min-w-[30rem]">
     <h3>
       <strong> Hình ảnh CNV </strong>
+      <button mat-stroked-button (click)="handleNewImage()">
+        <mat-icon>add</mat-icon>
+        Thêm hình ảnh
+      </button>
     </h3>
     <div class="min-h-[18rem] rounded-xl">
-      <image-input
-        [src]="editorDataService.editorData.questionBank.vcnv.cnvMediaSrc"
-        (imageChangeEvent)="handleImageChange($event)"
-      ></image-input>
-
+      @if (imageProccessing) {
+      <mat-progress-spinner
+        mode="indeterminate"
+        color="primary"
+      ></mat-progress-spinner>
+      } @else {
+      <cnv-viewer
+        [cnvMediaSrcs]="
+          editorDataService.editorData.questionBank.vcnv.cnvMediaSrcs || []
+        "
+      >
+      </cnv-viewer>
+      }
     </div>
   </div>
 </div>

@@ -38,8 +38,8 @@ export interface IKdQuestionsData {
 
 export interface IVcnvQuestionData {
   questions: IQuestion[];
-  cnvMediaSrc?: string;
-  cnvMediaSrcName: string;
+  cnvMediaSrcs?: string[];
+  cnvMediaSrcNames: string[];
 }
 
 export interface ITtQuestionData {

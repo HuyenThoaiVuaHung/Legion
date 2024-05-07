@@ -69,4 +69,8 @@ export class EditorComponent implements OnInit {
     [this.editorStatusEnum.ERROR]: 'Lỗi',
     [this.editorStatusEnum.UNSAVED]: 'Chưa lưu'
   }
+  public getData(data: string) {
+
+  }
+
 }
