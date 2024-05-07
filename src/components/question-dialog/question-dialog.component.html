@@ -56,9 +56,9 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="undefined">Đóng</button>
+  <button mat-stroked-button [mat-dialog-close]="undefined">Đóng</button>
   <button
-    mat-button
+    mat-flat-button
     [disabled]="questionForm.invalid"
     [mat-dialog-close]="{
       question: this.questionForm.value,
