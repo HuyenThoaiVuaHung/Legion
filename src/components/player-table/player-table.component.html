@@ -10,7 +10,9 @@
   <div class="w-2/12 grid place-items-center h-full">
     <strong>Trạng thái</strong>
   </div>
+  @if (editable){
   <div class="flex flex-grow place-items-center h-full"></div>
+  }
 </div>
 <div
   cdkDropList
@@ -19,11 +21,12 @@
 >
   @for (player of players; track player) {
   <div
-    class="table-item group border item-border border-solid w-full mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
+    class="table-item group item-shadow w-full mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
     cdkDrag
+    [cdkDragDisabled]="!editable"
   >
     <div class="w-5/12 flex items-center h-full">
-      <editable (save)="save()" (cancel)="cancel()">
+      <editable [enabled]="editable" (save)="save()">
         <ng-template viewMode>
           {{ player.name }}
         </ng-template>
@@ -41,7 +44,7 @@
     </div>
     <div class="w-3/12 flex items-center h-full">
       <strong>
-        <editable>
+        <editable [enabled]="editable" (save)="save()">
           <ng-template viewMode>
             {{ player.score }}
           </ng-template>
@@ -68,12 +71,14 @@
           }"
       ></span>
     </div>
+    @if (editable) {
     <div
       class="w-2/12 group-hover:opacity-100 opacity-0 transition-opacity flex justify-end items-center pr-10 cursor-move h-full"
       cdkDragHandle
     >
       <mat-icon> drag_indicator </mat-icon>
     </div>
+    }
   </div>
   }
 </div>

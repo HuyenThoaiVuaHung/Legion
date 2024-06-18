@@ -25,18 +25,50 @@ this.editorDataService.editorData.matchData.matchVersion == 24 ) {
 } @else if(this.editorDataService.editorData.matchData.matchVersion == 23) {
 <h3 class="mb-6 flex items-center gap-5">
   <strong>Gói câu hỏi</strong>
-  @for (o23QuestionPackIndex of [0,1,2]; track o23QuestionPackIndex) {
+  @for (_ of [0,1,2]; track $index) {
   <button
     mat-stroked-button
-    [disabled]="this.selectedO23QuestionPack == o23QuestionPackIndex"
-    (click)="this.selectedO23QuestionPack = o23QuestionPackIndex"
+    [disabled]="this.selectedO23QuestionPack == $index"
+    (click)="changeO23QuestionPackIndex($index)"
   >
-    {{ 8 + o23QuestionPackIndex * 4 }}
+    {{ 8 + $index * 4 }}
   </button>
   }
 </h3>
 }
-<div class="w-full h-max">
-  <question-table [questions]="questionData"></question-table>
+<div class="w-full h-max relative">
+  @if (this.editorDataService.editorData.matchData.matchVersion === 24) {
+  @if(this.selectedO24Control === controlType.MULTIPLAYER){
+  <question-table
+    [questions]="
+      this.editorDataService.editorData.questionBank.kd.o24Questions![
+        controlType.MULTIPLAYER
+      ]
+    "
+    context="kd"
+    (questionsChangeEvent)="save()"
+  ></question-table>
+  } @else {
+  <question-table
+    [questions]="
+      this.editorDataService.editorData.questionBank.kd.o24Questions![
+        controlType.SINGLEPLAYER
+      ][selectedO24SingleplayerPlayerIndex]
+    "
+    context="kd"
+    (questionsChangeEvent)="save()"
+  ></question-table>
+  } } @else if (this.editorDataService.editorData.matchData.matchVersion === 23)
+  {
+  <question-table
+    [questions]="
+      this.editorDataService.editorData.questionBank.kd.o23Questions![
+        this.selectedO23QuestionPack
+      ]
+    "
+    context="kd"
+    (questionsChangeEvent)="save()"
+  ></question-table>
+  }
 </div>
 }

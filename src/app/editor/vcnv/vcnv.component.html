@@ -1,19 +1,76 @@
+@if (editorDataService.editorData){
 <div class="w-full h-full gap-5 flex">
   <div class="flex flex-col flex-grow h-full">
+    <div>
+      <h3>
+        <strong>
+          Chướng ngại vật:
+          <editable
+            openBindingEvent="click"
+            (save)="editorDataService.saveCurrentEditorData()"
+            (cancel)="
+              editorDataService.editorData.questionBank.vcnv.cnv = cache
+            "
+            (modeChange)="
+              cache = editorDataService.editorData.questionBank.vcnv.cnv
+            "
+          >
+            <ng-template viewMode>
+              {{
+                editorDataService.editorData.questionBank.vcnv.cnv != ""
+                  ? editorDataService.editorData.questionBank.vcnv.cnv
+                  : "Nhấp để nhập."
+              }}
+            </ng-template>
+            <ng-template editMode>
+              <mat-form-field appearance="outline" class="min-w-40">
+                <input
+                  matInput
+                  [(ngModel)]="
+                    editorDataService.editorData.questionBank.vcnv.cnv
+                  "
+                />
+              </mat-form-field>
+            </ng-template>
+          </editable>
+        </strong>
+      </h3>
+    </div>
     <h3>
       <strong> Danh sách câu hỏi </strong>
     </h3>
     <question-table
       [allowDelete]="false"
-      [questions]="questionData"
+      [questions]="editorDataService.editorData.questionBank.vcnv.questions"
+      [allowCreate]="false"
+      (questionsChangeEvent)="save()"
+      (onQuestionMediaChange)="handleQuestionMediaChange($event)"
     ></question-table>
   </div>
   <div class="min-w-[30rem]">
     <h3>
       <strong> Hình ảnh CNV </strong>
+      <button mat-stroked-button (click)="handleCnvImage()">
+        <mat-icon>add</mat-icon>
+        Thêm hình ảnh
+      </button>
     </h3>
-    <div class=" h-[18rem] rounded-xl">
-      <image-input src="https://picsum.photos/1920/1080"></image-input>
+    <div class="min-h-[18rem] rounded-xl">
+      @if (imageProccessing) {
+      <mat-progress-spinner
+        mode="indeterminate"
+        color="primary"
+      ></mat-progress-spinner>
+      } @else {
+      <cnv-viewer
+        [cnvMediaSrcs]="
+          editorDataService.editorData.questionBank.vcnv.cnvMediaSrcs || []
+        "
+      >
+      </cnv-viewer>
+      }
     </div>
   </div>
 </div>
+
+}

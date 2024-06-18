@@ -11,5 +11,5 @@
   </button>
   }
 </h3>
-<question-table mediaPlacement="inline" [questions]="placeholderQuestions[selectedPlayerIndex]"></question-table>
+<question-table mediaPlacement="inline" context="vd" (questionsChangeEvent)="editorDataService.saveCurrentEditorData()" [questions]="editorDataService.editorData.questionBank.vd.questions[selectedPlayerIndex]"></question-table>
 }

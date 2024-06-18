@@ -1,5 +1,22 @@
 import { O24ControlType } from "../editor/kd/kd.component";
+import { IChpQuestionData, IKdQuestionData, ITtQuestionData, IVcnvQuestionData, IVdQuestionData } from "./editor.data.interface";
 
+export interface IKdData extends IKdQuestionData {
+  currentGamemode?: O24ControlType,
+  currentQuestionIndex: number,
+}
+export interface IVcnvData extends IVcnvQuestionData {
+
+}
+export interface ITtData extends ITtQuestionData {
+
+}
+export interface IVdData extends IVdQuestionData {
+
+}
+export interface IChpData extends IChpQuestionData {
+
+}
 export interface IUserInfo {
   sessionId: string;
   roleId: number;
@@ -19,34 +36,12 @@ export interface IPlayer {
   isReady: boolean;
   picUid?: string;
 }
-
-export interface IQuestionBank {
-  kd: IQuestion[][] | O24KdQuestionData,
-  vcnv: IQuestion[],
-  tt: IQuestion[],
-  vd: IQuestion[][],
-  chp: IQuestion[]
-
-}
-export interface O24KdQuestionData {
-  [O24ControlType.SINGLEPLAYER]: IQuestion[][],
-  [O24ControlType.MULTIPLAYER]: IQuestion[]
-}
-export interface IQuestion {
-  question: string,
-  answer: string,
-  type: QuestionType,
-  questionValue: number,
-  mediaSrc?: string,
-}
-
 export enum QuestionType {
   TEXT,
   IMAGE,
   AUDIO,
   VIDEO
 }
-
 
 export enum MatchPosition {
   IDLE,
@@ -57,6 +52,16 @@ export enum MatchPosition {
   TT_ANS,
   VD,
   CHP,
-  POINTS,
+  POINTS
+}
+export interface IQuestion {
+  question: string;
+  answer: string;
+  type: QuestionType;
+  value: number;
+  mediaSrc?: string;
+  mediaSrcName?: string;
+  secondaryMediaSrc?: string;
+  secondaryMediaSrcName?: string;
 }
 

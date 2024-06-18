@@ -3,12 +3,23 @@
 
 @mixin color($theme) {
   .border-theme {
-      border-color: mat.get-theme-color($theme, on-secondary-container);
+    border-color: mat.get-theme-color($theme, on-secondary-container);
   }
   .base-theme {
-    background-color:  mat.get-theme-color($theme, secondary-container);
+    background-color: mat.get-theme-color($theme, secondary-container);
   }
   .bg-theme {
-    background-color: rgba(mat.get-theme-color($theme, on-secondary-container), 0.1);
+    background-color: rgba(
+      mat.get-theme-color($theme, on-secondary-container),
+      0.1
+    );
   }
+
+  --cropper-outline-color: rgba(
+    #{red(mat.get-theme-color($theme, surface))},
+    #{green(mat.get-theme-color($theme, surface))},
+    #{blue(mat.get-theme-color($theme, surface))},
+    0.7
+  );
+  --cropper-overlay-color: rgba(0, 0, 0, 0);
 }

@@ -1,5 +1,10 @@
-<h2 mat-dialog-title>{{message}}</h2>
+<h2 mat-dialog-title>{{data.title}}</h2>
+@if(data.description){
+  <mat-dialog-content>
+    <p>{{data.description}}</p>
+  </mat-dialog-content>
+}
 <mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="false">Không</button>
-  <button mat-button [mat-dialog-close]="true">Có</button>
+  <button mat-stroked-button [mat-dialog-close]="false">Không</button>
+  <button mat-flat-button [mat-dialog-close]="true">Có</button>
 </mat-dialog-actions>
