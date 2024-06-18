@@ -1,7 +1,7 @@
 import { EditorDataService } from './services/editor.data.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot, Router, RouterLinkActive, RouterModule } from '@angular/router';
-import { IEditorData } from '../interfaces/editor.interface';
+import { IEditorData } from "../interfaces/config.interface";
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -12,6 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { EditorStatus } from './services/enums/editor.enum';
+import { FileHandlerService } from './services/file.handler.service';
 
 @Component({
   selector: 'app-editor',
@@ -35,7 +36,9 @@ export class EditorComponent implements OnInit {
   @Input() editorData?: IEditorData;
   constructor(
     public editorDataService: EditorDataService,
-    public router: Router
+    public router: Router,
+    public fileHandler: FileHandlerService,
+    public route: ActivatedRoute
   ) { }
   readonly menus: Array<{ name: string, icon: string, nav: string }> = [
     { name: 'Cài đặt chung', icon: 'settings', nav: 'general' },
@@ -45,11 +48,17 @@ export class EditorComponent implements OnInit {
     { name: 'Về đích', icon: 'military_tech', nav: 'vd' },
     { name: 'Câu hỏi phụ', icon: 'workspaces', nav: 'chp' }
   ]
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const uid: string | null = this.route.snapshot.queryParamMap.get('uid');
     if (this.editorData) {
       this.editorDataService.editorData = this.editorData;
-    } else {
-
+    } else if (uid) {
+      if (this.editorDataService.availableEditorDataUids.includes(uid))
+        this.editorDataService.editorData = await this.editorDataService.loadLocalEditorData(uid);
+      else {
+        this.router.navigate(['/editor']);
+        return;
+      }
     }
   }
   public readonly routeNameMap: { [key: string]: string } = {

@@ -1,3 +1,6 @@
+import { IQuestionBank } from "./editor.data.interface";
+import { IMatchData } from './game.interface';
+
 export interface IInterfaceConfig {
   darkMode: boolean;
   pallette: Pallette;
@@ -5,6 +8,7 @@ export interface IInterfaceConfig {
   miscImageSrc?: IMiscMedia
 }
 export interface IMiscMedia {
+  [key: string]: string | string[] | undefined;
   'logo-long'?: string
   'logo'?: string
   'placeholder'?: string
@@ -23,4 +27,12 @@ export enum Pallette {
   AZURE,
   VIOLET,
   ROSE
+}
+export interface IEditorData {
+  uiConfig: IInterfaceConfig;
+  matchData: IMatchData;
+  questionBank: IQuestionBank;
+  uid: string;
+  dateModified: number;
+
 }

@@ -7,8 +7,9 @@ import { PlayerTableComponent } from '../player-table/player-table.component';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
-import { IEditorData } from '../../app/interfaces/editor.interface';
+import { IEditorData } from "../../app/interfaces/config.interface";
 import { Router } from '@angular/router';
+import { FileHandlerService } from '../../app/editor/services/file.handler.service';
 
 @Component({
   selector: 'editor-card',
@@ -40,7 +41,8 @@ export class EditorCardComponent implements OnInit {
   @Input() editorData: IEditorData | undefined = undefined;
   constructor(
     private editorDataService: EditorDataService,
-    private router: Router
+    private router: Router,
+    private fileHandlerService: FileHandlerService
   ) {
 
   }
@@ -53,10 +55,13 @@ export class EditorCardComponent implements OnInit {
   }
   async delete() {
     await this.editorDataService.deleteLocalEditorData(this.uid);
+    if (this.editorDataService.editorData?.uid === this.uid) {
+      this.editorDataService.unloadEditorData();
+    }
     this.editorDataService.loadAvailableEditorDataUids();
+    gc? gc(): void 0;
   }
   download() {
-    //TODO: Implement this method
-    //this.editorDataService.downloadLocalEditorData(this.uid);
+    this.fileHandlerService.downloadEditorData(this.uid);
   }
 }

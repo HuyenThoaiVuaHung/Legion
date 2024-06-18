@@ -6,7 +6,8 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { QuestionTableComponent } from '../../../components/question-table/question-table.component';
-import { IQuestion, QuestionType } from '../../interfaces/game.interface';
+import { IQuestion } from '../../interfaces/game.interface';
+import { QuestionType } from '../../interfaces/game.interface';
 
 @Component({
   selector: 'app-kd',

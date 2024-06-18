@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { EditorDataService } from '../services/editor.data.service';
 import { QuestionTableComponent } from '../../../components/question-table/question-table.component';
-import { IQuestion, QuestionType } from '../../interfaces/game.interface';
+import { IQuestion } from '../../interfaces/game.interface';
+import { QuestionType } from '../../interfaces/game.interface';
 import { ImageInputComponent } from '../../../components/image-input/image-input.component';
 import { EditorMediaService } from '../services/editor.media.service';
 import { DialogService } from '../../services/dialog.service';
@@ -9,6 +10,10 @@ import { CnvViewerComponent } from '../../../components/cnv-viewer/cnv-viewer.co
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { EditableComponent, EditModeDirective, ViewModeDirective } from '@ngneat/edit-in-place';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-vcnv',
@@ -19,7 +24,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     CnvViewerComponent,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    EditableComponent,
+    EditModeDirective,
+    ViewModeDirective,
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule
   ],
   templateUrl: './vcnv.component.html',
   styleUrl: './vcnv.component.scss',
@@ -30,11 +41,21 @@ export class EditorVcnvComponent {
     public editorMediaService: EditorMediaService,
     private dialogService: DialogService
   ) {}
+  public cache: string = '';
   public imageProccessing: boolean = false;
   save() {
     this.editorDataService.saveCurrentEditorData();
   }
-  async handleNewImage() {
+  async handleQuestionMediaChange(event: { questionIndex: number, media: File }) {
+    if(this.editorDataService.editorData) this.editorDataService.editorData.questionBank.vcnv.questions[event.questionIndex] = await this.editorMediaService.handleQuestionMedia(
+      this.editorDataService.editorData.questionBank.vcnv.questions[event.questionIndex],
+      event.media,
+      'vcnv',
+      this.editorDataService.editorData.uid
+    );
+    this.save();
+  }
+  async handleCnvImage() {
     const file = document.createElement('input');
     file.type = 'file';
     file.accept = 'image/*';

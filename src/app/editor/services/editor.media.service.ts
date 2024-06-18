@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import {
-  IQuestion,
-  QuestionType,
   IQuestionBank,
-} from '../../interfaces/game.interface';
+} from '../../interfaces/editor.data.interface';
+import { IQuestion } from '../../interfaces/game.interface';
+import { QuestionType } from '../../interfaces/game.interface';
 import { FsService } from './fs.service';
 import { IMiscMedia } from '../../interfaces/config.interface';
 
@@ -11,8 +11,8 @@ import { IMiscMedia } from '../../interfaces/config.interface';
   providedIn: 'root',
 })
 export class EditorMediaService {
-  constructor(public fs: FsService) {}
-  private getMediaType(filetype: string): QuestionType {
+  constructor(public fs: FsService) { }
+  public getMediaType(filetype: string): QuestionType {
     if (filetype.startsWith('image')) return QuestionType.IMAGE;
     if (filetype.startsWith('video')) return QuestionType.VIDEO;
     if (filetype.startsWith('audio')) return QuestionType.AUDIO;
@@ -22,13 +22,15 @@ export class EditorMediaService {
     question: IQuestion,
     media: File,
     kind: 'kd' | 'vcnv' | 'tt' | 'vd' | 'chp',
-    uid: string
+    uid: string,
+    isSecondary: boolean = false
   ): Promise<IQuestion> {
     const ext = media.name.split('.').pop();
     question.type = this.getMediaType(media.type);
     console.log(question.type, media.type, 'type');
     if (question.type === QuestionType.TEXT) return question;
-    question.mediaSrcName = await this.setMedia(uid, media, kind);
+    if (!isSecondary) question.mediaSrcName = await this.setMedia(uid, media, kind);
+    else question.secondaryMediaSrcName = await this.setMedia(uid, media, kind);
     return question;
   }
   /**
@@ -40,13 +42,28 @@ export class EditorMediaService {
    */
   public async resolveQuestionMediaSrc(
     question: IQuestion,
-    kind: 'kd' | 'vcnv' | 'tt' | 'vd',
-    dataUid: string
+    kind: 'kd' | 'vcnv' | 'tt' | 'vd' | 'chp',
+    dataUid: string,
+    blobHandler?: questionMediaFileHandler
   ): Promise<IQuestion> {
     if (question.type !== QuestionType.TEXT) {
-      question.mediaSrc = await this.fs.getBlobUrl(
-        `${dataUid}/${kind}/${question.mediaSrcName}`
-      );
+      if (question.mediaSrcName !== undefined && question.mediaSrcName !== '') {
+        question.mediaSrc = await this.fs.getBlobUrl(
+          `${dataUid}/${kind}/${question.mediaSrcName}`
+        );
+        if (blobHandler) {
+          await blobHandler(await this.fs.getFile(`${dataUid}/${kind}/${question.mediaSrcName}`), kind);
+        }
+      }
+      else question.mediaSrc = undefined;
+      if (question.secondaryMediaSrcName) {
+        question.secondaryMediaSrc = await this.fs.getBlobUrl(
+          `${dataUid}/${kind}/${question.secondaryMediaSrcName}`
+        );
+        if (blobHandler) {
+          blobHandler(await this.fs.getFile(`${dataUid}/${kind}/${question.secondaryMediaSrcName}`), kind);
+        }
+      }
     }
     return question;
   }
@@ -60,13 +77,14 @@ export class EditorMediaService {
    */
   public async resolveQuestionsMediaSrc(
     questions: IQuestion[],
-    kind: 'kd' | 'vcnv' | 'tt' | 'vd',
-    dataUid: string
+    kind: 'kd' | 'vcnv' | 'tt' | 'vd' | 'chp',
+    dataUid: string,
+    blobHandler?: questionMediaFileHandler
   ): Promise<IQuestion[]> {
     return Promise.all(
       questions.map(
         async (question) =>
-          await this.resolveQuestionMediaSrc(question, kind, dataUid)
+          await this.resolveQuestionMediaSrc(question, kind, dataUid, blobHandler)
       )
     );
   }
@@ -81,34 +99,43 @@ export class EditorMediaService {
   public async resolveQuestionBankMediaSrc(
     questionBank: IQuestionBank,
     dataUid: string,
-    ver?: number
+    ver?: number,
+    blobHandler?: questionMediaFileHandler
   ): Promise<IQuestionBank> {
+
     questionBank.vcnv.questions = await this.resolveQuestionsMediaSrc(
       questionBank.vcnv.questions,
       'vcnv',
-      dataUid
+      dataUid, blobHandler
     );
     questionBank.vcnv.cnvMediaSrcs = [];
     for (let src of questionBank.vcnv.cnvMediaSrcNames) {
       questionBank.vcnv.cnvMediaSrcs.push(
         (await this.fs.getBlobUrl(`${dataUid}/vcnv/${src}`)) || ''
       );
+      if (blobHandler && src !== '') {
+        await blobHandler(await this.fs.getFile(`${dataUid}/vcnv/${src}`), 'vcnv');
+      }
     }
+
     questionBank.tt.questions = await this.resolveQuestionsMediaSrc(
       questionBank.tt.questions,
       'tt',
-      dataUid
+      dataUid, blobHandler
     );
+
     for (let questions of questionBank.vd.questions) {
-      questions = await this.resolveQuestionsMediaSrc(questions, 'vd', dataUid);
+      questions = await this.resolveQuestionsMediaSrc(questions, 'vd', dataUid, blobHandler);
     }
+
+    questionBank.chp.questions = await this.resolveQuestionsMediaSrc(questionBank.chp.questions, 'chp', dataUid, blobHandler)
     if (ver) {
       if (ver === 23) {
         if (questionBank.kd.o23Questions) {
           questionBank.kd.o23Questions = await Promise.all(
             questionBank.kd.o23Questions.map(
               async (questions) =>
-                await this.resolveQuestionsMediaSrc(questions, 'kd', dataUid)
+                await this.resolveQuestionsMediaSrc(questions, 'kd', dataUid, blobHandler)
             )
           );
           console.log(questionBank.kd.o23Questions, 'resolved');
@@ -119,12 +146,12 @@ export class EditorMediaService {
             await this.resolveQuestionsMediaSrc(
               questionBank.kd.o24Questions.MULTIPLAYER,
               'kd',
-              dataUid
+              dataUid, blobHandler
             );
           await Promise.all(
             questionBank.kd.o24Questions.SINGLEPLAYER.map(
               async (questions) =>
-                await this.resolveQuestionsMediaSrc(questions, 'kd', dataUid)
+                await this.resolveQuestionsMediaSrc(questions, 'kd', dataUid, blobHandler)
             )
           );
         } else throw new Error('Invalid question bank version');
@@ -278,41 +305,43 @@ export class EditorMediaService {
     return question;
   }
 
-  public async resolveMiscMediaSrc(
-    uid: string,
-    mediaSrcName: IMiscMedia
+  public async resolveMiscMediaSrc(uid: string, mediaSrcName: IMiscMedia,
+    fileHandler?: questionMediaFileHandler
   ): Promise<IMiscMedia> {
     const mediaSrc: IMiscMedia = {
       ...mediaSrcName,
-      players: [...(mediaSrcName.players || [])],
+      players: [],
     };
 
-    if (mediaSrcName['logo-long'])
-      mediaSrc['logo-long'] = await this.fs.getBlobUrl(
-        `${uid}/misc/${mediaSrcName['logo-long']}`
-      );
-    if (mediaSrcName['logo'])
-      mediaSrc['logo'] = await this.fs.getBlobUrl(
-        `${uid}/misc/${mediaSrcName['logo']}`
-      );
-    if (mediaSrcName['placeholder'])
-      mediaSrc['placeholder'] = await this.fs.getBlobUrl(
-        `${uid}/misc/${mediaSrcName['placeholder']}`
-      );
-    if (mediaSrcName['background'])
-      mediaSrc['background'] = await this.fs.getBlobUrl(
-        `${uid}/misc/${mediaSrcName['background']}`
-      );
-    if (mediaSrcName.players) {
-      for (let i = 0; i < Object.keys(mediaSrcName.players).length; i++) {
-        console.log(mediaSrcName.players[i], 'resolving');
-        const blobUrl = await this.fs.getBlobUrl(
-          `${uid}/misc/${mediaSrcName.players[i]}`
-        );
-        if (blobUrl && mediaSrc.players) mediaSrc.players[i] = blobUrl;
+    const properties = ['logo-long', 'logo', 'placeholder', 'background'];
+
+    for (const property of properties) {
+      if (mediaSrcName[property]) {
+        if (fileHandler) {
+          fileHandler(
+            await this.fs.getFile(`${uid}/misc/${mediaSrcName[property]}`),
+            'misc'
+          );
+        }
+        mediaSrc[property] = await this.fs.getBlobUrl(`${uid}/misc/${mediaSrcName[property]}`);
       }
     }
-    console.log(mediaSrc, 'resolved');
+
+    if (mediaSrcName.players) {
+      for (let name of mediaSrcName.players) {
+        if (name != '') {
+          if (fileHandler) {
+            fileHandler(
+              await this.fs.getFile(`${uid}/misc/${name}`),
+              'misc'
+            );
+          }
+
+          mediaSrc.players!.push(await this.fs.getBlobUrl(`${uid}/misc/${name}`) || '');
+        }
+      }
+    }
+
     return mediaSrc;
   }
   /**
@@ -332,3 +361,4 @@ export class EditorMediaService {
     return mediaSrcName;
   }
 }
+type questionMediaFileHandler = (blob: File, kind: string) => Promise<void>;

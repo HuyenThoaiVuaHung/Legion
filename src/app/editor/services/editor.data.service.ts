@@ -1,12 +1,14 @@
 import { O24ControlType } from './../kd/kd.component';
 import { effect, inject, Injectable } from '@angular/core';
-import { IEditorData } from '../../interfaces/editor.interface';
+import { IEditorData } from "../../interfaces/config.interface";
 import { Pallette } from '../../interfaces/config.interface';
 import {
-  IQuestion,
   IQuestionBank,
+} from '../../interfaces/editor.data.interface';
+import { IQuestion } from '../../interfaces/game.interface';
+import {
   MatchPosition,
-  QuestionType,
+  QuestionType
 } from '../../interfaces/game.interface';
 import { FsService } from './fs.service';
 import { DialogService } from '../../services/dialog.service';
@@ -60,7 +62,7 @@ export class EditorDataService {
         miscImageSrcNames: {},
       },
       matchData: {
-        matchName: 'Welcome to Legion',
+        matchName: 'Trận đấu mới',
         matchVersion: 24,
         matchPos: MatchPosition.IDLE,
         players: [
@@ -94,8 +96,8 @@ export class EditorDataService {
           },
         },
         vcnv: {
-          questions: [
-            ...Array(4)
+          questions:
+            Array(5)
               .fill(null)
               .map(() => ({
                 question: '',
@@ -103,17 +105,10 @@ export class EditorDataService {
                 type: QuestionType.TEXT,
                 value: 10,
               })),
-            {
-              question:
-                'Nhập chướng ngại vật bằng cách sửa đáp án câu hỏi này.',
-              answer: '',
-              type: QuestionType.TEXT,
-              value: 0,
-            },
-          ],
           cnvMediaSrcNames: Array(5)
             .fill(null)
             .map(() => ''),
+          cnv: ''
         },
         tt: {
           questions: Array(4)
@@ -122,11 +117,11 @@ export class EditorDataService {
               question: '',
               answer: '',
               type: QuestionType.IMAGE,
-              value: 10,
+              value: 40,
             })),
         },
         vd: {
-          questions: [],
+          questions: Array(4).fill(null).map(() => []),
         },
         chp: {
           questions: [],
@@ -299,5 +294,10 @@ export class EditorDataService {
         JSON.stringify(uids.filter((id: string) => id !== uid))
       );
     }
+  }
+
+  public unloadEditorData() {
+    this.editorData = undefined;
+    this.editorStatus = EditorStatus.UNLOADED;
   }
 }

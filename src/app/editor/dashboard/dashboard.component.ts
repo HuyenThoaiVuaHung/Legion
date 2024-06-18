@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
 import { FsService } from '../services/fs.service';
+import { FileHandlerService } from '../services/file.handler.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,27 +23,23 @@ import { FsService } from '../services/fs.service';
 export class EditorDashboardComponent {
   constructor(
     public editorDataService: EditorDataService,
-    private router: Router,
-    private fsService: FsService
-  ){
+    private fileHandler: FileHandlerService
+  ) {
 
   }
   public async createNewEditorData(): Promise<void> {
     await this.editorDataService.saveLocalEditorData(this.editorDataService.provideNewEditorData());
   }
-  public async processEditorDataFile(){
-    // const input = document.getElementById('editorFileInput');
-    // if (input){
-    //   const file = (input as HTMLInputElement).files?.[0];
-    //   if (file){
-    //     const reader = new FileReader();
-    //     reader.onload = async (e) => {
-    //       const result = e.target?.result as string;
-    //       await
-    //       this.editorDataService.loadAvailableEditorDataUids();
-    //     };
-    //     reader.readAsText(file);
-    //   }
-    // }
+  public async uploadEditorDataFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.lg';
+    input.click();
+    input.onchange = async () => {
+      const file = (input).files?.[0];
+      if (file && file.name.endsWith('.lg')) {
+        await this.fileHandler.loadEditorData(file);
+      }
+    }
   }
 }

@@ -8,11 +8,10 @@
         <mat-icon>add</mat-icon>
         Thêm trận đấu mới
       </button>
-      <button mat-stroked-button (click)="editorFileInput.click()">
+      <button mat-stroked-button (click)="uploadEditorDataFile()">
         <mat-icon>file_open</mat-icon>
         Mở trận đấu
       </button>
-      <input type="file" accept=".lg" (change)="processEditorDataFile()" #editorFileInput style="display: none"/>
     </div>
   </mat-card>
 </div>

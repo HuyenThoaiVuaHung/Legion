@@ -11,12 +11,19 @@ import { inject } from '@angular/core';
 import { EditorDataService } from './services/editor.data.service';
 import { firstValueFrom } from 'rxjs';
 
-export const editorRouteGuard: CanActivateFn = (route, state,) => {
-  const editorDataSvc = inject(EditorDataService);
-  if (!editorDataSvc.editorData) {
-    const router = inject(Router);
-    router.navigate(['/editor'])
-    return false;
+export const editorRouteGuard: CanActivateFn = (route) => {
+  const editorDataService = inject(EditorDataService);
+  if (!editorDataService.editorData) {
+    if (route.paramMap.has('uid')) {
+      const uid = route.paramMap.get('uid');
+      if (uid && editorDataService.availableEditorDataUids.includes(uid)) {
+        editorDataService.loadLocalEditorData(uid).then(data => editorDataService.editorData = data);
+      } else {
+        const router = inject(Router);
+        router.navigate(['/editor'])
+        return false;
+      }
+    }
   }
   return true;
 };

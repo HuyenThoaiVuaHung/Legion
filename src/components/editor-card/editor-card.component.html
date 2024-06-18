@@ -1,5 +1,5 @@
 @if (editorData) {
-<mat-card @fade appearance="outlined" class="group h-full">
+<mat-card (dblclick)="this.load()" @fade appearance="outlined" class="group h-full">
   <mat-card-content>
     <h6>
       {{ editorData.matchData.matchName }}

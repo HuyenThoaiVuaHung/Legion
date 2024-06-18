@@ -14,10 +14,21 @@
         <textarea matInput formControlName="answer"></textarea>
         <mat-error> Đáp án không được để trống. </mat-error>
       </mat-form-field>
+      @if (data.valueList){
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Điểm số</mat-label>
+        <mat-select matInput type="number" formControlName="value">
+          @for (value of data.valueList; track $index) {
+          <mat-option [value]="value">{{ value }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      } @else {
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Điểm số</mat-label>
         <input matInput type="number" formControlName="value" />
       </mat-form-field>
+      }
     </form>
     <!-- Media attachments -->
     <div class="w-full h-full min-w-80 max-w-96">

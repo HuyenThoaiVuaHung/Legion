@@ -1,5 +1,7 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { IPlayer, IQuestion, QuestionType } from '../../app/interfaces/game.interface';
+import { IQuestion } from '../../app/interfaces/game.interface';
+import { QuestionType } from '../../app/interfaces/game.interface';
+import { IPlayer } from '../../app/interfaces/game.interface';
 import { CdkDropList, CdkDrag, CdkDragHandle, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,8 +14,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DialogService } from '../../app/services/dialog.service';
-import { EditorDataService } from '../../app/editor/services/editor.data.service';
-import { EditorMediaService } from '../../app/editor/services/editor.media.service';
+
+
 @Component({
   selector: 'question-table',
   standalone: true,
@@ -44,17 +46,19 @@ export class QuestionTableComponent {
   @Input() allowCreate = true;
   @Input() context: "kd" | "vcnv" | "tt" | "vd" | "chp" | undefined;
   @Output() questionsChangeEvent = new EventEmitter<IQuestion[]>();
+  @Output() onQuestionMediaChange = new EventEmitter<{
+    questionIndex: number,
+    media: File
+  }>();
   public readonly questionType = QuestionType;
   save() {
-    // TODO: Implement this method
+    this.questionsChangeEvent.emit(this.questions);
   }
   cancel() {
-    // TODO: Implement this method
+    return;
   }
   constructor(
     private dialogService: DialogService,
-    private editorDataService: EditorDataService,
-    private editorMediaService: EditorMediaService
   ) { }
   drop(event: CdkDragDrop<IPlayer[]>) {
     moveItemInArray(this.questions, event.previousIndex, event.currentIndex);
@@ -66,19 +70,18 @@ export class QuestionTableComponent {
       answer: '',
       type: QuestionType.TEXT,
       value: 10
-    });
+    },
+      this.context === 'vd' ? [20, 30] : undefined);
     if (data) {
       let workingQuestion = data.question;
-      if (data.media) {
-        if (this.context && this.editorDataService.editorData)
-          workingQuestion = await this.editorMediaService.handleQuestionMedia(workingQuestion, data.media, this.context, this.editorDataService.editorData.uid);
-      }
-
       this.questions.push(workingQuestion);
       this.questionsChangeEvent.emit();
-      if (workingQuestion.mediaSrcName) {
-        this.editorDataService.editorData = await this.editorDataService.resolveMediaSrcs(this.editorDataService.editorData!)
-      }
+      this.onQuestionMediaChange.emit(
+        {
+          questionIndex: this.questions.length - 1,
+          media: data.media
+        }
+      );
     }
   }
 }

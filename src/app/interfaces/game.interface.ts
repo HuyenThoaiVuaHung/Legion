@@ -1,5 +1,22 @@
-import { O24ControlType } from '../editor/kd/kd.component';
+import { O24ControlType } from "../editor/kd/kd.component";
+import { IChpQuestionData, IKdQuestionData, ITtQuestionData, IVcnvQuestionData, IVdQuestionData } from "./editor.data.interface";
 
+export interface IKdData extends IKdQuestionData {
+  currentGamemode?: O24ControlType,
+  currentQuestionIndex: number,
+}
+export interface IVcnvData extends IVcnvQuestionData {
+
+}
+export interface ITtData extends ITtQuestionData {
+
+}
+export interface IVdData extends IVdQuestionData {
+
+}
+export interface IChpData extends IChpQuestionData {
+
+}
 export interface IUserInfo {
   sessionId: string;
   roleId: number;
@@ -19,52 +36,11 @@ export interface IPlayer {
   isReady: boolean;
   picUid?: string;
 }
-
-export interface IQuestionBank {
-  kd: IKdQuestionsData;
-  vcnv: IVcnvQuestionData;
-  tt: ITtQuestionData;
-  vd: IVdQuestionData;
-  chp: IChpQuestionData;
-}
-
-export interface IKdQuestionsData {
-  o24Questions?: {
-    [O24ControlType.MULTIPLAYER]: IQuestion[];
-    [O24ControlType.SINGLEPLAYER]: IQuestion[][];
-  };
-  o23Questions?: IQuestion[][];
-}
-
-export interface IVcnvQuestionData {
-  questions: IQuestion[];
-  cnvMediaSrcs?: string[];
-  cnvMediaSrcNames: string[];
-}
-
-export interface ITtQuestionData {
-  questions: IQuestion[];
-}
-export interface IVdQuestionData {
-  questions: IQuestion[][];
-}
-export interface IChpQuestionData {
-  questions: IQuestion[];
-}
-export interface IQuestion {
-  question: string;
-  answer: string;
-  type: QuestionType;
-  value: number;
-  mediaSrc?: string;
-  mediaSrcName?: string;
-}
-
 export enum QuestionType {
   TEXT,
   IMAGE,
   AUDIO,
-  VIDEO,
+  VIDEO
 }
 
 export enum MatchPosition {
@@ -76,5 +52,16 @@ export enum MatchPosition {
   TT_ANS,
   VD,
   CHP,
-  POINTS,
+  POINTS
 }
+export interface IQuestion {
+  question: string;
+  answer: string;
+  type: QuestionType;
+  value: number;
+  mediaSrc?: string;
+  mediaSrcName?: string;
+  secondaryMediaSrc?: string;
+  secondaryMediaSrcName?: string;
+}
+

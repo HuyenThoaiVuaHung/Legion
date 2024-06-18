@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IEditorData } from '../../interfaces/editor.interface';
+import { IEditorData } from "../../interfaces/config.interface";
 import JSZip from 'jszip';
 import { EditorDataService } from './editor.data.service';
 @Injectable({
@@ -71,7 +71,7 @@ export class FsService {
     }
     return await workingDir.getFileHandle(tokens[tokens.length - 1], { create: true });
   }
-  private async getDirectoryHandle(directory: string): Promise<FileSystemDirectoryHandle> {
+  public async getDirectoryHandle(directory: string): Promise<FileSystemDirectoryHandle> {
     const tokens = directory.split('/');
     let workingDir = await this.opfsRoot;
     if (directory === '') return workingDir;

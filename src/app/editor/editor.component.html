@@ -13,10 +13,10 @@
     @if(editorDataService.editorData){
     <h6 class="flex gap-5">
       Đang chỉnh sửa: {{ editorDataService.editorData.matchData.matchName }}
-      <button mat-icon-button matTooltip="Ngưng chỉnh sửa">
+      <button (click)="editorDataService.unloadEditorData()" mat-icon-button matTooltip="Ngưng chỉnh sửa">
         <mat-icon>close</mat-icon>
       </button>
-      <button mat-icon-button matTooltip="Tải xuống">
+      <button (click)="fileHandler.downloadEditorData(editorDataService.editorData.uid)" mat-icon-button matTooltip="Tải xuống">
         <mat-icon>file_download</mat-icon>
       </button>
     </h6>
