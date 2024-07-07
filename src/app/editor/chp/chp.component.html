@@ -1,0 +1,12 @@
+@if ( editorDataService.editorData ) {
+<h3>
+  <strong> Danh sách câu hỏi </strong>
+</h3>
+<question-table
+  [allowDelete]="true"
+  context="chp"
+  [questions]="this.editorDataService.editorData.questionBank.chp.questions"
+  (questionsChangeEvent)="editorDataService.saveCurrentEditorData()"
+></question-table>
+
+}

@@ -1,106 +1,106 @@
-import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { Socket, io } from "socket.io-client";
-import { environment } from "src/environments/environment";
-import { MatchData, UserInfo } from "./types/match.data";
+import { Injectable } from '@angular/core';
+import { NetworkingService } from './networking.service';
+import { MatchPosition } from '../interfaces/game.interface';
+import { IMatchData, IUserInfo } from '../interfaces/game.interface';
+import { Route, Router } from '@angular/router';
+import { SharedDataService } from './shared.data.service';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class AuthService {
-  public socket: Socket = {} as Socket;
-  public matchData: MatchData = {} as MatchData;
-  public userInfo: UserInfo = {
-    roleId: -1,
-    index: -1,
-    socketId: "",
-  };
-  public socketHook = () => {};
-  public guardHook = () => {};
-  constructor(private router: Router) {
-    this.socket = io(environment.socketIp);
-    console.log(localStorage.getItem("authString") && router.url != "/");
-    if (localStorage.getItem("authString") && router.url != "/")
+  public socketHook = () => { };
+  constructor(
+    private router: Router,
+    private network: NetworkingService,
+    private sharedData: SharedDataService
+  ) {
+    console.log(localStorage.getItem('authString') && router.url != '/connect');
+    if (localStorage.getItem('authString') && router.url != '/connect')
       this.authenticate();
     else;
     this.resetListeners();
   }
   public authenticate(authId?: string) {
-    this.socket.emit(
-      "init-authenticate",
-      authId ? authId : localStorage.getItem("authString"),
+    this.network.socket.emit(
+      'init-authenticate',
+      authId ? authId : localStorage.getItem('authString'),
       (callback: string) => console.log(callback)
     );
   }
   public resetListeners() {
-    this.socket.removeAllListeners();
-    this.socket.on("connect", () => {
-      if(localStorage.getItem("authString")) this.authenticate();
+    this.network.socket.removeAllListeners();
+    this.network.socket.on('connect', () => {
+      if (localStorage.getItem('authString')) this.authenticate();
     });
-    this.socket.on(
-      "authentication",
-      (_matchData: MatchData, _userInfo: UserInfo) => {
-        this.matchData = _matchData;
-        this.userInfo = _userInfo;
+    this.network.socket.on(
+      'authentication',
+      (_matchData: IMatchData, _userInfo: IUserInfo) => {
+        this.sharedData.matchData = _matchData;
+        this.sharedData.userInfo = _userInfo;
         this.socketHook();
-        this.guardHook();
         if (_userInfo.roleId == 1) return;
         console.log();
         this.navigateMatchPosition();
       }
     );
-    this.socket.on("update-match-data", (data) => {
-      this.matchData = data;
-      if (this.userInfo.roleId == 1) return;
+    this.network.socket.on('update-match-data', (data) => {
+      this.sharedData.matchData = data;
+      if (this.sharedData.userInfo.roleId == 1) return;
       this.navigateMatchPosition();
     });
   }
   public deauthenticate() {
-    localStorage.removeItem("authString");
-    this.socketHook = () => {};
-    this.guardHook = () => {};
-    this.userInfo = {
+    localStorage.removeItem('authString');
+    this.socketHook = () => { };
+
+    this.sharedData.userInfo = {
       roleId: -1,
       index: -1,
-      socketId: "",
+      socketId: '',
     };
     this.reconnect();
   }
   public reconnect() {
-    this.socket.disconnect();
-    this.socket.connect();
+    this.network.socket.disconnect();
+    this.network.socket.connect();
     this.resetListeners();
   }
   private navigateMatchPosition() {
-    if (this.userInfo.roleId == 1 || this.userInfo.roleId == 2) return;
-    console.log(this.matchData.matchPos+"nav");
-    switch (this.matchData.matchPos) {
-      case "KD":
-        this.router.navigate(["/pl-kd"]);
+    if (
+      this.sharedData.userInfo.roleId == 1 ||
+      this.sharedData.userInfo.roleId == 2
+    )
+      return;
+    const matchPos = MatchPosition;
+    console.log(this.sharedData.matchData.matchPos + 'nav');
+    switch (this.sharedData.matchData.matchPos) {
+      case matchPos.KD:
+        this.router.navigate(['/player/kd']);
         break;
-      case "VCNV_Q":
-        this.router.navigate(["/pl-vcnv-q"]);
+      case matchPos.VCNV_QUES:
+        this.router.navigate(['/player/vcnv-q']);
         break;
-      case "VCNV_A":
-        this.router.navigate(["/pl-vcnv-a"]);
+      case matchPos.VCNV_ANS:
+        this.router.navigate(['/player/vcnv-a']);
         break;
-      case "TT_Q":
-        this.router.navigate(["/pl-tangtoc-q"]);
+      case matchPos.TT_QUES:
+        this.router.navigate(['/player/tangtoc-q']);
         break;
-      case "TT_A":
-        this.router.navigate(["/pl-tangtoc-a"]);
+      case matchPos.TT_ANS:
+        this.router.navigate(['/player/tangtoc-a']);
         break;
-      case "VD":
-        this.router.navigate(["pl-vd"]);
+      case matchPos.VD:
+        this.router.navigate(['player/vd']);
         break;
-      case "H":
-        this.router.navigate([""]);
+      case matchPos.IDLE:
+        this.router.navigate(['']);
         break;
-      case "PNTS":
-        this.router.navigate(["/pnts"]);
+      case matchPos.POINTS:
+        this.router.navigate(['/pnts']);
         break;
-      case "CHP":
-        this.router.navigate(["/pl-chp"]);
+      case matchPos.CHP:
+        this.router.navigate(['/player/chp']);
     }
   }
 }

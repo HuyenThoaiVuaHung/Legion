@@ -1,42 +1,28 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
-import { AuthService } from "./services/auth.service";
-import { getControlUrlFromMatchPosition } from "./services/tools";
+import { MatButtonModule } from '@angular/material/button';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { NetworkingService } from './services/networking.service';
+import { NetworkStatus } from './services/networking.enum';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
+
 @Component({
-  selector: "app-root",
-  templateUrl: "./app.component.html",
-  styleUrls: ["./app.component.scss"],
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, MatButtonModule,MatIconModule, MatMenuModule, CommonModule],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
-  title = "Legion";
-  isBlocked: boolean = true;
-  matchPosCache: string = "";
-  closeBlockFrame() {
-    this.isBlocked = false;
+
+
+export class AppComponent {
+  title = 'relegion';
+  readonly NETWORK_STATUS = NetworkStatus;
+  constructor(public network: NetworkingService, maticon: MatIconRegistry){
+    maticon.setDefaultFontSetClass('material-symbols-outlined')
   }
-  constructor(private router: Router, public auth: AuthService) {}
-  ngOnInit(): void {}
-  changeMatchPosAdmin(pos: string) {
-    this.router.navigate([getControlUrlFromMatchPosition(pos)]);
-  }
-  togglePoints() {
-    this.auth.socket.emit("get-match-data", (data: { matchPos: string }) => {
-      if (data.matchPos == "PNTS") {
-        if (this.matchPosCache )
-        this.router.navigate([getControlUrlFromMatchPosition(this.matchPosCache)]);
-        this.auth.socket.emit(
-          "change-match-position",
-          this.matchPosCache,
-          localStorage.getItem("authString")
-        );
-      } else {
-        this.matchPosCache = data.matchPos;
-        this.auth.socket.emit(
-          "change-match-position",
-          "PNTS",
-          localStorage.getItem("authString")
-        );
-      }
-    });
+  disconnect() {
+    this.network.disconnect();
   }
 }

@@ -1,0 +1,73 @@
+<div class="w-full h-screen p-10 box-border flex flex-col">
+  <div class="w-full ml-4 h-24 flex flex-col">
+    <h4 class="w-full !mb-0">
+      <strong><a class="no-underline" routerLink="/editor">Editor</a> </strong>
+      @if (this.router.url.split('/').length > 2) { >
+      {{
+        routeNameMap[
+          this.router.url.split("/")[this.router.url.split("/").length - 1]
+        ]
+      }}
+      }
+    </h4>
+    @if(editorDataService.editorData){
+    <h6 class="flex gap-5">
+      Đang chỉnh sửa: {{ editorDataService.editorData.matchData.matchName }}
+      <button (click)="editorDataService.unloadEditorData()" mat-icon-button matTooltip="Ngưng chỉnh sửa">
+        <mat-icon>close</mat-icon>
+      </button>
+      <button (click)="fileHandler.downloadEditorData(editorDataService.editorData.uid)" mat-icon-button matTooltip="Tải xuống">
+        <mat-icon>file_download</mat-icon>
+      </button>
+    </h6>
+    }
+    @else {
+      <h6>
+        Hãy chọn một trận đấu để chỉnh sửa
+      </h6>
+    }
+  </div>
+  <div class="w-full h-[calc(100%-6rem)] gap-10 flex-grow flex 2xl:mt-0 mt-5">
+    <div class="min-w-[20rem] hidden 2xl:flex h-full">
+      <mat-card class="w-full" appearance="raised">
+        <mat-card-content class="!flex h-full flex-col">
+          <h6>
+            <strong>Menu</strong>
+          </h6>
+          <div class="w-full h-max relative overflow-y-auto pb-5 overflow-x-hidden flex flex-col gap-4">
+            @for (item of menus; track $index) {
+            <a
+              routerLinkActive
+              #rla="routerLinkActive"
+              [disabled]="rla.isActive || !this.editorDataService.editorData"
+              [routerLink]="item.nav"
+              class="w-full !justify-start"
+              mat-stroked-button
+            >
+              <mat-icon>{{ item.icon }}</mat-icon>
+              {{ item.name }}
+            </a>
+            @if ($index + 1 < menus.length) {
+            <mat-divider></mat-divider>
+            } }
+          </div>
+          <div class="flex flex-col flex-grow justify-end">
+            <h6>
+              <strong>Trạng thái</strong>
+            </h6>
+            <mat-card appearance="outlined">
+              <mat-card-content>
+              {{this.editorStatusNameMap[editorDataService.editorStatus]}}
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div
+      class="2xl:w-[calc(100%-27.5rem)] w-full overflow-y-auto relative h-full 2xl:px-10 px-4"
+    >
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

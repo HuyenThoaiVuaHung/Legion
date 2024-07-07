@@ -1,6 +1,128 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use "@angular/material" as mat;
+@use "@angular/material-experimental" as matx;
+@use "./components/image-input/image-input-theme" as image-input;
+@use "./components/themes/table-theme" as table;
+@use "sass:map";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
-html, body { height: 100%; }
-body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+$typography-base: matx.define-typography();
+$m3-theme: matx.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: matx.$m3-orange-palette,
+    ),
+    typography: (
+      brand-family: "Lexend",
+      plain-family: "Noto Sans",
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
+    ),
+  )
+);
+
+$m3-light-theme: matx.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: matx.$m3-rose-palette,
+      tertiary: matx.$m3-green-palette,
+    ),
+  )
+);
+html {
+  // Apply the base theme at the root, so it will be inherited by the whole app.
+  @include mat.all-component-themes($m3-theme);
+  @include mat.typography-hierarchy($m3-theme);
+  @include image-input.color($m3-theme);
+  @include table.color($m3-theme);
+  background: linear-gradient(
+    135deg,
+    mat.get-theme-color($m3-theme, surface) 0%,
+    mat.get-theme-color($m3-theme, surface) 80%,
+    mat.get-theme-color($m3-theme, primary-container) 100%
+  );
+
+  color: mat.get-theme-color($m3-theme, on-surface);
+  a {
+    @if mat.get-theme-type($m3-theme) == dark {
+      color: mat.get-theme-color($m3-theme, primary, 50);
+    } @else {
+      color: mat.get-theme-color($m3-theme, primary, 70);
+    }
+  }
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: mat.get-theme-color($m3-theme, surface-dim);
+    border-radius: 12px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: mat.get-theme-color($m3-theme, on-surface);
+    border-radius: 12px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+
+    background: mat.get-theme-color($m3-theme, primary);
+  }
+  ::selection {
+    background: mat.get-theme-color($m3-theme, primary);
+    color: mat.get-theme-color($m3-theme, on-primary);
+  }
+  ::-moz-selection {
+    background: mat.get-theme-color($m3-theme, primary);
+    color: mat.get-theme-color($m3-theme, on-primary);
+  }
+}
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+//.light-theme {
+//  @include mat.all-component-themes($m3-light-theme);
+//}
+noscript {
+  width: 100vw !important;
+  height: 100vh !important;
+  display: grid !important;
+  place-items: center !important;
+  font-family: "Noto Sans", sans-serif !important;
+  text-align: center !important;
+}
+/* You can add global styles to this file, and also import other style files */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+strong {
+  font-weight: 600 !important;
+}
