@@ -6,6 +6,8 @@ labels: ''
 assignees: maik205
 
 ---
+**Branch name**
+Name of the branch that caused the bug (eg. /main, /o24,...).
 
 **Describe the bug**
 A clear and concise description of what the bug is.
