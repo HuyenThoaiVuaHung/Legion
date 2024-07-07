@@ -1,0 +1,17 @@
+<div class="grid grid-flow-row grid-cols-2 2xl:grid-cols-3 auto-rows-fr gap-5">
+  @for (uid of editorDataService.availableEditorDataUids; track $index) {
+  <editor-card class="transition-all" [uid]="uid"> </editor-card>
+  }
+  <mat-card appearance="outlined" class="flex min-h-96 flex-grow">
+    <div class="w-full h-full flex justify-center items-center gap-5 flex-col">
+      <button mat-stroked-button (click)="createNewEditorData()">
+        <mat-icon>add</mat-icon>
+        Thêm trận đấu mới
+      </button>
+      <button mat-stroked-button (click)="uploadEditorDataFile()">
+        <mat-icon>file_open</mat-icon>
+        Mở trận đấu
+      </button>
+    </div>
+  </mat-card>
+</div>

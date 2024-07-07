@@ -1,11 +1,14 @@
 <div
   class="table-header sticky z-50 top-0 w-full mb-2 p-2 rounded-xl box-border h-16 items-center justify-center pl-5 flex flex-row"
 >
-  <div class="w-6/12 flex items-center h-full">
+  <div class="w-4/12 flex items-center h-full">
     <strong> Câu hỏi </strong>
   </div>
   <div class="w-4/12 flex items-center h-full">
     <strong> Đáp án </strong>
+  </div>
+  <div class="w-2/12 flex items-center h-full">
+    <strong> Giá trị </strong>
   </div>
   <div class="flex flex-grow justify-start items-center h-full">
     <strong>Hành động</strong>
@@ -18,12 +21,15 @@
 >
   @for (question of questions; track $index) {
   <div
-    class="w-full flex-1 group table-item border border-solid item-border mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
+    class="w-full flex-1 group table-item item-shadow mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
     cdkDrag
   >
     <div
-      [ngClass]="{'justify-between items-center': mediaPlacement === 'inline', 'flex-col': mediaPlacement === 'under'}"
-      class="w-6/12 flex pr-10 box-border h-full"
+      [ngClass]="{
+        'justify-between items-center': mediaPlacement === 'inline',
+        'flex-col': mediaPlacement === 'under'
+      }"
+      class="w-4/12 flex pr-10 box-border h-full"
     >
       <editable
         class="flex-grow"
@@ -95,7 +101,35 @@
         </ng-template>
       </editable>
     </div>
-    <div class="flex flex-grow items-center group-hover:opacity-100 opacity-0 transition-opacity">
+    <div
+      class="w-2/12 flex justify-between items-center pr-2 box-border h-full"
+    >
+      <editable class="flex-grow">
+        <ng-template viewMode class="">
+          <strong class="w-full text-wrap">
+            {{ question.value !== 0 ? question.value : "Nhấp để nhập." }}
+          </strong>
+        </ng-template>
+        <ng-template editMode>
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-24"
+          >
+            <input
+              matInput
+              editableOnEnter
+              editableOnEscape
+              [(ngModel)]="question.value"
+              type="number"
+            />
+          </mat-form-field>
+        </ng-template>
+      </editable>
+    </div>
+    <div
+      class="flex flex-grow items-center group-hover:opacity-100 opacity-0 transition-opacity"
+    >
       <button *ngIf="allowDelete" mat-icon-button matTooltip="Xoá câu hỏi">
         <mat-icon>delete</mat-icon>
       </button>
@@ -103,9 +137,23 @@
         <mat-icon>attach_file</mat-icon>
       </button>
       <div class="flex flex-grow"></div>
-      <mat-icon class="cursor-move" cdkDragHandle matTooltip="Kéo để di chuyển vị trí câu hỏi"
+      <mat-icon
+        class="cursor-move"
+        cdkDragHandle
+        matTooltip="Kéo để di chuyển vị trí câu hỏi"
         >drag_indicator</mat-icon
       >
+    </div>
+  </div>
+  } @if(allowCreate){
+  <div
+    class="w-full flex-1 table-item mb-2 p-2 rounded-xl box-border min-h-16 h-max items-center justify-center pl-5 flex flex-row"
+  >
+    <div class="w-full h-full flex justify-end items-center">
+      <button mat-button (click)="add()">
+        <mat-icon>add</mat-icon>
+        Tạo câu hỏi mới
+      </button>
     </div>
   </div>
   }

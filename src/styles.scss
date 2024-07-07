@@ -27,7 +27,7 @@ $typography-base: matx.define-typography();
 $m3-theme: matx.define-theme(
   (
     color: (
-      theme-type: light,
+      theme-type: dark,
       primary: matx.$m3-orange-palette,
     ),
     typography: (
@@ -80,11 +80,11 @@ html {
   ::-webkit-scrollbar-thumb {
     background: mat.get-theme-color($m3-theme, on-surface);
     border-radius: 12px;
-    @apply transition-all;
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
+
     background: mat.get-theme-color($m3-theme, primary);
   }
   ::selection {
