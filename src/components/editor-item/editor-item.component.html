@@ -1,5 +1,5 @@
-<div class="flex justify-between">
-  <div class="">
+<div [ngClass]="{'flex-col justify-normal gap-2': align == 'vertical'}" class="flex justify-between">
+  <div class="flex flex-col" [ngClass]="{'flex-col-reverse': reversed == true}">
     <h6>
       <strong>{{title}}</strong>
     </h6>

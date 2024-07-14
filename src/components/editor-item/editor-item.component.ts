@@ -13,4 +13,6 @@ import { Component, Input } from '@angular/core';
 export class EditorItemComponent {
   @Input() title: string = 'Placeholder';
   @Input() description: string = 'Lorem ipsum dolor si amet';
+  @Input() align: 'horizontal' | 'vertical' = 'horizontal';
+  @Input() reversed: boolean = false;
 }

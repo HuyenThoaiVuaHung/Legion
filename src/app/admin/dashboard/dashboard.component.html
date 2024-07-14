@@ -1,1 +1,108 @@
-<p>dashboard works!</p>
+<div class="w-full h-full grid">
+  <!--Container-->
+  <div class="flex flex-col gap-4 pb-4 box-border">
+    <div class="h-full flex w-full gap-4">
+      <div class="w-1/2 h-full">
+        <mat-card class="h-full" appearance="outlined">
+          <mat-card-header>
+            <mat-card-title>Trạng thái thí sinh</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="h-full">
+            <div class="w-full h-full gap-2 pt-2 flex">
+              <div class="w-3/4">
+                <player-table [players]="players"></player-table>
+              </div>
+              <div class="w-1/4 flex gap-2 items-center flex-col">
+                <header
+                  class="w-full h-16 table-header rounded-xl grid place-items-center"
+                >
+                  <strong> Link hiện điểm </strong>
+                </header>
+                <div class="flex flex-col gap-2">
+                  @for (player of [1,2,3,4]; track $index) {
+                  <div class="h-16 grid place-items-center">
+                    <button mat-icon-button matTooltip="URL GOES HERE">
+                      <mat-icon>link</mat-icon>
+                    </button>
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="w-[20%] h-full">
+        <mat-card class="h-full" appearance="outlined">
+          <mat-card-header class="flex justify-between">
+            <mat-card-title>MC</mat-card-title>
+            <button mat-icon-button matTooltip="URL GOES HERE">
+              <mat-icon>link</mat-icon>
+            </button>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="flex flex-col gap-2 pt-2">
+              <editor-item
+                title="Hiển thị đề"
+                description="Cho phép xem toàn bộ đề"
+              >
+                <mat-slide-toggle></mat-slide-toggle>
+              </editor-item>
+              <editor-item
+                align="vertical"
+                title="Mã đăng nhập"
+                description="Mã đăng nhập cho MC"
+              >
+                <mat-form-field appearance="outline">
+                  <input matInput placeholder="Nhấp để nhập" />
+                </mat-form-field>
+              </editor-item>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="w-[30%] h-full">
+        <mat-card class="h-full" appearance="outlined">
+          <mat-card-header>
+            <mat-card-title>Media</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="flex flex-col pt-2 gap-2">
+              <editor-item
+                [reversed]="true"
+                description="Trạng thái"
+                title="Toàn bộ đã được tải thành công"
+              >
+              </editor-item>
+              <editor-item
+                [reversed]="true"
+                description="Tổng cộng"
+                title="99 Video, 99 Hình ảnh, 99 Âm thanh"
+              >
+              </editor-item>
+
+              <editor-item
+                title="Tải lại"
+                description="Kiểm tra và tải lại toàn bộ tài nguyên trên máy của thí sinh"
+              >
+                <div class="min-w-40 grid place-items-center">
+                  <button mat-stroked-button color="primary">
+                    <mat-icon>refresh</mat-icon>
+                    Tải lại
+                  </button>
+                </div>
+              </editor-item>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    <div class="h-full w-full">
+      <mat-card class="h-full" appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>Phát sóng trực tiếp</mat-card-title>
+        </mat-card-header>
+      </mat-card>
+    </div>
+  </div>
+</div>
