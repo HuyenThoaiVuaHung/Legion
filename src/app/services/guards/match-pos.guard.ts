@@ -1,14 +1,11 @@
 import { Injectable } from "@angular/core";
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-} from "@angular/router";
+import { ActivatedRouteSnapshot } from "@angular/router";
 import { AuthService } from "../auth.service";
 
 @Injectable({
   providedIn: "root",
 })
-export class MatchPosGuard implements CanActivate {
+export class MatchPosGuard  {
   constructor(private auth: AuthService) {}
   async canActivate(
     route: ActivatedRouteSnapshot
