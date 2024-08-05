@@ -61,19 +61,19 @@
         <div *ngIf="matchData.matchPos == 'TT_Q' || matchData.matchPos == 'TT_A'">
             <div>
                 {{matchData.players[ttData.playerAnswers[0].id - 1].name.toUpperCase()}}:
-                {{ttData.playerAnswers[0].answer}} @ {{getTimePassed(0)}}
+                {{ttData.playerAnswers[0].answer}} &#64; {{getTimePassed(0)}}
             </div>
             <div>
                 {{matchData.players[ttData.playerAnswers[1].id - 1].name.toUpperCase()}}:
-                {{ttData.playerAnswers[1].answer}} @ {{getTimePassed(1)}}
+                {{ttData.playerAnswers[1].answer}} &#64; {{getTimePassed(1)}}
             </div>
             <div>
                 {{matchData.players[ttData.playerAnswers[2].id - 1].name.toUpperCase()}}:
-                {{ttData.playerAnswers[2].answer}} @ {{getTimePassed(2)}}
+                {{ttData.playerAnswers[2].answer}} &#64; {{getTimePassed(2)}}
             </div>
             <div>
                 {{matchData.players[ttData.playerAnswers[3].id - 1].name.toUpperCase()}}:
-                {{ttData.playerAnswers[3].answer}} @ {{getTimePassed(3)}}
+                {{ttData.playerAnswers[3].answer}} &#64; {{getTimePassed(3)}}
             </div>
         </div>
         <div *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">
