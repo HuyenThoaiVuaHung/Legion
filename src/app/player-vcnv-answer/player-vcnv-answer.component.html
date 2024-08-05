@@ -1,45 +1,95 @@
-<div class="overflow-y-hidden relative flex text-center justify-center h-screen w-screen">
-    <img src="../../assets/misc/1.png" class="w-screen object-cover h-screen absolute -z-50">
-
-    <div class="w-3 bg-white pole aurora disablePointerActions overflow-hidden"></div>
-    <div class="flex-shrink-0 disablePointerActions boxes overflow-hidden">
-        <div [ngClass]="{'opacity-50': vcnvData.playerAnswers[0].correct === false && vcnvData.showResults === true}"
-            class="aurora w-80 ml-80 h-20 p-2 text-right mt-20 bg-white overflow-hidden">
-            <p class=" text-sm underline ">{{auth.matchData.players[0].name}}</p>
-            <p class=" text-center font-bold text-lg ">{{vcnvData.playerAnswers[0].answer.toUpperCase()}}</p>
-        </div>
-        <div [ngClass]="{'opacity-50': vcnvData.playerAnswers[1].correct === false && vcnvData.showResults === true}"
-            class="aurora w-80 h-20 p-2 text-left mt-20 bg-white overflow-hidden">
-            <p class=" text-sm underline">{{auth.matchData.players[1].name}}</p>
-            <p class=" text-center font-bold text-lg ">{{vcnvData.playerAnswers[1].answer.toUpperCase()}}</p>
-        </div>
-        <div [ngClass]="{'opacity-50': vcnvData.playerAnswers[2].correct === false && vcnvData.showResults === true}"
-            class="aurora w-80 h-20 ml-80 p-2 text-right mt-20 bg-white overflow-hidden">
-            <p class=" text-sm underline">{{auth.matchData.players[2].name}}</p>
-            <p class=" text-center font-bold text-lg ">{{vcnvData.playerAnswers[2].answer.toUpperCase()}}</p>
-        </div>
-        <div [ngClass]="{'opacity-50': vcnvData.playerAnswers[3].correct === false && vcnvData.showResults === true}"
-            class="aurora w-80 h-20 p-2 text-left mt-20 bg-white overflow-hidden">
-            <p class=" text-sm underline">{{auth.matchData.players[3].name}}</p>
-            <p class=" text-center font-bold text-lg ">{{vcnvData.playerAnswers[3].answer.toUpperCase()}}</p>
-        </div>
+<div
+  class="overflow-y-hidden relative flex text-center justify-center h-screen w-screen"
+>
+  <div class="w-3 pole aurora disablePointerActions overflow-hidden"></div>
+  <div class="flex-shrink-0 disablePointerActions boxes overflow-hidden">
+    <div
+      [ngClass]="{
+        'opacity-50':
+          vcnvData.playerAnswers[0].correct === false &&
+          vcnvData.showResults === true
+      }"
+      class="aurora w-80 ml-80 h-20 p-2 text-right mt-20 overflow-hidden"
+    >
+      <p class="text-sm underline">{{ auth.matchData.players[0].name }}</p>
+      <p class="text-center font-bold text-lg">
+        {{ vcnvData.playerAnswers[0].answer.toUpperCase() }}
+      </p>
     </div>
-    <div *ngIf="auth.userInfo.roleId != 3" class="fixed z-50 bottom-0 right-0">
-        <button (click)="attemptCNV()" [disabled]="disabledCNVButton" mat-raised-button
-            class=" h-12 w-64 align-bottom items-center text-right">TRẢ LỜI CNV</button>
+    <div
+      [ngClass]="{
+        'opacity-50':
+          vcnvData.playerAnswers[1].correct === false &&
+          vcnvData.showResults === true
+      }"
+      class="aurora w-80 h-20 p-2 text-left mt-20 overflow-hidden"
+    >
+      <p class="text-sm underline">{{ auth.matchData.players[1].name }}</p>
+      <p class="text-center font-bold text-lg">
+        {{ vcnvData.playerAnswers[1].answer.toUpperCase() }}
+      </p>
     </div>
-    <div class=" absolute left-5 self-end ml-5 mt-10 w-52 h-60">
-        <div *ngIf="vcnvData.CNVPlayers[0] != undefined"
-            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black bg-golden text-gray-darkest">
-            {{auth.matchData.players[vcnvData.CNVPlayers[0].id].name}}</div>
-        <div *ngIf="vcnvData.CNVPlayers[1] != undefined"
-            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">
-            {{auth.matchData.players[vcnvData.CNVPlayers[1].id].name}}</div>
-        <div *ngIf="vcnvData.CNVPlayers[2] != undefined"
-            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">
-            {{auth.matchData.players[vcnvData.CNVPlayers[2].id].name}}</div>
-        <div *ngIf="vcnvData.CNVPlayers[3] != undefined"
-            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">
-            {{auth.matchData.players[vcnvData.CNVPlayers[3].id].name}}</div>
+    <div
+      [ngClass]="{
+        'opacity-50':
+          vcnvData.playerAnswers[2].correct === false &&
+          vcnvData.showResults === true
+      }"
+      class="aurora w-80 h-20 ml-80 p-2 text-right mt-20 overflow-hidden"
+    >
+      <p class="text-sm underline">{{ auth.matchData.players[2].name }}</p>
+      <p class="text-center font-bold text-lg">
+        {{ vcnvData.playerAnswers[2].answer.toUpperCase() }}
+      </p>
     </div>
+    <div
+      [ngClass]="{
+        'opacity-50':
+          vcnvData.playerAnswers[3].correct === false &&
+          vcnvData.showResults === true
+      }"
+      class="aurora w-80 h-20 p-2 text-left mt-20 overflow-hidden"
+    >
+      <p class="text-sm underline">{{ auth.matchData.players[3].name }}</p>
+      <p class="text-center font-bold text-lg">
+        {{ vcnvData.playerAnswers[3].answer.toUpperCase() }}
+      </p>
+    </div>
+  </div>
+  <div *ngIf="auth.userInfo.roleId != 3" class="fixed z-50 bottom-0 right-0">
+    <button
+      (click)="attemptCNV()"
+      [disabled]="disabledCNVButton"
+      mat-raised-button
+      class="h-12 w-64 align-bottom items-center text-right"
+    >
+      TRẢ LỜI CNV
+    </button>
+  </div>
+  <div class="absolute left-5 self-end ml-5 mt-10 w-52 h-60">
+    <div
+      *ngIf="vcnvData.CNVPlayers[0] != undefined"
+      class="w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black bg-golden text-gray-darkest"
+    >
+      {{ auth.matchData.players[vcnvData.CNVPlayers[0].id].name }}
+    </div>
+    <div
+      *ngIf="vcnvData.CNVPlayers[1] != undefined"
+      class="w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest"
+    >
+      {{ auth.matchData.players[vcnvData.CNVPlayers[1].id].name }}
+    </div>
+    <div
+      *ngIf="vcnvData.CNVPlayers[2] != undefined"
+      class="w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest"
+    >
+      {{ auth.matchData.players[vcnvData.CNVPlayers[2].id].name }}
+    </div>
+    <div
+      *ngIf="vcnvData.CNVPlayers[3] != undefined"
+      class="w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest"
+    >
+      {{ auth.matchData.players[vcnvData.CNVPlayers[3].id].name }}
+    </div>
+  </div>
 </div>

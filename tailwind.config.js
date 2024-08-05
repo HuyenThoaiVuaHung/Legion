@@ -1,5 +1,7 @@
 module.exports = {
-
+  corePlugins: {
+    preflight: false,
+  },
   content: [
     "./src/**/*.{html,ts}",
   ],
@@ -41,13 +43,13 @@ module.exports = {
         },
       },
       boxShadow: {
-				hard: '2px 2px 0px 0px rgba(0,0,0,1)',
-				'very-hard': '0.5rem 0.5rem 0px 0px rgba(0,0,0,1)'
-			}
+        hard: '2px 2px 0px 0px rgba(0,0,0,1)',
+        'very-hard': '0.5rem 0.5rem 0px 0px rgba(0,0,0,1)'
+      }
     },
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: []
 };

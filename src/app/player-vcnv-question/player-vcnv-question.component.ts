@@ -8,7 +8,7 @@ import { AuthService } from "../services/auth.service";
   styleUrls: ["./player-vcnv-question.component.scss"],
 })
 export class PlayerVcnvQuestionComponent implements OnInit {
-  constructor(private sfxService: SfxService, public auth: AuthService) { }
+  constructor(private sfxService: SfxService, public auth: AuthService) {}
   imageSource = "../../assets/abcdxyz.png";
   vcnvData: any = {};
   currentTime: number = 0;
@@ -20,10 +20,11 @@ export class PlayerVcnvQuestionComponent implements OnInit {
   disabledCNVButton: boolean = false;
   audio: any = null;
   ngOnInit(): void {
-    this.auth.resetListeners();
-    if (this.auth.userInfo.roleId == 0) {
-      this.auth.socket.emit("clear-player-answer");
-    }
+    this.auth.socketHook = () => {
+      if (this.auth.userInfo.roleId == 0) {
+        this.auth.socket.emit("clear-player-answer");
+      }
+    };
     this.auth.socket.on("play-sfx", (sfx) => {
       this.sfxService.playSfx(sfx);
     });
@@ -66,7 +67,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       if (this.curVCNVQuestion.type == "HN_S") {
         this.audio = new Audio(
           "../../../assets/audio-questions/vcnv/" +
-          this.curVCNVQuestion.audioFilePath
+            this.curVCNVQuestion.audioFilePath
         );
         this.audio.play();
       } else if (this.audio != null) {

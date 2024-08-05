@@ -1,58 +1,82 @@
 <div class="flex h-screen w-screen overflow-auto justify-center items-center">
-  <img src="../../assets/misc/1.png" class="w-screen blur-sm object-cover h-screen absolute -z-50">
-  <div class="text-center font-black">
+  <div class="text-center">
     <div class="m-3">
-      <img class="w-48 h-48 m-auto" src="../../assets/misc/logo.png">
+      <img class="w-48 h-48 m-auto" src="../../assets/misc/logo.png" />
     </div>
-    <p class="text-4xl">Chào mừng bạn đến với {{auth.matchData.matchName}}</p>
+    <h1>Chào mừng bạn đến với {{ auth.matchData.matchName }}</h1>
     <div *ngIf="auth.userInfo.roleId === -1">
       <mat-form-field>
         <mat-label>Nhập ID do BTC cung cấp</mat-label>
-        <input matInput (keyup.enter)="authenticate()" placeholder="ID" [(ngModel)]="authString">
+        <input
+          matInput
+          (keyup.enter)="authenticate()"
+          placeholder="ID"
+          [(ngModel)]="authString"
+        />
       </mat-form-field>
       <button mat-icon-button (click)="authenticate()">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
-    <div class=" flex flex-col text-2xl items-center text-center overflow-hidden" *ngIf="auth.userInfo.roleId != -1">
-      <div>
-        {{greetString}}
-      </div>
+    <div
+      class="flex flex-col items-center text-center overflow-hidden"
+      *ngIf="auth.userInfo.roleId != -1"
+    >
+      <h2>
+        {{ greetString }}
+      </h2>
       <div *ngIf="auth.userInfo.roleId === 1">
-        <div class="overflow-x-hidden w-max m-10 text-2xl">
+        <div class="overflow-x-hidden w-max m-10">
           <table mat-table [dataSource]="auth.matchData.players" class="w-max">
             <ng-container matColumnDef="id">
-              <th mat-header-cell *matHeaderCellDef> ID </th>
-              <td mat-cell *matCellDef="let element"> {{auth.matchData.players.indexOf(element) + 1}} </td>
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let element">
+                {{ auth.matchData.players.indexOf(element) + 1 }}
+              </td>
             </ng-container>
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef> Tên </th>
-              <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+              <th mat-header-cell *matHeaderCellDef>Tên</th>
+              <td mat-cell *matCellDef="let element">{{ element.name }}</td>
             </ng-container>
             <ng-container matColumnDef="score">
-              <th mat-header-cell *matHeaderCellDef> Điểm </th>
-              <td mat-cell *matCellDef="let element"> {{element.score}} </td>
+              <th mat-header-cell *matHeaderCellDef>Điểm</th>
+              <td mat-cell *matCellDef="let element">{{ element.score }}</td>
             </ng-container>
             <ng-container matColumnDef="active">
-              <th mat-header-cell *matHeaderCellDef> Đã kết nối? </th>
+              <th mat-header-cell *matHeaderCellDef>Đã kết nối?</th>
               <td mat-cell *matCellDef="let element">
-                <mat-checkbox disabled="true" [checked]="element.isReady"></mat-checkbox>
+                <mat-checkbox
+                  disabled="true"
+                  [checked]="element.isReady"
+                ></mat-checkbox>
               </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
-            <tr mat-row *matRowDef="let row;
-                          columns: displayedPlayerColumns;" (dblclick)="editPlayer(row)" class="row"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedPlayerColumns"
+              (dblclick)="editPlayer(row)"
+              class="row"
+            ></tr>
           </table>
         </div>
-        <input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
-        <div class="file-upload">
-          {{fileName || "Chưa nhập đề mới."}}
-          <button class="upload-btn" (click)="fileUpload.click()">
+        <input
+          type="file"
+          class="file-input"
+          (change)="onFileSelected($event)"
+          #fileUpload
+        />
+        <div class="file-upload mat-h2">
+          {{ fileName || "Chưa nhập đề mới." }}
+          <button
+            mat-icon-button
+            class="upload-btn"
+            (click)="fileUpload.click()"
+          >
             <mat-icon>attach_file</mat-icon>
           </button>
         </div>
       </div>
     </div>
-
   </div>
 </div>

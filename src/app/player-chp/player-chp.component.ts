@@ -23,6 +23,7 @@ export class PlayerChpComponent implements OnInit {
   currentTurn: number = -1;
   ifGotTurn: boolean = false;
   ngOnInit(): void {
+    this.auth.reconnect();
     this.auth.socket.emit('get-chp-data', (data) => {
       this.chpData = data;
     })

@@ -13,7 +13,7 @@ export class PlayerVcnvAnswerComponent implements OnInit {
   disabledCNVButton: boolean = false;
   constructor(private sfxService: SfxService, public auth: AuthService) {}
   ngOnInit(): void {
-    this.auth.resetListeners();
+    this.auth.reconnect();
     this.sfxService.playSfx("VCNV_SHOWANS");
     this.auth.socket.emit("get-vcnv-data", (callback) => {
       this.vcnvData = callback;

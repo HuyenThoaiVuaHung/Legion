@@ -8,7 +8,7 @@ import { MatchData, UserInfo } from "./types/match.data";
   providedIn: "root",
 })
 export class AuthService {
-  public socket: Socket = {} as Socket;
+  public readonly socket: Socket = io(environment.socketIp);
   public matchData: MatchData = {} as MatchData;
   public userInfo: UserInfo = {
     roleId: -1,
@@ -18,12 +18,11 @@ export class AuthService {
   public socketHook = () => {};
   public guardHook = () => {};
   constructor(private router: Router) {
-    this.socket = io(environment.socketIp);
+    this.getMatchData();
     console.log(localStorage.getItem("authString") && router.url != "/");
     if (localStorage.getItem("authString") && router.url != "/")
       this.authenticate();
-    else;
-    this.resetListeners();
+    else this.resetListeners();
   }
   public authenticate(authId?: string) {
     this.socket.emit(
@@ -32,20 +31,26 @@ export class AuthService {
       (callback: string) => console.log(callback)
     );
   }
+
+  public getMatchData() {
+    this.socket.emit("get-match-data", (callback: MatchData) => {
+      this.matchData = callback;
+    });
+  }
+
   public resetListeners() {
     this.socket.removeAllListeners();
     this.socket.on("connect", () => {
-      if(localStorage.getItem("authString")) this.authenticate();
+      if (localStorage.getItem("authString")) this.authenticate();
     });
     this.socket.on(
       "authentication",
       (_matchData: MatchData, _userInfo: UserInfo) => {
-        this.matchData = _matchData;
         this.userInfo = _userInfo;
+        console.debug(_userInfo);
         this.socketHook();
         this.guardHook();
         if (_userInfo.roleId == 1) return;
-        console.log();
         this.navigateMatchPosition();
       }
     );
@@ -73,7 +78,7 @@ export class AuthService {
   }
   private navigateMatchPosition() {
     if (this.userInfo.roleId == 1 || this.userInfo.roleId == 2) return;
-    console.log(this.matchData.matchPos+"nav");
+    console.log(this.matchData.matchPos + "nav");
     switch (this.matchData.matchPos) {
       case "KD":
         this.router.navigate(["/pl-kd"]);

@@ -1,5 +1,4 @@
 <div class=" flex h-screen w-screen">
-    <img src="../../assets/misc/1.png" class="w-screen disablePointerActions object-cover h-screen absolute -z-50">
     <div class="float-left disablePointerActions p-16 ml-5">
         <div
             class="w-64 h-64 drop-shadow-lg aurora flex text-center p-10 shadow-xl justify-center items-center text-8xl font-black rounded-xl">
@@ -11,7 +10,7 @@
             class="text-xl mt-2 w-64 rounded-md p-2 aurora shadow-lg text-center">
             {{auth.matchData.players[i].name.toUpperCase()}} ({{auth.matchData.players[i].score}})
         </div>
-
+        <player-list [players]="auth.matchData.players" [currentTurn]="vdData.currentPlayerId + 1"></player-list>
     </div>
     <div *ngIf="vdData.ifQuestionPickerShowing == false" class=" items-center text-center">
         <div *ngIf="curQuestion.type == 'V' || curQuestion.type == 'I'" class="disablePointerActions

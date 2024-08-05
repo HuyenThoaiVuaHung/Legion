@@ -1,5 +1,4 @@
 <div class="flex disablePointerActions text-center justify-center h-screen w-screen">
-    <img src="../../assets/misc/1.png" class="w-screen disablePointerActions object-cover h-screen absolute -z-50">
 
     <div class="flex-shrink-0 boxes box">
         <div *ngFor="let playerAnswer of ttData.playerAnswers; let i = index" [ngClass]="{'answer-incorrect': ttData.playerAnswers[i].correct == false && ttData.showResults == true}"

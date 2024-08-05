@@ -28,12 +28,12 @@
 }
 .boxes div:nth-child(odd) {
   right: 100%;
-  animation: 1s transitionRight forwards;
+  animation: 1s transitionRight forwards cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
 .boxes div:nth-child(even) {
   left: 100%;
-  animation: 1s transitionLeft forwards;
+  animation: 1s transitionLeft forwards cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 @keyframes trasitionUp {
   100% {
@@ -44,9 +44,8 @@
   position: absolute;
   height: 0;
   overflow: hidden;
-  background-color: gray;
   z-index: 1;
-  animation: 1s trasitionUp forwards;
+  animation: 1s trasitionUp forwards cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 .disablePointerActions {
   pointer-events: none;

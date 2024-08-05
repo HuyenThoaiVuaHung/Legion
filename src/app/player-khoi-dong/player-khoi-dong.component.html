@@ -1,58 +1,50 @@
-<div class=" aurora-bg flex h-screen sm:h-full w-screen">
-  <img src="../../assets/misc/1.png" class="w-screen object-cover h-screen absolute -z-50">
+<div class="aurora-bg overflow-hidden flex h-screen sm:h-full w-screen">
   <div class="float-left gap-5 pt-5 flex flex-col items-center ml-5">
     <div
-      class="w-64 aurora shadow-xl h-64 rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 disablePointerActions flex text-center  text-black justify-center items-center text-8xl font-black"
+      class="w-64 aurora shadow-xl h-64 rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 disablePointerActions flex text-center text-black justify-center items-center text-8xl font-black"
     >
-      <img class="h-48 w-48" src="../../assets/misc/logo.png">
+      <img class="h-48 w-48" src="../../assets/misc/logo.png" />
     </div>
-    <!-- 3s Timer (Admin triggered)-->
-    <div
-      *ngIf="threeSecTimer2 <= 0 && threeSecTimer1 > 0"
-      class="text-4xl disablePointerActions absolute z-2 w-64 rounded-xl mt-10 text-center"
-    >
-      {{ threeSecTimer1 / 10 }}s
-    </div>
-    <div
-      [ngClass]="{ 'opacity-0': threeSecTimer2 <= 0 }"
-      class="text-4xl disablePointerActions w-64 rounded-xl mt-10 text-center"
-    >
-      {{ threeSecTimer2 / 10 }}s
-    </div>
+
     <!-- 3s Timer (Player Triggered) *ngIf="threeSecTimer2 > 0"-->
-    <div
+    <player-list [players]="auth.matchData.players" [currentTurn]="currentTurn">
+
+    </player-list>
+    <!-- <div
       class="disablePointerActions w-64 overflow-hidden p-1 text-center gap-3 items-center flex flex-col"
     >
       <div
         *ngFor="let player of auth.matchData.players; let i = index"
         [ngClass]="{ 'name-highlight': currentTurn == i }"
-        class="text-xl w-full rounded-md aurora py-3 px-1 text-center shadow-lg"
+        class="mat-h2 w-full rounded-md aurora py-3 px-1 text-center shadow-lg"
       >
-        {{ auth.matchData.players[i].name.toUpperCase() }} ({{
+        {{ auth.matchData.players[i].name }} ({{
           auth.matchData.players[i].score
         }})
       </div>
-    </div>
-    <button *ngIf="gamemode == 'M'"
+    </div> -->
+    <button
+      mat-raised-button
+      *ngIf="gamemode == 'M'"
       (click)="getAnswerTurn()"
       [disabled]="answerButtonDisabled"
-      class="max-w-lg text-lg font-bold py-5 w-64 h-max active:bg-black bg-white
-       active:text-white active:shadow-none active:translate-x-[2px] active:translate-y-[2px] font-sans p-4
-        shadow-black transition-all flex justify-center items-center gap-1
-         disabled:bg-black disabled:translate-x-0 disabled:translate-y-0 disabled:text-white disabled:hover:shadow-none
-         aurora"
+      class="w-full h-32"
+      color="primary"
     >
-      GIÀNH QUYỀN TRẢ LỜI
+      <span class="mat-h2"> GIÀNH QUYỀN </span>
     </button>
   </div>
   <div
     [ngClass]="{ 'text-gold': ifGotTurn === true }"
-    class="disablePointerActions bg-white relative shadow-lg questionBox aurora
-     float-right mt-5 ml-10 mr-10 text-3xl border-4"
-    >
-    <span class="h-full flex flex-col w-full p-10 text-6xl">
+    class="disablePointerActions relative shadow-lg questionBox aurora float-right mt-5 ml-10 mr-10 text-3xl border-4"
+  >
+    <span class="h-full flex flex-col w-full p-10 mat-headline-1">
       {{ question.question }}
-      <img *ngIf="picturePath != ''" src="{{ picturePath }}" class=" max-w-2xl  mt-10" />
+      <img
+        *ngIf="picturePath != ''"
+        src="{{ picturePath }}"
+        class="max-w-2xl mt-10"
+      />
     </span>
     <div
       *ngIf="this.currentQuestionNo > 1"

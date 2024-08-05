@@ -7,10 +7,7 @@ import { AuthService } from "../services/auth.service";
   styleUrls: ["./player-tangtoc-q.component.scss"],
 })
 export class PlayerTangtocQComponent implements OnInit {
-  constructor(
-    private sfxService: SfxService,
-    public auth: AuthService
-  ) {}
+  constructor(private sfxService: SfxService, public auth: AuthService) {}
   imageSource = "";
   videoSource = "";
   ttData: any = {};
@@ -23,43 +20,19 @@ export class PlayerTangtocQComponent implements OnInit {
   playerAnswer: string = "";
   audio: any = null;
   ngOnInit(): void {
-    this.auth.resetListeners();
-    this.auth.socket.on("play-sfx", (sfxID) => {
-      this.sfxService.playSfx(sfxID);
-    });
-    if (this.auth.userInfo.roleId == 0) {
-      this.auth.socket.emit("clear-answer-tt");
-    }
-    this.auth.socket.emit("get-tangtoc-data", (callback) => {
-      this.ttData = callback;
-    });
+    this.auth.socketHook = () => {
+      this.auth.socket.on("play-sfx", (sfxID) => {
+        this.sfxService.playSfx(sfxID);
+      });
+      if (this.auth.userInfo.roleId == 0) {
+        this.auth.socket.emit("clear-answer-tt");
+      }
+      this.auth.socket.emit("get-tangtoc-data", (callback) => {
+        this.ttData = callback;
+      });
 
-    this.auth.socket.on("update-tangtoc-data", (data) => {
-      this.ttData = data;
-      if (this.curQuestion.type == "TT_IMG") {
-        if (this.ttData.showAnswer == true) {
-          this.imageSource =
-            "../../../assets/picture-questions/tt/" +
-            this.ttData.questions[this.curQuestion.id - 1].answer_image;
-        } else {
-          this.imageSource =
-            "../../../assets/picture-questions/tt/" +
-            this.ttData.questions[this.curQuestion.id - 1].question_image;
-        }
-      }
-    });
-    this.auth.socket.on("update-clock", (clock) => {
-      if (clock <= 0) {
-        this.disabledAnswerBox = true;
-        this.playerAnswer = "";
-      } else {
-        this.disabledAnswerBox = false;
-      }
-      this.currentTime = clock;
-    });
-    this.auth.socket.on("update-tangtoc-question", (question) => {
-      if (question != undefined) {
-        this.curQuestion = question;
+      this.auth.socket.on("update-tangtoc-data", (data) => {
+        this.ttData = data;
         if (this.curQuestion.type == "TT_IMG") {
           if (this.ttData.showAnswer == true) {
             this.imageSource =
@@ -70,20 +43,46 @@ export class PlayerTangtocQComponent implements OnInit {
               "../../../assets/picture-questions/tt/" +
               this.ttData.questions[this.curQuestion.id - 1].question_image;
           }
-        } else if (this.curQuestion.type == "TT_VD") {
-          this.videoSource =
-            "../../../assets/video-questions/tt/" +
-            this.ttData.questions[this.curQuestion.id - 1].video_name;
         }
-      } else {
-        this.curQuestion = {};
-        this.imageSource = "";
-        this.videoSource = "";
-      }
-    });
-    this.auth.socket.on("tangtoc-play-video", () => {
-      this.togglePlay();
-    });
+      });
+      this.auth.socket.on("update-clock", (clock) => {
+        if (clock <= 0) {
+          this.disabledAnswerBox = true;
+          this.playerAnswer = "";
+        } else {
+          this.disabledAnswerBox = false;
+        }
+        this.currentTime = clock;
+      });
+      this.auth.socket.on("update-tangtoc-question", (question) => {
+        if (question != undefined) {
+          this.curQuestion = question;
+          if (this.curQuestion.type == "TT_IMG") {
+            if (this.ttData.showAnswer == true) {
+              this.imageSource =
+                "../../../assets/picture-questions/tt/" +
+                this.ttData.questions[this.curQuestion.id - 1].answer_image;
+            } else {
+              this.imageSource =
+                "../../../assets/picture-questions/tt/" +
+                this.ttData.questions[this.curQuestion.id - 1].question_image;
+            }
+          } else if (this.curQuestion.type == "TT_VD") {
+            this.videoSource =
+              "../../../assets/video-questions/tt/" +
+              this.ttData.questions[this.curQuestion.id - 1].video_name;
+          }
+        } else {
+          this.curQuestion = {};
+          this.imageSource = "";
+          this.videoSource = "";
+        }
+      });
+      this.auth.socket.on("tangtoc-play-video", () => {
+        this.togglePlay();
+      });
+    };
+    this.auth.reconnect();
   }
 
   togglePlay() {

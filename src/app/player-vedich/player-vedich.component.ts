@@ -19,7 +19,7 @@ export class PlayerVedichComponent implements OnInit {
   buttonDisabled: boolean = true;
   audio: any = null;
   ngOnInit(): void {
-    this.auth.resetListeners();
+    this.auth.reconnect();
     this.auth.socket.on("play-sfx", (sfxID) => {
       this.sfxService.playSfx(sfxID);
     });

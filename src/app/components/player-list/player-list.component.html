@@ -1,0 +1,14 @@
+<div
+  class="disablePointerActions w-64 overflow-hidden p-1 text-center gap-3 items-center flex flex-col"
+>
+  <div
+    *ngFor="let player of players; let i = index"
+    [ngClass]="{ 'spec-highlight': currentTurn == i }"
+    class="mat-h2 w-full rounded-md flex leading-tight justify-between aurora py-3 px-3 box-border text-left shadow-lg"
+  >
+    <span>
+      {{ player.name }}
+    </span>
+    <span class="grid place-items-center text-left">{{ player.score }}</span>
+  </div>
+</div>

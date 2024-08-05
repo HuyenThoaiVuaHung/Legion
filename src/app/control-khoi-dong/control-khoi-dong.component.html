@@ -1,7 +1,7 @@
-<div class="bg-gray-darkest flex w-screen h-screen">
+<div class="flex w-screen h-screen">
   <div class="half-width float-left flex-col flex text-center overflow-auto table-container">
     <div class="m-5">
-      <div *ngIf="kdData.gamemode == 'M'" class="inline text-white text-xl">Thí sinh giành quyền: {{lastTurn.name}}</div>
+      <div *ngIf="kdData.gamemode == 'M'" class="inline text-xl">Thí sinh giành quyền: {{lastTurn.name}}</div>
       <div class=" mt-2">
         <div class="inline mr-10">
           <button mat-raised-button [disabled]="lastTurn.name == undefined" (click)="markCorrect()">Đúng</button>
@@ -41,13 +41,13 @@
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
         <tr mat-row *matRowDef="let row; columns:
-         displayedQuestionColumns; let i = index" class=" hover:bg-gray-darkest"
-          [ngClass]="{'bg-gray-light text-gray-darkest': row.ifSong === true}" (click)="onClickQuestion(row)"
+         displayedQuestionColumns; let i = index" class=""
+          [ngClass]="{'': row.ifSong === true}" (click)="onClickQuestion(row)"
           (dblclick)="onDoubleClickQuestion(row)"
           [ngClass]="{'highlight': displayingRow === row, 'choose': chosenRow === row}"></tr>
       </table>
     </div>
-    <div class=" text-right text-white mr-5">
+    <div class="text-right mr-5">
       <button mat-icon-button (click)="clearQuestion()">
         <mat-icon>visibility_off</mat-icon>
       </button>
@@ -57,7 +57,7 @@
     </div>
   </div>
   <div class="half-width flex flex-col items-center  float-right text-center overflow-auto table-container">
-    <div class="m-5 flex-col text-white text-xl">
+    <div class="m-5 flex-col  text-xl">
       <div class="">
         <mat-form-field>
           <mat-label>Phần thi</mat-label>
@@ -75,18 +75,18 @@
         <button mat-raised-button (click)="playSfx('KD_START')" class="w-52">Nhạc hiệu KĐ</button>
       </div>
       <div class="mt-5">
-        <button mat-raised-button (click)="roundStart(kdData.gamemode == 'S'? 6 : 12)" class="w-52 mt-5 bg-gray-lightest text-gray-darkest">Bắt đầu phần thi</button>
+        <button mat-raised-button color='accent' (click)="roundStart(kdData.gamemode == 'S'? 6 : 12)" class="w-52 mt-5">Bắt đầu phần thi</button>
       </div>
       <div class="mt-5">
-        <button mat-raised-button (click)="resetTurn()" class="w-52 mt-5 bg-gray-lightest text-gray-darkest">RESET CHUÔNG KĐ</button>
+        <button mat-raised-button  color='accent'  (click)="resetTurn()" class="w-52 mt-5 ">RESET CHUÔNG KĐ</button>
       </div>
     </div>
-    <div class="text-2xl text-white">
+    <div class="text-2xl ">
       <br>
       Số câu hỏi hiện tại: {{currentQuestionNo}}/{{currentMaxQuestionNo}}
     </div>
-    <div class="text-2xl mt-5 text-white">
-      Vị trí thí sinh: <span class="text-white">{{matchData.matchPos}}</span>
+    <div class="text-2xl mt-5 ">
+      Vị trí thí sinh: <span class="">{{matchData.matchPos}}</span>
     </div>
     <div class="overflow-x-hidden w-max m-5 text-2xl">
       <table mat-table [dataSource]="matchData.players" class="w-max">
@@ -111,10 +111,10 @@
         <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedPlayerColumns;" (dblclick)="onDoubleClickPlayer(row)"
           (click)="choosePlayer(row)"
-          [ngClass]="{' bg-gray': chosenPlayer === row, 'bg-golden-dark': lastTurn === row, 'highlight': kdData.currentSingleplayerPlayer === row.id - 1}">
+          [ngClass]="{' choose': chosenPlayer === row, 'turn': lastTurn === row, 'highlight': kdData.currentSingleplayerPlayer === row.id - 1}">
         </tr>
       </table>
-      <div class=" text-white p-2 text-right">
+      <div class="  p-2 text-right">
         <button *ngIf="chosenPlayer.name != undefined" mat-icon-button (click)="editPlayer()">
           <mat-icon>edit</mat-icon>
         </button>

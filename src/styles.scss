@@ -1,6 +1,50 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use "@angular/material" as mat;
+@use "./app/themes/table-theme";
+@use "./app/themes/player-ui-theme";
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+
+$Legion-primary: mat.define-palette(mat.$green-palette);
+$Legion-accent: mat.define-palette(mat.$amber-palette);
+
+$Legion-warn: mat.define-palette(mat.$red-palette);
+$Lexend-typography: mat.define-typography-config(
+  $font-family: "Lexend, sans-serif",
+);
+@include mat.core($Lexend-typography);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$Legion-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $Legion-primary,
+      accent: $Legion-accent,
+      warn: $Legion-warn,
+    ),
+    typography: $Lexend-typography,
+  )
+);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($Legion-theme);
+@include table-theme.theme($Legion-theme);
+@include player-ui-theme.theme($Legion-theme);
 
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-html, body { height: 100%; }
-body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+}

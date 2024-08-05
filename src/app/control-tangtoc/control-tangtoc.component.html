@@ -1,4 +1,4 @@
-<div class="bg-gray-darkest flex w-screen h-screen">
+<div class=" flex w-screen h-screen">
   <div class="half-width float-left flex-col flex text-center overflow-hidden table-container">
     <div class="m-5">
     </div>
@@ -25,7 +25,7 @@
           (dblclick)="onDoubleClickQuestion(row)"
           [ngClass]="{'highlight': displayingRow === row, 'choose': chosenRow === row}"></tr>
       </table>
-      <div class=" text-right text-white m-2">
+      <div class=" text-right  m-2">
         <button mat-icon-button title="Chỉnh sửa câu hỏi đang chọn (nhấn 1 lần vào câu hỏi cần sửa)"
           (click)="editQuestion()">
           <mat-icon>edit</mat-icon>
@@ -47,7 +47,7 @@
           </button>
         </span>
         <span *ngIf="displayingRow.type == 'TT_IMG'" class=" pl-2">
-          <button [ngClass]="{'bg-gray-lightest text-gray-darkest': tangtocData.showAnswer === true}" mat-raised-button
+          <button [ngClass]="{'text-gray-darkest': tangtocData.showAnswer === true}" mat-raised-button
             (click)="toggleQuestionAnswer()">Toggle đáp án</button>
         </span>
         <span class="pl-2" *ngIf="displayingRow.type == 'TT_VD'">
@@ -67,12 +67,12 @@
       <div class="inline ml-5">
         <button mat-raised-button (click)="playSfx('TT_START')">Nhạc hiệu tăng tốc</button>
       </div>
-      <div class="text-2xl mt-5 text-white">
-        Vị trí thí sinh: <span class="text-white">{{auth.matchData.matchPos}}</span>
+      <div class="text-2xl mt-5 ">
+        Vị trí thí sinh: <span class="">{{auth.matchData.matchPos}}</span>
       </div>
     </div>
     <div class="overflow-x-hidden w-max m-5 text-2xl">
-      <div class="text-white">Chấm</div>
+      <div class="">Chấm</div>
       <table mat-table [dataSource]="auth.matchData.players" class="w-max">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef> ID </th>
@@ -115,7 +115,7 @@
         <button mat-raised-button [disabled]="currentTime > 0" (click)="submitMark()">Xác Nhận</button>
       </div>
       <div class="m-5 inline">
-        <button [ngClass]="{'bg-gray-lightest text-gray-darkest': tangtocData.showResults === true}" mat-raised-button
+        <button [ngClass]="{' text-gray-darkest': tangtocData.showResults === true}" mat-raised-button
           (click)="toggleResultsDisplay()">Toggle KQ chấm</button>
       </div>
     </div>
