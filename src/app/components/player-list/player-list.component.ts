@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, input, Input, OnInit, Signal } from "@angular/core";
 import { Player } from "src/app/services/types/match.data";
 
 @Component({
@@ -7,7 +7,8 @@ import { Player } from "src/app/services/types/match.data";
   styleUrls: ["./player-list.component.scss"],
 })
 export class PlayerListComponent {
-  @Input() currentTurn = -1;
-  @Input() players: Player[] = [];
+  public turnIndex = input(-1);
+  public highlightIndex = input(-1);
+  public players: Signal<Player[]> = input([]);
   constructor() {}
 }

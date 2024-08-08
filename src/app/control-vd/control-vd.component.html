@@ -1,52 +1,66 @@
 <div class="flex w-screen h-screen">
-  <div class="half-width float-left flex-col flex text-center overflow-hidden table-container">
-    <div class="m-5">
-    </div>
-    <div class="overflow-x-hidden mb-5 mr-5 ml-5 height-600 w-max h-auto text-xs">
+  <div
+    class="half-width float-left flex-col flex text-center overflow-hidden table-container"
+  >
+    <div class="m-5"></div>
+    <div
+      class="overflow-x-hidden mb-5 mr-5 ml-5 height-600 w-max h-auto text-xs"
+    >
       <table mat-table [dataSource]="currentQuestionPool" class="">
         <ng-container matColumnDef="question">
-          <th mat-header-cell *matHeaderCellDef> Câu hỏi </th>
-          <td mat-cell *matCellDef="let element"> {{element.question}} </td>
+          <th mat-header-cell *matHeaderCellDef>Câu hỏi</th>
+          <td mat-cell *matCellDef="let element">{{ element.question }}</td>
         </ng-container>
         <ng-container matColumnDef="answer">
-          <th mat-header-cell *matHeaderCellDef> Đáp án </th>
-          <td mat-cell *matCellDef="let element"> {{element.answer}} </td>
+          <th mat-header-cell *matHeaderCellDef>Đáp án</th>
+          <td mat-cell *matCellDef="let element">{{ element.answer }}</td>
         </ng-container>
         <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef> Loại </th>
-          <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+          <th mat-header-cell *matHeaderCellDef>Loại</th>
+          <td mat-cell *matCellDef="let element">{{ element.type }}</td>
         </ng-container>
         <ng-container matColumnDef="value">
-          <th mat-header-cell *matHeaderCellDef> Giá trị </th>
-          <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+          <th mat-header-cell *matHeaderCellDef>Giá trị</th>
+          <td mat-cell *matCellDef="let element">{{ element.value }}</td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedQuestionColumns;" (click)="onClickQuestion(row)"
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedQuestionColumns"
+          (click)="onClickQuestion(row)"
           (dblclick)="onDoubleClickQuestion(row)"
-          [ngClass]="{'highlight': displayingRow == row, 'choose': chosenRow == row}"></tr>
+          [ngClass]="{
+            highlight: displayingRow == row,
+            choose: chosenRow == row
+          }"
+        ></tr>
       </table>
     </div>
-    <div class=" text-right  m-2">
-      <button *ngIf="chosenRow.question != undefined" mat-icon-button
-        title="Chỉnh sửa câu hỏi đang chọn (nhấn 1 lần vào câu hỏi cần sửa)" (click)="editQuestion()">
+    <div class="text-right m-2">
+      <button
+        *ngIf="chosenRow.question != undefined"
+        mat-icon-button
+        title="Chỉnh sửa câu hỏi đang chọn (nhấn 1 lần vào câu hỏi cần sửa)"
+        (click)="editQuestion()"
+      >
         <mat-icon>edit</mat-icon>
       </button>
-      <span class=" pl-2">
+      <span class="pl-2">
         <button mat-icon-button (click)="addQuestion()">
           <mat-icon>add</mat-icon>
         </button>
       </span>
-      <span class=" pl-2">
+      <span class="pl-2">
         <button mat-icon-button (click)="deleteQuestion()">
           <mat-icon>remove</mat-icon>
         </button>
       </span>
-      <span class=" pl-2">
+      <span class="pl-2">
         <button mat-icon-button (click)="hideQuestion()">
           <mat-icon>clear</mat-icon>
         </button>
       </span>
-      <span *ngIf="displayingRow.question" class=" pl-2">
+      <span *ngIf="displayingRow.question" class="pl-2">
         <button mat-icon-button (click)="showQuestion()">
           <mat-icon>visibility</mat-icon>
         </button>
@@ -56,68 +70,107 @@
           <mat-icon>play_circle</mat-icon>
         </button>
       </span>
-      <div class=" w-full items-center flex justify-center overflow-y-auto text-right">
-        <div class="disablePointerActions text-right right-0 flex smallsize flex-col h-48 w-28">
+      <div
+        class="w-full items-center flex justify-center overflow-y-auto text-right"
+      >
+        <div
+          class="disablePointerActions text-right right-0 flex smallsize flex-col h-48 w-28"
+        >
           <div>
-            <div class=" float-left h-20 w-6">
+            <div class="float-left h-20 w-6">
               <span class="checkboxes">
-                <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')"
-                  [(ngModel)]="vdData.questionPickerArray[0]"></mat-checkbox>
+                <mat-checkbox
+                  (change)="updateVdData()"
+                  (change)="playSfx('VD_CHOOSE')"
+                  [(ngModel)]="vdData.questionPickerArray[0]"
+                ></mat-checkbox>
               </span>
               <span class="checkboxes">
-                <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')"
-                  [(ngModel)]="vdData.questionPickerArray[1]"></mat-checkbox>
+                <mat-checkbox
+                  (change)="updateVdData()"
+                  (change)="playSfx('VD_CHOOSE')"
+                  [(ngModel)]="vdData.questionPickerArray[1]"
+                ></mat-checkbox>
               </span>
               <span class="checkboxes">
-                <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')"
-                  [(ngModel)]="vdData.questionPickerArray[2]"></mat-checkbox>
+                <mat-checkbox
+                  (change)="updateVdData()"
+                  (change)="playSfx('VD_CHOOSE')"
+                  [(ngModel)]="vdData.questionPickerArray[2]"
+                ></mat-checkbox>
               </span>
             </div>
             <div
-              class=" justify-center font-black text-center items-center rounded-xl  text-2xl flex float-right h-20  w-20 border-2">
-              20</div>
+              class="justify-center font-semibold text-center items-center rounded-xl text-2xl flex float-right h-20 w-20 border-2"
+            >
+              20
+            </div>
           </div>
           <div class="">
             <div class="mt-5 float-left h-20 w-6">
               <span class="checkboxes">
-                <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')"
-                  [(ngModel)]="vdData.questionPickerArray[3]"></mat-checkbox>
+                <mat-checkbox
+                  (change)="updateVdData()"
+                  (change)="playSfx('VD_CHOOSE')"
+                  [(ngModel)]="vdData.questionPickerArray[3]"
+                ></mat-checkbox>
               </span>
               <span class="checkboxes">
-                <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')"
-                  [(ngModel)]="vdData.questionPickerArray[4]"></mat-checkbox>
+                <mat-checkbox
+                  (change)="updateVdData()"
+                  (change)="playSfx('VD_CHOOSE')"
+                  [(ngModel)]="vdData.questionPickerArray[4]"
+                ></mat-checkbox>
               </span>
               <span class="checkboxes">
-                <mat-checkbox (change)="updateVdData()" (change)="playSfx('VD_CHOOSE')"
-                  [(ngModel)]="vdData.questionPickerArray[5]"></mat-checkbox>
+                <mat-checkbox
+                  (change)="updateVdData()"
+                  (change)="playSfx('VD_CHOOSE')"
+                  [(ngModel)]="vdData.questionPickerArray[5]"
+                ></mat-checkbox>
               </span>
             </div>
             <div
-              class="mt-5 justify-center font-black text-center items-center rounded-xl  text-2xl flex float-right h-20  w-20 border-2">
-              30</div>
+              class="mt-5 justify-center font-semibold text-center items-center rounded-xl text-2xl flex float-right h-20 w-20 border-2"
+            >
+              30
+            </div>
           </div>
         </div>
       </div>
-      <div class=" inline p-2">
-        <button [ngClass]="{'bg-gray-lightest text-gray-darkest': vdData.ifQuestionPickerShowing === true}"
-          (click)="toggleQuestionPicker()" mat-raised-button>Toggle Thanh Chọn câu hỏi</button>
+      <div class="inline p-2">
+        <!-- TODO: APPLY TOGGLE CLASSES -->
+
+        <button (click)="toggleQuestionPicker()" mat-raised-button>
+          Toggle Thanh Chọn câu hỏi
+        </button>
       </div>
-      <div class=" inline p-2">
-        <button (click)="clearQuestionPicker()" mat-raised-button>Clear Thanh chọn câu hỏi</button>
+      <div class="inline p-2">
+        <button (click)="clearQuestionPicker()" mat-raised-button>
+          Clear Thanh chọn câu hỏi
+        </button>
       </div>
     </div>
   </div>
-  <div class="half-width flex flex-col items-center  float-right text-center overflow-hidden table-container">
+  <div
+    class="half-width flex flex-col items-center float-right text-center overflow-hidden table-container"
+  >
     <div class="m-5">
       <div class="mb-2">
         <div class="mt-2 inline">
-          <button mat-raised-button (click)="playSfx('VD_START')">Nhạc hiệu Về đích</button>
+          <button mat-raised-button (click)="playSfx('VD_START')">
+            Nhạc hiệu Về đích
+          </button>
         </div>
         <div class="mt-2 ml-2 inline">
-          <button mat-raised-button (click)="playSfx('VD_END')">Nhạc hiệu Kết Thúc Về đích</button>
+          <button mat-raised-button (click)="playSfx('VD_END')">
+            Nhạc hiệu Kết Thúc Về đích
+          </button>
         </div>
         <span class="mt-2 ml-2 inline">
-          <button mat-raised-button (click)="playSfx('BLANK_SPC')" class="w-52">Âm thanh khoảng trống</button>
+          <button mat-raised-button (click)="playSfx('BLANK_SPC')" class="w-52">
+            Âm thanh khoảng trống
+          </button>
         </span>
       </div>
       <div class="mt-2 inline">
@@ -127,64 +180,120 @@
         <button mat-raised-button (click)="startTimer(20)">Bắt đầu 20s</button>
       </div>
       <div class="mt-2">
-        <button mat-raised-button (click)="openStealTurn()">Mở chuông trả lời</button>
+        <button mat-raised-button (click)="openStealTurn()">
+          Mở chuông trả lời
+        </button>
       </div>
       <div class="mt-2">
-        <button mat-raised-button [ngClass]="{'bg-white text-gray-darkest': vdData.ifNSHV === true}"
-          (click)="toggleNSHV()">Toggle NSHV</button>
+        <!-- TODO: APPLY TOGGLE CLASSES -->
+        <button
+          mat-raised-button
+          [ngClass]="{ '': vdData.ifNSHV === true }"
+          (click)="toggleNSHV()"
+        >
+          Toggle NSHV
+        </button>
       </div>
-      <div class="text-2xl mt-5 ">
-        Vị trí thí sinh: <span class="">{{auth.matchData.matchPos}}</span>
+      <div class="text-2xl mt-5">
+        Vị trí thí sinh: <span class="">{{ auth.matchData().matchPos }}</span>
       </div>
-      <div *ngIf="vdData.currentPlayerId != 0" class="text-2xl mt-5 ">
-        Người chơi hiện tại: {{auth.matchData.players[vdData.currentPlayerId - 1].name}}
+      <div *ngIf="vdData.currentPlayerId != 0" class="text-2xl mt-5">
+        Người chơi hiện tại:
+        {{ auth.matchData().players[vdData.currentPlayerId - 1].name }}
       </div>
-      <div *ngIf="vdData.currentPlayerId == 0" class="text-2xl mt-5 ">
+      <div *ngIf="vdData.currentPlayerId == 0" class="text-2xl mt-5">
         Chưa có người chơi
       </div>
-      <div *ngIf="vdData.currentPlayerId != 0 && displayingRow.question != undefined"
-        class="text-2xl mt-5 inline ">
+      <div
+        *ngIf="
+          vdData.currentPlayerId != 0 && displayingRow.question != undefined
+        "
+        class="text-2xl mt-5 inline"
+      >
         <button (click)="markCorrect()" mat-raised-button>Chấm đúng</button>
       </div>
       <div
-        *ngIf="(vdData.currentPlayerId != 0 && displayingRow.question != undefined) && playerStoleQuestion != undefined"
-        class="text-2xl mt-5 inline ">
+        *ngIf="
+          vdData.currentPlayerId != 0 &&
+          displayingRow.question != undefined &&
+          playerStoleQuestion != undefined
+        "
+        class="text-2xl mt-5 inline"
+      >
         <button (click)="markIncorrect()" mat-raised-button>Chấm sai</button>
       </div>
     </div>
     <div class="overflow-x-hidden w-max m-5 text-2xl">
-      <table mat-table [dataSource]="auth.matchData.players" class="w-max">
+      <table mat-table [dataSource]="auth.matchData().players" class="w-max">
         <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef> ID </th>
-          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            [ngClass]="{
+              choose: chosenPlayer === element,
+            }"
+          >
+            {{ element.id }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> Tên </th>
-          <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+          <th mat-header-cell *matHeaderCellDef>Tên</th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            [ngClass]="{
+              turn: playerStoleQuestion === element,
+            }"
+          >
+            {{ element.name }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="score">
-          <th mat-header-cell *matHeaderCellDef> Điểm </th>
-          <td mat-cell *matCellDef="let element"> {{element.score}} </td>
+          <th mat-header-cell *matHeaderCellDef>Điểm</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.score }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="active">
-          <th mat-header-cell *matHeaderCellDef> Đã kết nối? </th>
-          <td mat-cell *matCellDef="let element">
-            <mat-checkbox disabled="true" [checked]="element.isReady"></mat-checkbox>
+          <th mat-header-cell *matHeaderCellDef>Đã kết nối?</th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            [ngClass]="{
+              highlight: currentTurnPlayer === element
+            }"
+          >
+            <mat-checkbox
+              disabled="true"
+              [checked]="element.isReady"
+            ></mat-checkbox>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedPlayerColumns;" (dblclick)="onDoubleClickPlayer(row)"
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedPlayerColumns"
+          (dblclick)="onDoubleClickPlayer(row)"
           (click)="choosePlayer(row)"
-          [ngClass]="{'choose': chosenPlayer === row, 'turn': playerStoleQuestion === row, 'highlight': currentTurnPlayer === row}">
-        </tr>
+        ></tr>
       </table>
-      <div class="  p-2 text-right">
-        <button *ngIf="chosenPlayer.name != undefined" mat-icon-button (click)="editPlayer()">
+      <div class="p-2 text-right">
+        <button
+          *ngIf="chosenPlayer.name != undefined"
+          mat-icon-button
+          (click)="editPlayer()"
+        >
           <mat-icon>edit</mat-icon>
         </button>
-        <button *ngIf=" currentTurnPlayer != undefined" mat-icon-button (click)="clearPlayer()">
+        <button
+          *ngIf="currentTurnPlayer != undefined"
+          mat-icon-button
+          (click)="clearPlayer()"
+        >
           <mat-icon>clear</mat-icon>
         </button>
       </div>
     </div>
   </div>
+</div>

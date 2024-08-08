@@ -11,35 +11,33 @@ export class PlayerTangtocAComponent implements OnInit {
   ttData: any = {};
   constructor(private sfxService: SfxService, public auth: AuthService) {}
   ngOnInit(): void {
+    this.auth.resetListeners()
     this.sfxService.playSfx("TT_SHOWANS");
-    this.auth.socketHook = () => {
-      this.auth.socket.on("play-sfx", (sfxID) => {
-        this.sfxService.playSfx(sfxID);
-      });
-      this.auth.socket.emit("get-tangtoc-data", (callback) => {
-        this.ttData = callback;
-        this.ttData.playerAnswers.sort(sortByTimestamp);
-      });
+    this.auth.socket.on("play-sfx", (sfxID) => {
+      this.sfxService.playSfx(sfxID);
+    });
+    this.auth.socket.emit("get-tangtoc-data", (callback) => {
+      this.ttData = callback;
+      this.ttData.playerAnswers.sort(sortByTimestamp);
+    });
 
-      this.auth.socket.on("update-tangtoc-data", (data) => {
-        this.ttData = data;
-        this.ttData.playerAnswers.sort(sortByTimestamp);
-        if (this.ttData.showResults == true) {
-          let counter = 0;
-          this.ttData.playerAnswers.forEach((element) => {
-            if (element.correct == true) {
-              counter++;
-            }
-          });
-          if (counter == 0) {
-            this.sfxService.playSfx("TT_WRONG");
-          } else {
-            this.sfxService.playSfx("TT_CORRECT");
+    this.auth.socket.on("update-tangtoc-data", (data) => {
+      this.ttData = data;
+      this.ttData.playerAnswers.sort(sortByTimestamp);
+      if (this.ttData.showResults == true) {
+        let counter = 0;
+        this.ttData.playerAnswers.forEach((element) => {
+          if (element.correct == true) {
+            counter++;
           }
+        });
+        if (counter == 0) {
+          this.sfxService.playSfx("TT_WRONG");
+        } else {
+          this.sfxService.playSfx("TT_CORRECT");
         }
-      });
-      this.auth.reconnect();
-    };
+      }
+    });
   }
   getTimePassed(id: number): string {
     let readableTime = "0s0ms";

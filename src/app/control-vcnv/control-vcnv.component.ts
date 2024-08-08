@@ -17,7 +17,7 @@ export class ControlVcnvComponent implements OnInit {
     public dialog: MatDialog,
     public auth: AuthService
   ) {}
-  vcnvData: any = {};
+  vcnvData: any;
   currentTime: number = 0;
   playerGetVCNV: any[] = [];
   displayingRow: any = {};
@@ -43,8 +43,8 @@ export class ControlVcnvComponent implements OnInit {
   ngOnInit(): void {
     this.auth.resetListeners();
     if (
-      this.auth.matchData.matchPos != "VCNV_Q" &&
-      this.auth.matchData.matchPos != "VCNV_A"
+      this.auth.matchData().matchPos != "VCNV_Q" &&
+      this.auth.matchData().matchPos != "VCNV_A"
     ) {
       this.auth.socket.emit("change-match-position", "VCNV_Q");
     }
@@ -69,7 +69,8 @@ export class ControlVcnvComponent implements OnInit {
     this.auth.socket.emit("play-sfx", sfxId);
   }
   onDoubleClickPlayer(row: any) {
-    let player = this.auth.matchData.players[this.auth.matchData.players.indexOf(row)];
+    let player =
+      this.auth.matchData().players[this.auth.matchData().players.indexOf(row)];
     const dialogRef = this.dialog.open(FormPlayerComponent, {
       data: player,
     });
@@ -77,7 +78,7 @@ export class ControlVcnvComponent implements OnInit {
       if (result) {
         var payload: any = {
           player: result,
-          index: this.auth.matchData.players.indexOf(row),
+          index: this.auth.matchData().players.indexOf(row),
         };
         payload.player.score = parseInt(payload.player.score);
         this.auth.socket.emit("edit-player-info", payload, (callback) => {});
@@ -105,7 +106,10 @@ export class ControlVcnvComponent implements OnInit {
     });
   }
   submitMark() {
-    this.auth.socket.emit("submit-mark-vcnv-admin", this.vcnvData.playerAnswers);
+    this.auth.socket.emit(
+      "submit-mark-vcnv-admin",
+      this.vcnvData.playerAnswers
+    );
   }
   onClickQuestion(row) {
     this.chosenRow = row;
@@ -144,9 +148,9 @@ export class ControlVcnvComponent implements OnInit {
     this.auth.socket.emit("toggle-results-display-vcnv");
   }
   toggleAnswerDisplay() {
-    if (this.auth.matchData.matchPos == "VCNV_Q") {
+    if (this.auth.matchData().matchPos == "VCNV_Q") {
       this.auth.socket.emit("change-match-position", "VCNV_A");
-    } else if (this.auth.matchData.matchPos == "VCNV_A") {
+    } else if (this.auth.matchData().matchPos == "VCNV_A") {
       this.auth.socket.emit("change-match-position", "VCNV_Q");
       if (this.vcnvData.showResults == true) {
         this.toggleResultsDisplay();
@@ -174,10 +178,13 @@ export class ControlVcnvComponent implements OnInit {
     this.router.navigate(["/c-tt"]);
   }
   showPoints() {
-    if (this.auth.matchData.matchPos == "PNTS") {
+    if (this.auth.matchData().matchPos == "PNTS") {
       this.auth.socket.emit("change-match-position", "VCNV_Q");
     } else {
       this.auth.socket.emit("change-match-position", "PNTS");
     }
+  }
+  public pauseClock() {
+    this.auth.socket.emit("play-pause-clock", this.currentTime);
   }
 }

@@ -6,6 +6,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { FormPlayerComponent } from "../form-player/form-player.component";
 import { environment } from "src/environments/environment";
 import { AuthService } from "../services/auth.service";
+import { KdData } from "../services/types/game";
 
 @Component({
   selector: "app-control-khoi-dong",
@@ -16,7 +17,7 @@ export class ControlKhoiDongComponent implements OnInit {
   constructor(
     private router: Router,
     public dialog: MatDialog,
-    private auth: AuthService
+    public auth: AuthService
   ) {}
   displayingRow: any = null;
   chosenRow: any = null;
@@ -25,60 +26,52 @@ export class ControlKhoiDongComponent implements OnInit {
     "question",
     "answer",
     "type",
-    "subject",
   ];
   displayedPlayerColumns: string[] = ["id", "name", "score", "active"];
   authString: string = "";
   currentMaxQuestionNo: number = 0;
   currentQuestionNo: number = 0;
-  matchData: any = {};
-  kdData: any = {};
+  kdData: KdData = {} as KdData;
   chosenPlayer: any = {};
   currentQuestionCount: number = 0;
   lastTurn: any = { name: "" };
   threeSecTimers: number[] = [0, 0];
   async ngOnInit(): Promise<void> {
-    this.auth.reconnect();
-    this.auth.socketHook = () => {
-      this.auth.socket.emit("get-kd-data-admin", (callback: any) => {
-        console.log(this.auth.socket.id);
-        this.kdData = callback;
-        console.log(this.kdData);
-      });
-      this.auth.socket.emit("change-match-position", "KD");
-      this.auth.matchData = this.auth.matchData;
-      this.auth.socket.on("update-match-data", (data) => {
-        this.matchData = data;
-      });
-      this.auth.socket.on("update-kd-data-admin", (data) => {
-        this.kdData = data;
-      });
-      this.auth.socket.on("update-number-question", (max, curr) => {
-        this.currentMaxQuestionNo = max;
-        this.currentQuestionNo = curr;
-      });
-      this.auth.socket.on("update-clock", (clock) => {
-        this.currentTime = clock;
-      });
+    this.auth.resetListeners();
+    this.auth.socket.emit("get-kd-data-admin", (callback: KdData) => {
+      this.kdData = callback;
+    });
+    this.auth.socket.emit("change-match-position", "KD");
+    // this.auth.matchData = this.auth.matchData;
 
-      this.auth.socket.on("disconnect", () => {
-        this.auth.socket.emit("leave-match", this.authString);
-      });
-      this.auth.socket.on("player-got-turn-kd", (player) => {
-        this.lastTurn = player;
-      });
-      this.auth.socket.on("next-question", () => {
-        this.nextQuestion();
-        this.lastTurn.name = "";
-      });
-      this.auth.socket.on("update-3s-timer-kd", (timer, ifPlayer) => {
-        if (ifPlayer) {
-          this.threeSecTimers[1] = timer;
-        } else {
-          this.threeSecTimers[0] = timer;
-        }
-      });
-    };
+    this.auth.socket.on("update-kd-data-admin", (data) => {
+      this.kdData = data;
+    });
+    this.auth.socket.on("update-number-question-kd", (max, curr) => {
+      this.currentMaxQuestionNo = max;
+      this.currentQuestionNo = curr;
+    });
+    this.auth.socket.on("update-clock", (clock) => {
+      this.currentTime = clock;
+    });
+
+    this.auth.socket.on("disconnect", () => {
+      this.auth.socket.emit("leave-match", this.authString);
+    });
+    this.auth.socket.on("player-got-turn-kd", (player) => {
+      this.lastTurn = player;
+    });
+    this.auth.socket.on("next-question", () => {
+      this.nextQuestion();
+      this.lastTurn.name = "";
+    });
+    this.auth.socket.on("update-3s-timer-kd", (timer, ifPlayer) => {
+      if (ifPlayer) {
+        this.threeSecTimers[1] = timer;
+      } else {
+        this.threeSecTimers[0] = timer;
+      }
+    });
   }
   onClickQuestion(row: any) {
     this.chosenRow = row;
@@ -89,13 +82,13 @@ export class ControlKhoiDongComponent implements OnInit {
       "broadcast-kd-question",
       row,
       (callback: { message: any }) => {
-        console.log(callback.message);
+        console.debug(callback.message);
       }
     );
   }
   editPlayer() {
     let player =
-      this.matchData.players[this.matchData.players.indexOf(this.chosenPlayer)];
+      this.auth.matchData().players[this.auth.matchData().players.indexOf(this.chosenPlayer)];
     const dialogRef = this.dialog.open(FormPlayerComponent, {
       data: player,
     });
@@ -103,14 +96,14 @@ export class ControlKhoiDongComponent implements OnInit {
       if (result) {
         var payload: any = {
           player: result,
-          index: this.matchData.players.indexOf(this.chosenPlayer),
+          index: this.auth.matchData().players.indexOf(this.chosenPlayer),
         };
         payload.player.score = parseInt(payload.player.score);
         this.auth.socket.emit(
           "edit-player-info",
           payload,
           (callback: { message: any }) => {
-            console.log(callback.message);
+            console.debug(callback.message);
           }
         );
       }
@@ -122,28 +115,28 @@ export class ControlKhoiDongComponent implements OnInit {
   onGamemodeChange($event: any) {
     this.auth.socket.emit("change-kd-gamemode", this.kdData.gamemode);
   }
-  editQuestion() {
-    let question =
-      this.kdData.questions[this.kdData.questions.indexOf(this.chosenRow)];
-    const dialogRef = this.dialog.open(FormQKdComponent, {
-      data: question,
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        var payload: any = {
-          question: result,
-          index: this.kdData.questions.indexOf(this.chosenRow),
-        };
-        this.auth.socket.emit(
-          "edit-kd-question",
-          payload,
-          (callback: { message: any }) => {
-            console.log(callback.message);
-          }
-        );
-      }
-    });
-  }
+  // editQuestion() {
+  //   let question =
+  //     this.kdData.questions[this.kdData.questions.indexOf(this.chosenRow)];
+  //   const dialogRef = this.dialog.open(FormQKdComponent, {
+  //     data: question,
+  //   });
+  //   dialogRef.afterClosed().subscribe((result) => {
+  //     if (result) {
+  //       var payload: any = {
+  //         question: result,
+  //         index: this.kdData.questions.indexOf(this.chosenRow),
+  //       };
+  //       this.auth.socket.emit(
+  //         "edit-kd-question",
+  //         payload,
+  //         (callback: { message: any }) => {
+  //           console.debug(callback.message);
+  //         }
+  //       );
+  //     }
+  //   });
+  // }
   choosePlayer(row: any) {
     this.chosenPlayer = row;
   }
@@ -196,8 +189,8 @@ export class ControlKhoiDongComponent implements OnInit {
     }
   }
   nextQuestion() {
-    console.log(this.currentQuestionCount);
-    console.log(this.currentMaxQuestionNo);
+    console.debug(this.currentQuestionCount);
+    console.debug(this.currentMaxQuestionNo);
     if (this.currentQuestionCount < this.currentMaxQuestionNo) {
       // this.displayingRow = this.kdData.questions[this.kdData.questions[this.kdData.gamemode == 'S'].indexOf(this.displayingRow) + 1];
       this.displayingRow =
@@ -210,20 +203,20 @@ export class ControlKhoiDongComponent implements OnInit {
         "broadcast-kd-question",
         this.displayingRow,
         (callback: { message: any }) => {
-          console.log(callback.message);
+          console.debug(callback.message);
         }
       );
       this.currentQuestionCount += 1;
     } else {
       this.auth.socket.emit("stop-kd-sound");
-      console.log("Last question reached");
+      console.debug("Last question reached");
     }
   }
   clearQuestion() {
     this.auth.socket.emit("clear-question-kd");
   }
   showPoints() {
-    if (this.matchData.matchPos == "PNTS") {
+    if (this.auth.matchData().matchPos == "PNTS") {
       this.auth.socket.emit("change-match-position", "KD");
     } else {
       this.auth.socket.emit("change-match-position", "PNTS");

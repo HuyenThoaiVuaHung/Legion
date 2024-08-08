@@ -1,64 +1,47 @@
-<div class="flex h-screen w-screen">
-  <div class="float-left disablePointerActions p-16 ml-5">
-    <div
-      class="w-64 h-64 drop-shadow-lg flex text-center aurora p-10 shadow-xl justify-center items-center text-8xl font-black rounded-xl"
-    >
-      {{ currentTime }}
-    </div>
+<div class="flex h-screen w-screen gap-5 p-10 box-border">
+  <div class="disablePointerActions box-border flex flex-col items-center">
+    <countdown [currentTime]="this.currentTime" [maxTime]="this.maxTime" />
+
     <div class="text-2xl w-64 rounded-xl mt-11 text-center">
       {{ curQuestion.question }}
     </div>
-    <div
-      *ngIf="auth.userInfo.roleId != 3"
-      class="text-4xl w-64 rounded-xl mt-5 text-center"
-    >
-      Số điểm:
-    </div>
-    <div
-      *ngIf="auth.userInfo.roleId != 3"
-      class="text-7xl w-64 rounded-xl text-cyan-600 mt-5 text-center"
-    >
-      {{ auth.matchData.players[auth.userInfo.index!].score }}
-    </div>
+
     <player-list
-      [players]="auth.matchData.players"
-      *ngIf="auth.userInfo.roleId == 3"
+      [players]="auth.matchData().players"
+      [highlightIndex]="auth.userInfo().index!"
     ></player-list>
   </div>
-  <div class="questionBox float-right mt-16 ml-10 mr-10 text-3xl">
+  <div class="text-3xl flex flex-col gap-3">
+    @if ( curQuestion.type == 'TT_VD' ) {
     <video
       muted="true"
       *ngIf="curQuestion.type == 'TT_VD'"
       id="video-1"
-      class="disablePointerActions questionBox z-10 absolute"
+      class="disablePointerActions questionBox z-10 w-full h-full"
       preload="auto"
       poster="../../assets/misc/placeholder.png"
     >
-      <source
-        *ngIf="curQuestion.type == 'TT_VD'"
-        src="{{ videoSource }}"
-        type="video/mp4"
-      />
+      <source src="{{ videoSource }}" type="video/mp4" />
     </video>
+    } @else if ( curQuestion.type == 'TT_IMG' ) {
+
     <img
       *ngIf="imageSource != '' && curQuestion.type == 'TT_IMG'"
       src="{{ imageSource }}"
-      class="disablePointerActions absolute questionBox"
+      class="disablePointerActions questionBox object-cover w-full h-full"
     />
+    } @else {
     <img
-      [ngClass]="{
-        'opacity-0':
-          imageSource != '' ||
-          videoSource != '' ||
-          curQuestion.type != undefined
-      }"
       src="../../assets/misc/placeholder.png"
-      class="aurora shadow-xl disablePointerActions questionBox"
+      class="shadow-xl disablePointerActions questionBox w-full h-full"
     />
-    <div class="w-max flex justify-center items-center">
+    }
+    <div class="w-full flex gap-2 justify-center items-center">
       <mat-form-field
-        *ngIf="auth.userInfo.roleId != 3"
-        class="very-long"
+        appearance="outline"
+        subscriptSizing="dynamic"
+        *ngIf="auth.userInfo().roleId != 3"
+        class="w-5/12"
       >
         <input
           matInput
@@ -71,23 +54,22 @@
         />
       </mat-form-field>
       <button
-        *ngIf="auth.userInfo.roleId != 3"
+        *ngIf="auth.userInfo().roleId != 3"
         (click)="submitAnswer()"
         [disabled]="currentTime <= 0"
         mat-icon-button
-        class="inline"
       >
         <mat-icon>done</mat-icon>
       </button>
       <span
-        *ngIf="auth.userInfo.roleId != 3"
-        class="disablePointerActions w-52 flex-wrap text-2xl ml-5 p-2 rounded-xl inline text-center"
+        *ngIf="auth.userInfo().roleId != 3"
+        class="disablePointerActions w-3/12 flex-wrap text-2xl ml-5 p-2 rounded-xl inline text-center"
       >
         {{ answerCache.toUpperCase() }}</span
       >
       <span
-        *ngIf="auth.userInfo.roleId != 3"
-        class="disablePointerActions text-4xl ml-5 p-2 rounded-xl inline-block text-center"
+        *ngIf="auth.userInfo().roleId != 3"
+        class="disablePointerActions text-4xl flex-grow ml-5 p-2 rounded-xl inline-block text-center"
       >
         {{ readableTime }}</span
       >

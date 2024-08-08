@@ -1,4 +1,4 @@
-import { AuthService } from './../services/auth.service';
+import { AuthService } from"../services/auth.service";
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { io } from 'socket.io-client';
@@ -12,7 +12,7 @@ import { MatchData } from '../services/types/match.data';
 })
 export class PointsViewComponent implements OnInit {
   slideIndex = 5;
-  matchData: MatchData= this.authService.matchData;
+  matchData: MatchData= this.authService.matchData();
   constructor(
     private router: Router,
     public authService: AuthService

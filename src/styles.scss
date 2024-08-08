@@ -1,58 +1,75 @@
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
 @use "@angular/material" as mat;
 @use "./app/themes/table-theme";
 @use "./app/themes/player-ui-theme";
-// Plus imports for other components in your app.
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-
-$Legion-primary: mat.define-palette(mat.$green-palette);
-$Legion-accent: mat.define-palette(mat.$amber-palette);
-
-$Legion-warn: mat.define-palette(mat.$red-palette);
-$Lexend-typography: mat.define-legacy-typography-config(
-  $font-family: "Lexend, sans-serif",
-);
-// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
-//  The following line adds:
-//    1. Default typography styles for all components
-//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
-//  If you specify typography styles for the components you use elsewhere, you should delete this line.
-//  If you don't need the default component typographies but still want the hierarchy styles,
-//  you can delete this line and instead use:
-//    `@include mat.legacy-typography-hierarchy($Lexend-typography);`
-@include mat.all-legacy-component-typographies($Lexend-typography);
-@include mat.legacy-core();
-
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
-$Legion-theme: mat.define-light-theme(
-  (
-    color: (
-      primary: $Legion-primary,
-      accent: $Legion-accent,
-      warn: $Legion-warn,
-    ),
-    typography: $Lexend-typography,
-  )
-);
-
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include mat.all-legacy-component-themes($Legion-theme);
-@include table-theme.theme($Legion-theme);
-@include player-ui-theme.theme($Legion-theme);
-
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+$Legion-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$green-palette,
+      tertiary: mat.$yellow-palette,
+    ),
+    typography: (
+      plain-family: "Lexend",
+      brand-family: "Lexend",
+    ),
+  )
+);
+html {
+  ::-webkit-scrollbar-track {
+    background: mat.get-theme-color($Legion-theme, surface-dim);
+    border-radius: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: mat.get-theme-color($Legion-theme, surface-dim);
+    border-radius: 12px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: mat.get-theme-color($Legion-theme, on-surface);
+    border-radius: 12px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: mat.get-theme-color($Legion-theme, primary);
+  }
+  ::selection {
+    background: mat.get-theme-color($Legion-theme, primary);
+    color: mat.get-theme-color($Legion-theme, on-primary);
+  }
+  ::-moz-selection {
+    background: mat.get-theme-color($Legion-theme, primary);
+    color: mat.get-theme-color($Legion-theme, on-primary);
+  }
+}
+::-webkit-scrollbar {
+  width: 10px;
+}
+
 html,
 body {
+  @include mat.core();
   height: 100%;
+  @include mat.all-component-themes($Legion-theme);
+  @include mat.typography-hierarchy($Legion-theme);
+  // @include mat.all-component-typograph
+  @include table-theme.theme($Legion-theme);
+  @include player-ui-theme.theme($Legion-theme);
+  .admin-container {
+    height: calc(100vh - 64px);
+    width: 100%;
+    padding: 0.75rem;
+    gap: 0.75rem;
+    box-sizing: border-box;
+    display: flex;
+    background: mat.get-theme-color($Legion-theme, surface-container);
+  }
 }
 body {
   margin: 0;

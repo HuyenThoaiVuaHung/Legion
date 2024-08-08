@@ -1,17 +1,28 @@
-<div class="flex disablePointerActions text-center justify-center h-screen w-screen">
-
-    <div class="flex-shrink-0 boxes box">
-        <div *ngFor="let playerAnswer of ttData.playerAnswers; let i = index" [ngClass]="{'answer-incorrect': ttData.playerAnswers[i].correct == false && ttData.showResults == true}"
-            class=" w-96 h-max text-right mt-14 bg-white aurora rounded-xl border-white">
-            <div class=" w-full h-10 p-2 text-left mb-1 text-lg font-semibold border-b border-black">
-                {{auth.matchData.players[ttData.playerAnswers[i].id - 1].name}}</div>
-            <div class="flex h-24 justify-center items-center">
-                <div class="w-8/12 text-center justify-center text-2xl font-bold">
-                    {{ttData.playerAnswers[i].answer.toUpperCase()}}</div>
-                <div class="w-max p-2 aurora bg-white justify-center items-center h-max text-2xl rounded-md">
-                    {{getTimePassed(i)}}</div>
-            </div>
-        </div>
-
+<div
+  class="flex answers disablePointerActions flex-col gap-10 items-center justify-center h-screen w-screen"
+>
+  <div
+    *ngFor="let playerAnswer of ttData.playerAnswers; let i = index"
+    [ngClass]="{
+      'answer-incorrect':
+        ttData.playerAnswers[i].correct == false && ttData.showResults == true,
+      'answer-correct':
+        ttData.playerAnswers[i].correct == true && ttData.showResults == true
+    }"
+    class="w-2/5 h-max rounded-xl"
+  >
+    <div class="w-full h-10 p-2 name-box box-border text-left border-b-2 mb-1 text-lg font-semibold">
+      {{ auth.matchData().players[ttData.playerAnswers[i].id - 1].name }}
     </div>
+    <div class="flex h-20 justify-center items-center">
+      <div class="w-8/12 text-center justify-center text-2xl font-bold">
+        {{ ttData.playerAnswers[i].answer.toUpperCase() }}
+      </div>
+      <div
+        class="w-max p-2 timer-box justify-center items-center h-max text-2xl"
+      >
+        {{ getTimePassed(i) }}
+      </div>
+    </div>
+  </div>
 </div>

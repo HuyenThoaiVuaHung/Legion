@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormPlayerComponent } from '../form-player/form-player.component';
 import { FormQVdComponent } from '../form-q-vd/form-q-vd.component';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from"../services/auth.service";
 
 @Component({
   selector: 'app-control-vd',
@@ -30,12 +30,12 @@ export class ControlVdComponent implements OnInit {
     this.auth.resetListeners();
     this.auth.socket.emit('change-match-position', 'VD');
     this.auth.socket.on('update-match-data', () => {
-      this.currentTurnPlayer = this.auth.matchData.players[this.vdData.currentPlayerId - 1];
+      this.currentTurnPlayer = this.auth.matchData().players[this.vdData.currentPlayerId - 1];
     }
     )
     this.auth.socket.on('update-vedich-data', (data) => {
       this.vdData = data;
-      this.currentTurnPlayer = this.auth.matchData.players[this.vdData.currentPlayerId - 1];
+      this.currentTurnPlayer = this.auth.matchData().players[this.vdData.currentPlayerId - 1];
       switch (this.vdData.currentPlayerId) {
         case 1: this.currentQuestionPool = this.vdData.questionPools[0];
           break;
@@ -54,11 +54,11 @@ export class ControlVdComponent implements OnInit {
     })
     this.auth.socket.on('player-steal-question', (id) => {
       this.playSfx('VD_STEAL_Q');
-      this.playerStoleQuestion = this.auth.matchData.players[id];
+      this.playerStoleQuestion = this.auth.matchData().players[id];
     })
     this.auth.socket.emit('get-vedich-data', (callback) => {
       this.vdData = callback;
-      this.currentTurnPlayer = this.auth.matchData.players[this.vdData.currentPlayerId - 1];
+      this.currentTurnPlayer = this.auth.matchData().players[this.vdData.currentPlayerId - 1];
       switch (this.vdData.currentPlayerId) {
         case 1: this.currentQuestionPool = this.vdData.questionPools[0];
           break;
@@ -85,13 +85,13 @@ export class ControlVdComponent implements OnInit {
     this.auth.socket.emit('update-vedich-data', this.vdData);
   }
   editPlayer() {
-    let player = this.auth.matchData.players[this.auth.matchData.players.indexOf(this.chosenPlayer)];
+    let player = this.auth.matchData().players[this.auth.matchData().players.indexOf(this.chosenPlayer)];
     const dialogRef = this.dialog.open(FormPlayerComponent, {
       data: player
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        var payload: any = { player: result, index: this.auth.matchData.players.indexOf(this.chosenPlayer) };
+        var payload: any = { player: result, index: this.auth.matchData().players.indexOf(this.chosenPlayer) };
         payload.player.score = parseInt(payload.player.score);
         this.auth.socket.emit('edit-player-info', payload, (callback) => {
         });
@@ -212,7 +212,7 @@ export class ControlVdComponent implements OnInit {
     this.playSfx('VD_5S');
   }
   showPoints() {
-    if (this.auth.matchData.matchPos == 'PNTS') {
+    if (this.auth.matchData().matchPos == 'PNTS') {
       this.auth.socket.emit('change-match-position', 'VD');
     }
     else {

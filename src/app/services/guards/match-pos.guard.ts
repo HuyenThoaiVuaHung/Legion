@@ -18,7 +18,7 @@ export class MatchPosGuard  {
           else reject("Invalid match position");
         });
       } catch (e) {
-        console.log(e);
+        console.debug(e);
         reject(false);
       }
     });

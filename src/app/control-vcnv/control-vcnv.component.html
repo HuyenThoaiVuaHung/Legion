@@ -1,15 +1,23 @@
-<div class="flex w-screen h-screen">
-  <div
-    class="half-width float-left flex-col flex text-center overflow-hidden table-container"
-  >
-    <div class="m-5"></div>
-    <div
-      class="overflow-x-hidden mb-5 mr-5 ml-5 height-600 w-max h-auto text-xs"
-    >
+<div class="admin-container">
+  <mat-card appearance="outlined" class="w-full">
+    <mat-card-header class="py-2">
+      <mat-card-title> Danh sách câu hỏi </mat-card-title>
+      <mat-card-subtitle>
+        Nhấn 1 lần để highlight câu hỏi, nhấn đúp chuột để chọn câu hỏi.
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="overflow-y-auto">
+      @if(vcnvData){
       <table mat-table [dataSource]="vcnvData.questions" class="">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+          <td
+            mat-cell
+            [ngClass]="{choose: chosenRow === element,}"
+            *matCellDef="let element"
+          >
+            {{ element.id }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="question">
           <th mat-header-cell *matHeaderCellDef>Câu hỏi</th>
@@ -29,40 +37,39 @@
         </ng-container>
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Hành động</th>
-          <td mat-cell *matCellDef="let element">
-            <div
-              class="inline pr-3"
-              title="Không cho thấy góc hình ảnh"
-              *ngIf="element.type != 'CNV'"
-            >
-              <button mat-icon-button (click)="closeHN(element.id)">
-                <mat-icon>disabled_by_default</mat-icon>
-              </button>
-            </div>
-            <div
-              class="inline pr-3"
-              title="Cho thấy góc hình ảnh"
-              *ngIf="element.type != 'CNV'"
-            >
+          <td
+            mat-cell
+            [ngClass]="{
+              highlight: displayingRow === element,
+              opened: vcnvData.questions[element.id - 1].ifOpen === true
+            }"
+            *matCellDef="let element"
+          >
+            @if (element.type != 'CNV'){
+            <div class="flex items-center flex-wrap gap-2">
               <button
                 mat-icon-button
+                matTooltip="Không cho thấy góc hình ảnh"
+                (click)="closeHN(element.id)"
+              >
+                <mat-icon>disabled_by_default</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                matTooltip="Cho thấy góc hình ảnh"
                 (click)="playSfx('VCNV_PIC_REVEAL')"
                 (click)="openHN(element.id)"
               >
                 <mat-icon>visibility</mat-icon>
               </button>
-            </div>
-            <div
-              class="inline pr-3"
-              title="Câu hỏi đã hiện hay chưa"
-              *ngIf="element.type != 'CNV'"
-            >
               <mat-checkbox
+                matTooltip="Câu hỏi đã hiện hay chưa"
                 color="primary"
                 (change)="toggleIfShown()"
                 [(ngModel)]="element.ifShown"
               ></mat-checkbox>
             </div>
+            }
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
@@ -72,189 +79,216 @@
           (click)="onClickQuestion(row)"
           (dblclick)="onDoubleClickQuestion(row)"
           (dblclick)="playSfx('VCNV_CHOOSE_ROW')"
-          [ngClass]="{
-            highlight: displayingRow === row,
-            choose: chosenRow === row,
-            'opened': vcnvData.questions[row.id - 1].ifOpen === true
-          }"
         ></tr>
       </table>
-      <div class="text-right  m-2">
+      }
+      @else {
+        <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+      }
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button
+        mat-button
+        matTooltip="Chỉnh sửa câu hỏi đang chọn (nhấn 1 lần vào câu hỏi cần sửa)"
+        (click)="editQuestion()"
+      >
+        <mat-icon>edit</mat-icon>
+        Chỉnh sửa
+      </button>
+      <button
+        mat-button
+        matTooltip="Cho thí sinh/MC nhìn thấy câu hỏi được highlight"
+        (click)="showQuestion()"
+      >
+        <mat-icon>visibility</mat-icon>
+        Hiện câu hỏi
+      </button>
+      <button
+        mat-button
+        matTooltip="Ẩn câu hỏi khỏi màn hình của thí sinh và MC."
+        (click)="hideQuestion()"
+      >
+        <mat-icon>visibility_off</mat-icon>
+        Ẩn câu hỏi
+      </button>
+    </mat-card-actions>
+  </mat-card>
+  <mat-card appearance="outlined" class="w-full h-full">
+    <mat-card-header>
+      <mat-card-title> Quản lý vòng đấu </mat-card-title>
+      <mat-card-subtitle>
+        & chấm điểm hàng ngang, chướng ngại vật.
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="overflow-y-auto">
+      <menu-item
+        title="Thời gian"
+        description="Thời gian còn lại hiện tại: {{ currentTime }} giây"
+      >
         <button
-          mat-icon-button
-          title="Chỉnh sửa câu hỏi đang chọn (nhấn 1 lần vào câu hỏi cần sửa)"
-          (click)="editQuestion()"
+          mat-raised-button
+          (click)="start15sTimer()"
+          (click)="playSfx('VCNV_15S')"
         >
-          <mat-icon>edit</mat-icon>
+          <mat-icon> timer </mat-icon>
+          Đếm ngược 15s
         </button>
-        <button
-          mat-icon-button
-          title="Cho thí sinh/MC nhìn thấy câu hỏi được highlight"
-          (click)="showQuestion()"
-        >
+        <button mat-button (click)="pauseClock()">
+          <mat-icon> pause </mat-icon>
+          Dừng đồng hồ
+        </button>
+      </menu-item>
+      <menu-item
+        title="Vị trí"
+        description="Vị trí hiện tại:
+      {{ auth.positionMap.get(auth.matchData().matchPos) }}"
+      >
+        <button mat-raised-button (click)="toggleAnswerDisplay()">
           <mat-icon>visibility</mat-icon>
+          Hiện đáp án/câu hỏi
         </button>
-        <button mat-icon-button title="Ẩn câu hỏi" (click)="hideQuestion()">
-          <mat-icon>clear</mat-icon>
+      </menu-item>
+
+      <menu-item
+        title="Âm thanh"
+        description="Phát nhạc hiệu & âm thanh khoảng trắng"
+      >
+        <button mat-raised-button (click)="playSfx('VCNV_START')">
+          Nhạc hiệu
         </button>
-      </div>
-      <div class="overflow-x-hidden w-max m-10 text-2xl">
-        <div class=" mb-3">Chấm CNV</div>
-        <table mat-table [dataSource]="vcnvData.CNVPlayers" class="w-max">
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef>ID</th>
-            <td mat-cell *matCellDef="let element">{{ element.id + 1 }}</td>
-          </ng-container>
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Tên</th>
-            <td mat-cell *matCellDef="let element">
-              {{ auth.matchData.players[element.id].name }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="time">
-            <th mat-header-cell *matHeaderCellDef>Thời gian</th>
-            <td mat-cell *matCellDef="let element">
-              {{ element.readableTime }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="mark">
-            <th mat-header-cell *matHeaderCellDef>Chấm</th>
-            <td mat-cell *matCellDef="let element">
-              <mat-checkbox
-                color="primary"
-                [(ngModel)]="vcnvMark[element.id]"
-              ></mat-checkbox
-              >Đúng
-            </td>
-          </ng-container>
-          <tr
-            mat-header-row
-            *matHeaderRowDef="displayedVCNVPlayersColumns"
-          ></tr>
-          <tr
-            mat-row
-            *matRowDef="let row; columns: displayedVCNVPlayersColumns"
-          ></tr>
-        </table>
-        <div class="m-5">
+        <button mat-raised-button (click)="playSfx('BLANK_SPC')">
+          Khoảng trắng
+        </button>
+      </menu-item>
+      <mat-card class="mat-elevation-z5">
+        <mat-card-header>
+          <mat-card-title class="mat-title-medium">
+            Chấm hàng ngang
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="auth.matchData().players" class="">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Tên</th>
+              <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="score">
+              <th mat-header-cell *matHeaderCellDef>Điểm</th>
+              <td mat-cell *matCellDef="let element">{{ element.score }}</td>
+            </ng-container>
+            <ng-container matColumnDef="response">
+              <th mat-header-cell *matHeaderCellDef>Trả lời</th>
+              <td mat-cell *matCellDef="let element">
+                {{
+                  vcnvData.playerAnswers[element.id - 1].answer.toUpperCase()
+                }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="mark">
+              <th mat-header-cell *matHeaderCellDef>Chấm</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  (change)="auth.socket.emit('update-vcnv-data', vcnvData)"
+                  [(ngModel)]="vcnvData.playerAnswers[element.id - 1].correct"
+                  >Đúng</mat-checkbox
+                >
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="active">
+              <th mat-header-cell *matHeaderCellDef>Đã kết nối?</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  disabled="true"
+                  [checked]="element.isReady"
+                ></mat-checkbox>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedPlayerColumns"
+              (dblclick)="onDoubleClickPlayer(row)"
+            ></tr>
+          </table>
+        </mat-card-content>
+        <mat-card-actions align="end">
           <button
+            mat-flat-button
+            [disabled]="currentTime > 0"
+            (click)="submitMark()"
+          >
+            Xác Nhận
+          </button>
+          <button
+            [color]="vcnvData.showResults === true ? 'accent' : 'primary'"
             mat-raised-button
+            (click)="toggleResultsDisplay()"
+          >
+            Toggle KQ chấm
+          </button>
+        </mat-card-actions>
+      </mat-card>
+      <mat-card class="mat-elevation-z5">
+        <mat-card-header>
+          <mat-card-title class="mat-title-medium">
+            Chấm chướng ngại vật
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="vcnvData.CNVPlayers">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let element">{{ element.id + 1 }}</td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Tên</th>
+              <td mat-cell *matCellDef="let element">
+                {{ auth.matchData().players[element.id].name }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="time">
+              <th mat-header-cell *matHeaderCellDef>Thời gian</th>
+              <td mat-cell *matCellDef="let element">
+                {{ element.readableTime }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="mark">
+              <th mat-header-cell *matHeaderCellDef>Chấm</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-checkbox
+                  color="primary"
+                  [(ngModel)]="vcnvMark[element.id]"
+                ></mat-checkbox
+                >Đúng
+              </td>
+            </ng-container>
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedVCNVPlayersColumns"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedVCNVPlayersColumns"
+            ></tr>
+          </table>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button
+            mat-flat-button
             [disabled]="vcnvData.CNVPlayers.length == 0"
             (click)="submitVCNVMark()"
           >
             Xác Nhận
           </button>
-        </div>
-        <div class="m-5">
           <button mat-raised-button (click)="resetCNVPlayers()">
             Reset Chuông CNV
           </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    class="half-width flex flex-col items-center float-right text-center overflow-hidden table-container"
-  >
-    <div class="m-5">
-      <div class="p-2">
-        <div class="inline">
-          <button mat-raised-button (click)="toggleAnswerDisplay()">
-            Chuyển giữa xem đáp án/câu hỏi
-          </button>
-        </div>
-        <div class="ml-2 inline">
-          <button
-            mat-raised-button
-            (click)="start15sTimer()"
-            (click)="playSfx('VCNV_15S')"
-          >
-            Bắt đầu 15s
-          </button>
-        </div>
-      </div>
-      <div class="p-2">
-        <div class="mt-5 inline">
-          <button mat-raised-button (click)="playSfx('VCNV_START')">
-            Nhạc hiệu VCNV
-          </button>
-        </div>
-        <span class="m-2 inline">
-          <button mat-raised-button (click)="playSfx('BLANK_SPC')" class="w-52">
-            Âm thanh khoảng trống
-          </button>
-        </span>
-      </div>
-      <div class="text-2xl mt-5 ">
-        Vị trí thí sinh:
-        <span class="">{{ auth.matchData.matchPos }}</span>
-      </div>
-    </div>
-    <div class="overflow-x-hidden w-max m-5 text-2xl">
-      <div class="">Chấm HN</div>
-      <table mat-table [dataSource]="auth.matchData.players" class="w-max">
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let element">{{ element.id }}</td>
-        </ng-container>
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Tên</th>
-          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-        </ng-container>
-        <ng-container matColumnDef="score">
-          <th mat-header-cell *matHeaderCellDef>Điểm</th>
-          <td mat-cell *matCellDef="let element">{{ element.score }}</td>
-        </ng-container>
-        <ng-container matColumnDef="response">
-          <th mat-header-cell *matHeaderCellDef>Trả lời</th>
-          <td mat-cell *matCellDef="let element">
-            {{ vcnvData.playerAnswers[element.id - 1].answer.toUpperCase() }}
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="mark">
-          <th mat-header-cell *matHeaderCellDef>Chấm</th>
-          <td mat-cell *matCellDef="let element">
-            <mat-checkbox
-              (change)="auth.socket.emit('update-vcnv-data', vcnvData)"
-              [(ngModel)]="vcnvData.playerAnswers[element.id - 1].correct"
-              >Đúng</mat-checkbox
-            >
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="active">
-          <th mat-header-cell *matHeaderCellDef>Đã kết nối?</th>
-          <td mat-cell *matCellDef="let element">
-            <mat-checkbox
-              disabled="true"
-              [checked]="element.isReady"
-            ></mat-checkbox>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedPlayerColumns"
-          (dblclick)="onDoubleClickPlayer(row)"
-        ></tr>
-      </table>
-      <div class="m-5">
-        <button
-          mat-raised-button
-          [disabled]="currentTime > 0"
-          (click)="submitMark()"
-        >
-          Xác Nhận
-        </button>
-      </div>
-      <div class="m-5 inline">
-        <button
-          [color]="{ accent: vcnvData.showResults === true }"
-          mat-raised-button
-          (click)="toggleResultsDisplay()"
-        >
-          Toggle KQ chấm
-        </button>
-      </div>
-    </div>
-  </div>
+        </mat-card-actions>
+      </mat-card>
+    </mat-card-content>
+  </mat-card>
 </div>

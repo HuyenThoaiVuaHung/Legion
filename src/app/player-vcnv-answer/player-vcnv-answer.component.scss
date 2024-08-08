@@ -23,16 +23,25 @@
     right: 0;
   }
 }
+
+[mat-fab] {
+  height: 3rem;
+  width: 16rem;
+}
+
 .aurora {
   @apply relative drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
 }
 .boxes div:nth-child(odd) {
   right: 100%;
   animation: 1s transitionRight forwards cubic-bezier(0.075, 0.82, 0.165, 1);
+  text-align: right;
+  margin-left: 20rem;
 }
 
 .boxes div:nth-child(even) {
   left: 100%;
+  text-align: left;
   animation: 1s transitionLeft forwards cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 @keyframes trasitionUp {
@@ -46,6 +55,7 @@
   overflow: hidden;
   z-index: 1;
   animation: 1s trasitionUp forwards cubic-bezier(0.165, 0.84, 0.44, 1);
+  border-radius: 0 !important;
 }
 .disablePointerActions {
   pointer-events: none;

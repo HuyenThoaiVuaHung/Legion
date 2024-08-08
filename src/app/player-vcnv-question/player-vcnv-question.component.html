@@ -1,178 +1,117 @@
-<div class="relative overflow-hidden flex-col flex h-full w-screen">
-  <div
-    draggable="false"
-    (dragstart)="(false)"
-    class="absolute self-center ml-5 mt-10 w-52 h-60"
-  >
+<div class="overflow-hidden flex-col flex h-full w-screen">
+  <div class="absolute top-10 self-center w-52 h-60">
     <div
       *ngFor="let player of vcnvData.CNVPlayers"
-      class="w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black"
+      class="w-52 text-lg rounded-md special-highlight p-3"
     >
-      {{ auth.matchData.players[player.id].name }}
+      {{ auth.matchData().players[player.id].name }}
     </div>
+  </div>
+  <div class="grid place-items-center lg:hidden h-96 w-full">
+    <h3>Vui lòng thu phóng trình duyệt.</h3>
   </div>
   <div
     draggable="false"
     (dragstart)="(false)"
-    class="topPortion disablePointerActions"
+    class="w-full hidden lg:flex flex-wrap justify-between items-center disablePointerActions"
   >
     <div
       draggable="false"
+      id="cnvPicBox"
       (dragstart)="(false)"
-      class="justify-center relative bg-red-600 float-left mt-10 ml-10 cnvPicBox content-center overflow-hidden"
+      class="relative text-4xl bg-cover font-semibold mt-10 ml-10 cnvPicBox overflow-hidden"
     >
       <div
         [ngClass]="{ 'opacity-0': vcnvData.questions[4].ifOpen === true }"
-        class="text-center flex justify-center items-center text-4xl font-black cnvPicCoverCellCenter absolute z-20 bg-white border-2"
+        class="center grid place-items-center cover-cell absolute z-20"
       >
         5
       </div>
-      <div
-        [ngClass]="{ 'opacity-0': vcnvData.questions[4].ifOpen === true }"
-        class="text-center flex justify-center items-center text-2xl font-black cnvPicCoverCellCenter absolute z-20 bg-transparent"
-      ></div>
+
       <div
         [ngClass]="{ 'opacity-0': vcnvData.questions[0].ifOpen === true }"
-        class="text-4xl font-black cnvPicCoverCell1 absolute z-10 bg-transparent border-white"
+        class="cover-cell absolute top-0 left-0 z-10 bg-transparent"
       >
-        <div class="bg-white cnvCornerCell1 CCell1"></div>
-        <div
-          class="bg-white cnvCornerCell2 items-start justify-end flex CCell2"
-        >
-          1
+        <div class="cnvCornerCell1 CCell1"></div>
+        <div class="cnvCornerCell2 items-start justify-end flex CCell2">
         </div>
         <div class="bg-transparent cnvCornerCell2 CCell3"></div>
+        <span class="text"> 1 </span>
       </div>
       <div
         [ngClass]="{ 'opacity-0': vcnvData.questions[1].ifOpen === true }"
-        class="text-4xl font-black cnvPicCoverCell2 absolute z-10 bg-transparent border-white"
+        class="cover-cell top-0 right-0 absolute z-10 bg-transparent"
       >
-        <div class="bg-white cnvCornerCell1 CCell4"></div>
+        <div class="cnvCornerCell1 CCell4"></div>
         <div class="bg-transparent absolute cnvCornerCell2 CCell5"></div>
         <div
-          class="bg-white absolute ml-40 items-start justify-start flex cnvCornerCell2 CCell6"
+          class="absolute ml-40 items-start justify-start flex cnvCornerCell2 CCell6"
         >
-          2
+
         </div>
+        <span class="text"> 2 </span>
       </div>
       <div
         [ngClass]="{ 'opacity-0': vcnvData.questions[2].ifOpen === true }"
-        class="text-4xl font-black cnvPicCoverCell3 absolute z-10 bg-transparent border-white"
+        class="cover-cell left-0 bottom-0 cover-cell absolute z-10 bg-transparent"
       >
-        <div class="bg-white cnvCornerCell2 items-end justify-end flex CCell7">
+        <div
+          class="cnvCornerCell2 items-end justify-end flex CCell7"
+        ></div>
+        <div class="cnvCornerCell1 CCell8"></div>
+        <span class="text">
           3
-        </div>
-        <div class="bg-white cnvCornerCell1 CCell8"></div>
+
+        </span>
       </div>
       <div
         [ngClass]="{ 'opacity-0': vcnvData.questions[3].ifOpen === true }"
-        class="text-4xl font-black cnvPicCoverCell4 absolute bg-transparent z-10 border-white"
+        class="cover-cell right-0 bottom-0 absolute bg-transparent z-10"
       >
-        <div class="bg-transparent absolute block cnvCornerCell2 CCell9"></div>
+        <div class="bg-transparent absolute cnvCornerCell2 CCell9"></div>
         <div
-          class="bg-white absolute ml-40 items-end justify-start flex cnvCornerCell2 CCell10"
-        >
-          4
-        </div>
-        <div class="bg-white mt-90px cnvCornerCell1 CCell12"></div>
+          class="absolute ml-40 items-end justify-start flex cnvCornerCell2 CCell10"
+        ></div>
+        <div class="absolute bottom-0 cnvCornerCell1 CCell12"></div>
+        <span class="text"> 4 </span>
       </div>
-      <img
-        draggable="false"
-        (dragstart)="(false)"
-        class="w-[640px] h-[360px] image z-0 top-0 left-0 flex-shrink-0"
-        src="../../assets/picture-questions/vcnv/{{
-          vcnvData.questions[5].picFileName
-        }}"
-      />
     </div>
     <div
-      class="overflow-hidden text-center justify-center items-center cnvTextBox flex mr-10 float-right"
+      class="overflow-hidden justify-center tracking-hangngang gap-2 p-2 flex-col flex mr-10"
     >
-      <div class="">
+      @for (i of [0,1,2,3]; track i) {
+      <div class="flex justify-end items-center gap-4">
         <div
           [ngClass]="{
             'question-highlight':
               highlightedVCNVQuestion.question ===
-              vcnvData.questions[0].question
+              vcnvData.questions[$index].question
           }"
-          class="aurora shadow-lg h-auto p-3 text-right items-center justify-center text-2xl rounded-lg"
+          class="hangngang-box w-full p-5 text-right items-center justify-center text-2xl rounded-md"
         >
-          {{ VCNVStrings[0] }}
+          <span>
+            {{ VCNVStrings[i] }}
+          </span>
         </div>
-        <div
+        <span
           [ngClass]="{
-            'question-highlight':
-              highlightedVCNVQuestion.question ===
-              vcnvData.questions[1].question
+            'opacity-30': vcnvData.questions[i].ifOpen === true
           }"
-          class="aurora shadow-lg mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg"
+          class="p-5 grid place-items-center"
         >
-          {{ VCNVStrings[1] }}
-        </div>
-        <div
-          [ngClass]="{
-            'question-highlight':
-              highlightedVCNVQuestion.question ===
-              vcnvData.questions[2].question
-          }"
-          class="aurora shadow-lg mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg"
-        >
-          {{ VCNVStrings[2] }}
-        </div>
-        <div
-          [ngClass]="{
-            'question-highlight':
-              highlightedVCNVQuestion.question ===
-              vcnvData.questions[3].question
-          }"
-          class="aurora shadow-lg mt-5 h-auto p-3 text-right items-center justify-center text-2xl rounded-lg"
-        >
-          {{ VCNVStrings[3] }}
-        </div>
+          {{ i + 1 }}
+        </span>
       </div>
-      <div class="ml-10">
-        <div
-          [ngClass]="{
-            'opened-question': vcnvData.questions[0].ifShown == true
-          }"
-          class="aurora h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg"
-        >
-          1
-        </div>
-        <div
-          [ngClass]="{
-            'opened-question': vcnvData.questions[1].ifShown == true
-          }"
-          class="aurora mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg"
-        >
-          2
-        </div>
-        <div
-          [ngClass]="{
-            'opened-question': vcnvData.questions[2].ifShown == true
-          }"
-          class="aurora mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg"
-        >
-          3
-        </div>
-        <div
-          [ngClass]="{
-            'opened-question': vcnvData.questions[3].ifShown == true
-          }"
-          class="aurora mt-5 h-auto p-3 justify-center items-center flex text-2xl text-center rounded-lg"
-        >
-          4
-        </div>
-      </div>
+      }
     </div>
   </div>
-  <div class="flex flex-row w-screen">
-    <div class="w-9/12 h-max">
-      <div class="text-xl ml-10 mt-5 disablePointerActions">
-        CNV CÓ: {{ VCNVStrings[5].length }} KÍ TỰ
-      </div>
+  <div class="flex flex-col px-10 gap-2 pt-5 w-full">
+    <div class="text-xl disablePointerActions">
+      CNV CÓ: {{ VCNVStrings[5].length }} KÍ TỰ
+    </div>
+    <div class="h-max flex gap-2 items-center">
       <div
-        class="disablePointerActions question-box-border h-48 text-left w-11/12 relative items float-left p-5 text-2xl question-box flex overflow-auto ml-10 mt-5 border questionBox rounded-md"
+        class="disablePointerActions h-full text-left w-9/12 relative box-border items p-5 text-2xl questionBox flex overflow-auto rounded-md"
       >
         {{ curVCNVQuestion.question }}
         <div
@@ -182,28 +121,32 @@
           HN CÓ {{ curVCNVQuestion.answer.replace(" ", "").length }} KÍ TỰ
         </div>
         <div
-          *ngIf="auth.userInfo.roleId == 3 && currentTime > 0"
+          *ngIf="auth.userInfo().roleId == 3 && currentTime > 0"
           class="font-thin absolute m-5 right-left bottom-0"
         >
           {{ currentTime }}
         </div>
       </div>
-    </div>
-    <div
-      class="disablePointerActions w-2/12 overflow-hidden h-full text-center items-center justify-center flex flex-col float-right ml-3 mt-5 mr-10"
-    >
-      <player-list
-        [players]="auth.matchData.players"
-        [currentTurn]="auth.userInfo.index!"
-      ></player-list>
+      <div
+        class="disablePointerActions w-max overflow-hidden h-full text-center items-center justify-center flex flex-col"
+      >
+        <player-list
+          [players]="auth.matchData().players"
+          [highlightIndex]="auth.userInfo().index!"
+        ></player-list>
+      </div>
     </div>
   </div>
   <div class="w-full flex h-max px-10">
     <div
-      *ngIf="auth.userInfo.roleId != 3"
-      class="relative w-6/12 flex gap-2 items-center answer-box mt-1"
+      *ngIf="auth.userInfo().roleId != 3"
+      class="relative w-6/12 flex gap-2 items-center mt-3"
     >
-      <mat-form-field class="w-full form-field text-lg">
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+        class="w-full text-lg"
+      >
         <input
           matInput
           autocomplete="off"
@@ -214,18 +157,23 @@
           class=""
         />
       </mat-form-field>
-      <button (click)="submitAnswer()" mat-icon-button class="aurora shadow-lg">
+      <button
+        (click)="submitAnswer()"
+        [disabled]="currentTime <= 0"
+        mat-icon-button
+        class="shadow-lg"
+      >
         <mat-icon>done</mat-icon>
       </button>
     </div>
     <div
-      *ngIf="auth.userInfo.roleId != 3"
+      *ngIf="auth.userInfo().roleId != 3"
       class="disablePointerActions w-3/12 mt-8 text-center justify-center items-center"
     >
       <p class="text-2xl pr-32">{{ answerCache }}</p>
     </div>
     <div
-      *ngIf="auth.userInfo.roleId != 3"
+      *ngIf="auth.userInfo().roleId != 3"
       class="disablePointerActions w-3/12 mt-8 text-center justify-center items-center"
     >
       <p *ngIf="currentTime != 0" class="text-2xl pr-32">
@@ -233,11 +181,12 @@
       </p>
     </div>
   </div>
-  <div *ngIf="auth.userInfo.roleId != 3" class="fixed z-50 bottom-0 right-0">
+  <div *ngIf="auth.userInfo().roleId != 3" class="fixed z-50 bottom-0 right-0">
     <button
       [disabled]="disabledCNVButton == true"
       (click)="attemptVCNV()"
-      mat-raised-button
+      mat-fab
+      extended
       class="h-12 w-64 align-bottom items-center text-right"
     >
       TRẢ LỜI CNV

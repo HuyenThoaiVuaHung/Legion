@@ -32,6 +32,8 @@ import { PointsViewComponent } from './points-view/points-view.component';
 import { FormQchpComponent } from './form-qchp/form-qchp.component';
 import { SinglePointTsComponent } from './single-point-ts/single-point-ts.component';
 import { PlayerListComponent } from './components/player-list/player-list.component';
+import { CountdownComponent } from './components/countdown/countdown.component';
+import { MenuItemComponent } from './components/menu-item/menu-item.component';
 
 
 @NgModule({
@@ -63,7 +65,9 @@ import { PlayerListComponent } from './components/player-list/player-list.compon
     PointsViewComponent,
     FormQchpComponent,
     SinglePointTsComponent,
-    PlayerListComponent
+    PlayerListComponent,
+    CountdownComponent,
+    MenuItemComponent
   ],
   imports: [
     BrowserModule,

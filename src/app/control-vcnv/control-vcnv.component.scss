@@ -1,11 +1,9 @@
 .half-width {
   width: 50vw;
 }
-.table-container {
-  min-height: 200px;
-  max-height: calc(100vh - 50px);
-
-  overflow-x: hidden;
+.admin-container {
+  height: calc(100vh - 64px);
+  width: 100%;
 }
 .height-600 {
   height: 100%;
@@ -49,9 +47,7 @@
   text-align: center;
   padding: 0px;
 }
-.mat-column-mark {
-  width: 80px;
-}
+
 th.mat-mdc-header-cell:first-of-type,
 td.mat-mdc-cell:first-of-type,
 td.mat-mdc-footer-cell:first-of-type {
