@@ -12,6 +12,7 @@ export class PlayerVedichComponent implements OnInit {
   videoSource = "";
   imgSource = "";
   vdData: any = {};
+  public maxTime = 0;
   currentTime: number = 0;
   stealingPlayerIndex: number = -1;
   fiveSecTimer: number = 0;
@@ -32,7 +33,7 @@ export class PlayerVedichComponent implements OnInit {
     this.auth.socket.on("update-vedich-question", (question) => {
       if (question != undefined) {
         this.curQuestion = question;
-        console.log(this.curQuestion);
+        console.debug(this.curQuestion);
         if (this.audio != null) {
           this.audio.pause();
           this.audio = null;
@@ -60,10 +61,15 @@ export class PlayerVedichComponent implements OnInit {
       }
     });
     this.auth.socket.on("update-clock", (clock) => {
+      if (this.currentTime == 0) {
+        console.debug(this.maxTime);
+        this.maxTime = clock;
+      }
+
       this.currentTime = clock;
     });
     this.auth.socket.on("vd-play-video", () => {
-      let video: HTMLVideoElement = document.getElementById(
+      const video: HTMLVideoElement = document.getElementById(
         "vedich-video"
       ) as HTMLVideoElement;
       if (video.paused) {
@@ -72,21 +78,18 @@ export class PlayerVedichComponent implements OnInit {
         video.pause();
       }
     });
-    if (this.auth.userInfo.roleId == 0) {
-      this.auth.socket.on("unlock-button-vd", () => {
-        this.buttonDisabled = false;
-      });
-      this.auth.socket.on("lock-button-vd", () => {
-        this.buttonDisabled = true;
-      });
-    }
+    this.auth.socket.on("unlock-button-vd", () => {
+      this.buttonDisabled = false;
+    });
+    this.auth.socket.on("lock-button-vd", () => {
+      this.buttonDisabled = true;
+    });
 
     this.auth.socket.on("update-5s-countdown-vd", (counter) => {
       this.fiveSecTimer = counter;
     });
     this.auth.socket.on("player-steal-question", (id) => {
       this.stealingPlayerIndex = id;
-      console.log(id);
     });
     this.auth.socket.on("clear-stealing-player", () => {
       this.stealingPlayerIndex = -1;

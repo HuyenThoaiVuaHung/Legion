@@ -1,21 +1,21 @@
 <div class="bg-gray-dark  flex h-screen sm:h-full w-screen">
     <div class=" absolute left-5 self-end ml-5 mt-10 w-52 h-60">
         <div *ngIf="vcnvData.CNVPlayers[0] != undefined"
-            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black bg-golden text-gray-darkest">
+            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-semibold bg-golden text-gray-darkest">
             {{matchData.players[vcnvData.CNVPlayers[0].id].name}}</div>
         <div *ngIf="vcnvData.CNVPlayers[1] != undefined"
-            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">
+            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-semibold mt-2 bg-golden text-gray-darkest">
             {{matchData.players[vcnvData.CNVPlayers[1].id].name}}</div>
         <div *ngIf="vcnvData.CNVPlayers[2] != undefined"
-            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">
+            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-semibold mt-2 bg-golden text-gray-darkest">
             {{matchData.players[vcnvData.CNVPlayers[2].id].name}}</div>
         <div *ngIf="vcnvData.CNVPlayers[3] != undefined"
-            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-black mt-2 bg-golden text-gray-darkest">
+            class=" w-52 h-12 flex items-center justify-center text-center text-lg rounded-lg border-2 border-gray-darkest font-semibold mt-2 bg-golden text-gray-darkest">
             {{matchData.players[vcnvData.CNVPlayers[3].id].name}}</div>
     </div>
     <div class="float-left  ml-5">
         <div
-            class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">
+            class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-semibold rounded-xl">
             {{time}}</div>
         <div [ngClass]="{'text-black bg-white': vdData.currentPlayerId === 1 && matchData.matchPos === 'VD', 'bg-golden-dark': (stealingPlayerIndex == 0 && matchData.matchPos === 'VD') || (kdTurn.id === 1 && matchData.matchPos === 'KD')}"
             class="text-md mt-2 w-64 rounded-md p-2 text-center text-white bg-gray">
@@ -61,19 +61,19 @@
         <div *ngIf="matchData.matchPos == 'TT_Q' || matchData.matchPos == 'TT_A'">
             <div>
                 {{matchData.players[ttData.playerAnswers[0].id - 1].name.toUpperCase()}}:
-                {{ttData.playerAnswers[0].answer}} @ {{getTimePassed(0)}}
+                {{ttData.playerAnswers[0].answer}} &#64; {{getTimePassed(0)}}
             </div>
             <div>
                 {{matchData.players[ttData.playerAnswers[1].id - 1].name.toUpperCase()}}:
-                {{ttData.playerAnswers[1].answer}} @ {{getTimePassed(1)}}
+                {{ttData.playerAnswers[1].answer}} &#64; {{getTimePassed(1)}}
             </div>
             <div>
                 {{matchData.players[ttData.playerAnswers[2].id - 1].name.toUpperCase()}}:
-                {{ttData.playerAnswers[2].answer}} @ {{getTimePassed(2)}}
+                {{ttData.playerAnswers[2].answer}} &#64; {{getTimePassed(2)}}
             </div>
             <div>
                 {{matchData.players[ttData.playerAnswers[3].id - 1].name.toUpperCase()}}:
-                {{ttData.playerAnswers[3].answer}} @ {{getTimePassed(3)}}
+                {{ttData.playerAnswers[3].answer}} &#64; {{getTimePassed(3)}}
             </div>
         </div>
         <div *ngIf="matchData.matchPos == 'VCNV_Q' || matchData.matchPos == 'VCNV_A'">

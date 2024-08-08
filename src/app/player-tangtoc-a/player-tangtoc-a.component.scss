@@ -1,28 +1,20 @@
+@keyframes transitionIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-@for $i from 1 through 4 {
-  @keyframes transitionIn{
-    0%{
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    100%{
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  .boxes div:nth-child(n) {
-    animation: 1s transitionIn forwards;
-  }
+.answers {
+  animation: 1s transitionIn forwards;
 }
 .disablePointerActions {
-    pointer-events: none;
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-            user-select: none; 
-}
-.answer-incorrect{
-  opacity: 0.25 !important;
-}
-.aurora {
-  @apply relative drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
+  pointer-events: none;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  user-select: none;
 }

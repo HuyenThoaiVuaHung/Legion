@@ -22,8 +22,10 @@ export class AppComponent implements OnInit {
   togglePoints() {
     this.auth.socket.emit("get-match-data", (data: { matchPos: string }) => {
       if (data.matchPos == "PNTS") {
-        if (this.matchPosCache )
-        this.router.navigate([getControlUrlFromMatchPosition(this.matchPosCache)]);
+        if (this.matchPosCache)
+          this.router.navigate([
+            getControlUrlFromMatchPosition(this.matchPosCache),
+          ]);
         this.auth.socket.emit(
           "change-match-position",
           this.matchPosCache,

@@ -1,62 +1,74 @@
-<div class=" aurora-bg flex h-screen sm:h-full w-screen">
-  <img src="../../assets/misc/1.png" class="w-screen object-cover h-screen absolute -z-50">
-  <div class="float-left gap-5 pt-5 flex flex-col items-center ml-5">
-    <div
-      class="w-64 aurora shadow-xl h-64 rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 disablePointerActions flex text-center  text-black justify-center items-center text-8xl font-black"
-    >
-      <img class="h-48 w-48" src="../../assets/misc/logo.png">
+<div class="aurora-bg overflow-hidden box-border gap-5 p-10 flex h-full w-full">
+  <div class="gap-5 flex text-center flex-col items-center">
+    @if ( this.currentMaxQuestionNo > 0 ) {
+    <span class="w-full text-2xl">Câu hỏi số</span>
+    <div class="grid text-7xl place-items-center w-full">
+      <span class="w-full">
+        {{ currentQuestionNo }} : {{ currentMaxQuestionNo }}
+      </span>
+      <mat-progress-bar
+        class
+        mode="determinate"
+        [value]="(currentQuestionNo * 100) / currentMaxQuestionNo"
+        color="primary"
+      ></mat-progress-bar>
     </div>
-    <!-- 3s Timer (Admin triggered)-->
-    <div
-      *ngIf="threeSecTimer2 <= 0 && threeSecTimer1 > 0"
-      class="text-4xl disablePointerActions absolute z-2 w-64 rounded-xl mt-10 text-center"
-    >
-      {{ threeSecTimer1 / 10 }}s
-    </div>
-    <div
-      [ngClass]="{ 'opacity-0': threeSecTimer2 <= 0 }"
-      class="text-4xl disablePointerActions w-64 rounded-xl mt-10 text-center"
-    >
-      {{ threeSecTimer2 / 10 }}s
-    </div>
+    } @else {
+    <h6 class="w-full text-2xl">Phần thi</h6>
+    <h5>
+      <strong>
+        {{ this.gamemode == "M" ? "Đối kháng" : "Cá nhân" }}
+      </strong>
+    </h5>
+    }
+
     <!-- 3s Timer (Player Triggered) *ngIf="threeSecTimer2 > 0"-->
     <div
-      class="disablePointerActions w-64 overflow-hidden p-1 text-center gap-3 items-center flex flex-col"
+      class="text-4xl disablePointerActions relative z-2 py-3 w-full rounded-xl text-center"
     >
-      <div
-        *ngFor="let player of auth.matchData.players; let i = index"
-        [ngClass]="{ 'name-highlight': currentTurn == i }"
-        class="text-xl w-full rounded-md aurora py-3 px-1 text-center shadow-lg"
+      <span [ngClass]="{ 'opacity-0': threeSecTimer1 <= 0 }" class="text-4xl"
+        >{{ threeSecTimer1 / 10 }}s</span
       >
-        {{ auth.matchData.players[i].name.toUpperCase() }} ({{
-          auth.matchData.players[i].score
-        }})
-      </div>
+      <span [ngClass]="{ 'opacity-0': threeSecTimer2 <= 0 }" class="text-4xl"
+        >{{ threeSecTimer2 / 10 }}s</span
+      >
     </div>
-    <button *ngIf="gamemode == 'M'"
+
+    <player-list
+      [players]="auth.matchData().players"
+      [turnIndex]="currentTurn"
+      [highlightIndex]="
+        this.gamemode == 'S' ? this.kdData.currentSingleplayerPlayer : -1
+      "
+    >
+    </player-list>
+    <button
+      mat-fab
+      extended
+      *ngIf="gamemode == 'M'"
       (click)="getAnswerTurn()"
       [disabled]="answerButtonDisabled"
-      class="max-w-lg text-lg font-bold py-5 w-64 h-max active:bg-black bg-white
-       active:text-white active:shadow-none active:translate-x-[2px] active:translate-y-[2px] font-sans p-4
-        shadow-black transition-all flex justify-center items-center gap-1
-         disabled:bg-black disabled:translate-x-0 disabled:translate-y-0 disabled:text-white disabled:hover:shadow-none
-         aurora"
+      class="big-button"
+      color="primary"
     >
-      GIÀNH QUYỀN TRẢ LỜI
+      <span class="mat-h2"> GIÀNH QUYỀN </span>
     </button>
   </div>
   <div
     [ngClass]="{ 'text-gold': ifGotTurn === true }"
-    class="disablePointerActions bg-white relative shadow-lg questionBox aurora
-     float-right mt-5 ml-10 mr-10 text-3xl border-4"
-    >
-    <span class="h-full flex flex-col w-full p-10 text-6xl">
+    class="disablePointerActions relative p-10 questionBox box-border shadow-lg w-full h-full text-3xl"
+  >
+    <span class="h-full flex flex-col w-full mat-headline-1">
       {{ question.question }}
-      <img *ngIf="picturePath != ''" src="{{ picturePath }}" class=" max-w-2xl  mt-10" />
+      <img
+        *ngIf="picturePath != ''"
+        src="{{ picturePath }}"
+        class="max-w-2xl mt-10"
+      />
     </span>
     <div
-      *ngIf="this.currentQuestionNo > 1"
-      class="flex mt-10 bottom-32 absolute w-max rounded-l p-5"
+      *ngIf="this.currentQuestionNo > 1 && this.answerCache"
+      class="flex mt-10 bottom-32 left-16 answer-box absolute w-max p-5"
     >
       {{ answerCache }}
     </div>

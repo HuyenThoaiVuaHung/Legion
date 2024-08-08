@@ -29,7 +29,7 @@ export class McComponent implements OnInit {
   ngOnInit(): void {
     this.socket.emit('init-authenticate', localStorage.getItem('authString'), (callback) => {
       if (callback.roleId == 2) {
-        console.log('Logged in as MC');
+        console.debug('Logged in as MC');
         this.matchData = callback.matchData;
         this.socket.on('update-kd-question', (data) => {
           this.answerCache = this.question.answer;
@@ -99,7 +99,7 @@ export class McComponent implements OnInit {
         })
       }
       else {
-        console.log('Wrong token/Wrong match position');
+        console.debug('Wrong token/Wrong match position');
         this.router.navigate(['/']);
       }
     });

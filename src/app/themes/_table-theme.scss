@@ -1,0 +1,43 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+@mixin color($theme) {
+  .highlight {
+    background: linear-gradient(
+      -90deg,
+      mat.get-theme-color($theme, primary-container),
+      #0000
+    ) !important;
+  }
+  .choose {
+    background: linear-gradient(
+      90deg,
+      mat.get-theme-color($theme, secondary-container),
+      #0000
+    );
+  }
+  .turn {
+    background: linear-gradient(
+      90deg,
+      #0000,
+      mat.get-theme-color($theme, tertiary-container),
+      #0000
+    ) !important;
+  }
+
+  .row:hover {
+    background-color: mat.get-theme-color($theme, surface-dim);
+  }
+  .opened {
+    background: linear-gradient(
+      90de90deg,
+      mat.get-theme-color($theme, error),
+      #0000
+    );
+  }
+}
+@mixin theme($theme) {
+  @if mat.theme-has($theme, color) {
+    @include color($theme);
+  }
+}

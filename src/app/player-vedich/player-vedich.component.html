@@ -1,79 +1,104 @@
-<div class=" flex h-screen w-screen">
-    <img src="../../assets/misc/1.png" class="w-screen disablePointerActions object-cover h-screen absolute -z-50">
-    <div class="float-left disablePointerActions p-16 ml-5">
-        <div
-            class="w-64 h-64 drop-shadow-lg aurora flex text-center p-10 shadow-xl justify-center items-center text-8xl font-black rounded-xl">
-            {{currentTime}}</div>
-        <div *ngIf="auth.userInfo.roleId != 3" class=" text-2xl w-64 rounded-xl mt-10 text-center ">Số điểm:</div>
-        <div *ngIf="auth.userInfo.roleId != 3" class=" text-8xl w-64 rounded-xl  text-cyan-500 mt-5 text-center ">
-            {{auth.matchData.players[this.auth.userInfo.index!].score}}</div>
-        <div *ngFor="let player of auth.matchData.players; let i = index" [ngClass]="{'text-black bg-white': vdData.currentPlayerId === i + 1, 'name-highlight': stealingPlayerIndex == i}"
-            class="text-xl mt-2 w-64 rounded-md p-2 aurora shadow-lg text-center">
-            {{auth.matchData.players[i].name.toUpperCase()}} ({{auth.matchData.players[i].score}})
-        </div>
+<div class="flex h-screen w-screen gap-5 p-10 box-border">
+  <div class="flex flex-col items-center gap-3 disablePointerActions">
+    <countdown [currentTime]="this.currentTime" [maxTime]="this.maxTime" />
+    <div
+      *ngIf="auth.userInfo().roleId != 3"
+      class="text-2xl w-64 rounded-xl mt-10 text-center"
+    >
+      Số điểm:
+      <strong>
+        {{ auth.matchData().players[this.auth.userInfo().index!].score }}
+      </strong>
+    </div>
 
+    <player-list
+      [players]="auth.matchData().players"
+      [highlightIndex]="vdData.currentPlayerId - 1"
+      [turnIndex]="stealingPlayerIndex"
+    ></player-list>
+  </div>
+  @if(vdData.ifQuestionPickerShowing == false) {
+  <div class="flex-grow flex flex-col gap-5">
+    <div
+      class="disablePointerActions flex questionBox h-full w-full text-4xl p-10 box-border border-2 rounded-xl"
+    >
+      <div class="rounded-xl w-full">
+        {{ curQuestion.question }}
+      </div>
+      @if (curQuestion.type != 'N' && curQuestion.type != 'A'){
+      <div class="w-full">
+        @if (curQuestion.type == 'V'){
+        <video
+          id="vedich-video"
+          class="videoBox"
+          preload="auto"
+          poster="../../assets/misc/placeholder.png"
+        >
+          <source src="{{ videoSource }}" type="video/mp4" />
+        </video>
+
+        } @if (curQuestion.type == 'I'){
+        <img class="h-72" src="{{ imgSource }}" />
+        }
+      </div>
+      }
+      <span
+        *ngIf="vdData.ifNSHV == true"
+        class="absolute text-7xl p-5 bottom-0 right-0 text-golden-dark"
+        >★</span
+      >
     </div>
-    <div *ngIf="vdData.ifQuestionPickerShowing == false" class=" items-center text-center">
-        <div *ngIf="curQuestion.type == 'V' || curQuestion.type == 'I'" class="disablePointerActions
-     drop-shadow-lg relative bg-white question-text float-right p-5 text-3xl border-2 aurora rounded-xl">
-            <div class="h-auto m-5 block text-black text-4xl font-bold text-left  rounded-xl">{{curQuestion.question}}
-            </div>
-            <div>
-                <video *ngIf="curQuestion.type == 'V'" id="vedich-video" class="videoBox" preload="auto"
-                    poster="../../assets/misc/placeholder.png">
-                    <source src="{{videoSource}}" type="video/mp4" />
-                </video>
-                <img *ngIf="curQuestion.type == 'I'" class="h-72" src="{{imgSource}}" />
-            </div>
-            <span *ngIf="vdData.ifNSHV == true" class="absolute text-7xl p-5 bottom-0 right-0 text-golden-dark">★</span>
-        </div>
-        <div *ngIf="curQuestion.type != 'V' && curQuestion.type != 'I'" class=" disablePointerActions
-        drop-shadow-xl question-text relative  float-right p-10 text-4xl aurora bg-white rounded-xl
-        ">{{curQuestion.question}}
-            <span *ngIf="vdData.ifNSHV == true" class="absolute right-0 bottom-0 text-7xl text-golden-dark p-5">★</span>
-        </div>
-        <div *ngIf="auth.userInfo.roleId != 3" class=" text-white inline">
-            <button [disabled]="buttonDisabled" (click)="stealQuestion()" matRipple
-                class="bg-white disabled:bg-gray-900 shadow-xl disabled:text-gray-300 aurora text-xl h-32 very-long text-gray-darkest">
-                GIÀNH CHUÔNG TRẢ LỜI
-            </button>
-        </div>
+    <div *ngIf="auth.userInfo().roleId != 3" class="grid place-items-center">
+      <button
+        mat-fab
+        extended
+        [disabled]="buttonDisabled"
+        (click)="stealQuestion()"
+        matRipple
+        class="very-long"
+      >
+        GIÀNH CHUÔNG TRẢ LỜI
+      </button>
     </div>
-    <div>
-        <div *ngIf="vdData.ifQuestionPickerShowing == true"
-            class=" absolute right-5 zoom bottom-52 disablePointerActions flex-col h-96 w-52">
-            <div>
-                <div class=" float-left h-40 w-12">
-                    <span>
-                        <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[0]"></mat-checkbox>
-                    </span>
-                    <span>
-                        <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[1]"></mat-checkbox>
-                    </span>
-                    <span>
-                        <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[2]"></mat-checkbox>
-                    </span>
-                </div>
-                <div
-                    class=" justify-center font-black text-center items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-white aurora">
-                    20</div>
-            </div>
-            <div class="">
-                <div class="mt-5 float-left h-40 w-12">
-                    <span>
-                        <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[3]"></mat-checkbox>
-                    </span>
-                    <span>
-                        <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[4]"></mat-checkbox>
-                    </span>
-                    <span>
-                        <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[5]"></mat-checkbox>
-                    </span>
-                </div>
-                <div
-                    class="mt-5 justify-center font-black text-center items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-white aurora">
-                    30</div>
-            </div>
+  </div>
+  } @else {
+  <div class="flex w-full h-full justify-end items-center p-5 box-border">
+    <div class="disablePointerActions gap-5 flex flex-col h-96 w-52">
+      <div class="flex items-center h-max">
+        <div class="grid place-items-center h-40 w-12">
+          @for (index of [0,1,2]; track index) {
+          <span>
+            <mat-checkbox
+              disabled=""
+              [(ngModel)]="vdData.questionPickerArray[index]"
+            ></mat-checkbox>
+          </span>
+          }
         </div>
+        <div
+          class="justify-center border-primary border-2 font-semibold grid place-items-center rounded-xl text-6xl h-40 w-40 bg-surface"
+        >
+          20
+        </div>
+      </div>
+      <div class="flex items-center h-max">
+        <div class="grid place-items-center h-40 w-12">
+          @for (index of [3,4,5]; track index) {
+          <span>
+            <mat-checkbox
+              disabled=""
+              [(ngModel)]="vdData.questionPickerArray[index]"
+            ></mat-checkbox>
+          </span>
+          }
+        </div>
+        <div
+          class="justify-center border-primary border-2 font-semibold grid place-items-center rounded-xl text-6xl h-40 w-40 bg-surface"
+        >
+          30
+        </div>
+      </div>
     </div>
+  </div>
+  }
 </div>

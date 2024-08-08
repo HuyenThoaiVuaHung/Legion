@@ -7,10 +7,7 @@ import { AuthService } from "../services/auth.service";
   styleUrls: ["./player-tangtoc-q.component.scss"],
 })
 export class PlayerTangtocQComponent implements OnInit {
-  constructor(
-    private sfxService: SfxService,
-    public auth: AuthService
-  ) {}
+  constructor(private sfxService: SfxService, public auth: AuthService) {}
   imageSource = "";
   videoSource = "";
   ttData: any = {};
@@ -22,12 +19,13 @@ export class PlayerTangtocQComponent implements OnInit {
   answerCache: string = "";
   playerAnswer: string = "";
   audio: any = null;
+  public maxTime = 0;
   ngOnInit(): void {
     this.auth.resetListeners();
     this.auth.socket.on("play-sfx", (sfxID) => {
       this.sfxService.playSfx(sfxID);
     });
-    if (this.auth.userInfo.roleId == 0) {
+    if (this.auth.userInfo().roleId == 0) {
       this.auth.socket.emit("clear-answer-tt");
     }
     this.auth.socket.emit("get-tangtoc-data", (callback) => {
@@ -53,6 +51,10 @@ export class PlayerTangtocQComponent implements OnInit {
         this.disabledAnswerBox = true;
         this.playerAnswer = "";
       } else {
+        if (this.currentTime == 0) {
+          console.debug(this.maxTime)
+          this.maxTime = clock;
+        }
         this.disabledAnswerBox = false;
       }
       this.currentTime = clock;
@@ -105,7 +107,7 @@ export class PlayerTangtocQComponent implements OnInit {
       this.answerCache = this.playerAnswer;
       this.auth.socket.emit("");
       this.playerAnswer = "";
-      this.getTimePassed(this.auth.userInfo.index!);
+      this.getTimePassed(this.auth.userInfo().index!);
     }
   }
   getTimePassed(id: number) {

@@ -1,0 +1,140 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+@mixin color($theme) {
+  .question-box-border {
+    border: 1px solid mat.get-theme-color($theme, primary) !important;
+  }
+
+  .opened-question {
+    opacity: 0.3;
+  }
+  .question-highlight {
+    background: mat.get-theme-color($theme, primary) !important;
+    color: mat.get-theme-color($theme, on-primary) !important;
+  }
+
+  .bg-names {
+    background: mat.get-theme-color($theme, surface-container-high);
+  }
+
+  .questionBox {
+    background: mat.get-theme-color($theme, surface-container);
+    color: mat.get-theme-color($theme, on-surface);
+    border: 1px solid mat.get-theme-color($theme, outline-variant);
+    box-shadow: 0 0 0 1px mat.get-theme-color($theme, shadow);
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+  }
+  .answer-box {
+    background: mat.get-theme-color($theme, surface-container-high);
+    color: mat.get-theme-color($theme, on-surface);
+    border: 1px solid mat.get-theme-color($theme, outline-variant);
+    border-radius: 0.5rem;
+  }
+  .boxes div {
+    background: mat.get-theme-color($theme, surface);
+    color: mat.get-theme-color($theme, outline-variant);
+    border: 1px solid mat.get-theme-color($theme, outline-variant);
+    box-sizing: border-box;
+  }
+  .pole {
+    background: mat.get-theme-color($theme, on-surface);
+  }
+  .cnvPicBox {
+    color: mat.get-theme-color($theme, outline-variant);
+    border: 1px solid mat.get-theme-color($theme, outline-variant);
+    div {
+      background: mat.get-theme-color($theme, surface) !important;
+    }
+    .bg-transparent{
+      background: transparent !important;
+    }
+    .text{
+      color: mat.get-theme-color($theme, on-surface);
+      position: absolute;
+      top: calc(50% - 1rem);
+      left: calc(50% - 1rem);
+    }
+    .center {
+      color: mat.get-theme-color($theme, on-surface);
+      border-color: mat.get-theme-color($theme, outline-variant);
+    }
+  }
+  .bg-surface {
+    background: mat.get-theme-color($theme, surface);
+  }
+  .bg-surface-container {
+    background: mat.get-theme-color($theme, surface-container);
+  }
+
+  .bg-primary {
+    background: mat.get-theme-color($theme, primary);
+  }
+
+  .bg-tertiary {
+    background: mat.get-theme-color($theme, tertiary);
+  }
+  .border-primary {
+    border-color: mat.get-theme-color($theme, primary);
+    border-style: solid;
+  }
+  .bg-error {
+    background: mat.get-theme-color($theme, error);
+  }
+  .hangngang-box {
+    background: mat.get-theme-color($theme, surface-container-high);
+    color: mat.get-theme-color($theme, on-surface);
+  }
+  .answers > div {
+    background: mat.get-theme-color($theme, surface-container-lowest);
+    color: mat.get-theme-color($theme, on-surface);
+    border: 2px solid mat.get-theme-color($theme, primary);
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    .name-box {
+      background: mat.get-theme-color($theme, surface-container-low);
+      color: mat.get-theme-color($theme, on-surface);
+      border-bottom: 2px solid mat.get-theme-color($theme, primary);
+      border-radius: 0.5rem 0.5rem 0 0;
+      box-sizing: border-box;
+    }
+    .timer-box {
+      background: mat.get-theme-color($theme, surface-container-low);
+      color: mat.get-theme-color($theme, on-surface);
+      border: 1px solid mat.get-theme-color($theme, primary);
+      border-radius: 0.5rem;
+      box-sizing: border-box;
+    }
+  }
+  .answer-incorrect {
+    background: mat.get-theme-color($theme, error-container) !important;
+    color: mat.get-theme-color($theme, on-error-container) !important;
+    border: 1px solid mat.get-theme-color($theme, error) !important;
+    opacity: 0.2;
+  }
+  .answer-correct {
+    color: mat.get-theme-color($theme, primary) !important;
+    border: 1px solid mat.get-theme-color($theme, primary) !important;
+  }
+
+  .name-highlight {
+    background: mat.get-theme-color($theme, primary) !important;
+    color: mat.get-theme-color($theme, on-primary) !important;
+  }
+
+  .special-highlight {
+    background: mat.get-theme-color($theme, tertiary) !important;
+    color: mat.get-theme-color($theme, on-tertiary) !important;
+  }
+}
+
+@mixin theme($theme) {
+  @if mat.theme-has($theme, color) {
+    @include color($theme);
+  }
+  .big-button {
+    width: 100%;
+    min-height: 10rem;
+  }
+}

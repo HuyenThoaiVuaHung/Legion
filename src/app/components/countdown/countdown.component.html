@@ -1,0 +1,12 @@
+<div
+  class="w-32 h-32 relative flex text-center rounded-full p-10 justify-center items-center text-6xl font-semibold"
+>
+  <mat-progress-spinner
+    diameter="200"
+    strokeWidth="10"
+    mode="determinate"
+    [value]="(currentTime() * 100) / maxTime()"
+  >
+  </mat-progress-spinner>
+  {{ currentTime() }}
+</div>

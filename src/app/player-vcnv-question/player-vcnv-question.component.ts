@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { SfxService } from "../services/sfx-service.service";
 import { AuthService } from "../services/auth.service";
+import { VcnvData } from "../types/game";
 
 @Component({
   selector: "app-player-vcnv-question",
@@ -8,9 +9,8 @@ import { AuthService } from "../services/auth.service";
   styleUrls: ["./player-vcnv-question.component.scss"],
 })
 export class PlayerVcnvQuestionComponent implements OnInit {
-  constructor(private sfxService: SfxService, public auth: AuthService) { }
-  imageSource = "../../assets/abcdxyz.png";
-  vcnvData: any = {};
+  constructor(private sfxService: SfxService, public auth: AuthService) {}
+  vcnvData: VcnvData = {} as VcnvData;
   currentTime: number = 0;
   curVCNVQuestion: any = {};
   highlightedVCNVQuestion: any = {};
@@ -19,17 +19,16 @@ export class PlayerVcnvQuestionComponent implements OnInit {
   playerAnswer: string = "";
   disabledCNVButton: boolean = false;
   audio: any = null;
-  ngOnInit(): void {
+
+  async ngOnInit() {
     this.auth.resetListeners();
-    if (this.auth.userInfo.roleId == 0) {
-      this.auth.socket.emit("clear-player-answer");
-    }
+    this.auth.socket.emit("clear-player-answer");
     this.auth.socket.on("play-sfx", (sfx) => {
       this.sfxService.playSfx(sfx);
     });
     this.auth.socket.on("update-vcnv-data", (data) => {
       this.vcnvData = data;
-      if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo.index!)) {
+      if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
         this.disabledCNVButton = true;
       } else {
         this.disabledCNVButton = false;
@@ -37,16 +36,18 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       try {
         this.formatStrings();
       } catch (error) {
-        console.log(error);
+        console.debug(error);
         this.VCNVStrings = [];
       }
     });
+
     this.auth.socket.on("update-clock", (clock) => {
       this.currentTime = clock;
     });
-    this.auth.socket.emit("get-vcnv-data", (callback) => {
+    this.auth.socket.emit("get-vcnv-data", (callback: VcnvData) => {
+      console.debug(callback);
       this.vcnvData = callback;
-      if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo.index!)) {
+      if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
         this.disabledCNVButton = true;
       } else {
         this.disabledCNVButton = false;
@@ -54,7 +55,7 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       try {
         this.formatStrings();
       } catch (error) {
-        console.log(error);
+        console.debug(error);
         this.VCNVStrings = [];
       }
     });
@@ -66,13 +67,21 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       if (this.curVCNVQuestion.type == "HN_S") {
         this.audio = new Audio(
           "../../../assets/audio-questions/vcnv/" +
-          this.curVCNVQuestion.audioFilePath
+            this.curVCNVQuestion.audioFilePath
         );
         this.audio.play();
       } else if (this.audio != null) {
         this.audio.pause();
       }
     });
+    this.setCnvImage();
+  }
+  async setCnvImage() {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    document.getElementById("cnvPicBox")!.style.backgroundImage =
+      "url(../../../assets/picture-questions/vcnv/" +
+      this.vcnvData.questions[5].picFileName +
+      ")";
   }
   formatStrings() {
     for (let i: number = 0; i <= 5; i++) {

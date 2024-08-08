@@ -1,38 +1,33 @@
-<div class="bg-gray-dark  flex h-screen sm:h-full w-screen">
-    <div class="float-left  ml-5">
-        <div
-            class="w-64 h-64 disablePointerActions drop-shadow-lg flex text-center bg-gray text-white p-10 mt-5 border-2 justify-center items-center text-8xl font-black rounded-xl">
-            {{time}}</div>
-        <div
-            class="disablePointerActions w-56 overflow-hidden h-52 text-center items-center justify-center flex flex-col float-right text-white ml-3 mr-10">
-            <div [ngClass]="{'name-highlight': currentTurn == 0 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-                {{this.auth.matchData.players[0].name.toUpperCase()}} ({{this.auth.matchData.players[0].score}})
-            </div>
-            <div [ngClass]="{'name-highlight': currentTurn == 1 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-                {{this.auth.matchData.players[1].name.toUpperCase()}} ({{this.auth.matchData.players[1].score}})
-            </div>
-            <div [ngClass]="{'name-highlight': currentTurn == 2 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-                {{this.auth.matchData.players[2].name.toUpperCase()}} ({{this.auth.matchData.players[2].score}})
-            </div>
-            <div [ngClass]="{'name-highlight': currentTurn == 3 }"
-                class="text-xl mt-2 w-64 rounded-lg p-1.5 text-center text-white bg-gray">
-                {{this.auth.matchData.players[3].name.toUpperCase()}} ({{this.auth.matchData.players[3].score}})
-            </div>
-        </div>
-        <div class=" text-2xl w-64 rounded-xl mt-10 text-center">
-            <button *ngIf="this.auth.userInfo.roleId != 3 && chpData.playerIDs[auth.userInfo.index!] == true" mat-button
-                class=" bg-gray h-20 text-xl p-5 text-white" (click)="getAnswerTurn()"
-                [disabled]="(answerButtonDisabled)">
-                GIÀNH QUYỀN TRẢ LỜI
-            </button>
-        </div>
+<div class="flex p-5 box-border gap-5 h-screen w-screen">
+  <div class="flex flex-col gap-5 items-center">
+    <div
+      class="w-32 h-32 disablePointerActions shadow-xl flex text-center p-10 border-2 justify-center items-center text-6xl font-semibold rounded-xl"
+    >
+      {{ time }}
     </div>
-    <div [ngClass]="{'text-gold': ifGotTurn === true}" class=" disablePointerActions 
-    bg-gray relative drop-shadow-lg questionBox float-right mt-5 ml-10 mr-10 p-10 text-3xl border-2 text-white rounded-xl
-    ">
-        {{question.question}}
-    </div>
+    <player-list
+      [players]="this.auth.matchData().players"
+      [highlightIndex]="currentTurn"
+    >
+    </player-list>
+    <button
+      *ngIf="
+        this.auth.userInfo().roleId != 3 &&
+        chpData.playerIDs[auth.userInfo().index!] == true
+      "
+      mat-fab
+      extended
+      class="big-button"
+      (click)="getAnswerTurn()"
+      [disabled]="answerButtonDisabled"
+    >
+      GIÀNH QUYỀN TRẢ LỜI
+    </button>
+  </div>
+  <div
+    [ngClass]="{ 'text-gold': ifGotTurn === true }"
+    class="disablePointerActions relative drop-shadow-lg w-full h-full questionBox text-3xl border-2 rounded-xl"
+  >
+    {{ question.question }}
+  </div>
 </div>
