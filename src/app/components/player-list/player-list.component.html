@@ -1,11 +1,11 @@
 <div
   class="disablePointerActions w-64 overflow-hidden p-1 text-center gap-3 items-center flex flex-col"
 >
+  @for (player of players(); track $index) {
   <div
-    *ngFor="let player of players(); let i = index"
     [ngClass]="{
-      'name-highlight': highlightIndex() == i,
-      'special-highlight': turnIndex() == i
+      'name-highlight': highlightIndex() == $index,
+      'special-highlight': turnIndex() == $index
     }"
     class="mat-h2 w-full bg-names rounded-md flex leading-tight justify-between py-3 px-3 box-border text-left shadow-lg"
   >
@@ -14,4 +14,5 @@
     </span>
     <span class="grid place-items-center text-right">{{ player.score }}</span>
   </div>
+  }
 </div>

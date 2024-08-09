@@ -1,15 +1,13 @@
 import {
   Component,
   OnInit,
-  Output,
-  EventEmitter,
   Signal,
   computed,
 } from "@angular/core";
 import * as XLSX from "xlsx";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
-import { FormPlayerComponent } from "../form-player/form-player.component";
+import { FormPlayerComponent } from "../components/forms/form-player/form-player.component";
 import { AuthService } from "../services/auth.service";
 
 @Component({

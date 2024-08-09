@@ -1,10 +1,11 @@
 <div
+  [ngClass]="{ 'flex-col items-start': orientation() == 'vertical' }"
   class="mat-elevation-z5 my-3 p-3 flex justify-between items-center rounded-lg"
 >
   <div class="mat-title-medium">
-    <div>{{title()}}</div>
+    <div>{{ title() }}</div>
     <div class="mat-label-medium">
-        {{description()}}
+      {{ description() }}
     </div>
   </div>
 

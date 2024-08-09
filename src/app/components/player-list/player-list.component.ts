@@ -1,3 +1,4 @@
+import { CommonModule } from "@angular/common";
 import { Component, input, Input, OnInit, Signal } from "@angular/core";
 import { Player } from "src/app/services/types/match.data";
 
@@ -5,6 +6,8 @@ import { Player } from "src/app/services/types/match.data";
   selector: "player-list",
   templateUrl: "./player-list.component.html",
   styleUrls: ["./player-list.component.scss"],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class PlayerListComponent {
   public turnIndex = input(-1);

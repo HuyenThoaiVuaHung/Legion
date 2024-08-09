@@ -108,22 +108,22 @@ export class AuthService {
     if (this.userInfo().roleId === 0 || this.userInfo().roleId === 3)
       switch (matchPosition) {
         case "KD":
-          this.router.navigate(["/pl-kd"]);
+          this.router.navigate(["/player/kd"]);
           break;
         case "VCNV_Q":
-          this.router.navigate(["/pl-vcnv-q"]);
+          this.router.navigate(["/player/vcnv-q"]);
           break;
         case "VCNV_A":
-          this.router.navigate(["/pl-vcnv-a"]);
+          this.router.navigate(["/player/vcnv-a"]);
           break;
         case "TT_Q":
-          this.router.navigate(["/pl-tangtoc-q"]);
+          this.router.navigate(["/player/tangtoc-q"]);
           break;
         case "TT_A":
-          this.router.navigate(["/pl-tangtoc-a"]);
+          this.router.navigate(["/player/tangtoc-a"]);
           break;
         case "VD":
-          this.router.navigate(["pl-vd"]);
+          this.router.navigate(["/player/vd"]);
           break;
         case "H":
           this.router.navigate([""]);
@@ -132,7 +132,7 @@ export class AuthService {
           this.router.navigate(["/pnts"]);
           break;
         case "CHP":
-          this.router.navigate(["/pl-chp"]);
+          this.router.navigate(["/player/chp"]);
       }
   }
 

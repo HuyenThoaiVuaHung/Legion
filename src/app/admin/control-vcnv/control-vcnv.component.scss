@@ -1,0 +1,61 @@
+.half-width {
+  width: 50vw;
+}
+
+.height-600 {
+  height: 100%;
+}
+.mat-column-question {
+  width: 180px;
+  text-align: left;
+}
+.mat-column-answer {
+  width: 160px;
+  text-align: left;
+  padding-left: 10px;
+}
+.mat-column-type {
+  width: 80px;
+  text-align: left;
+  padding-left: 10px;
+  font-weight: bolder;
+}
+.mat-column-value {
+  width: 80px;
+  text-align: left;
+  padding-left: 10px;
+}
+.mat-column-action {
+  width: 200px;
+  text-align: left;
+}
+.mat-column-name {
+  width: 160px;
+  text-align: left;
+  padding-left: 10px;
+}
+.mat-column-response {
+  width: 300px;
+  text-align: left;
+  padding-left: 10px;
+}
+.mat-column-id {
+  width: 80px;
+  text-align: center;
+  padding: 0px;
+}
+
+th.mat-mdc-header-cell:first-of-type,
+td.mat-mdc-cell:first-of-type,
+td.mat-mdc-footer-cell:first-of-type {
+  padding-left: 0px;
+}
+// .highlight {
+//   background-color: rgb(17, 17, 17) !important;
+// }
+// .choose{
+//   background-color: #404040;
+// }
+// .row:hover{
+//   background-color: rgb(64, 64, 64);
+// }
