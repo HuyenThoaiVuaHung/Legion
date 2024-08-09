@@ -22,17 +22,17 @@ export class PlayerTangtocQComponent implements OnInit {
   public maxTime = 0;
   ngOnInit(): void {
     this.auth.resetListeners();
-    this.auth.socket().on("play-sfx", (sfxID) => {
+    this.auth.socket.on("play-sfx", (sfxID) => {
       this.sfxService.playSfx(sfxID);
     });
     if (this.auth.userInfo().roleId == 0) {
-      this.auth.socket().emit("clear-answer-tt");
+      this.auth.socket.emit("clear-answer-tt");
     }
-    this.auth.socket().emit("get-tangtoc-data", (callback) => {
+    this.auth.socket.emit("get-tangtoc-data", (callback) => {
       this.ttData = callback;
     });
 
-    this.auth.socket().on("update-tangtoc-data", (data) => {
+    this.auth.socket.on("update-tangtoc-data", (data) => {
       this.ttData = data;
       if (this.curQuestion.type == "TT_IMG") {
         if (this.ttData.showAnswer == true) {
@@ -46,7 +46,7 @@ export class PlayerTangtocQComponent implements OnInit {
         }
       }
     });
-    this.auth.socket().on("update-clock", (clock) => {
+    this.auth.socket.on("update-clock", (clock) => {
       if (clock <= 0) {
         this.disabledAnswerBox = true;
         this.playerAnswer = "";
@@ -59,7 +59,7 @@ export class PlayerTangtocQComponent implements OnInit {
       }
       this.currentTime = clock;
     });
-    this.auth.socket().on("update-tangtoc-question", (question) => {
+    this.auth.socket.on("update-tangtoc-question", (question) => {
       if (question != undefined) {
         this.curQuestion = question;
         if (this.curQuestion.type == "TT_IMG") {
@@ -83,7 +83,7 @@ export class PlayerTangtocQComponent implements OnInit {
         this.videoSource = "";
       }
     });
-    this.auth.socket().on("tangtoc-play-video", () => {
+    this.auth.socket.on("tangtoc-play-video", () => {
       this.togglePlay();
     });
   }
@@ -103,9 +103,9 @@ export class PlayerTangtocQComponent implements OnInit {
   }
   submitAnswer() {
     if (this.currentTime > 0) {
-      this.auth.socket().emit("player-submit-answer-tangtoc", this.playerAnswer);
+      this.auth.socket.emit("player-submit-answer-tangtoc", this.playerAnswer);
       this.answerCache = this.playerAnswer;
-      this.auth.socket().emit("");
+      this.auth.socket.emit("");
       this.playerAnswer = "";
       this.getTimePassed(this.auth.userInfo().index!);
     }

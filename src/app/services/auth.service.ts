@@ -14,29 +14,14 @@ import { MatchData, UserInfo } from "./types/match.data";
 import { firstValueFrom } from "rxjs";
 import { AppState } from "./types/app";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { NetworkService } from "./network.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  public socket: Signal<Socket> = computed(() => {
-    if (this.network.socket().connected) {
-      this.initializeListeners();
-      this.getMatchData().then((data) => {
-        this.matchData.set(data);
-        if (localStorage.getItem("authString")) {
-          this.authenticate();
-        }
-      });
-      return io(this.network.url!);
-    }
-    return io({
-      autoConnect: false,
-    });
-  });
+  public readonly socket: Socket = io(environment.socketIp);
 
-  public state: AppState = AppState.UNAUTHENTICATED;
+  public state: AppState = AppState.UNINITIALIZED;
 
   public readonly matchData: WritableSignal<MatchData> = signal(
     {} as MatchData
@@ -48,71 +33,74 @@ export class AuthService {
     socketId: "",
   });
 
-  constructor(
-    private router: Router,
-    private snackBar: MatSnackBar,
-    public network: NetworkService
-  ) {
+
+  constructor(private router: Router, private snackBar: MatSnackBar) {
+    this.initializeListeners();
+    this.getMatchData().then((data) => {
+      this.matchData.set(data);
+      if (localStorage.getItem("authString")) {
+        this.authenticate();
+      }
+    });
+
     effect(() => {
       this.navigateMatchPosition(this.matchData().matchPos);
     });
   }
   public authenticate(authId?: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.network
-        .socket()
-        .emit(
-          "init-authenticate",
-          authId ? authId : localStorage.getItem("authString"),
-          (callback: UserInfo) => {
-            this.state = AppState.AUTHENTICATED;
-            resolve(this.userInfo.set(callback));
-          }
-        );
+      this.socket.emit(
+        "init-authenticate",
+        authId ? authId : localStorage.getItem("authString"),
+        (callback: UserInfo) => {
+          this.state = AppState.CONNECTED;
+          resolve(this.userInfo.set(callback));
+        }
+      );
     });
   }
 
   public async getMatchData(): Promise<MatchData> {
     return new Promise((resolve, reject) => {
-      this.network.socket().emit("get-match-data", (callback: MatchData) => {
+      this.socket.emit("get-match-data", (callback: MatchData) => {
         resolve(callback);
       });
     });
   }
 
   private initializeListeners() {
-    this.network.socket().on("connect_error", (error) => {
+    this.socket.on("connect_error", (error) => {
       this.state = AppState.ERROR;
       this.snackBar.open("Lỗi kết nối", "Đóng", {
         duration: 5000,
         horizontalPosition: "start",
       });
     });
-    this.network.socket().on("connect", () => {
+    this.socket.on("connect", () => {
       if (localStorage.getItem("authString")) this.authenticate();
     });
-    this.network.socket().on("update-match-data", (data) => {
+    this.socket.on("update-match-data", (data) => {
       this.matchData.set(data);
     });
   }
 
   public resetListeners() {
-    this.network.socket().removeAllListeners();
+    this.socket.removeAllListeners();
     this.initializeListeners();
   }
 
   public deauthenticate() {
     localStorage.removeItem("authString");
-    this.state = AppState.UNAUTHENTICATED;
+    this.state = AppState.UNINITIALIZED;
     this.userInfo.set({ roleId: -1, index: -1, socketId: "" });
-    this.network.socket().disconnect();
-    this.network.socket().connect();
+    this.socket.disconnect();
+    this.socket.connect();
     this.resetListeners();
   }
   public reconnect() {
     this.resetListeners();
-    this.network.socket().disconnect();
-    this.network.socket().connect();
+    this.socket.disconnect();
+    this.socket.connect();
   }
 
   private navigateMatchPosition(matchPosition: string) {

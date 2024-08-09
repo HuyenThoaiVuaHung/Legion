@@ -83,7 +83,7 @@
           <ng-container matColumnDef="playing">
             <th mat-header-cell *matHeaderCellDef> Chơi </th>
             <td mat-cell *matCellDef="let element">
-              <mat-checkbox (change)="this.auth.socket().emit('update-chp-data', chpData);" [(ngModel)]="chpData.playerIDs[auth.matchData().players.indexOf(element)]"></mat-checkbox>
+              <mat-checkbox (change)="auth.socket.emit('update-chp-data', chpData);" [(ngModel)]="chpData.playerIDs[auth.matchData().players.indexOf(element)]"></mat-checkbox>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>

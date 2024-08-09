@@ -12,7 +12,7 @@ export class AdminGuard  {
     state: RouterStateSnapshot): Promise<boolean> {
       return new Promise<boolean>((resolve, reject) => {
         try {
-          this.auth.socket().emit('verify-identity', localStorage.getItem('authString'), (callback) => {
+          this.auth.socket.emit('verify-identity', localStorage.getItem('authString'), (callback) => {
             if (callback == 1) resolve(true);
             else reject("Invalid token");
           });

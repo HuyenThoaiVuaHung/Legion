@@ -25,12 +25,12 @@ export class ControlVdComponent implements OnInit {
   displayedPlayerColumns: string[] = ["id", "name", "score", "active"];
   ngOnInit(): void {
     this.auth.resetListeners();
-    this.auth.socket().emit("change-match-position", "VD");
-    this.auth.socket().on("update-match-data", () => {
+    this.auth.socket.emit("change-match-position", "VD");
+    this.auth.socket.on("update-match-data", () => {
       this.currentTurnPlayer =
         this.auth.matchData().players[this.vdData.currentPlayerId - 1];
     });
-    this.auth.socket().on("update-vedich-data", (data) => {
+    this.auth.socket.on("update-vedich-data", (data) => {
       this.vdData = data;
       this.currentTurnPlayer =
         this.auth.matchData().players[this.vdData.currentPlayerId - 1];
@@ -52,14 +52,14 @@ export class ControlVdComponent implements OnInit {
           break;
       }
     });
-    this.auth.socket().on("update-clock", (clock) => {
+    this.auth.socket.on("update-clock", (clock) => {
       this.currentTime = clock;
     });
-    this.auth.socket().on("player-steal-question", (id) => {
+    this.auth.socket.on("player-steal-question", (id) => {
       this.playSfx("VD_STEAL_Q");
       this.playerStoleQuestion = this.auth.matchData().players[id];
     });
-    this.auth.socket().emit("get-vedich-data", (callback) => {
+    this.auth.socket.emit("get-vedich-data", (callback) => {
       this.vdData = callback;
       this.currentTurnPlayer =
         this.auth.matchData().players[this.vdData.currentPlayerId - 1];
@@ -89,7 +89,7 @@ export class ControlVdComponent implements OnInit {
     this.chosenRow = undefined;
     this.displayingRow = undefined;
     this.playSfx("VD_START_TURN");
-    this.auth.socket().emit("update-vedich-data", this.vdData);
+    this.auth.socket.emit("update-vedich-data", this.vdData);
   }
   editPlayer() {
     if (!this.chosenPlayer) return;
@@ -107,20 +107,20 @@ export class ControlVdComponent implements OnInit {
           index: this.auth.matchData().players.indexOf(this.chosenPlayer),
         };
         payload.player.score = parseInt(payload.player.score);
-        this.auth.socket().emit("edit-player-info", payload, (callback) => {});
+        this.auth.socket.emit("edit-player-info", payload, (callback) => {});
       }
     });
   }
   toggleNSHV() {
     if (this.vdData.ifNSHV == false) this.playSfx("VD_NSHV");
     this.vdData.ifNSHV = !this.vdData.ifNSHV;
-    this.auth.socket().emit("update-vedich-data", this.vdData);
+    this.auth.socket.emit("update-vedich-data", this.vdData);
   }
   choosePlayer(row: any) {
     this.chosenPlayer = row;
   }
   playSfx(sfxId: string) {
-    this.auth.socket().emit("play-sfx", sfxId);
+    this.auth.socket.emit("play-sfx", sfxId);
   }
   editQuestion() {
     if (this.chosenRow == undefined) return;
@@ -144,17 +144,17 @@ export class ControlVdComponent implements OnInit {
             this.chosenRow
           )
         ].value = Number.parseInt(result.value);
-        this.auth.socket().emit("update-vedich-data", this.vdData);
+        this.auth.socket.emit("update-vedich-data", this.vdData);
       }
     });
   }
   updateVdData() {
-    this.auth.socket().emit("update-vedich-data", this.vdData);
+    this.auth.socket.emit("update-vedich-data", this.vdData);
   }
   clearPlayer() {
     this.vdData.currentPlayerId = 0;
     this.currentTurnPlayer = undefined;
-    this.auth.socket().emit("update-vedich-data", this.vdData);
+    this.auth.socket.emit("update-vedich-data", this.vdData);
   }
   toggleQuestionPicker() {
     if (this.vdData.ifQuestionPickerShowing == true) {
@@ -164,7 +164,7 @@ export class ControlVdComponent implements OnInit {
       this.playSfx("VD_SHOW_PICKER");
       this.vdData.ifQuestionPickerShowing = true;
     }
-    this.auth.socket().emit("update-vedich-data", this.vdData);
+    this.auth.socket.emit("update-vedich-data", this.vdData);
   }
   clearQuestionPicker() {
     this.vdData.questionPickerArray = [
@@ -175,7 +175,7 @@ export class ControlVdComponent implements OnInit {
       false,
       false,
     ];
-    this.auth.socket().emit("update-vedich-data", this.vdData);
+    this.auth.socket.emit("update-vedich-data", this.vdData);
   }
   addQuestion() {
     const dialogRef = this.dialog.open(FormQVdComponent, {
@@ -193,7 +193,7 @@ export class ControlVdComponent implements OnInit {
         this.vdData.questionPools[this.vdData.currentPlayerId - 1].push(
           payload
         );
-        this.auth.socket().emit("update-vedich-data", this.vdData);
+        this.auth.socket.emit("update-vedich-data", this.vdData);
       }
     });
   }
@@ -207,7 +207,7 @@ export class ControlVdComponent implements OnInit {
     );
     this.chosenRow = undefined;
     this.displayingRow = undefined;
-    this.auth.socket().emit("update-vedich-data", this.vdData);
+    this.auth.socket.emit("update-vedich-data", this.vdData);
   }
   onClickQuestion(row) {
     this.chosenRow = row;
@@ -217,33 +217,33 @@ export class ControlVdComponent implements OnInit {
   }
   showQuestion() {
     if (!this.displayingRow) return;
-    this.auth.socket().emit(
+    this.auth.socket.emit(
       "broadcast-vd-question",
       this.currentQuestionPool.indexOf(this.displayingRow)
     );
   }
   hideQuestion() {
-    this.auth.socket().emit("broadcast-vd-question", -1);
+    this.auth.socket.emit("broadcast-vd-question", -1);
     this.displayingRow = undefined;
   }
   startTimer(time: number) {
-    this.auth.socket().emit("start-clock", time);
+    this.auth.socket.emit("start-clock", time);
     this.playSfx("VD_" + time + "S");
   }
   togglePlayVideo() {
-    this.auth.socket().emit("vd-play-video");
+    this.auth.socket.emit("vd-play-video");
   }
   markCorrect() {
     this.playSfx("VD_CORRECT");
     if (!this.displayingRow) return;
     if (this.playerStoleQuestion != undefined) {
-      this.auth.socket().emit(
+      this.auth.socket.emit(
         "mark-correct-vd",
         this.playerStoleQuestion.id,
         this.displayingRow.value
       );
     } else {
-      this.auth.socket().emit(
+      this.auth.socket.emit(
         "mark-correct-vd",
         this.vdData.currentPlayerId,
         this.displayingRow.value
@@ -255,7 +255,7 @@ export class ControlVdComponent implements OnInit {
     this.playSfx("VD_WRONG");
     if (!this.displayingRow) return;
     if (this.playerStoleQuestion != undefined) {
-      this.auth.socket().emit(
+      this.auth.socket.emit(
         "mark-incorrect-vd",
         this.playerStoleQuestion.id,
         this.displayingRow.value
@@ -264,17 +264,17 @@ export class ControlVdComponent implements OnInit {
     this.playerStoleQuestion = undefined;
   }
   openStealTurn() {
-    this.auth.socket().emit("start-5s-countdown-vd");
+    this.auth.socket.emit("start-5s-countdown-vd");
     this.playSfx("VD_5S");
   }
   showPoints() {
     if (this.auth.matchData().matchPos == "PNTS") {
-      this.auth.socket().emit("change-match-position", "VD");
+      this.auth.socket.emit("change-match-position", "VD");
     } else {
-      this.auth.socket().emit("change-match-position", "PNTS");
+      this.auth.socket.emit("change-match-position", "PNTS");
     }
   }
   public resetStealTurn() {
-    this.auth.socket().emit("reset-stealing-player");
+    this.auth.socket.emit("reset-stealing-player");
   }
 }

@@ -26,7 +26,7 @@ export class AdminDashboardComponent {
           index: this.auth.matchData().players.indexOf(row),
         };
         payload.player.score = parseInt(payload.player.score);
-        this.auth.socket().emit("edit-player-info", payload, (callback) => {
+        this.auth.socket.emit("edit-player-info", payload, (callback) => {
           console.debug(callback.message);
         });
       }
@@ -53,7 +53,7 @@ export class AdminDashboardComponent {
           tt: XLSX.utils.sheet_to_json(ttSheet),
           vd: XLSX.utils.sheet_to_json(vdSheet),
         };
-        this.auth.socket().emit("update-data-from-excel", payload, (callback) => {
+        this.auth.socket.emit("update-data-from-excel", payload, (callback) => {
           console.debug(callback.message);
         });
         console.debug(payload);

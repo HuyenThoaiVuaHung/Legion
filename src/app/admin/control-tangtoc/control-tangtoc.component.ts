@@ -39,18 +39,18 @@ export class ControlTangtocComponent implements OnInit {
       this.auth.matchData().matchPos != "TT_Q" &&
       this.auth.matchData().matchPos != "TT_A"
     ) {
-      this.auth.socket().emit("change-match-position", "TT_Q");
+      this.auth.socket.emit("change-match-position", "TT_Q");
     }
-    this.auth.socket().on("update-match-data", (data) => {
+    this.auth.socket.on("update-match-data", (data) => {
       this.auth.matchData.set(data);
     });
-    this.auth.socket().on("update-tangtoc-data", (data) => {
+    this.auth.socket.on("update-tangtoc-data", (data) => {
       this.tangtocData = data;
     });
-    this.auth.socket().on("update-clock", (clock) => {
+    this.auth.socket.on("update-clock", (clock) => {
       this.currentTime = clock;
     });
-    this.auth.socket().emit("get-tangtoc-data", (callback: TtData) => {
+    this.auth.socket.emit("get-tangtoc-data", (callback: TtData) => {
       this.tangtocData = callback;
       if (this.tangtocData.showResults == true) this.toggleResultsDisplay();
     });
@@ -69,7 +69,7 @@ export class ControlTangtocComponent implements OnInit {
           index: this.auth.matchData().players.indexOf(row),
         };
         payload.player.score = parseInt(payload.player.score);
-        this.auth.socket().emit("edit-player-info", payload, (callback) => {
+        this.auth.socket.emit("edit-player-info", payload, (callback) => {
           console.debug(callback.message);
         });
       }
@@ -90,18 +90,18 @@ export class ControlTangtocComponent implements OnInit {
         this.tangtocData!.questions[
           this.tangtocData!.questions.indexOf(this.chosenRow)
         ] = result;
-        this.auth.socket().emit("update-tangtoc-data", this.tangtocData);
+        this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
       }
     });
   }
   submitMark() {
-    this.auth.socket().emit(
+    this.auth.socket.emit(
       "submit-mark-tangtoc-admin",
       this.tangtocData!.playerAnswers
     );
   }
   playSfx(sfxId: string) {
-    this.auth.socket().emit("play-sfx", sfxId);
+    this.auth.socket.emit("play-sfx", sfxId);
   }
   onClickQuestion(row) {
     this.chosenRow = row;
@@ -115,7 +115,7 @@ export class ControlTangtocComponent implements OnInit {
     } else {
       this.tangtocData!.showAnswer = true;
     }
-    this.auth.socket().emit("update-tangtoc-data", this.tangtocData);
+    this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
   }
   getTimePassed(id: number): string {
     let readableTime = "0s0ms";
@@ -133,33 +133,33 @@ export class ControlTangtocComponent implements OnInit {
   }
   showQuestion() {
     this.tangtocData!.showAnswer = false;
-    this.auth.socket().emit("update-tangtoc-data", this.tangtocData);
-    this.auth.socket().emit("broadcast-tt-question", this.displayingRow!.id);
+    this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
+    this.auth.socket.emit("broadcast-tt-question", this.displayingRow!.id);
     if (this.tangtocData!.showAnswer == false) {
       this.playSfx("TT_QUESTION_SHOW");
     }
   }
   hideQuestion() {
-    this.auth.socket().emit("broadcast-tt-question", -1);
+    this.auth.socket.emit("broadcast-tt-question", -1);
   }
   startTimer(time: number) {
-    this.auth.socket().emit("update-timer-start-timestamp");
+    this.auth.socket.emit("update-timer-start-timestamp");
     this.playSfx("TT_" + time + "S");
-    this.auth.socket().emit("start-clock", time);
+    this.auth.socket.emit("start-clock", time);
   }
   toggleResultsDisplay() {
-    this.auth.socket().emit("toggle-results-display-tangtoc");
+    this.auth.socket.emit("toggle-results-display-tangtoc");
   }
   toggleAnswerDisplay() {
     if (this.auth.matchData().matchPos == "TT_Q") {
-      this.auth.socket().emit("change-match-position", "TT_A");
+      this.auth.socket.emit("change-match-position", "TT_A");
     } else if (this.auth.matchData().matchPos == "TT_A") {
-      this.auth.socket().emit("change-match-position", "TT_Q");
+      this.auth.socket.emit("change-match-position", "TT_Q");
       if (this.tangtocData!.showResults == true) this.toggleResultsDisplay();
     }
   }
   togglePlayVideo() {
-    this.auth.socket().emit("tangtoc-play-video");
+    this.auth.socket.emit("tangtoc-play-video");
     this.startTimer(40);
   }
   goToVD() {
@@ -167,12 +167,12 @@ export class ControlTangtocComponent implements OnInit {
   }
   showPoints() {
     if (this.auth.matchData().matchPos == "PNTS") {
-      this.auth.socket().emit("change-match-position", "TT_Q");
+      this.auth.socket.emit("change-match-position", "TT_Q");
     } else {
-      this.auth.socket().emit("change-match-position", "PNTS");
+      this.auth.socket.emit("change-match-position", "PNTS");
     }
   }
   public pauseClock() {
-    this.auth.socket().emit("play-pause-clock", this.currentTime);
+    this.auth.socket.emit("play-pause-clock", this.currentTime);
   }
 }

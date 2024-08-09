@@ -23,40 +23,40 @@ export class PlayerChpComponent implements OnInit {
   ifGotTurn: boolean = false;
   ngOnInit(): void {
     this.auth.resetListeners();
-    this.auth.socket().emit("get-chp-data", (data) => {
+    this.auth.socket.emit("get-chp-data", (data) => {
       this.chpData = data;
     });
-    this.auth.socket().on("play-sfx", (sfxID) => {
+    this.auth.socket.on("play-sfx", (sfxID) => {
       this.sfxService.playSfx(sfxID);
     });
-    this.auth.socket().on("update-chp-question", (data) => {
+    this.auth.socket.on("update-chp-question", (data) => {
       this.question = data;
     });
-    this.auth.socket().on("got-turn-chp", (data) => {
+    this.auth.socket.on("got-turn-chp", (data) => {
       if (this.auth.userInfo().index! == data) {
         this.ifGotTurn = true;
       }
       this.currentTurn = data;
     });
-    this.auth.socket().on("clear-turn-chp", () => {
+    this.auth.socket.on("clear-turn-chp", () => {
       this.currentTurn = -1;
       this.ifGotTurn = false;
     });
-    this.auth.socket().on("unlock-button-chp", () => {
+    this.auth.socket.on("unlock-button-chp", () => {
       this.answerButtonDisabled = false;
     });
-    this.auth.socket().on("lock-button-chp", () => {
+    this.auth.socket.on("lock-button-chp", () => {
       this.answerButtonDisabled = true;
     });
-    this.auth.socket().on("update-clock", (clock) => {
+    this.auth.socket.on("update-clock", (clock) => {
       this.time = clock;
     });
-    this.auth.socket().on("update-chp-data", (data) => {
+    this.auth.socket.on("update-chp-data", (data) => {
       this.chpData = data;
     });
   }
 
   getAnswerTurn() {
-    this.auth.socket().emit("get-turn-chp");
+    this.auth.socket.emit("get-turn-chp");
   }
 }

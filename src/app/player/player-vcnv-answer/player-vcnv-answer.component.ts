@@ -16,16 +16,16 @@ export class PlayerVcnvAnswerComponent implements OnInit {
   ngOnInit(): void {
     this.sfxService.playSfx("VCNV_SHOWANS");
     this.auth.resetListeners();
-    this.auth.socket().emit("get-vcnv-data", (callback) => {
+    this.auth.socket.emit("get-vcnv-data", (callback) => {
       this.vcnvData = callback;
       if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
         this.disabledCNVButton = true;
       }
     });
-    this.auth.socket().on("play-sfx", (sfx) => {
+    this.auth.socket.on("play-sfx", (sfx) => {
       this.sfxService.playSfx(sfx);
     });
-    this.auth.socket().on("update-vcnv-data", (data) => {
+    this.auth.socket.on("update-vcnv-data", (data) => {
       this.vcnvData = data;
       console.debug(this.auth.userInfo());
       if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
@@ -48,8 +48,8 @@ export class PlayerVcnvAnswerComponent implements OnInit {
   }
 
   attemptCNV() {
-    this.auth.socket().emit("attempt-cnv-player", Date.now());
-    this.auth.socket().emit("play-sfx", "VCNV_OBSTACLE");
+    this.auth.socket.emit("attempt-cnv-player", Date.now());
+    this.auth.socket.emit("play-sfx", "VCNV_OBSTACLE");
     this.disabledCNVButton = true;
   }
 }
