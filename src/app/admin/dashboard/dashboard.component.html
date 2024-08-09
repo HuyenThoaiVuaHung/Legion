@@ -1,0 +1,66 @@
+<div class="admin-container">
+  <mat-card appearance="outlined" class="w-full h-full">
+    <mat-card-header>
+      <mat-card-title class="w-full">
+        <div class="flex w-full justify-between">
+          <div>Quản lý câu hỏi</div>
+        </div>
+        <input
+          type="file"
+          class="hidden"
+          accept=".xlsx"
+          (change)="onFileSelected($event)"
+          #fileUpload
+        />
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-button class="upload-btn" (click)="fileUpload.click()">
+        <mat-icon>attach_file</mat-icon>
+        {{ fileName || "Nhập đề mới" }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+  <mat-card appearance="outlined" class="w-full h-full">
+    <mat-card-header>
+      <mat-card-title> Quản lý thông tin người chơi </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="auth.matchData().players" class="w-max">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let element">
+            {{ auth.matchData().players.indexOf(element) + 1 }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Tên</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="score">
+          <th mat-header-cell *matHeaderCellDef>Điểm</th>
+          <td mat-cell *matCellDef="let element">{{ element.score }}</td>
+        </ng-container>
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef>Đã kết nối?</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-checkbox
+              disabled="true"
+              [checked]="element.isReady"
+            ></mat-checkbox>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedPlayerColumns"
+          (dblclick)="editPlayer(row)"
+          class="row"
+        ></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

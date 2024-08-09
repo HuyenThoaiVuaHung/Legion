@@ -29,10 +29,10 @@ export class PlayerKhoiDongComponent implements OnInit {
   public kdData: KdData = {} as KdData;
   ngOnInit(): void {
     this.auth.resetListeners();
-    this.auth.socket.on("play-sfx", (sfxID, loop) => {
+    this.auth.socket().on("play-sfx", (sfxID, loop) => {
       this.sfxService.playSfx(sfxID, loop);
     });
-    this.auth.socket.on("update-kd-question", (data) => {
+    this.auth.socket().on("update-kd-question", (data) => {
       this.currentTurn = -1;
       this.answerCache = this.question.answer;
       this.question = data;
@@ -52,24 +52,24 @@ export class PlayerKhoiDongComponent implements OnInit {
         this.picturePath = "";
       }
     });
-    this.auth.socket.on("clear-turn-player-kd", () => {
+    this.auth.socket().on("clear-turn-player-kd", () => {
       this.ifGotTurn = false;
       this.currentTurn = -1;
     });
-    this.auth.socket.emit("get-kd-data", (data: KdData) => {
+    this.auth.socket().emit("get-kd-data", (data: KdData) => {
       this.kdData = data;
     });
-    this.auth.socket.on("update-kd-data", (data: KdData) => {
+    this.auth.socket().on("update-kd-data", (data: KdData) => {
       this.kdData = data;
     });
-    this.auth.socket.on("player-got-turn-kd", (data) => {
+    this.auth.socket().on("player-got-turn-kd", (data) => {
       if (this.auth.userInfo().index == data.id - 1) {
         this.ifGotTurn = true;
       }
       this.currentTurn = data.id - 1;
       console.debug(this.currentTurn);
     });
-    this.auth.socket.on("update-number-question-kd", (max, curr) => {
+    this.auth.socket().on("update-number-question-kd", (max, curr) => {
       this.currentMaxQuestionNo = max;
       if (curr > max) {
         this.answerButtonDisabled = true;
@@ -78,33 +78,33 @@ export class PlayerKhoiDongComponent implements OnInit {
       }
       this.currentQuestionNo = curr;
     });
-    this.auth.socket.on("disable-answer-button-kd", () => {
+    this.auth.socket().on("disable-answer-button-kd", () => {
       this.answerButtonDisabled = true;
     });
-    this.auth.socket.on("enable-answer-button-kd", () => {
+    this.auth.socket().on("enable-answer-button-kd", () => {
       this.answerButtonDisabled = false;
       console.debug("enable");
     });
-    this.auth.socket.on("update-3s-timer-kd", (time, ifPlayer) => {
+    this.auth.socket().on("update-3s-timer-kd", (time, ifPlayer) => {
       if (ifPlayer == true) {
         this.threeSecTimer2 = time;
       } else {
         this.threeSecTimer1 = time;
       }
     });
-    this.auth.socket.on("stop-kd-sound", () => {
+    this.auth.socket().on("stop-kd-sound", () => {
       this.sfxService.stopLoopingAudio();
     });
-    this.auth.socket.on("update-kd-gamemode", (gamemode) => {
+    this.auth.socket().on("update-kd-gamemode", (gamemode) => {
       this.gamemode = gamemode;
       this.currentMaxQuestionNo = this.currentQuestionNo = 0;
     });
-    this.auth.socket.emit("get-kd-gamemode", (callback) => {
+    this.auth.socket().emit("get-kd-gamemode", (callback) => {
       this.gamemode = callback;
     });
   }
 
   getAnswerTurn() {
-    this.auth.socket.emit("get-turn-kd");
+    this.auth.socket().emit("get-turn-kd");
   }
 }

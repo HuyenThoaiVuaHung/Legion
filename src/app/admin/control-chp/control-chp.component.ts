@@ -30,21 +30,21 @@ export class ControlChpComponent implements OnInit {
   threeSecTimers: number[] = [0, 0];
   ngOnInit(): void {
     this.auth.resetListeners();
-    this.auth.socket.emit('change-match-position', 'CHP');
+    this.auth.socket().emit('change-match-position', 'CHP');
 
-    this.auth.socket.on('update-chp-data-admin', (data) => {
+    this.auth.socket().on('update-chp-data-admin', (data) => {
       this.chpData = data;
     });
-    this.auth.socket.on('update-clock', (clock) => {
+    this.auth.socket().on('update-clock', (clock) => {
       this.currentTime = clock;
     })
-    this.auth.socket.emit('get-chp-data', (callback) => {
+    this.auth.socket().emit('get-chp-data', (callback) => {
       this.chpData = callback;
     });
-    this.auth.socket.on('disconnect', () => {
-      this.auth.socket.emit('leave-match', (this.authString))
+    this.auth.socket().on('disconnect', () => {
+      this.auth.socket().emit('leave-match', (this.authString))
     })
-    this.auth.socket.on('got-turn-chp', (id) => {
+    this.auth.socket().on('got-turn-chp', (id) => {
       this.lastTurn = this.auth.matchData().players[id];
     })
   }
@@ -53,7 +53,7 @@ export class ControlChpComponent implements OnInit {
   }
   onDoubleClickQuestion(row: any) {
     this.displayingRow = row;
-    this.auth.socket.emit('broadcast-chp-question', this.chpData.questions.indexOf(this.displayingRow), callback => {
+    this.auth.socket().emit('broadcast-chp-question', this.chpData.questions.indexOf(this.displayingRow), callback => {
       console.debug(callback.message);
     });
   }
@@ -66,7 +66,7 @@ export class ControlChpComponent implements OnInit {
       if (result) {
         var payload: any = { player: result, index: this.auth.matchData().players.indexOf(row) };
         payload.player.score = parseInt(payload.player.score);
-        this.auth.socket.emit('edit-player-info', payload, (callback) => {
+        this.auth.socket().emit('edit-player-info', payload, (callback) => {
           console.debug(callback.message);
         });
       }
@@ -80,44 +80,44 @@ export class ControlChpComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.chpData.questions[this.chpData.questions.indexOf(this.chosenRow)] = result;
-        this.auth.socket.emit('update-chp-data', this.chpData, (callback) => {
+        this.auth.socket().emit('update-chp-data', this.chpData, (callback) => {
           console.debug(callback.message);
         });
       }
     });
   }
   playSfx(sfxId: string) {
-    this.auth.socket.emit('play-sfx', sfxId);
+    this.auth.socket().emit('play-sfx', sfxId);
   }
   clockStart() {
-    this.auth.socket.emit('start-timer-chp', (callback) => {
+    this.auth.socket().emit('start-timer-chp', (callback) => {
       console.debug(callback.message);
     });
   }
   clockPause() {
-    this.auth.socket.emit('play-pause-clock', this.currentTime);
+    this.auth.socket().emit('play-pause-clock', this.currentTime);
   }
   markCorrect() {
     if (this.lastTurn.name != '') {
-      this.auth.socket.emit('mark-correct-chp');
+      this.auth.socket().emit('mark-correct-chp');
       this.lastTurn = { name: '' };
     }
   }
   markWrong() {
     if (this.lastTurn.name != '') {
-      this.auth.socket.emit('mark-wrong-chp');
+      this.auth.socket().emit('mark-wrong-chp');
       this.lastTurn = { name: '' };
     }
   }
   clearQuestion() {
-    this.auth.socket.emit('clear-question-chp');
+    this.auth.socket().emit('clear-question-chp');
   }
   showPoints() {
     if (this.auth.matchData().matchPos == 'PNTS') {
-      this.auth.socket.emit('change-match-position', 'CHP');
+      this.auth.socket().emit('change-match-position', 'CHP');
     }
     else {
-      this.auth.socket.emit('change-match-position', 'PNTS');
+      this.auth.socket().emit('change-match-position', 'PNTS');
     }
   }
 }

@@ -1,8 +1,8 @@
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatToolbarModule } from "@angular/material/toolbar";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule, Routes } from "@angular/router";
-import { AdminGuard } from "../services/guards/admin.guard";
 import { ControlKhoiDongComponent } from "./control-khoi-dong/control-khoi-dong.component";
 import { ControlChpComponent } from "./control-chp/control-chp.component";
 import { ControlTangtocComponent } from "./control-tangtoc/control-tangtoc.component";
@@ -19,33 +19,43 @@ import { MenuItemComponent } from "../components/menu-item/menu-item.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AdminComponent } from "./admin.component";
+import { AdminDashboardComponent } from "./dashboard/dashboard.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 export const adminRoutes: Routes = [
   {
+    path: "",
+    redirectTo: "/admin/dashboard",
+    pathMatch: "full",
+  },
+  {
+    path: "dashboard",
+    component: AdminDashboardComponent,
+  },
+  {
     path: "kd",
     component: ControlKhoiDongComponent,
-    canActivate: [AdminGuard],
   },
   {
     path: "vcnv",
     component: ControlVcnvComponent,
-    canActivate: [AdminGuard],
   },
   {
     path: "tt",
     component: ControlTangtocComponent,
-    canActivate: [AdminGuard],
   },
   {
     path: "vd",
     component: ControlVdComponent,
-    canActivate: [AdminGuard],
   },
   {
     path: "chp",
     component: ControlChpComponent,
-    canActivate: [AdminGuard],
   },
+  {
+    path: "**",
+    redirectTo: "/404",
+  }
 ];
 
 @NgModule({
@@ -55,7 +65,8 @@ export const adminRoutes: Routes = [
     ControlTangtocComponent,
     ControlVcnvComponent,
     ControlVdComponent,
-    AdminComponent
+    AdminComponent,
+    AdminDashboardComponent,
   ],
   imports: [
     MenuItemComponent,
@@ -74,6 +85,8 @@ export const adminRoutes: Routes = [
     ReactiveFormsModule,
     MatProgressSpinner,
     MatToolbarModule,
+    MatTooltipModule,
+    MatExpansionModule
   ],
   bootstrap: [AdminComponent],
   exports: [RouterModule],

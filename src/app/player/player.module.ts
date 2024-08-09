@@ -19,6 +19,9 @@ import { CountdownComponent } from '../components/countdown/countdown.component'
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
 import { PointsViewComponent } from './points-view/points-view.component';
+import { PlayerComponent } from './player.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 export const playerRoutes: Routes = [
   {
@@ -72,7 +75,8 @@ export const playerRoutes: Routes = [
     PlayerTangtocAComponent,
     PlayerVedichComponent,
     PlayerChpComponent,
-    PointsViewComponent
+    PointsViewComponent,
+    PlayerComponent
   ],
   imports: [
     CommonModule,
@@ -86,8 +90,11 @@ export const playerRoutes: Routes = [
     FormsModule,
     CountdownComponent,
     MatProgressBarModule,
-    MatInputModule
+    MatInputModule,
+    MatSnackBarModule,
+    MatCheckboxModule
   ],
   exports: [RouterModule],
+  bootstrap: [PlayerComponent]
 })
 export class PlayerModule {}

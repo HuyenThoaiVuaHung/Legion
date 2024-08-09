@@ -1,5 +1,5 @@
 export interface VcnvData {
-  questions: Question[];
+  questions: VcnvQuestion[];
   playerAnswers: PlayerAnswer[];
   showResults: boolean;
   disabledPlayers: number[];
@@ -12,9 +12,9 @@ export interface PlayerAnswer {
   correct: boolean;
 }
 
-export interface Question {
+export interface VcnvQuestion {
   id: number;
-  type: string;
+  type: "HN" | "HN_S" | "CNV";
   value: number;
   ifOpen: boolean;
   ifShown: boolean;
@@ -26,7 +26,7 @@ export interface Question {
 
 export interface KdData {
   questions: KdQuestions;
-  gamemode: string;
+  gamemode: "S" | "M";
   currentSingleplayerPlayer: number;
 }
 
@@ -38,40 +38,89 @@ export interface KdQuestions {
 export interface KdQuestion {
   question: string;
   answer: string;
-  type: Type;
+  type: KdType;
+  audioFilePath?: string;
 }
 
-export enum Type {
+export enum KdType {
   N = "N",
   P = "P",
   A = "A",
 }
 
-
-
 export interface TtData {
-  questions:           TtQuestion[];
-  playerAnswers:       PlayerAnswer[];
-  showResults:         boolean;
-  currentQuestion:     number;
-  showAnswer:          boolean;
+  questions: TtQuestion[];
+  playerAnswers: PlayerAnswer[];
+  showResults: boolean;
+  currentQuestion: number;
+  showAnswer: boolean;
   timerStartTimestamp: number;
 }
 
 export interface PlayerAnswer {
-  id:           number;
-  answer:       string;
-  timestamp:    number;
+  id: number;
+  answer: string;
+  timestamp: number;
   readableTime: string;
-  correct:      boolean;
+  correct: boolean;
 }
 
 export interface TtQuestion {
-  id:              number;
-  question:        string;
-  answer:          string;
-  type:            string;
+  id: number;
+  question: string;
+  answer: string;
+  type: "TT_IMG" | "TT_VD";
   question_image?: string;
-  answer_image?:   string;
-  video_name?:     string;
+  answer_image?: string;
+  video_name?: string;
+}
+
+export interface VdData {
+  questionPools: Array<VdQuestion[]>;
+  currentPlayerId: number;
+  ifQuestionPickerShowing: boolean;
+  questionPickerArray: boolean[];
+  ifNSHV: boolean;
+  NSHV: boolean;
+  questions: any[];
+}
+
+export interface VdQuestion {
+  value: number;
+  type: VdType;
+  question: string;
+  answer: string;
+  file_name?: string;
+}
+
+export enum VdType {
+  A = "A",
+  I = "I",
+  N = "N",
+  V = "V",
+}
+export enum Type {
+  AUDIO = "A",
+  IMAGE = "I",
+  NORMAL = "N",
+  VIDEO = "V",
+}
+export interface ChpData {
+  questions: ChpQuestion[];
+  playerIDs: boolean[];
+}
+
+export interface ChpQuestion {
+  question: string;
+  answer: string;
+}
+
+export interface Question {
+  question: string;
+  answer: string;
+  type: Type;
+  image_name?: string;
+  secondary_image_name?: string;
+  audio_name?: string;
+  video_name?: string;
 }

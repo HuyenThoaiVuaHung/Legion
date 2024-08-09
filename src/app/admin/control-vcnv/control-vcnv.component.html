@@ -194,7 +194,7 @@
               <th mat-header-cell *matHeaderCellDef>Chấm</th>
               <td mat-cell *matCellDef="let element">
                 <mat-checkbox
-                  (change)="auth.socket.emit('update-vcnv-data', vcnvData)"
+                  (change)="this.auth.socket().emit('update-vcnv-data', vcnvData)"
                   [(ngModel)]="vcnvData.playerAnswers[element.id - 1].correct"
                   >Đúng</mat-checkbox
                 >

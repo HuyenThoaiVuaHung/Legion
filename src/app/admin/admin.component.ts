@@ -15,20 +15,20 @@ export class AdminComponent {
   }
   private matchPosCache: string = "";
   togglePoints() {
-    this.auth.socket.emit("get-match-data", (data: { matchPos: string }) => {
+    this.auth.socket().emit("get-match-data", (data: { matchPos: string }) => {
       if (data.matchPos == "PNTS") {
         if (this.matchPosCache)
           this.router.navigate([
             getControlUrlFromMatchPosition(this.matchPosCache),
           ]);
-        this.auth.socket.emit(
+        this.auth.socket().emit(
           "change-match-position",
           this.matchPosCache,
           localStorage.getItem("authString")
         );
       } else {
         this.matchPosCache = data.matchPos;
-        this.auth.socket.emit(
+        this.auth.socket().emit(
           "change-match-position",
           "PNTS",
           localStorage.getItem("authString")

@@ -10,11 +10,8 @@ import { MatIconRegistry } from "@angular/material/icon";
 })
 export class AppComponent implements OnInit {
   title = "Legion";
-  isBlocked: boolean = true;
   matchPosCache: string = "";
-  closeBlockFrame() {
-    this.isBlocked = false;
-  }
+
   constructor(private router: Router, public auth: AuthService, private iconRegistry: MatIconRegistry) {
     iconRegistry.setDefaultFontSetClass('material-symbols-outlined')
   }

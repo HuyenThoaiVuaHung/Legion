@@ -12,15 +12,15 @@ export class PlayerTangtocAComponent implements OnInit {
   ngOnInit(): void {
     this.auth.resetListeners();
     this.sfxService.playSfx("TT_SHOWANS");
-    this.auth.socket.on("play-sfx", (sfxID) => {
+    this.auth.socket().on("play-sfx", (sfxID) => {
       this.sfxService.playSfx(sfxID);
     });
-    this.auth.socket.emit("get-tangtoc-data", (callback) => {
+    this.auth.socket().emit("get-tangtoc-data", (callback) => {
       this.ttData = callback;
       this.ttData.playerAnswers.sort(sortByTimestamp);
     });
 
-    this.auth.socket.on("update-tangtoc-data", (data) => {
+    this.auth.socket().on("update-tangtoc-data", (data) => {
       this.ttData = data;
       this.ttData.playerAnswers.sort(sortByTimestamp);
       if (this.ttData.showResults == true) {

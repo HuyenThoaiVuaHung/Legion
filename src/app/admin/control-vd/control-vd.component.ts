@@ -1,174 +1,213 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
-import { FormQVdComponent } from '../../components/forms/form-q-vd/form-q-vd.component';
-import { AuthService } from"../../services/auth.service";
+import { Component, OnInit } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
+import { FormPlayerComponent } from "../../components/forms/form-player/form-player.component";
+import { FormQVdComponent } from "../../components/forms/form-q-vd/form-q-vd.component";
+import { AuthService } from "../../services/auth.service";
+import { VdData, VdQuestion } from "src/app/services/types/game";
+import { Player } from "src/app/services/types/match.data";
 
 @Component({
-  selector: 'app-control-vd',
-  templateUrl: './control-vd.component.html',
-  styleUrls: ['./control-vd.component.scss']
+  selector: "app-control-vd",
+  templateUrl: "./control-vd.component.html",
+  styleUrls: ["./control-vd.component.scss"],
 })
 export class ControlVdComponent implements OnInit {
-
-  constructor(
-    public dialog: MatDialog,
-    public auth: AuthService,
-  ) {
-  }
-  currentQuestionPool: any = [];
-  vdData: any = {};
+  constructor(public dialog: MatDialog, public auth: AuthService) {}
+  currentQuestionPool: VdQuestion[] = [];
+  vdData: VdData = {} as VdData;
   currentTime: number = 0;
-  displayingRow: any = {};
-  chosenRow: any = {};
-  currentTurnPlayer: any = {};
-  chosenPlayer: any = {};
-  playerStoleQuestion: any = undefined;
-  displayedQuestionColumns: string[] = ['question', 'answer', 'type', 'value'];
-  displayedPlayerColumns: string[] = ['id', 'name', 'score', 'active'];
+  displayingRow: VdQuestion | undefined;
+  chosenRow: VdQuestion | undefined;
+  currentTurnPlayer: Player | undefined;
+  chosenPlayer: Player | undefined;
+  playerStoleQuestion: Player | undefined = undefined;
+  displayedQuestionColumns: string[] = ["question", "answer", "type", "value"];
+  displayedPlayerColumns: string[] = ["id", "name", "score", "active"];
   ngOnInit(): void {
     this.auth.resetListeners();
-    this.auth.socket.emit('change-match-position', 'VD');
-    this.auth.socket.on('update-match-data', () => {
-      this.currentTurnPlayer = this.auth.matchData().players[this.vdData.currentPlayerId - 1];
-    }
-    )
-    this.auth.socket.on('update-vedich-data', (data) => {
+    this.auth.socket().emit("change-match-position", "VD");
+    this.auth.socket().on("update-match-data", () => {
+      this.currentTurnPlayer =
+        this.auth.matchData().players[this.vdData.currentPlayerId - 1];
+    });
+    this.auth.socket().on("update-vedich-data", (data) => {
       this.vdData = data;
-      this.currentTurnPlayer = this.auth.matchData().players[this.vdData.currentPlayerId - 1];
+      this.currentTurnPlayer =
+        this.auth.matchData().players[this.vdData.currentPlayerId - 1];
       switch (this.vdData.currentPlayerId) {
-        case 1: this.currentQuestionPool = this.vdData.questionPools[0];
+        case 1:
+          this.currentQuestionPool = this.vdData.questionPools[0];
           break;
-        case 2: this.currentQuestionPool = this.vdData.questionPools[1];
+        case 2:
+          this.currentQuestionPool = this.vdData.questionPools[1];
           break;
-        case 3: this.currentQuestionPool = this.vdData.questionPools[2];
+        case 3:
+          this.currentQuestionPool = this.vdData.questionPools[2];
           break;
-        case 4: this.currentQuestionPool = this.vdData.questionPools[3];
+        case 4:
+          this.currentQuestionPool = this.vdData.questionPools[3];
           break;
-        default: this.currentQuestionPool = [];
+        default:
+          this.currentQuestionPool = [];
           break;
       }
     });
-    this.auth.socket.on('update-clock', (clock) => {
+    this.auth.socket().on("update-clock", (clock) => {
       this.currentTime = clock;
-    })
-    this.auth.socket.on('player-steal-question', (id) => {
-      this.playSfx('VD_STEAL_Q');
+    });
+    this.auth.socket().on("player-steal-question", (id) => {
+      this.playSfx("VD_STEAL_Q");
       this.playerStoleQuestion = this.auth.matchData().players[id];
-    })
-    this.auth.socket.emit('get-vedich-data', (callback) => {
+    });
+    this.auth.socket().emit("get-vedich-data", (callback) => {
       this.vdData = callback;
-      this.currentTurnPlayer = this.auth.matchData().players[this.vdData.currentPlayerId - 1];
+      this.currentTurnPlayer =
+        this.auth.matchData().players[this.vdData.currentPlayerId - 1];
       switch (this.vdData.currentPlayerId) {
-        case 1: this.currentQuestionPool = this.vdData.questionPools[0];
+        case 1:
+          this.currentQuestionPool = this.vdData.questionPools[0];
           break;
-        case 2: this.currentQuestionPool = this.vdData.questionPools[1];
+        case 2:
+          this.currentQuestionPool = this.vdData.questionPools[1];
           break;
-        case 3: this.currentQuestionPool = this.vdData.questionPools[2];
+        case 3:
+          this.currentQuestionPool = this.vdData.questionPools[2];
           break;
-        case 4: this.currentQuestionPool = this.vdData.questionPools[3];
+        case 4:
+          this.currentQuestionPool = this.vdData.questionPools[3];
           break;
-        default: this.currentQuestionPool = [];
+        default:
+          this.currentQuestionPool = [];
           break;
       }
     });
   }
-
-
 
   onDoubleClickPlayer(row: any) {
     this.currentTurnPlayer = row;
     this.vdData.currentPlayerId = row.id;
-    this.chosenRow = {};
-    this.displayingRow = {};
-    this.playSfx('VD_START_TURN');
-    this.auth.socket.emit('update-vedich-data', this.vdData);
+    this.chosenRow = undefined;
+    this.displayingRow = undefined;
+    this.playSfx("VD_START_TURN");
+    this.auth.socket().emit("update-vedich-data", this.vdData);
   }
   editPlayer() {
-    let player = this.auth.matchData().players[this.auth.matchData().players.indexOf(this.chosenPlayer)];
+    if (!this.chosenPlayer) return;
+    let player =
+      this.auth.matchData().players[
+        this.auth.matchData().players.indexOf(this.chosenPlayer)
+      ];
     const dialogRef = this.dialog.open(FormPlayerComponent, {
-      data: player
+      data: player,
     });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        var payload: any = { player: result, index: this.auth.matchData().players.indexOf(this.chosenPlayer) };
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.chosenPlayer) {
+        var payload: any = {
+          player: result,
+          index: this.auth.matchData().players.indexOf(this.chosenPlayer),
+        };
         payload.player.score = parseInt(payload.player.score);
-        this.auth.socket.emit('edit-player-info', payload, (callback) => {
-        });
+        this.auth.socket().emit("edit-player-info", payload, (callback) => {});
       }
     });
   }
   toggleNSHV() {
-    if (this.vdData.ifNSHV == false) this.playSfx('VD_NSHV');
+    if (this.vdData.ifNSHV == false) this.playSfx("VD_NSHV");
     this.vdData.ifNSHV = !this.vdData.ifNSHV;
-    this.auth.socket.emit('update-vedich-data', this.vdData);
+    this.auth.socket().emit("update-vedich-data", this.vdData);
   }
   choosePlayer(row: any) {
     this.chosenPlayer = row;
   }
   playSfx(sfxId: string) {
-    this.auth.socket.emit('play-sfx', sfxId);
+    this.auth.socket().emit("play-sfx", sfxId);
   }
   editQuestion() {
-    let question = this.currentQuestionPool[this.currentQuestionPool.indexOf(this.chosenRow)];
-    question.value = question.value.toString();
+    if (this.chosenRow == undefined) return;
+    let question =
+      this.currentQuestionPool[
+        this.currentQuestionPool.indexOf(this.chosenRow)
+      ];
+    question.value = +question.value.toString();
     const dialogRef = this.dialog.open(FormQVdComponent, {
-      data: question
+      data: question,
     });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.vdData.questionPools[this.vdData.currentPlayerId - 1][this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow)] = result;
-        this.vdData.questionPools[this.vdData.currentPlayerId - 1][this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow)].value = Number.parseInt(result.value);
-        this.auth.socket.emit('update-vedich-data', this.vdData);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.chosenRow) {
+        this.vdData.questionPools[this.vdData.currentPlayerId - 1][
+          this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(
+            this.chosenRow
+          )
+        ] = result;
+        this.vdData.questionPools[this.vdData.currentPlayerId - 1][
+          this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(
+            this.chosenRow
+          )
+        ].value = Number.parseInt(result.value);
+        this.auth.socket().emit("update-vedich-data", this.vdData);
       }
     });
   }
   updateVdData() {
-    this.auth.socket.emit('update-vedich-data', this.vdData);
+    this.auth.socket().emit("update-vedich-data", this.vdData);
   }
   clearPlayer() {
     this.vdData.currentPlayerId = 0;
-    this.currentTurnPlayer = {};
-    this.auth.socket.emit('update-vedich-data', this.vdData);
+    this.currentTurnPlayer = undefined;
+    this.auth.socket().emit("update-vedich-data", this.vdData);
   }
   toggleQuestionPicker() {
     if (this.vdData.ifQuestionPickerShowing == true) {
-      this.playSfx('VD_CHOSEN');
+      this.playSfx("VD_CHOSEN");
       this.vdData.ifQuestionPickerShowing = false;
-    }
-    else {
-      this.playSfx('VD_SHOW_PICKER');
+    } else {
+      this.playSfx("VD_SHOW_PICKER");
       this.vdData.ifQuestionPickerShowing = true;
     }
-    this.auth.socket.emit('update-vedich-data', this.vdData);
+    this.auth.socket().emit("update-vedich-data", this.vdData);
   }
   clearQuestionPicker() {
-    this.vdData.questionPickerArray = [false, false, false, false, false, false];
-    this.auth.socket.emit('update-vedich-data', this.vdData);
+    this.vdData.questionPickerArray = [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ];
+    this.auth.socket().emit("update-vedich-data", this.vdData);
   }
   addQuestion() {
     const dialogRef = this.dialog.open(FormQVdComponent, {
       data: {
-        question: '',
-        answer: '',
+        question: "",
+        answer: "",
         value: 0,
-        type: '',
-      }
+        type: "",
+      },
     });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         let payload = result;
         payload.value = +payload.value;
-        this.vdData.questionPools[this.vdData.currentPlayerId - 1].push(payload);
-        this.auth.socket.emit('update-vedich-data', this.vdData);
+        this.vdData.questionPools[this.vdData.currentPlayerId - 1].push(
+          payload
+        );
+        this.auth.socket().emit("update-vedich-data", this.vdData);
       }
     });
   }
   deleteQuestion() {
-    this.vdData.questionPools[this.vdData.currentPlayerId - 1].splice(this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(this.chosenRow), 1);
-    this.chosenRow = {};
-    this.displayingRow = {};
-    this.auth.socket.emit('update-vedich-data', this.vdData);
+    if (!this.chosenRow) return;
+    this.vdData.questionPools[this.vdData.currentPlayerId - 1].splice(
+      this.vdData.questionPools[this.vdData.currentPlayerId - 1].indexOf(
+        this.chosenRow
+      ),
+      1
+    );
+    this.chosenRow = undefined;
+    this.displayingRow = undefined;
+    this.auth.socket().emit("update-vedich-data", this.vdData);
   }
   onClickQuestion(row) {
     this.chosenRow = row;
@@ -177,46 +216,65 @@ export class ControlVdComponent implements OnInit {
     this.displayingRow = row;
   }
   showQuestion() {
-    this.auth.socket.emit('broadcast-vd-question', this.currentQuestionPool.indexOf(this.displayingRow));
+    if (!this.displayingRow) return;
+    this.auth.socket().emit(
+      "broadcast-vd-question",
+      this.currentQuestionPool.indexOf(this.displayingRow)
+    );
   }
   hideQuestion() {
-    this.auth.socket.emit('broadcast-vd-question', -1);
-    this.displayingRow = {};
+    this.auth.socket().emit("broadcast-vd-question", -1);
+    this.displayingRow = undefined;
   }
   startTimer(time: number) {
-    this.auth.socket.emit('start-clock', time);
-    this.playSfx('VD_' + time + 'S');
+    this.auth.socket().emit("start-clock", time);
+    this.playSfx("VD_" + time + "S");
   }
   togglePlayVideo() {
-    this.auth.socket.emit('vd-play-video');
+    this.auth.socket().emit("vd-play-video");
   }
   markCorrect() {
-    this.playSfx('VD_CORRECT');
+    this.playSfx("VD_CORRECT");
+    if (!this.displayingRow) return;
     if (this.playerStoleQuestion != undefined) {
-      this.auth.socket.emit('mark-correct-vd', this.playerStoleQuestion.id, this.displayingRow.value);
-    }
-    else {
-      this.auth.socket.emit('mark-correct-vd', this.vdData.currentPlayerId, this.displayingRow.value);
+      this.auth.socket().emit(
+        "mark-correct-vd",
+        this.playerStoleQuestion.id,
+        this.displayingRow.value
+      );
+    } else {
+      this.auth.socket().emit(
+        "mark-correct-vd",
+        this.vdData.currentPlayerId,
+        this.displayingRow.value
+      );
     }
     this.playerStoleQuestion = undefined;
   }
   markIncorrect() {
-    this.playSfx('VD_WRONG');
+    this.playSfx("VD_WRONG");
+    if (!this.displayingRow) return;
     if (this.playerStoleQuestion != undefined) {
-      this.auth.socket.emit('mark-incorrect-vd', this.playerStoleQuestion.id, this.displayingRow.value);
+      this.auth.socket().emit(
+        "mark-incorrect-vd",
+        this.playerStoleQuestion.id,
+        this.displayingRow.value
+      );
     }
     this.playerStoleQuestion = undefined;
   }
   openStealTurn() {
-    this.auth.socket.emit('start-5s-countdown-vd');
-    this.playSfx('VD_5S');
+    this.auth.socket().emit("start-5s-countdown-vd");
+    this.playSfx("VD_5S");
   }
   showPoints() {
-    if (this.auth.matchData().matchPos == 'PNTS') {
-      this.auth.socket.emit('change-match-position', 'VD');
+    if (this.auth.matchData().matchPos == "PNTS") {
+      this.auth.socket().emit("change-match-position", "VD");
+    } else {
+      this.auth.socket().emit("change-match-position", "PNTS");
     }
-    else {
-      this.auth.socket.emit('change-match-position', 'PNTS');
-    }
+  }
+  public resetStealTurn() {
+    this.auth.socket().emit("reset-stealing-player");
   }
 }

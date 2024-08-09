@@ -10,10 +10,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 
 export const miscRoutes: Routes = [
-  { path: "sc-qb", component: ScQuestionBarComponent },
-  { path: "sc-vd", component: ScVeDichComponent },
-  { path: "sc-kd", component: ScKhoiDongComponent },
-  { path: "rl-pnts", component: SinglePointTsComponent },
+  { path: "bar", component: ScQuestionBarComponent },
+  { path: "vd", component: ScVeDichComponent },
+  { path: "kd", component: ScKhoiDongComponent },
+  { path: "points", component: SinglePointTsComponent },
 ]
 
 @NgModule({

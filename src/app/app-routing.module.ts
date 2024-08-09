@@ -2,6 +2,9 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { HomeComponent } from "./home/home.component";
 import { McComponent } from "./mc/mc.component";
+import { AdminComponent } from "./admin/admin.component";
+import { AdminGuard } from "./services/guards/admin.guard";
+import { PlayerComponent } from "./player/player.component";
 
 const routes: Routes = [
   { path: "", component: HomeComponent },
@@ -9,11 +12,15 @@ const routes: Routes = [
     path: "player",
     loadChildren: () =>
       import("./player/player.module").then((m) => m.PlayerModule),
+    component: PlayerComponent
   },
+
   {
     path: "admin",
     loadChildren: () =>
       import("./admin/admin.module").then((m) => m.AdminModule),
+    component: AdminComponent,
+    canActivate: [AdminGuard],
   },
   {
     path: "misc",

@@ -21,16 +21,16 @@ export class PlayerVedichComponent implements OnInit {
   audio: any = null;
   ngOnInit(): void {
     this.auth.resetListeners();
-    this.auth.socket.on("play-sfx", (sfxID) => {
+    this.auth.socket().on("play-sfx", (sfxID) => {
       this.sfxService.playSfx(sfxID);
     });
-    this.auth.socket.emit("get-vedich-data", (callback) => {
+    this.auth.socket().emit("get-vedich-data", (callback) => {
       this.vdData = callback;
     });
-    this.auth.socket.on("update-vedich-data", (data) => {
+    this.auth.socket().on("update-vedich-data", (data) => {
       this.vdData = data;
     });
-    this.auth.socket.on("update-vedich-question", (question) => {
+    this.auth.socket().on("update-vedich-question", (question) => {
       if (question != undefined) {
         this.curQuestion = question;
         console.debug(this.curQuestion);
@@ -60,7 +60,7 @@ export class PlayerVedichComponent implements OnInit {
         this.videoSource = "";
       }
     });
-    this.auth.socket.on("update-clock", (clock) => {
+    this.auth.socket().on("update-clock", (clock) => {
       if (this.currentTime == 0) {
         console.debug(this.maxTime);
         this.maxTime = clock;
@@ -68,7 +68,7 @@ export class PlayerVedichComponent implements OnInit {
 
       this.currentTime = clock;
     });
-    this.auth.socket.on("vd-play-video", () => {
+    this.auth.socket().on("vd-play-video", () => {
       const video: HTMLVideoElement = document.getElementById(
         "vedich-video"
       ) as HTMLVideoElement;
@@ -78,24 +78,24 @@ export class PlayerVedichComponent implements OnInit {
         video.pause();
       }
     });
-    this.auth.socket.on("unlock-button-vd", () => {
+    this.auth.socket().on("unlock-button-vd", () => {
       this.buttonDisabled = false;
     });
-    this.auth.socket.on("lock-button-vd", () => {
+    this.auth.socket().on("lock-button-vd", () => {
       this.buttonDisabled = true;
     });
 
-    this.auth.socket.on("update-5s-countdown-vd", (counter) => {
+    this.auth.socket().on("update-5s-countdown-vd", (counter) => {
       this.fiveSecTimer = counter;
     });
-    this.auth.socket.on("player-steal-question", (id) => {
+    this.auth.socket().on("player-steal-question", (id) => {
       this.stealingPlayerIndex = id;
     });
-    this.auth.socket.on("clear-stealing-player", () => {
+    this.auth.socket().on("clear-stealing-player", () => {
       this.stealingPlayerIndex = -1;
     });
   }
   stealQuestion() {
-    this.auth.socket.emit("player-steal-question");
+    this.auth.socket().emit("player-steal-question");
   }
 }

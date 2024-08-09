@@ -14,14 +14,29 @@ import { MatchData, UserInfo } from "./types/match.data";
 import { firstValueFrom } from "rxjs";
 import { AppState } from "./types/app";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { NetworkService } from "./network.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  public readonly socket: Socket = io(environment.socketIp);
+  public socket: Signal<Socket> = computed(() => {
+    if (this.network.socket().connected) {
+      this.initializeListeners();
+      this.getMatchData().then((data) => {
+        this.matchData.set(data);
+        if (localStorage.getItem("authString")) {
+          this.authenticate();
+        }
+      });
+      return io(this.network.url!);
+    }
+    return io({
+      autoConnect: false,
+    });
+  });
 
-  public state: AppState = AppState.UNINITIALIZED;
+  public state: AppState = AppState.UNAUTHENTICATED;
 
   public readonly matchData: WritableSignal<MatchData> = signal(
     {} as MatchData
@@ -33,75 +48,71 @@ export class AuthService {
     socketId: "",
   });
 
-  public socketHook: () => void = () => {};
-
-  constructor(private router: Router, private snackBar: MatSnackBar) {
-    this.initializeListeners();
-    this.getMatchData().then((data) => {
-      this.matchData.set(data);
-      if (localStorage.getItem("authString")) {
-        this.authenticate();
-      }
-    });
-
+  constructor(
+    private router: Router,
+    private snackBar: MatSnackBar,
+    public network: NetworkService
+  ) {
     effect(() => {
       this.navigateMatchPosition(this.matchData().matchPos);
     });
   }
   public authenticate(authId?: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.socket.emit(
-        "init-authenticate",
-        authId ? authId : localStorage.getItem("authString"),
-        (callback: UserInfo) => {
-          this.state = AppState.CONNECTED;
-          resolve(this.userInfo.set(callback));
-        }
-      );
+      this.network
+        .socket()
+        .emit(
+          "init-authenticate",
+          authId ? authId : localStorage.getItem("authString"),
+          (callback: UserInfo) => {
+            this.state = AppState.AUTHENTICATED;
+            resolve(this.userInfo.set(callback));
+          }
+        );
     });
   }
 
   public async getMatchData(): Promise<MatchData> {
     return new Promise((resolve, reject) => {
-      this.socket.emit("get-match-data", (callback: MatchData) => {
+      this.network.socket().emit("get-match-data", (callback: MatchData) => {
         resolve(callback);
       });
     });
   }
 
   private initializeListeners() {
-    this.socket.on("connect_error", (error) => {
+    this.network.socket().on("connect_error", (error) => {
       this.state = AppState.ERROR;
       this.snackBar.open("Lỗi kết nối", "Đóng", {
         duration: 5000,
         horizontalPosition: "start",
       });
     });
-    this.socket.on("connect", () => {
+    this.network.socket().on("connect", () => {
       if (localStorage.getItem("authString")) this.authenticate();
     });
-    this.socket.on("update-match-data", (data) => {
+    this.network.socket().on("update-match-data", (data) => {
       this.matchData.set(data);
     });
   }
 
   public resetListeners() {
-    this.socket.removeAllListeners();
+    this.network.socket().removeAllListeners();
     this.initializeListeners();
   }
 
   public deauthenticate() {
     localStorage.removeItem("authString");
-    this.state = AppState.UNINITIALIZED;
+    this.state = AppState.UNAUTHENTICATED;
     this.userInfo.set({ roleId: -1, index: -1, socketId: "" });
-    this.socket.disconnect();
-    this.socket.connect();
+    this.network.socket().disconnect();
+    this.network.socket().connect();
     this.resetListeners();
   }
   public reconnect() {
     this.resetListeners();
-    this.socket.disconnect();
-    this.socket.connect();
+    this.network.socket().disconnect();
+    this.network.socket().connect();
   }
 
   private navigateMatchPosition(matchPosition: string) {
@@ -129,7 +140,7 @@ export class AuthService {
           this.router.navigate([""]);
           break;
         case "PNTS":
-          this.router.navigate(["/pnts"]);
+          this.router.navigate(["player/points"]);
           break;
         case "CHP":
           this.router.navigate(["/player/chp"]);

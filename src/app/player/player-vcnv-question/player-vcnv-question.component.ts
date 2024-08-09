@@ -22,11 +22,11 @@ export class PlayerVcnvQuestionComponent implements OnInit {
 
   async ngOnInit() {
     this.auth.resetListeners();
-    this.auth.socket.emit("clear-player-answer");
-    this.auth.socket.on("play-sfx", (sfx) => {
+    this.auth.socket().emit("clear-player-answer");
+    this.auth.socket().on("play-sfx", (sfx) => {
       this.sfxService.playSfx(sfx);
     });
-    this.auth.socket.on("update-vcnv-data", (data) => {
+    this.auth.socket().on("update-vcnv-data", (data) => {
       this.vcnvData = data;
       if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
         this.disabledCNVButton = true;
@@ -41,10 +41,10 @@ export class PlayerVcnvQuestionComponent implements OnInit {
       }
     });
 
-    this.auth.socket.on("update-clock", (clock) => {
+    this.auth.socket().on("update-clock", (clock) => {
       this.currentTime = clock;
     });
-    this.auth.socket.emit("get-vcnv-data", (callback: VcnvData) => {
+    this.auth.socket().emit("get-vcnv-data", (callback: VcnvData) => {
       console.debug(callback);
       this.vcnvData = callback;
       if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
@@ -59,10 +59,10 @@ export class PlayerVcnvQuestionComponent implements OnInit {
         this.VCNVStrings = [];
       }
     });
-    this.auth.socket.on("update-highlighted-vcnv-question", (index) => {
+    this.auth.socket().on("update-highlighted-vcnv-question", (index) => {
       this.highlightedVCNVQuestion = this.vcnvData.questions[index - 1];
     });
-    this.auth.socket.on("update-vcnv-question", (data) => {
+    this.auth.socket().on("update-vcnv-question", (data) => {
       this.curVCNVQuestion = data;
       if (this.curVCNVQuestion.type == "HN_S") {
         this.audio = new Audio(
@@ -116,13 +116,13 @@ export class PlayerVcnvQuestionComponent implements OnInit {
   submitAnswer() {
     if (this.currentTime > 0) {
       this.answerCache = this.playerAnswer.toUpperCase();
-      this.auth.socket.emit("submit-answer-vcnv", this.playerAnswer);
+      this.auth.socket().emit("submit-answer-vcnv", this.playerAnswer);
       this.playerAnswer = "";
     }
   }
   attemptVCNV() {
-    this.auth.socket.emit("attempt-cnv-player", Date.now());
-    this.auth.socket.emit("play-sfx", "VCNV_OBSTACLE");
+    this.auth.socket().emit("attempt-cnv-player", Date.now());
+    this.auth.socket().emit("play-sfx", "VCNV_OBSTACLE");
     this.disabledCNVButton = true;
   }
   checkIfTime() {

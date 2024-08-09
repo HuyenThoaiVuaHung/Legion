@@ -1,3 +1,4 @@
+import { MatStepperModule } from '@angular/material/stepper';
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 
@@ -14,6 +15,7 @@ import { MatTableModule } from "@angular/material/table";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
 import { CommonModule } from "@angular/common";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import { CommonModule } from "@angular/common";
     ReactiveFormsModule,
     MatInputModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    MatProgressSpinnerModule,
+    MatStepperModule
   ],
   providers: [],
   bootstrap: [AppComponent],

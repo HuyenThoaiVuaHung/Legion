@@ -1,14 +1,11 @@
-import {
-  Component,
-  OnInit,
-  Signal,
-  computed,
-} from "@angular/core";
-import * as XLSX from "xlsx";
+import { Component, OnInit, Signal, computed } from "@angular/core";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { FormPlayerComponent } from "../components/forms/form-player/form-player.component";
 import { AuthService } from "../services/auth.service";
+import { NetworkService } from "../services/network.service";
+import { FormBuilder, Validators } from "@angular/forms";
+import { NetworkStatus } from "../services/types/network.enum";
 
 @Component({
   selector: "app-home",
@@ -19,9 +16,29 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     public auth: AuthService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    public network: NetworkService,
+    private _formBuilder: FormBuilder
   ) {}
-  displayedPlayerColumns: string[] = ["id", "name", "score", "active"];
+  errorMsg: string = "";
+  urlFormGroup = this._formBuilder.group({
+    legendaryUrl: [
+      "http://",
+      [Validators.pattern(/(http:\x2f\x2f)[A-Za-z0-9.\x2f:]+/)],
+    ],
+  });
+  tokenFormGroup = this._formBuilder.group({
+    token: ["", [Validators.required]],
+  });
+  connect() {
+    if (
+      localStorage.getItem("defaultUrl") !==
+      this.urlFormGroup.value.legendaryUrl
+    ) {
+      this.network.connect(this.urlFormGroup.value.legendaryUrl!);
+    }
+  }
+  _networkStatus = NetworkStatus;
   authString: string = "";
   greetString: Signal<string> = computed(() => {
     switch (this.auth.userInfo().roleId) {
@@ -29,7 +46,7 @@ export class HomeComponent implements OnInit {
         return this.auth.matchData().players[this.auth.userInfo().index || 0]
           .name;
       case 1:
-        this.auth.socket.emit("change-match-position", "H");
+        this.auth.socket().emit("change-match-position", "H");
         return "Ban tổ chức";
       case 2:
         return "Người dẫn chương trình";
@@ -39,57 +56,16 @@ export class HomeComponent implements OnInit {
         return "Chào bạn";
     }
   });
-  fileName = "";
-  ngOnInit(): void {
-    this.auth.deauthenticate();
-  }
-  authenticate() {
-    this.auth.authenticate(this.authString);
-    localStorage.setItem("authString", this.authString);
-  }
-  editPlayer(row: any) {
-    let player =
-      this.auth.matchData().players[this.auth.matchData().players.indexOf(row)];
-    const dialogRef = this.dialog.open(FormPlayerComponent, {
-      data: player,
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        var payload: any = {
-          player: result,
-          index: this.auth.matchData().players.indexOf(row),
-        };
-        payload.player.score = parseInt(payload.player.score);
-        this.auth.socket.emit("edit-player-info", payload, (callback) => {
-          console.debug(callback.message);
-        });
-      }
-    });
-  }
-  onFileSelected(event) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.fileName = file.name;
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onload = (e) => {
-        const bufferArray = e.target?.result;
-        const wb = XLSX.read(bufferArray, { type: "buffer" });
-        const kdSheet = wb.Sheets[wb.SheetNames[0]];
-        const vcnvSheet = wb.Sheets[wb.SheetNames[1]];
-        const ttSheet = wb.Sheets[wb.SheetNames[2]];
-        const vdSheet = wb.Sheets[wb.SheetNames[3]];
-        const payload: any = {
-          kd: XLSX.utils.sheet_to_json(kdSheet),
-          vcnv: XLSX.utils.sheet_to_json(vcnvSheet),
-          tt: XLSX.utils.sheet_to_json(ttSheet),
-          vd: XLSX.utils.sheet_to_json(vdSheet),
-        };
-        this.auth.socket.emit("update-data-from-excel", payload, (callback) => {
-          console.debug(callback.message);
-        });
-        console.debug(payload);
-      };
+  async ngOnInit(): Promise<void> {
+    if (localStorage.getItem("defaultUrl")) {
+      this.urlFormGroup.setValue({
+        legendaryUrl: localStorage.getItem("defaultUrl"),
+      });
     }
+  }
+  async authenticate() {
+    localStorage.setItem("authString", this.tokenFormGroup.value.token || "");
+    await this.auth.authenticate(this.tokenFormGroup.value.token || "");
+    if (this.auth.userInfo().roleId == 1) this.router.navigate(["admin"]);
   }
 }

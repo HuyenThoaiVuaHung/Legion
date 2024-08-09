@@ -1,40 +1,35 @@
-<mat-toolbar>
-  <button
-    mat-icon-button
-    (click)="changeMatchPosAdmin('H')"
-    title="Quay về màn hình chính"
-  >
-    <mat-icon>home</mat-icon>
-  </button>
-  <button mat-icon-button (click)="togglePoints()" title="Điểm số">
-    <mat-icon>scoreboard</mat-icon>
-  </button>
-  <span class="spacer"></span>
-  <button mat-icon-button (click)="changeMatchPosAdmin('KD')" title="Khởi động">
-    <mat-icon>grass</mat-icon>
-  </button>
-  <button
-    mat-icon-button
-    (click)="changeMatchPosAdmin('VCNV_Q')"
-    title="Vượt chướng ngại vật"
-  >
-    <mat-icon>landscape</mat-icon>
-  </button>
-  <button
-    mat-icon-button
-    (click)="changeMatchPosAdmin('TT_Q')"
-    title="Tăng tốc"
-  >
-    <mat-icon>rocket_launch</mat-icon>
-  </button>
-  <button mat-icon-button (click)="changeMatchPosAdmin('VD')" title="Về đích">
-    <mat-icon>military_tech</mat-icon>
-  </button>
-  <button
-    mat-icon-button
-    (click)="changeMatchPosAdmin('CHP')"
-    title="Câu hỏi phụ"
-  >
-    <mat-icon>workspaces</mat-icon>
-  </button>
-</mat-toolbar>
+<div class="w-full h-full">
+  <mat-toolbar>
+    <a
+      mat-icon-button
+      routerLink="/"
+
+      title="Quay về màn hình chính"
+    >
+      <mat-icon>home</mat-icon>
+    </a>
+    <button mat-icon-button (click)="togglePoints()" title="Điểm số">
+      <mat-icon>scoreboard</mat-icon>
+    </button>
+    <span class="flex flex-grow"></span>
+    <a mat-icon-button routerLink="/admin" title="Trang chủ">
+      <mat-icon>table</mat-icon>
+    </a>
+    <a mat-icon-button routerLink="/admin/kd" title="Khởi động">
+      <mat-icon>grass</mat-icon>
+    </a>
+    <a mat-icon-button routerLink="/admin/vcnv" title="Vượt chướng ngại vật">
+      <mat-icon>landscape</mat-icon>
+    </a>
+    <a mat-icon-button routerLink="/admin/tt" title="Tăng tốc">
+      <mat-icon>rocket_launch</mat-icon>
+    </a>
+    <a mat-icon-button routerLink="/admin/vd" title="Về đích">
+      <mat-icon>military_tech</mat-icon>
+    </a>
+    <a mat-icon-button routerLink="/admin/chp" title="Câu hỏi phụ">
+      <mat-icon>workspaces</mat-icon>
+    </a>
+  </mat-toolbar>
+  <router-outlet></router-outlet>
+</div>

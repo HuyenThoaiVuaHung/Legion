@@ -46,27 +46,27 @@ export class ControlVcnvComponent implements OnInit {
       this.auth.matchData().matchPos != "VCNV_Q" &&
       this.auth.matchData().matchPos != "VCNV_A"
     ) {
-      this.auth.socket.emit("change-match-position", "VCNV_Q");
+      this.auth.socket().emit("change-match-position", "VCNV_Q");
     }
 
-    this.auth.socket.on("update-vcnv-data", (data) => {
+    this.auth.socket().on("update-vcnv-data", (data) => {
       this.vcnvData = data;
     });
-    this.auth.socket.on("update-clock", (clock) => {
+    this.auth.socket().on("update-clock", (clock) => {
       this.currentTime = clock;
     });
-    this.auth.socket.emit("get-vcnv-data", (callback) => {
+    this.auth.socket().emit("get-vcnv-data", (callback) => {
       this.vcnvData = callback;
       if (this.vcnvData.showResults == true) {
         this.toggleResultsDisplay();
       }
     });
-    this.auth.socket.on("player-vcnv-get", (player) => {
+    this.auth.socket().on("player-vcnv-get", (player) => {
       this.playerGetVCNV.push(player);
     });
   }
   playSfx(sfxId: string) {
-    this.auth.socket.emit("play-sfx", sfxId);
+    this.auth.socket().emit("play-sfx", sfxId);
   }
   onDoubleClickPlayer(row: any) {
     let player =
@@ -81,7 +81,7 @@ export class ControlVcnvComponent implements OnInit {
           index: this.auth.matchData().players.indexOf(row),
         };
         payload.player.score = parseInt(payload.player.score);
-        this.auth.socket.emit("edit-player-info", payload, (callback) => {});
+        this.auth.socket().emit("edit-player-info", payload, (callback) => {});
       }
     });
   }
@@ -101,12 +101,12 @@ export class ControlVcnvComponent implements OnInit {
         this.vcnvData.questions[
           this.vcnvData.questions.indexOf(this.chosenRow)
         ] = payload.question;
-        this.auth.socket.emit("update-vcnv-data", this.vcnvData);
+        this.auth.socket().emit("update-vcnv-data", this.vcnvData);
       }
     });
   }
   submitMark() {
-    this.auth.socket.emit(
+    this.auth.socket().emit(
       "submit-mark-vcnv-admin",
       this.vcnvData.playerAnswers
     );
@@ -116,42 +116,42 @@ export class ControlVcnvComponent implements OnInit {
   }
   onDoubleClickQuestion(row) {
     this.displayingRow = row;
-    this.auth.socket.emit("play-sfx", "VCNV_CHOOSE_ROW");
-    this.auth.socket.emit("highlight-vcnv-question", row.id, (callback) => {});
+    this.auth.socket().emit("play-sfx", "VCNV_CHOOSE_ROW");
+    this.auth.socket().emit("highlight-vcnv-question", row.id, (callback) => {});
   }
   openHN(id: number) {
-    this.auth.socket.emit("open-hn-vcnv", id);
+    this.auth.socket().emit("open-hn-vcnv", id);
   }
   resetCNVPlayers() {
     this.vcnvData.CNVPlayers = [];
     this.vcnvData.disabledPlayers = [];
-    this.auth.socket.emit("update-vcnv-data", this.vcnvData);
+    this.auth.socket().emit("update-vcnv-data", this.vcnvData);
   }
   showQuestion() {
-    this.auth.socket.emit("broadcast-vcnv-question", this.displayingRow.id);
+    this.auth.socket().emit("broadcast-vcnv-question", this.displayingRow.id);
     this.vcnvData.questions[this.displayingRow.id - 1].ifShown = true;
-    this.auth.socket.emit("update-vcnv-data", this.vcnvData);
+    this.auth.socket().emit("update-vcnv-data", this.vcnvData);
   }
   toggleIfShown() {
-    this.auth.socket.emit("update-vcnv-data", this.vcnvData);
+    this.auth.socket().emit("update-vcnv-data", this.vcnvData);
   }
   hideQuestion() {
-    this.auth.socket.emit("broadcast-vcnv-question", 7);
+    this.auth.socket().emit("broadcast-vcnv-question", 7);
   }
   closeHN(id: number) {
-    this.auth.socket.emit("close-hn-vcnv", id);
+    this.auth.socket().emit("close-hn-vcnv", id);
   }
   start15sTimer() {
-    this.auth.socket.emit("start-clock", 15);
+    this.auth.socket().emit("start-clock", 15);
   }
   toggleResultsDisplay() {
-    this.auth.socket.emit("toggle-results-display-vcnv");
+    this.auth.socket().emit("toggle-results-display-vcnv");
   }
   toggleAnswerDisplay() {
     if (this.auth.matchData().matchPos == "VCNV_Q") {
-      this.auth.socket.emit("change-match-position", "VCNV_A");
+      this.auth.socket().emit("change-match-position", "VCNV_A");
     } else if (this.auth.matchData().matchPos == "VCNV_A") {
-      this.auth.socket.emit("change-match-position", "VCNV_Q");
+      this.auth.socket().emit("change-match-position", "VCNV_Q");
       if (this.vcnvData.showResults == true) {
         this.toggleResultsDisplay();
       }
@@ -162,14 +162,14 @@ export class ControlVcnvComponent implements OnInit {
     for (let i = 0; i < this.vcnvMark.length; i++) {
       if (this.vcnvMark[i] == true) ifAnswerCorrect = true;
     }
-    this.auth.socket.emit("submit-cnv-mark", this.vcnvMark);
+    this.auth.socket().emit("submit-cnv-mark", this.vcnvMark);
     if (ifAnswerCorrect) {
       this.playSfx("VCNV_OBSTACLE_CORRECT");
-      this.auth.socket.emit("open-hn-vcnv", 1);
-      this.auth.socket.emit("open-hn-vcnv", 2);
-      this.auth.socket.emit("open-hn-vcnv", 3);
-      this.auth.socket.emit("open-hn-vcnv", 4);
-      this.auth.socket.emit("open-hn-vcnv", 5);
+      this.auth.socket().emit("open-hn-vcnv", 1);
+      this.auth.socket().emit("open-hn-vcnv", 2);
+      this.auth.socket().emit("open-hn-vcnv", 3);
+      this.auth.socket().emit("open-hn-vcnv", 4);
+      this.auth.socket().emit("open-hn-vcnv", 5);
     } else {
       this.playSfx("VCNV_WRONG_ROW");
     }
@@ -179,12 +179,12 @@ export class ControlVcnvComponent implements OnInit {
   }
   showPoints() {
     if (this.auth.matchData().matchPos == "PNTS") {
-      this.auth.socket.emit("change-match-position", "VCNV_Q");
+      this.auth.socket().emit("change-match-position", "VCNV_Q");
     } else {
-      this.auth.socket.emit("change-match-position", "PNTS");
+      this.auth.socket().emit("change-match-position", "PNTS");
     }
   }
   public pauseClock() {
-    this.auth.socket.emit("play-pause-clock", this.currentTime);
+    this.auth.socket().emit("play-pause-clock", this.currentTime);
   }
 }
