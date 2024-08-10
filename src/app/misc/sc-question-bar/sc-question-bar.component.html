@@ -1,35 +1,41 @@
-<div *ngIf="vdData.ifQuestionPickerShowing == true"
-class=" absolute disablePointerActions flex-col h-96 w-52">
-<div>
-    <div class=" float-left h-40 w-12">
+@if (vdData){
+<div class="flex w-full h-full justify-end items-center p-5 box-border">
+  <div class="disablePointerActions gap-5 flex flex-col h-96 w-52">
+    <div class="flex items-center h-max">
+      <div class="grid place-items-center h-40 w-12">
+        @for (index of [0,1,2]; track index) {
         <span>
-            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[0]"></mat-checkbox>
+          <mat-checkbox
+            disabled=""
+            [(ngModel)]="vdData.questionPickerArray[index]"
+          ></mat-checkbox>
         </span>
-        <span>
-            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[1]"></mat-checkbox>
-        </span>
-        <span>
-            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[2]"></mat-checkbox>
-        </span>
+        }
+      </div>
+      <div
+        class="justify-center border-primary border-2 font-semibold grid place-items-center rounded-xl text-6xl h-40 w-40 bg-surface"
+      >
+        20
+      </div>
     </div>
-    <div
-        class=" justify-center font-semibold text-center  items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-gradient-to-br from-pink-50 to-blue-50">
-        20</div>
-</div>
-<div class="">
-    <div class="mt-5 float-left h-40 w-12">
+    <div class="flex items-center h-max">
+      <div class="grid place-items-center h-40 w-12">
+        @for (index of [3,4,5]; track index) {
         <span>
-            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[3]"></mat-checkbox>
+          <mat-checkbox
+            disabled=""
+            [(ngModel)]="vdData.questionPickerArray[index]"
+          ></mat-checkbox>
         </span>
-        <span>
-            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[4]"></mat-checkbox>
-        </span>
-        <span>
-            <mat-checkbox disabled="" [(ngModel)]="vdData.questionPickerArray[5]"></mat-checkbox>
-        </span>
+        }
+      </div>
+      <div
+        class="justify-center border-primary border-2 font-semibold grid place-items-center rounded-xl text-6xl h-40 w-40 bg-surface"
+      >
+        30
+      </div>
     </div>
-    <div
-        class="mt-5 justify-center font-semibold text-center  items-center rounded-xl  text-6xl flex float-right h-40  w-40 bg-gradient-to-br from-pink-50 to-blue-50">
-        30</div>
+  </div>
 </div>
-</div>
+
+}

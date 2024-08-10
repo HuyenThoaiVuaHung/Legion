@@ -18,8 +18,8 @@ export class PlayerComponent {
   private showSnackbar(interval: any) {
     if (this.isBlocked) {
       const ref = this.matSnackbar.open(
-        "Vui lòng nhấn cho phép bật âm thanh.",
-        "OK",
+        "Vui lòng nhấn vào màn hình để cho phép bật âm thanh.",
+        undefined,
         {
           duration: 2000,
           horizontalPosition: "end",

@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
 import { FormPlayerComponent } from "src/app/components/forms/form-player/form-player.component";
 import { FormQVcnvComponent } from "src/app/components/forms/form-q-vcnv/form-q-vcnv.component";
+import { VcnvData } from "src/app/services/types/game";
 
 @Component({
   selector: "app-control-vcnv",
@@ -17,7 +18,7 @@ export class ControlVcnvComponent implements OnInit {
     public dialog: MatDialog,
     public auth: AuthService
   ) {}
-  vcnvData: any;
+  vcnvData: VcnvData = {} as VcnvData;
   currentTime: number = 0;
   playerGetVCNV: any[] = [];
   displayingRow: any = {};

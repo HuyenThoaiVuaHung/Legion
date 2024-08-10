@@ -12,7 +12,12 @@ export class SinglePointTsComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     public auth: AuthService
-  ) {}
+  ) {
+    if (!localStorage.getItem("defaultUrl"))
+      this.auth.connect(
+        document.URL.match(/(http:\x2f\x2f)[A-Za-z0-9\.]+/)![0]
+      );
+  }
   public index = -1;
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((params) => {

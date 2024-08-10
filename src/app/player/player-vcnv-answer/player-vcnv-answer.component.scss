@@ -1,15 +1,15 @@
-.boxes,
-.boxes > h1 {
+.box-container,
+.box-container > h1 {
   transition: 1s all;
 }
 
-.boxes a {
+.box-container a {
   transition: 0.25s all;
   text-decoration: none;
-  color: #fff;
+
   margin: 10px 0;
 }
-.boxes div {
+.box-container div {
   position: relative;
 }
 
@@ -32,14 +32,14 @@
 .aurora {
   @apply relative drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
 }
-.boxes div:nth-child(odd) {
+.box-container div:nth-child(odd) {
   right: 100%;
   animation: 1s transitionRight forwards cubic-bezier(0.075, 0.82, 0.165, 1);
   text-align: right;
   margin-left: 20rem;
 }
 
-.boxes div:nth-child(even) {
+.box-container div:nth-child(even) {
   left: 100%;
   text-align: left;
   animation: 1s transitionLeft forwards cubic-bezier(0.075, 0.82, 0.165, 1);

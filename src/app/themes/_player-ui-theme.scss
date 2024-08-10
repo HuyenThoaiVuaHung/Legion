@@ -38,8 +38,14 @@
     border: 1px solid mat.get-theme-color($theme, outline-variant);
     box-sizing: border-box;
   }
+
   .pole {
     background: mat.get-theme-color($theme, on-surface);
+  }
+
+  .box-container div {
+    border: 1px solid mat.get-theme-color($theme, outline);
+    box-sizing: border-box;
   }
   .cnvPicBox {
     color: mat.get-theme-color($theme, outline-variant);
@@ -47,10 +53,10 @@
     div {
       background: mat.get-theme-color($theme, surface) !important;
     }
-    .bg-transparent{
+    .bg-transparent {
       background: transparent !important;
     }
-    .text{
+    .text {
       color: mat.get-theme-color($theme, on-surface);
       position: absolute;
       top: calc(50% - 1rem);

@@ -70,6 +70,9 @@ body {
     display: flex;
     background: mat.get-theme-color($Legion-theme, surface-container);
   }
+  .mat-mdc-card-actions {
+    @apply gap-3;
+  }
 }
 body {
   margin: 0;

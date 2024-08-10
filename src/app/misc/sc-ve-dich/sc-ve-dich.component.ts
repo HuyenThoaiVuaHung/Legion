@@ -1,50 +1,49 @@
-import { Component, OnInit } from '@angular/core';
-import { io } from 'socket.io-client';
-import { environment } from 'src/environments/environment';
+import { Component, OnInit } from "@angular/core";
+import { io } from "socket.io-client";
+import { AuthService } from "src/app/services/auth.service";
+import { VdData } from "src/app/services/types/game";
+import { environment } from "src/environments/environment";
 
 @Component({
-  selector: 'app-sc-ve-dich',
-  templateUrl: './sc-ve-dich.component.html',
-  styleUrls: ['./sc-ve-dich.component.scss']
+  selector: "app-sc-ve-dich",
+  templateUrl: "./sc-ve-dich.component.html",
+  styleUrls: ["./sc-ve-dich.component.scss"],
 })
 export class ScVeDichComponent implements OnInit {
-  socket = io(environment.socketIp);
-  constructor() { }
-  vdData : any = {};
-  matchData : any = {};
+  constructor(public auth: AuthService) {
+    console.log(document.URL.match(/(http:\x2f\x2f)[A-Za-z0-9\.]+/)![0]);
+    if (!localStorage.getItem("defaultUrl"))
+      this.auth.connect(
+        document.URL.match(/(http:\x2f\x2f)[A-Za-z0-9\.]+/)![0]
+      );
+    
+    this.auth.socket.emit("get-vedich-data", (callback) => {
+      this.vdData = callback;
+    });
+    this.auth.socket.on("update-vedich-data", (data) => {
+      this.vdData = data;
+    });
+  }
+  public vdData: VdData | undefined;
   currentQuestion: any = {};
   time = 0;
   playerStealingQuestion: number = -1;
   ngOnInit(): void {
-    this.socket.emit('get-vedich-data', (callback) =>{
-      this.vdData = callback;
-    })
-    this.socket.on('update-vedich-data', (data) => {
-      this.vdData = data;
-    });
-    this.socket.emit('get-match-data', (callback) =>{
-      this.matchData = callback;
-    })
-    this.socket.on('update-match-data', (data) => {
-      this.matchData = data;
-    });
-    this.socket.on('update-vedich-question', (question) => {
-      if(question != undefined){
+    this.auth.socket.on("update-vedich-question", (question) => {
+      if (question != undefined) {
         this.currentQuestion = question;
-      }
-      else{
+      } else {
         this.currentQuestion = {};
       }
     });
-    this.socket.on('player-steal-question', (id) => {
+    this.auth.socket.on("player-steal-question", (id) => {
       this.playerStealingQuestion = id;
-    })
-    this.socket.on('clear-stealing-player', () =>{
+    });
+    this.auth.socket.on("clear-stealing-player", () => {
       this.playerStealingQuestion = -1;
-    })
-    this.socket.on('update-clock', (time) => {
+    });
+    this.auth.socket.on("update-clock", (time) => {
       this.time = time;
-    })
+    });
   }
-
 }

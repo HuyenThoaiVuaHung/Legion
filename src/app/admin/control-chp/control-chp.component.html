@@ -4,15 +4,15 @@
         <div class="inline  text-xl">Thí sinh giành quyền: {{lastTurn.name}}</div>
         <div class=" mt-2">
           <div class="inline mr-10">
-            <button mat-raised-button [disabled]="lastTurn.name == undefined" (click)="markCorrect()">Đúng</button>
+            <button mat-stroked-button [disabled]="lastTurn.name == undefined" (click)="markCorrect()">Đúng</button>
           </div>
           <div class="inline">
-            <button mat-raised-button [disabled]="lastTurn.name == undefined" (click)="markWrong()">Sai</button>
+            <button mat-stroked-button [disabled]="lastTurn.name == undefined" (click)="markWrong()">Sai</button>
           </div>
         </div>
         <div class="mt-5">
           <span class="m-2 inline">
-            <button mat-raised-button [disabled]="threeSecTimers[1] > 0 || currentTime <= 0"
+            <button mat-stroked-button [disabled]="threeSecTimers[1] > 0 || currentTime <= 0"
               (click)="playSfx('BLANK_SPC')" class="w-52">Âm thanh khoảng trống</button>
           </span>
         </div>
@@ -47,10 +47,10 @@
     <div class="half-width flex flex-col items-center  float-right text-center overflow-hidden table-container">
       <div class="m-5 flex-col  text-xl">
         <div class="inline">
-          <button mat-raised-button (click)="clockPause()" class="w-52">Pause/Resume thời gian</button>
+          <button mat-stroked-button (click)="clockPause()" class="w-52">Pause/Resume thời gian</button>
         </div>
         <div class="inline ml-5">
-          <button mat-raised-button (click)="clockStart()" class="w-52">Bắt đầu thời gian</button>
+          <button mat-stroked-button (click)="clockStart()" class="w-52">Bắt đầu thời gian</button>
         </div>
       </div>
       <div class="text-2xl ">

@@ -19,7 +19,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   providedIn: "root",
 })
 export class AuthService {
-  public readonly socket: Socket = io(environment.socketIp);
+  public socket: Socket = io({
+    autoConnect: false,
+  });
 
   public state: AppState = AppState.UNINITIALIZED;
 
@@ -27,22 +29,18 @@ export class AuthService {
     {} as MatchData
   );
 
+  public url: string = "";
+
   public userInfo: WritableSignal<UserInfo> = signal({
     roleId: -1,
     index: -1,
     socketId: "",
   });
 
-
   constructor(private router: Router, private snackBar: MatSnackBar) {
-    this.initializeListeners();
-    this.getMatchData().then((data) => {
-      this.matchData.set(data);
-      if (localStorage.getItem("authString")) {
-        this.authenticate();
-      }
-    });
-
+    if (localStorage.getItem("defaultUrl"))
+      this.connect(localStorage.getItem("defaultUrl")!);
+    
     effect(() => {
       this.navigateMatchPosition(this.matchData().matchPos);
     });
@@ -68,19 +66,46 @@ export class AuthService {
     });
   }
 
+  public connect(url: string) {
+    this.socket.disconnect();
+    this.socket = io(url);
+    this.url = url;
+    this.state = AppState.CONNECTING;
+
+    this.initializeListeners();
+    this.getMatchData().then((data) => {
+      this.matchData.set(data);
+      if (localStorage.getItem("authString")) {
+        this.authenticate();
+      }
+    });
+  }
+  public disconnect() {
+    this.socket.disconnect();
+    this.state = AppState.UNCONNECTED;
+    localStorage.removeItem("defaultUrl");
+  }
+
   private initializeListeners() {
     this.socket.on("connect_error", (error) => {
       this.state = AppState.ERROR;
+      this.socket.disconnect();
+      localStorage.removeItem("defaultUrl");
       this.snackBar.open("Lỗi kết nối", "Đóng", {
         duration: 5000,
         horizontalPosition: "start",
       });
     });
     this.socket.on("connect", () => {
+      this.state = AppState.CONNECTED;
+      localStorage.setItem("defaultUrl", this.url);
       if (localStorage.getItem("authString")) this.authenticate();
     });
     this.socket.on("update-match-data", (data) => {
       this.matchData.set(data);
+    });
+    this.socket.on("disconnect", () => {
+      this.state = AppState.UNCONNECTED;
     });
   }
 

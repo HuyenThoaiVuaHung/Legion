@@ -13,7 +13,7 @@ export const miscRoutes: Routes = [
   { path: "bar", component: ScQuestionBarComponent },
   { path: "vd", component: ScVeDichComponent },
   { path: "kd", component: ScKhoiDongComponent },
-  { path: "points", component: SinglePointTsComponent },
+  { path: "points/:id", component: SinglePointTsComponent },
 ]
 
 @NgModule({

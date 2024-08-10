@@ -2,7 +2,7 @@
   class="overflow-y-hidden relative flex text-center justify-center h-screen w-screen"
 >
   <div class="w-3 pole aurora disablePointerActions overflow-hidden"></div>
-  <div class="flex-shrink-0 disablePointerActions boxes overflow-hidden">
+  <div class="flex-shrink-0 disablePointerActions box-container text-on-surface overflow-hidden">
     @for (index of [0,1,2,3]; track index) {
     <div
       [ngClass]="{
@@ -21,6 +21,7 @@
     </div>
     }
   </div>
+  @if (auth.userInfo().roleId == 0){
   <div *ngIf="auth.userInfo().roleId != 3" class="fixed z-50 bottom-0 right-0">
     <button
       [disabled]="disabledCNVButton == true"
@@ -32,6 +33,7 @@
       TRẢ LỜI CNV
     </button>
   </div>
+  }
   <div
     class="absolute left-5 flex bottom-5 gap-2 flex-col self-end ml-5 mt-10 w-52"
   >

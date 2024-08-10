@@ -57,11 +57,11 @@
       </table>
     </mat-card-content>
     <mat-card-actions align="end">
-      <button mat-button (click)="clearQuestion()">
+      <button mat-stroked-button (click)="clearQuestion()">
         <mat-icon>visibility_off</mat-icon>
         Ẩn câu hỏi
       </button>
-      <button mat-button (click)="(undefined)">
+      <button mat-stroked-button (click)="(undefined)">
         <mat-icon>edit</mat-icon>
         Chỉnh sửa
       </button>
@@ -102,7 +102,7 @@
           <mat-icon>done</mat-icon>
           Đúng
         </button>
-        <button mat-raised-button (click)="markWrong()">
+        <button mat-stroked-button (click)="markWrong()">
           <mat-icon>clear</mat-icon>
           Sai
         </button>
@@ -111,11 +111,11 @@
         title="Âm thanh"
         description="Âm thanh khoảng trắng & nhạc hiệu"
       >
-        <button mat-raised-button (click)="playSfx('BLANK_SPC')">
+        <button mat-stroked-button (click)="playSfx('BLANK_SPC')">
           <mat-icon>music_note</mat-icon>
           Âm thanh khoảng trắng
         </button>
-        <button mat-raised-button (click)="playSfx('KD_START')">
+        <button mat-stroked-button (click)="playSfx('KD_START')">
           <mat-icon>music_note</mat-icon>
           Nhạc hiệu
         </button>
@@ -137,14 +137,14 @@
           Bắt đầu phần thi
         </button>
 
-        <button mat-raised-button color="accent" (click)="resetTurn()">
+        <button mat-stroked-button color="accent" (click)="resetTurn()">
           <mat-icon>replay</mat-icon>
           Reset chuông
         </button>
       </menu-item>
       <menu-item title="Đếm ngược">
         <button
-          mat-raised-button
+          mat-stroked-button
           [disabled]="threeSecTimers[1] > 0"
           (click)="start3sTimer()"
         >
@@ -210,7 +210,7 @@
         <mat-card-actions align="end">
           <button
             *ngIf="chosenPlayer.name != undefined"
-            mat-button
+            mat-stroked-button
             (click)="editPlayer()"
           >
             <mat-icon>edit</mat-icon>
