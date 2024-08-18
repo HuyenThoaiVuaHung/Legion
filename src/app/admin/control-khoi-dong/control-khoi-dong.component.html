@@ -57,11 +57,11 @@
       </table>
     </mat-card-content>
     <mat-card-actions align="end">
-      <button mat-stroked-button (click)="clearQuestion()">
+      <button mat-button (click)="clearQuestion()">
         <mat-icon>visibility_off</mat-icon>
         Ẩn câu hỏi
       </button>
-      <button mat-stroked-button (click)="(undefined)">
+      <button mat-button (click)="(undefined)">
         <mat-icon>edit</mat-icon>
         Chỉnh sửa
       </button>
@@ -102,7 +102,7 @@
           <mat-icon>done</mat-icon>
           Đúng
         </button>
-        <button mat-stroked-button (click)="markWrong()">
+        <button mat-button (click)="markWrong()">
           <mat-icon>clear</mat-icon>
           Sai
         </button>
@@ -111,11 +111,11 @@
         title="Âm thanh"
         description="Âm thanh khoảng trắng & nhạc hiệu"
       >
-        <button mat-stroked-button (click)="playSfx('BLANK_SPC')">
+        <button mat-button (click)="playSfx('BLANK_SPC')">
           <mat-icon>music_note</mat-icon>
           Âm thanh khoảng trắng
         </button>
-        <button mat-stroked-button (click)="playSfx('KD_START')">
+        <button mat-button (click)="playSfx('KD_START')">
           <mat-icon>music_note</mat-icon>
           Nhạc hiệu
         </button>
@@ -137,14 +137,18 @@
           Bắt đầu phần thi
         </button>
 
-        <button mat-stroked-button color="accent" (click)="resetTurn()">
+        <button mat-button color="accent" (click)="resetTurn()">
           <mat-icon>replay</mat-icon>
           Reset chuông
+        </button>
+        <button mat-button (click)="nextQuestion()">
+          <mat-icon>skip_next</mat-icon>
+          Bỏ qua CH
         </button>
       </menu-item>
       <menu-item title="Đếm ngược">
         <button
-          mat-stroked-button
+          mat-button
           [disabled]="threeSecTimers[1] > 0"
           (click)="start3sTimer()"
         >
@@ -210,7 +214,7 @@
         <mat-card-actions align="end">
           <button
             *ngIf="chosenPlayer.name != undefined"
-            mat-stroked-button
+            mat-button
             (click)="editPlayer()"
           >
             <mat-icon>edit</mat-icon>

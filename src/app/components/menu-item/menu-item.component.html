@@ -1,6 +1,9 @@
 <div
-  [ngClass]="{ 'flex-col items-start': orientation() == 'vertical' }"
-  class="mat-elevation-z5 my-3 p-3 flex justify-between items-center rounded-lg"
+  [ngClass]="{
+    'flex-col': orientation() == 'vertical',
+    'justify-between items-center': orientation() == 'horizontal'
+  }"
+  class="mat-elevation-z3 my-3 flex w-full box-border p-3 rounded-lg"
 >
   <div class="mat-title-medium max-w-sm">
     <div>{{ title() }}</div>
@@ -12,9 +15,9 @@
   <div
     [ngClass]="{
       'w-full': orientation() == 'vertical',
-      'w-max max-w-lg': orientation() == 'horizontal'
+      'w-max flex justify-end flex-wrap max-w-lg': orientation() == 'horizontal'
     }"
-    class="flex justify-end flex-wrap gap-3"
+    class=" gap-3"
   >
     <ng-content></ng-content>
   </div>

@@ -5,6 +5,7 @@ import { McComponent } from "./mc/mc.component";
 import { AdminComponent } from "./admin/admin.component";
 import { AdminGuard } from "./services/guards/admin.guard";
 import { PlayerComponent } from "./player/player.component";
+import { NotFoundComponent } from "./not-found/not.found.component";
 
 const routes: Routes = [
   { path: "", component: HomeComponent },
@@ -27,7 +28,7 @@ const routes: Routes = [
     loadChildren: () => import("./misc/misc.module").then((m) => m.MiscModule),
   },
   { path: "mc", component: McComponent },
-  { path: "**", component: HomeComponent },
+  { path: "**", component: NotFoundComponent },
 ];
 
 @NgModule({

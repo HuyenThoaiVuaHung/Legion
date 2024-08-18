@@ -6,7 +6,7 @@ import {
   VcnvQuestion,
   VdQuestion,
   Type,
-} from "src/app/services/types/game";
+} from "../../services/types/game";
 
 export function normalizeQuestion(
   data: KdQuestion | VcnvQuestion | TtQuestion | VdQuestion | ChpQuestion | any
@@ -27,6 +27,7 @@ export function normalizeQuestion(
       case "I":
       case "TT_IMG":
       case "P":
+      case "CNV":
         type = Type.IMAGE;
         type = Type.IMAGE;
         break;
@@ -63,6 +64,9 @@ export function normalizeQuestion(
     }
     if (data.type === "I") image_name = data.audioFilePath;
     if (data.type === "P") image_name = data.file_name;
+    if (data.type === "CNV") {
+      image_name = data.picFileName;
+    }
   }
   return {
     question: data.question,

@@ -221,6 +221,7 @@ export class ControlKhoiDongComponent implements OnInit {
         }
       );
       this.currentQuestionCount += 1;
+      this.auth.socket.emit('update-number-question-kd', this.currentMaxQuestionNo, this.currentQuestionCount);
     } else {
       this.auth.socket.emit("stop-kd-sound");
       console.debug("Last question reached");

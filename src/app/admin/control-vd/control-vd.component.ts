@@ -131,6 +131,9 @@ export class ControlVdComponent implements OnInit {
     question.value = +question.value.toString();
     const dialogRef = this.dialog.open(FormQVdComponent, {
       data: question,
+      minWidth: "700px",
+      width: "80vw",
+      height: "80vh",
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result && this.chosenRow) {
@@ -185,6 +188,9 @@ export class ControlVdComponent implements OnInit {
         value: 0,
         type: "",
       },
+      minWidth: "700px",
+      width: "80vw",
+      height: "80vh",
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {

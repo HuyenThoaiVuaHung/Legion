@@ -35,19 +35,19 @@
         [(ngModel)]="data.audioFilePath"
       />
     </mat-form-field>
+
+    }
     <mat-form-field class="inputForm">
       <input
-        [disabled]="data.type == 'HN'"
+        [disabled]="data.type != 'CNV'"
         matInput
         placeholder="Tên file hình ảnh"
         [(ngModel)]="data.picFileName"
       />
     </mat-form-field>
-
-    }
   </div>
   <div mat-dialog-actions>
-    <button mat-stroked-button (click)="onNoClick()">Huỷ</button>
-    <button mat-stroked-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
+    <button mat-button (click)="onNoClick()">Huỷ</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
   </div>
 </div>

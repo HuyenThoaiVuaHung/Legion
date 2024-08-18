@@ -133,6 +133,9 @@
     background: mat.get-theme-color($theme, tertiary) !important;
     color: mat.get-theme-color($theme, on-tertiary) !important;
   }
+  .text-primary {
+    color: mat.get-theme-color($theme, primary);
+  }
 }
 
 @mixin theme($theme) {

@@ -55,14 +55,33 @@
         orientation="vertical"
       >
         <div class="h-full rounded-md overflow-hidden">
-          <img
-            class="w-full"
-            *ngIf="this.chosenRow.type == 'TT_IMG'"
-            src="../../../assets/picture-questions/tt/{{
-              this.chosenRow.question_image
-            }}"
-            alt="Hình ảnh câu hỏi"
-          />
+          <div class="w-full text-center grid place-items-center grid-flow-col">
+            <div *ngIf="this.chosenRow.type == 'TT_IMG'" class="w-full">
+              <img
+                class="w-96 aspect-video"
+                src="../../../assets/picture-questions/tt/{{
+                  this.chosenRow.question_image
+                }}"
+                alt="Hình ảnh câu hỏi"
+              />
+              <h6>Hình ảnh câu hỏi</h6>
+            </div>
+            <div
+              *ngIf="
+                this.chosenRow.type == 'TT_IMG' && this.chosenRow.answer_image
+              "
+              class="w-full"
+            >
+              <img
+                class="w-96 aspect-video"
+                src="../../../assets/picture-questions/tt/{{
+                  this.chosenRow.answer_image
+                }}"
+                alt="Hình ảnh đáp án"
+              />
+              <h6>Hình ảnh đáp án</h6>
+            </div>
+          </div>
           <video
             class="w-full"
             *ngIf="this.chosenRow.type == 'TT_VD'"
@@ -77,19 +96,19 @@
     </mat-card-content>
     <mat-card-actions align="end">
       <button
-        mat-stroked-button
+        mat-button
         title="Chỉnh sửa câu hỏi đang chọn (nhấn 1 lần vào câu hỏi cần sửa)"
         (click)="editQuestion()"
       >
         Chỉnh sửa
         <mat-icon>edit</mat-icon>
       </button>
-      <button mat-stroked-button (click)="hideQuestion()">
+      <button mat-button (click)="hideQuestion()">
         Ẩn câu hỏi
         <mat-icon>visibility_off</mat-icon>
       </button>
       @if (displayingRow) {
-      <button mat-stroked-button (click)="showQuestion()">
+      <button mat-button (click)="showQuestion()">
         Hiện câu hỏi
         <mat-icon>visibility</mat-icon>
       </button>
@@ -130,7 +149,7 @@
           Bắt đầu đếm ngược
         </button>
         }
-        <button mat-stroked-button (click)="pauseClock()">
+        <button mat-button (click)="pauseClock()">
           <mat-icon>play_pause</mat-icon>
           Tạm dừng/tiếp tục
         </button>
@@ -141,7 +160,7 @@
           this.tangtocData?.showAnswer ? 'hiện' : 'ẩn'
         }}"
       >
-        <button mat-stroked-button (click)="toggleQuestionAnswer()">
+        <button mat-button (click)="toggleQuestionAnswer()">
           {{ this.tangtocData?.showAnswer ? "Ẩn" : "Hiện" }} đáp án
         </button>
       </menu-item>
@@ -150,7 +169,7 @@
         description="Vị trí hiện tại:
       {{ auth.positionMap.get(auth.matchData().matchPos) }}"
       >
-        <button mat-stroked-button (click)="toggleAnswerDisplay()">
+        <button mat-button (click)="toggleAnswerDisplay()">
           <mat-icon>switch_access_2</mat-icon>
           Đáp án thí sinh/câu hỏi
         </button>
@@ -159,12 +178,8 @@
         title="Âm thanh"
         description="Phát nhạc hiệu & âm thanh khoảng trắng"
       >
-        <button mat-stroked-button (click)="playSfx('TT_START')">
-          Nhạc hiệu
-        </button>
-        <button mat-stroked-button (click)="playSfx('BLANK_SPC')">
-          Khoảng trắng
-        </button>
+        <button mat-button (click)="playSfx('TT_START')">Nhạc hiệu</button>
+        <button mat-button (click)="playSfx('BLANK_SPC')">Khoảng trắng</button>
       </menu-item>
       <mat-card>
         <mat-card-header>
@@ -243,7 +258,7 @@
           >
             Xác Nhận
           </button>
-          <button mat-stroked-button (click)="toggleResultsDisplay()">
+          <button mat-button (click)="toggleResultsDisplay()">
             {{ this.tangtocData?.showResults ? "Ẩn" : "Hiện" }} kết quả
           </button>
         </mat-card-actions>
@@ -277,12 +292,12 @@
   >
     <div class="m-5">
       <div class="inline">
-        <button mat-stroked-button (click)="toggleAnswerDisplay()">
+        <button mat-button (click)="toggleAnswerDisplay()">
           Chuyển giữa xem đáp án/câu hỏi
         </button>
       </div>
       <div class="inline ml-5">
-        <button mat-stroked-button (click)="playSfx('TT_START')">
+        <button mat-button (click)="playSfx('TT_START')">
           Nhạc hiệu tăng tốc
         </button>
       </div>

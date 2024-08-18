@@ -43,7 +43,7 @@
             <button
               [disabled]="urlFormGroup.controls.legendaryUrl.errors?.['pattern']"
               (click)="connect()"
-              mat-stroked-button
+              mat-button
             >
               <mat-icon>arrow_right</mat-icon>
               @if (auth.state == appState.ERROR) {
@@ -54,7 +54,7 @@
               Đã kết nối } @else { Kết nối }
             </button>
             <button
-              mat-stroked-button
+              mat-button
               [disabled]="auth.state != appState.CONNECTED"
               matStepperNext
             >
@@ -76,7 +76,7 @@
           </form>
 
           <div>
-            <button mat-stroked-button (click)="this.authenticate()">
+            <button mat-button (click)="this.authenticate()">
               <mat-icon>arrow_right</mat-icon>
               Đăng nhập
             </button>

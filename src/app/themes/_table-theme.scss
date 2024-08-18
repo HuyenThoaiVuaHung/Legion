@@ -30,8 +30,9 @@
   }
   .opened {
     background: linear-gradient(
-      90de90deg,
-      mat.get-theme-color($theme, error),
+      90deg,
+      #0000,
+      mat.get-theme-color($theme, error-container),
       #0000
     );
   }

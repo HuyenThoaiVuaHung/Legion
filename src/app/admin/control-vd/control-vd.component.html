@@ -56,18 +56,18 @@
       }
     </mat-card-content>
     <mat-card-actions align="end">
-      <button [disabled]="!chosenRow" mat-stroked-button (click)="editQuestion()">
+      <button [disabled]="!chosenRow" mat-button (click)="editQuestion()">
         <mat-icon>edit</mat-icon>
         Chỉnh sửa
       </button>
 
-      <button mat-stroked-button (click)="hideQuestion()">
+      <button mat-button (click)="hideQuestion()">
         <mat-icon>visibility_off</mat-icon>
         Ẩn câu hỏi
       </button>
       <button
         [disabled]="!this.displayingRow"
-        mat-stroked-button
+        mat-button
         (click)="showQuestion()"
       >
         <mat-icon>visibility</mat-icon>
@@ -76,7 +76,7 @@
 
       <button
         [disabled]="this.displayingRow?.type !== 'V'"
-        mat-stroked-button
+        mat-button
         (click)="togglePlayVideo()"
       >
         <mat-icon>play_circle</mat-icon>
@@ -108,11 +108,11 @@
         title="Thời gian"
         description="Thời gian còn lại {{ currentTime }}"
       >
-        <button mat-stroked-button (click)="startTimer(15)">Bắt đầu 15s</button>
-        <button mat-stroked-button (click)="startTimer(20)">Bắt đầu 20s</button>
+        <button mat-button (click)="startTimer(15)">Bắt đầu 15s</button>
+        <button mat-button (click)="startTimer(20)">Bắt đầu 20s</button>
       </menu-item>
       <menu-item title="Ngôi sao hy vọng">
-        <button mat-stroked-button (click)="toggleNSHV()">
+        <button mat-button (click)="toggleNSHV()">
           {{ vdData.ifNSHV ? "Tắt" : "Bật" }} NSHV
         </button>
       </menu-item>
@@ -135,7 +135,7 @@
             playerStoleQuestion == undefined
           "
           (click)="markIncorrect()"
-          mat-stroked-button
+          mat-button
         >
           Chấm sai
         </button>
@@ -149,23 +149,22 @@
         </button>
       </menu-item>
       <menu-item title="Nhạc hiệu">
-        <button mat-stroked-button (click)="playSfx('VD_START')">
-          Nhạc hiệu
-        </button>
-        <button mat-stroked-button (click)="playSfx('VD_END')">
+        <button mat-button (click)="playSfx('VD_START')">Nhạc hiệu</button>
+        <button mat-button (click)="playSfx('VD_END')">
           Nhạc hiệu kết thúc
         </button>
-        <button mat-stroked-button (click)="playSfx('BLANK_SPC')">
-          Khoảng trắng
-        </button>
+        <button mat-button (click)="playSfx('BLANK_SPC')">Khoảng trắng</button>
       </menu-item>
       <menu-item
         title="Thanh chọn câu hỏi"
         description="Thanh chọn câu hỏi không ảnh hưởng tới việc chọn câu hỏi của kỹ thuật viên."
       >
-        <button mat-stroked-button (click)="toggleQuestionPicker()">
+        <button mat-button (click)="toggleQuestionPicker()">
           {{ vdData.ifQuestionPickerShowing ? "Tắt" : "Bật" }} Thanh chọn câu
           hỏi
+        </button>
+        <button (click)="clearQuestionPicker()" mat-button>
+          Clear Thanh chọn câu hỏi
         </button>
       </menu-item>
       <menu-item title="Thanh chọn" orientation="vertical">
@@ -266,13 +265,13 @@
           </table>
         </mat-card-content>
         <mat-card-actions align="end">
-          <button [disabled]="!chosenPlayer" mat-stroked-button (click)="editPlayer()">
+          <button [disabled]="!chosenPlayer" mat-button (click)="editPlayer()">
             <mat-icon>edit</mat-icon>
             Sửa thông tin
           </button>
           <button
             [disabled]="!currentTurnPlayer"
-            mat-stroked-button
+            mat-button
             (click)="clearPlayer()"
           >
             <mat-icon>clear</mat-icon>
@@ -309,14 +308,12 @@
       </div>
       <div class="inline p-2">
 
-        <button (click)="toggleQuestionPicker()" mat-stroked-button>
+        <button (click)="toggleQuestionPicker()" mat-button>
           Toggle Thanh Chọn câu hỏi
         </button>
       </div>
       <div class="inline p-2">
-        <button (click)="clearQuestionPicker()" mat-stroked-button>
-          Clear Thanh chọn câu hỏi
-        </button>
+
       </div>
     </div>
   </div>

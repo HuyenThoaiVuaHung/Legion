@@ -71,6 +71,7 @@ export class HomeComponent implements OnInit {
   async authenticate() {
     await this.auth.authenticate(this.tokenFormGroup.value.token!);
     if (this.auth.userInfo().roleId == 1) this.router.navigate(["admin"]);
+    if (this.auth.userInfo().roleId == 2) this.router.navigate(["mc"]);
     localStorage.setItem("authString", this.tokenFormGroup.value.token!);
   }
 }

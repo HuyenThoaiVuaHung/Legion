@@ -16,6 +16,8 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
 import { CommonModule } from "@angular/common";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { PlayerListComponent } from "./components/player-list/player-list.component";
+import { CountdownComponent } from "./components/countdown/countdown.component";
 
 @NgModule({
   declarations: [
@@ -37,8 +39,10 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     CommonModule,
     FormsModule,
     MatProgressSpinnerModule,
-    MatStepperModule
-  ],
+    MatStepperModule,
+    PlayerListComponent,
+    CountdownComponent
+],
   providers: [],
   bootstrap: [AppComponent],
 })
