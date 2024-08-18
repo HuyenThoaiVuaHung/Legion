@@ -1,0 +1,39 @@
+@if (vdData){
+<div class="flex w-full h-full justify-end items-center p-5 box-border">
+  <div class="disablePointerActions gap-5 flex flex-col h-96 w-52">
+    <div class="flex items-center h-max">
+      <div class="grid place-items-center h-40 w-12">
+        @for (index of [0,1,2]; track index) {
+        <span>
+          <mat-checkbox
+            [(ngModel)]="vdData.questionPickerArray[index]"
+          ></mat-checkbox>
+        </span>
+        }
+      </div>
+      <div
+        class="justify-center border-primary border-2 font-semibold grid place-items-center rounded-xl text-6xl h-40 w-40 bg-surface"
+      >
+        20
+      </div>
+    </div>
+    <div class="flex items-center h-max">
+      <div class="grid place-items-center h-40 w-12">
+        @for (index of [3,4,5]; track index) {
+        <span>
+          <mat-checkbox
+            [(ngModel)]="vdData.questionPickerArray[index]"
+          ></mat-checkbox>
+        </span>
+        }
+      </div>
+      <div
+        class="justify-center border-primary border-2 font-semibold grid place-items-center rounded-xl text-6xl h-40 w-40 bg-surface"
+      >
+        30
+      </div>
+    </div>
+  </div>
+</div>
+
+}

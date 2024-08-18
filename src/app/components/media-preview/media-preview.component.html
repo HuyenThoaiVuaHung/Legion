@@ -1,0 +1,39 @@
+<menu-item title="Preview hình ảnh, video của câu hỏi" orientation="vertical">
+  <div class="h-full rounded-md overflow-hidden">
+    @if (question().type === 'I'){
+    <img
+      class="w-full"
+      *ngIf="this.question().type == 'P'"
+      src="../../../assets/picture-questions/{{ context() }}/{{
+        question().image_name
+      }}"
+      alt="Hình ảnh câu hỏi"
+    />
+    @if(this.question().secondary_image_name) {
+    <img
+      class="w-full"
+      *ngIf="this.question().type == 'P'"
+      src="../../../assets/picture-questions/{{ context() }}/{{
+        question().secondary_image_name
+      }}"
+      alt="Hình ảnh đáp án câu hỏi"
+    />
+    } } @else if (question().type === 'V' ){
+    <video
+      class="w-full"
+      src="../../../assets/video-questions/{{ context() }}/{{
+        this.question().video_name
+      }}"
+      controls
+    ></video>
+    } @else if (question().type === 'A'){
+    <audio
+      class="w-full"
+      src="../../../assets/audio-questions/{{ context() }}/{{
+        this.question().audio_name
+      }}"
+      controls
+    ></audio>
+    } @else if (question().type !== 'N'){ Câu hỏi không hợp lệ }
+  </div>
+</menu-item>

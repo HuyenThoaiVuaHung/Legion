@@ -1,0 +1,47 @@
+<div
+  class="overflow-y-hidden relative flex text-center justify-center h-screen w-screen"
+>
+  <div class="w-3 pole aurora disablePointerActions overflow-hidden"></div>
+  <div class="flex-shrink-0 disablePointerActions box-container text-on-surface overflow-hidden">
+    @for (index of [0,1,2,3]; track index) {
+    <div
+      [ngClass]="{
+        'opacity-50':
+          vcnvData.playerAnswers[index].correct === false &&
+          vcnvData.showResults === true
+      }"
+      class="aurora w-80 h-20 p-2 mt-20 overflow-hidden"
+    >
+      <p class="text-sm underline">
+        {{ auth.matchData().players[index].name }}
+      </p>
+      <p class="text-center font-bold text-lg">
+        {{ vcnvData.playerAnswers[index].answer.toUpperCase() }}
+      </p>
+    </div>
+    }
+  </div>
+  @if (auth.userInfo().roleId == 0){
+  <div *ngIf="auth.userInfo().roleId != 3" class="fixed z-50 bottom-0 right-0">
+    <button
+      [disabled]="disabledCNVButton == true"
+      (click)="attemptCNV()"
+      mat-fab
+      extended
+      class="h-12 w-64 align-bottom items-center text-right"
+    >
+      TRẢ LỜI CNV
+    </button>
+  </div>
+  }
+  <div
+    class="absolute left-5 flex bottom-5 gap-2 flex-col self-end ml-5 mt-10 w-52"
+  >
+    <div
+      *ngFor="let player of vcnvData.CNVPlayers"
+      class="w-52 text-lg rounded-md special-highlight p-3"
+    >
+      {{ auth.matchData().players[player.id].name }}
+    </div>
+  </div>
+</div>

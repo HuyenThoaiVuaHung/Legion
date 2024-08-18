@@ -1,0 +1,38 @@
+
+.videoBox {
+  width: 42rem;
+}
+.picture {
+  height: 50rem;
+}
+.very-long {
+  height: 64px;
+  width: 600px;
+}
+.disablePointerActions {
+  pointer-events: none;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  user-select: none;
+}
+.name-highlight {
+  background-color: goldenrod !important;
+  color: black !important;
+}
+
+.active {
+  width: 100%;
+}
+.hidden {
+  width: 0px;
+}
+.typebox {
+  height: 33%;
+  width: 100%;
+  margin: 10px;
+}
+
+
+.mat-mdc-checkbox {
+  transform: scale(1.5);
+}

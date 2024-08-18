@@ -1,0 +1,15 @@
+.questionBox {
+  height: 70%;
+
+  aspect-ratio: 16/9 !important;
+}
+.disablePointerActions {
+  pointer-events: none;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  user-select: none;
+}
+.aurora {
+  @apply relative drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
+}
+

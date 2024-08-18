@@ -1,9 +1,11 @@
-import { Component, OnInit, Output, EventEmitter } from "@angular/core";
-import * as XLSX from "xlsx";
+import { Component, OnInit, Signal, computed } from "@angular/core";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
-import { FormPlayerComponent } from "../form-player/form-player.component";
+import { FormPlayerComponent } from "../components/forms/form-player/form-player.component";
 import { AuthService } from "../services/auth.service";
+import { Validators, FormBuilder } from "@angular/forms";
+import { NetworkStatus } from "../services/types/network.enum";
+import { AppState } from "../services/types/app";
 
 @Component({
   selector: "app-home",
@@ -11,84 +13,65 @@ import { AuthService } from "../services/auth.service";
   styleUrls: ["./home.component.scss"],
 })
 export class HomeComponent implements OnInit {
+  errorMsg: string = "";
+  urlFormGroup = this._formBuilder.group({
+    legendaryUrl: [
+      "http://",
+      [Validators.pattern(/(http:\x2f\x2f)[A-Za-z0-9.\x2f:]+/)],
+    ],
+  });
+  tokenFormGroup = this._formBuilder.group({
+    token: ["", [Validators.required]],
+  });
+
+  appState = AppState;
   constructor(
-    private router: Router,
+    private _formBuilder: FormBuilder,
     public auth: AuthService,
+    private router: Router,
     private dialog: MatDialog
   ) {}
   displayedPlayerColumns: string[] = ["id", "name", "score", "active"];
   authString: string = "";
-  greetString: string = "";
-  fileName = "";
-  player: any;
-  ngOnInit(): void {
-    this.auth.deauthenticate();
-  }
-  authenticate() {
-    console.log("Đăng nhập với :" + this.authString);
-    this.auth.socketHook = () => {
-      localStorage.setItem("authString", this.authString);
-      if (this.auth.userInfo.roleId == 0) {
-        this.greetString =
-          "Chào " +
-          this.auth.matchData.players[this.auth.userInfo.index || 0].name;
-      } else if (this.auth.userInfo.roleId == 1) {
-        this.greetString = "Chào BTC";
+  greetString: Signal<string> = computed(() => {
+    switch (this.auth.userInfo().roleId) {
+      case 0:
+        return this.auth.matchData().players[this.auth.userInfo().index || 0]
+          .name;
+      case 1:
         this.auth.socket.emit("change-match-position", "H");
-
-      } else if (this.auth.userInfo.roleId == 2) {
-        this.greetString = "Chào MC";
-
-      } else if (this.auth.userInfo.roleId == 3) {
-        localStorage.setItem("authString", this.authString);
-        this.greetString = "Viewer";
-      } else { console.log('who tf?')}
-    };
-    this.auth.authenticate(this.authString);
-  }
-  editPlayer(row: any) {
-    let player =
-      this.auth.matchData.players[this.auth.matchData.players.indexOf(row)];
-    const dialogRef = this.dialog.open(FormPlayerComponent, {
-      data: player,
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        var payload: any = {
-          player: result,
-          index: this.auth.matchData.players.indexOf(row),
-        };
-        payload.player.score = parseInt(payload.player.score);
-        this.auth.socket.emit("edit-player-info", payload, (callback) => {
-          console.log(callback.message);
-        });
-      }
-    });
-  }
-  onFileSelected(event) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.fileName = file.name;
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onload = (e) => {
-        const bufferArray = e.target?.result;
-        const wb = XLSX.read(bufferArray, { type: "buffer" });
-        const kdSheet = wb.Sheets[wb.SheetNames[0]];
-        const vcnvSheet = wb.Sheets[wb.SheetNames[1]];
-        const ttSheet = wb.Sheets[wb.SheetNames[2]];
-        const vdSheet = wb.Sheets[wb.SheetNames[3]];
-        const payload: any = {
-          kd: XLSX.utils.sheet_to_json(kdSheet),
-          vcnv: XLSX.utils.sheet_to_json(vcnvSheet),
-          tt: XLSX.utils.sheet_to_json(ttSheet),
-          vd: XLSX.utils.sheet_to_json(vdSheet),
-        };
-        this.auth.socket.emit("update-data-from-excel", payload, (callback) => {
-          console.log(callback.message);
-        });
-        console.log(payload);
-      };
+        return "Ban tổ chức";
+      case 2:
+        return "Người dẫn chương trình";
+      case 3:
+        return "Viewer";
+      default:
+        return "Chào bạn";
     }
+  });
+
+  async ngOnInit(): Promise<void> {
+    this.auth.deauthenticate();
+    if (localStorage.getItem("defaultUrl")) {
+      this.urlFormGroup.setValue({
+        legendaryUrl: localStorage.getItem("defaultUrl"),
+      });
+      this.auth.connect(localStorage.getItem("defaultUrl")!);
+    }
+  }
+  connect() {
+    if (
+      localStorage.getItem("defaultUrl") !==
+      this.urlFormGroup.value.legendaryUrl
+    ) {
+      this.auth.connect(this.urlFormGroup.value.legendaryUrl!);
+    }
+  }
+  login() {}
+  async authenticate() {
+    await this.auth.authenticate(this.tokenFormGroup.value.token!);
+    if (this.auth.userInfo().roleId == 1) this.router.navigate(["admin"]);
+    if (this.auth.userInfo().roleId == 2) this.router.navigate(["mc"]);
+    localStorage.setItem("authString", this.tokenFormGroup.value.token!);
   }
 }

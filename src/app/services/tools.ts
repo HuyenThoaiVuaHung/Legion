@@ -2,15 +2,15 @@
 export function getControlUrlFromMatchPosition(matchPos: string) {
     switch (matchPos) {
       case "VCNV_Q":
-        return "/c-vcnv";
+        return "/admin/vcnv";
       case "KD":
-        return "/c-kd";
+        return "/admin/kd";
       case "TT_Q":
-        return "/c-tt";
+        return "/admin/tt";
       case "VD":
-        return "/c-vd";
+        return "/admin/vd";
       case "CHP":
-        return "/c-chp";
+        return "/admin/chp";
       case "H":
         return "";
       default:

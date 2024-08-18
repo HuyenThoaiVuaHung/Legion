@@ -1,0 +1,24 @@
+<div
+  [ngClass]="{
+    'flex-col': orientation() == 'vertical',
+    'justify-between items-center': orientation() == 'horizontal'
+  }"
+  class="mat-elevation-z3 my-3 flex w-full box-border p-3 rounded-lg"
+>
+  <div class="mat-title-medium max-w-sm">
+    <div>{{ title() }}</div>
+    <div class="mat-label-medium">
+      {{ description() }}
+    </div>
+  </div>
+
+  <div
+    [ngClass]="{
+      'w-full': orientation() == 'vertical',
+      'w-max flex justify-end flex-wrap max-w-lg': orientation() == 'horizontal'
+    }"
+    class=" gap-3"
+  >
+    <ng-content></ng-content>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+@if (vdData) {
+<div class="base relative gap-10 flex w-screen justify-center items-center">
+  <div
+    class="question mat-elevation-z8 rounded-md overflow-hidden w-[70rem] flex flex-col"
+  >
+    <div class="h-12 w-full flex">
+      @for (player of auth.matchData().players; track $index) {
+      <div
+        [ngClass]="{
+          'name-highlight': vdData.currentPlayerId === $index + 1,
+          'special-highlight': playerStealingQuestion === $index
+        }"
+        class="border-2 border-white w-full box-border h-full bg-surface font-semibold flex justify-between gap-2 items-center p-5"
+      >
+        <span>
+          {{ auth.matchData().players[$index].name.toUpperCase() }}
+        </span>
+        <span>
+          {{ auth.matchData().players[$index].score }}
+        </span>
+      </div>
+      }
+    </div>
+    <div
+      class="w-full relative text-xl bg-surface-container box-border p-5 h-56 rounded-b-md"
+    >
+      {{ currentQuestion.question }}
+      <span
+        *ngIf="vdData.ifNSHV == true"
+        class="absolute right-0 bottom-0 text-5xl text-primary p-5"
+        >★</span
+      >
+    </div>
+  </div>
+  <div
+    class="w-52 text-7xl mat-elevation-z8 border-2 font-semibold bg-surface-container rounded-xl grid place-items-center h-52"
+  >
+    {{ time }}
+  </div>
+</div>
+
+}

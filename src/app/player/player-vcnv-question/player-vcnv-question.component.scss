@@ -1,0 +1,82 @@
+.cnvPicBox {
+  width: 640px;
+  height: 360px;
+  border-radius: 10px;
+}
+
+.cnvCornerCell1 {
+  width: 320px;
+  height: 90px;
+}
+.cnvCornerCell2 {
+  width: 160px;
+  height: 90px;
+}
+.CCell1 {
+  box-shadow: inset -1px 0px 0;
+}
+.CCell2 {
+  box-shadow: inset 0px -1px 0;
+}
+.CCell3 {
+  box-shadow: 0px -1px 0;
+}
+.CCell6 {
+  box-shadow: inset 0px -1px 0;
+}
+.CCell8 {
+  box-shadow: inset -1px 0px 0;
+}
+.border-right-1 {
+  border: 1px;
+}
+
+.mt-90px {
+  margin-top: 90px;
+}
+.cover-cell {
+  width: 320px;
+  height: 180px;
+  // box-shadow:0px 0px 0 1px;
+}
+
+.center {
+  top: 90px;
+  left: 160px;
+  border: 1px solid;
+}
+
+.tracking-hangngang {
+  letter-spacing: 9px;
+}
+
+.form-field {
+  width: 70%;
+}
+.image {
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  pointer-events: none;
+}
+.disablePointerActions {
+  pointer-events: none;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  user-select: none;
+}
+
+[mat-fab] {
+  height: 3rem;
+  width: 16rem;
+}
+
+// .highlight {
+//   background-color: goldenrod !important;
+// }
+
+// .opened-question {
+//   color: gray !important;
+// }

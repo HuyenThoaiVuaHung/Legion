@@ -1,0 +1,195 @@
+<div class="overflow-hidden flex-col flex h-full w-screen">
+  <div class="absolute top-10 self-center w-52 h-60">
+    <div
+      *ngFor="let player of vcnvData.CNVPlayers"
+      class="w-52 text-lg rounded-md special-highlight p-3"
+    >
+      {{ auth.matchData().players[player.id].name }}
+    </div>
+  </div>
+  <div class="grid place-items-center lg:hidden h-96 w-full">
+    <h3>Vui lòng thu phóng trình duyệt.</h3>
+  </div>
+  <div
+    draggable="false"
+    (dragstart)="(false)"
+    class="w-full hidden lg:flex flex-wrap justify-between items-center disablePointerActions"
+  >
+    <div
+      draggable="false"
+      id="cnvPicBox"
+      (dragstart)="(false)"
+      class="relative text-4xl bg-cover font-semibold mt-10 ml-10 cnvPicBox overflow-hidden"
+    >
+      <div
+        [ngClass]="{ 'opacity-0': vcnvData.questions[4].ifOpen === true }"
+        class="center grid place-items-center cover-cell absolute z-20"
+      >
+        5
+      </div>
+
+      <div
+        [ngClass]="{ 'opacity-0': vcnvData.questions[0].ifOpen === true }"
+        class="cover-cell absolute top-0 left-0 z-10 bg-transparent"
+      >
+        <div class="cnvCornerCell1 CCell1"></div>
+        <div class="cnvCornerCell2 items-start justify-end flex CCell2">
+        </div>
+        <div class="bg-transparent cnvCornerCell2 CCell3"></div>
+        <span class="text"> 1 </span>
+      </div>
+      <div
+        [ngClass]="{ 'opacity-0': vcnvData.questions[1].ifOpen === true }"
+        class="cover-cell top-0 right-0 absolute z-10 bg-transparent"
+      >
+        <div class="cnvCornerCell1 CCell4"></div>
+        <div class="bg-transparent absolute cnvCornerCell2 CCell5"></div>
+        <div
+          class="absolute ml-40 items-start justify-start flex cnvCornerCell2 CCell6"
+        >
+
+        </div>
+        <span class="text"> 2 </span>
+      </div>
+      <div
+        [ngClass]="{ 'opacity-0': vcnvData.questions[2].ifOpen === true }"
+        class="cover-cell left-0 bottom-0 cover-cell absolute z-10 bg-transparent"
+      >
+        <div
+          class="cnvCornerCell2 items-end justify-end flex CCell7"
+        ></div>
+        <div class="cnvCornerCell1 CCell8"></div>
+        <span class="text">
+          3
+
+        </span>
+      </div>
+      <div
+        [ngClass]="{ 'opacity-0': vcnvData.questions[3].ifOpen === true }"
+        class="cover-cell right-0 bottom-0 absolute bg-transparent z-10"
+      >
+        <div class="bg-transparent absolute cnvCornerCell2 CCell9"></div>
+        <div
+          class="absolute ml-40 items-end justify-start flex cnvCornerCell2 CCell10"
+        ></div>
+        <div class="absolute bottom-0 cnvCornerCell1 CCell12"></div>
+        <span class="text"> 4 </span>
+      </div>
+    </div>
+    <div
+      class="overflow-hidden justify-center tracking-hangngang gap-2 p-2 flex-col flex mr-10"
+    >
+      @for (i of [0,1,2,3]; track i) {
+      <div class="flex justify-end items-center gap-4">
+        <div
+          [ngClass]="{
+            'question-highlight':
+              highlightedVCNVQuestion.question ===
+              vcnvData.questions[$index].question
+          }"
+          class="hangngang-box w-full p-5 text-right items-center justify-center text-2xl rounded-md"
+        >
+          <span>
+            {{ VCNVStrings[i] }}
+          </span>
+        </div>
+        <span
+          [ngClass]="{
+            'opacity-30': vcnvData.questions[i].ifOpen === true
+          }"
+          class="p-5 grid place-items-center"
+        >
+          {{ i + 1 }}
+        </span>
+      </div>
+      }
+    </div>
+  </div>
+  <div class="flex flex-col px-10 gap-2 pt-5 w-full">
+    <div class="text-xl disablePointerActions">
+      CNV CÓ: {{ VCNVStrings[5].length }} KÍ TỰ
+    </div>
+    <div class="h-max flex gap-2 items-center">
+      <div
+        class="disablePointerActions h-full text-left w-9/12 relative box-border items p-5 text-2xl questionBox flex overflow-auto rounded-md"
+      >
+        {{ curVCNVQuestion.question }}
+        <div
+          *ngIf="curVCNVQuestion.answer != undefined"
+          class="font-bold absolute m-5 right-0 bottom-0"
+        >
+          HN CÓ {{ curVCNVQuestion.answer.replace(" ", "").length }} KÍ TỰ
+        </div>
+        <div
+          *ngIf="auth.userInfo().roleId == 3 && currentTime > 0"
+          class="font-thin absolute m-5 right-left bottom-0"
+        >
+          {{ currentTime }}
+        </div>
+      </div>
+      <div
+        class="disablePointerActions w-max overflow-hidden h-full text-center items-center justify-center flex flex-col"
+      >
+        <player-list
+          [players]="auth.matchData().players"
+          [highlightIndex]="auth.userInfo().index!"
+        ></player-list>
+      </div>
+    </div>
+  </div>
+  <div class="w-full flex h-max px-10">
+    <div
+      *ngIf="auth.userInfo().roleId != 3"
+      class="relative w-6/12 flex gap-2 items-center mt-3"
+    >
+      <mat-form-field
+        appearance="outline"
+        subscriptSizing="dynamic"
+        class="w-full text-lg"
+      >
+        <input
+          matInput
+          autocomplete="off"
+          (keyup)="checkIfTime()"
+          (keyup.enter)="submitAnswer()"
+          [(ngModel)]="playerAnswer"
+          placeholder="Nhập đáp án vào đây"
+          class=""
+        />
+      </mat-form-field>
+      <button
+        (click)="submitAnswer()"
+        [disabled]="currentTime <= 0"
+        mat-icon-button
+        class="shadow-lg"
+      >
+        <mat-icon>done</mat-icon>
+      </button>
+    </div>
+    <div
+      *ngIf="auth.userInfo().roleId != 3"
+      class="disablePointerActions w-3/12 mt-8 text-center justify-center items-center"
+    >
+      <p class="text-2xl pr-32">{{ answerCache }}</p>
+    </div>
+    <div
+      *ngIf="auth.userInfo().roleId != 3"
+      class="disablePointerActions w-3/12 mt-8 text-center justify-center items-center"
+    >
+      <p *ngIf="currentTime != 0" class="text-2xl pr-32">
+        Thời gian: {{ currentTime }}
+      </p>
+    </div>
+  </div>
+  <div *ngIf="auth.userInfo().roleId != 3" class="fixed z-50 bottom-0 right-0">
+    <button
+      [disabled]="disabledCNVButton == true"
+      (click)="attemptVCNV()"
+      mat-fab
+      extended
+      class="h-12 w-64 align-bottom items-center text-right"
+    >
+      TRẢ LỜI CNV
+    </button>
+  </div>
+</div>

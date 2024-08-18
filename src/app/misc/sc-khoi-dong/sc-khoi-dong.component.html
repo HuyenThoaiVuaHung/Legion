@@ -1,0 +1,59 @@
+<div class="base relative flex justify-center items-center">
+  <div class="question mat-elevation-z8 rounded-md overflow-hidden flex w-[70rem] flex-col mr-5">
+    <div class="h-12 w-full flex">
+      @for (player of auth.matchData().players; track $index) {
+      <div
+        [ngClass]="{
+                'name-highlight': playerGotTurn.id === $index + 1,
+              }"
+        class="border-2 w-full box-border h-full bg-surface font-semibold flex justify-between gap-2 items-center p-5"
+      >
+        <span>
+          {{ auth.matchData().players[$index].name.toUpperCase() }}
+        </span>
+        <span>
+          {{ auth.matchData().players[$index].score }}
+        </span>
+      </div>
+      }
+    </div>
+    <div
+      class="w-full relative text-2xl box-border p-5 h-56"
+    >
+      @if (currentQuestion) { @if (currentQuestion.type == 'P') {
+      <span class="w-full h-full justify-between flex gap-5">
+        <span class="w-full max-w-96">
+          {{ currentQuestion.question }}
+        </span>
+        <img
+          class="w-40 float-right"
+          [src]="
+            '../../../assets/picture-questions/kd/' +
+            currentQuestion.audioFilePath
+          "
+        />
+      </span>
+      } @else {
+      <span>
+        {{ currentQuestion.question }}
+      </span>
+
+      } }
+      <span
+        *ngIf="threeSecTimers[1] <= 0 && threeSecTimers[0] > 0"
+        class="absolute right-0 bottom-0 text-5xl p-5"
+        >{{ threeSecTimers[0] / 10 }}</span
+      >
+      <span
+        *ngIf="threeSecTimers[1] > 0"
+        class="absolute right-0 bottom-0 text-5xl p-5"
+        >{{ threeSecTimers[1] / 10 }}</span
+      >
+    </div>
+  </div>
+  <div
+    class=" w-52 text-7xl border-2 font-semibold mat-elevation-z8 rounded-xl grid place-items-center h-52"
+  >
+    {{ currentQuestionNo }}:{{ currentMaxQuestionNo }}
+  </div>
+</div>

@@ -1,0 +1,227 @@
+<div class="admin-container">
+  <mat-card appearance="outlined" class="w-full h-full">
+    <mat-card-header>
+      <mat-card-title> Quản lý câu hỏi </mat-card-title>
+      <mat-card-subtitle>
+        Danh sách câu hỏi hiện tại: {{ currentQuestionListName() }}
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="overflow-y-auto">
+      <table
+        mat-table
+        [dataSource]="
+          kdData().gamemode == 'S'
+            ? kdData().questions.singleplayer[
+                kdData().currentSingleplayerPlayer
+              ]
+            : kdData().questions.multiplayer
+        "
+      >
+        <ng-container matColumnDef="question">
+          <th mat-header-cell *matHeaderCellDef>Câu hỏi</th>
+          <td
+            mat-cell
+            [ngClass]="{
+          choose: chosenRow === element,
+        }"
+            *matCellDef="let element"
+          >
+            {{ element.question }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="answer">
+          <th mat-header-cell *matHeaderCellDef>Đáp án</th>
+          <td mat-cell *matCellDef="let element">{{ element.answer }}</td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Loại</th>
+          <td
+            mat-cell
+            [ngClass]="{
+            highlight: displayingRow === element,
+          }"
+            *matCellDef="let element"
+          >
+            {{ element.type }}
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedQuestionColumns; let i = index"
+          class=""
+          [ngClass]="{ '': row.ifSong === true }"
+          (click)="onClickQuestion(row)"
+          (dblclick)="onDoubleClickQuestion(row)"
+        ></tr>
+      </table>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-button (click)="clearQuestion()">
+        <mat-icon>visibility_off</mat-icon>
+        Ẩn câu hỏi
+      </button>
+      <button mat-button (click)="(undefined)">
+        <mat-icon>edit</mat-icon>
+        Chỉnh sửa
+      </button>
+    </mat-card-actions>
+  </mat-card>
+  <mat-card appearance="outlined" class="w-full h-full">
+    <mat-card-header>
+      <mat-card-title> Quản lý vòng đấu </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="overflow-y-auto">
+      <menu-item
+        title="Chế độ"
+        description="Chọn chế độ của vòng đấu theo luật Olympia 2024."
+      >
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Phần thi</mat-label>
+          <mat-select
+            [(value)]="kdData().gamemode"
+            (valueChange)="onGamemodeChange($event)"
+          >
+            <mat-option *ngFor="let gamemode of ['S', 'M']" [value]="gamemode">
+              {{ gamemode == "S" ? "Cá nhân" : "Đối kháng" }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </menu-item>
+      <menu-item title="Thí sinh giành quyền" description="">
+        @if(this.kdData().gamemode == 'S'){ Phần thi cá nhân } @else if
+        (lastTurn.name) {
+        {{ lastTurn.name }}
+        } @else { Chưa có thí sinh bấm chuông. }
+      </menu-item>
+      <menu-item
+        title="Chấm điểm"
+        description="Chấm đúng sai cho thí sinh, đối với phần thi cá nhân sẽ tính điểm thí sinh đang thi."
+      >
+        <button mat-flat-button (click)="markCorrect()">
+          <mat-icon>done</mat-icon>
+          Đúng
+        </button>
+        <button mat-button (click)="markWrong()">
+          <mat-icon>clear</mat-icon>
+          Sai
+        </button>
+      </menu-item>
+      <menu-item
+        title="Âm thanh"
+        description="Âm thanh khoảng trắng & nhạc hiệu"
+      >
+        <button mat-button (click)="playSfx('BLANK_SPC')">
+          <mat-icon>music_note</mat-icon>
+          Âm thanh khoảng trắng
+        </button>
+        <button mat-button (click)="playSfx('KD_START')">
+          <mat-icon>music_note</mat-icon>
+          Nhạc hiệu
+        </button>
+      </menu-item>
+      <menu-item
+        title="Điều khiển"
+        description="Số câu hỏi hiện tại: {{ currentQuestionNo }}/{{
+          currentMaxQuestionNo
+        }}
+      "
+      >
+        <button
+          mat-flat-button
+          color="accent"
+          matTooltip="Sẽ bắt đầu vòng đấu mới với số câu hỏi theo chế độ đã chọn và reset số câu hỏi hiện tại."
+          (click)="roundStart(kdData().gamemode == 'S' ? 6 : 12)"
+        >
+          <mat-icon>flag</mat-icon>
+          Bắt đầu phần thi
+        </button>
+
+        <button mat-button color="accent" (click)="resetTurn()">
+          <mat-icon>replay</mat-icon>
+          Reset chuông
+        </button>
+        <button mat-button (click)="nextQuestion()">
+          <mat-icon>skip_next</mat-icon>
+          Bỏ qua CH
+        </button>
+      </menu-item>
+      <menu-item title="Đếm ngược">
+        <button
+          mat-button
+          [disabled]="threeSecTimers[1] > 0"
+          (click)="start3sTimer()"
+        >
+          <mat-icon>timer</mat-icon>
+          Đếm ngược 3s
+        </button>
+      </menu-item>
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title> Thông tin thí sinh </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table
+            mat-table
+            [dataSource]="auth.matchData().players"
+            class="w-max"
+          >
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td
+                mat-cell
+                [ngClass]="{
+                  choose: chosenPlayer === element
+                }"
+                *matCellDef="let element"
+              >
+                {{ element.id }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Tên</th>
+              <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="score">
+              <th mat-header-cell *matHeaderCellDef>Điểm</th>
+              <td mat-cell *matCellDef="let element">{{ element.score }}</td>
+            </ng-container>
+            <ng-container matColumnDef="active">
+              <th mat-header-cell *matHeaderCellDef>Đã kết nối?</th>
+              <td
+                [ngClass]="{
+                  highlight:
+                    kdData().currentSingleplayerPlayer === element.id - 1
+                }"
+                mat-cell
+                *matCellDef="let element"
+              >
+                <mat-checkbox
+                  disabled="true"
+                  [checked]="element.isReady"
+                ></mat-checkbox>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedPlayerColumns"
+              (dblclick)="onDoubleClickPlayer(row)"
+              (click)="choosePlayer(row)"
+            ></tr>
+          </table>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button
+            *ngIf="chosenPlayer.name != undefined"
+            mat-button
+            (click)="editPlayer()"
+          >
+            <mat-icon>edit</mat-icon>
+            Chỉnh sửa
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-card-content>
+  </mat-card>
+</div>
