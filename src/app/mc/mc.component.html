@@ -13,7 +13,6 @@
     <player-list
       [players]="auth.matchData().players"
       [highlightIndex]="vdData ? vdData.currentPlayerId - 1 : -1"
-      ;
       [turnIndex]="
         auth.matchData().matchPos == 'VD'
           ? stealingPlayerIndex
@@ -83,25 +82,12 @@
       </span>
       <div class="float-left">
         <span>
-          HN1: {{ vcnvData.questions[0].answer }} |
-          {{ VCNVStrings[0].length }} Kí tự
+          @for (index of [0,1,2,3,4,5]; track $index) {
+          {{ index == 5 ? "HN" + (index + 1) : "CNV" }}:
+          {{ vcnvData.questions[index].answer }} |
+          {{ getVcnvAnswerLength(index) }} Kí tự
           <br />
-          HN2: {{ vcnvData.questions[1].answer }} |
-          {{ VCNVStrings[1].length }} Kí tự
-          <br />
-          HN3: {{ vcnvData.questions[2].answer }} |
-          {{ VCNVStrings[2].length }} Kí tự
-          <br />
-          HN4: {{ vcnvData.questions[3].answer }} |
-          {{ VCNVStrings[3].length }} Kí tự
-          <br />
-          HN5: {{ vcnvData.questions[4].answer }} |
-          {{ VCNVStrings[4].length }} Kí tự
-          <br />
-          CNV: {{ vcnvData.questions[5].answer }} |
-          {{ VCNVStrings[5].length }} Kí tự
-          <br />
-          Giải thích: {{ vcnvData.questions[5].question }}
+          } Giải thích: {{ vcnvData.questions[5].question }}
         </span>
       </div>
       <div class="float-right">

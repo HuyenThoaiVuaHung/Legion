@@ -7,16 +7,7 @@
       </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content class="overflow-y-auto">
-      <table
-        mat-table
-        [dataSource]="
-          kdData().gamemode == 'S'
-            ? kdData().questions.singleplayer[
-                kdData().currentSingleplayerPlayer
-              ]
-            : kdData().questions.multiplayer
-        "
-      >
+      <table mat-table [dataSource]="currentQuestionList()">
         <ng-container matColumnDef="question">
           <th mat-header-cell *matHeaderCellDef>Câu hỏi</th>
           <td
@@ -61,7 +52,7 @@
         <mat-icon>visibility_off</mat-icon>
         Ẩn câu hỏi
       </button>
-      <button mat-button (click)="(undefined)">
+      <button mat-button (click)="editQuestion()">
         <mat-icon>edit</mat-icon>
         Chỉnh sửa
       </button>
