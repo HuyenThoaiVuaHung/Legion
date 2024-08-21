@@ -1,7 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { io, Socket } from "socket.io-client";
-import { environment } from "src/environments/environment";
 import { AuthService } from "../services/auth.service";
 import { TtData, VcnvData, VdData } from "../services/types/game";
 import { Player } from "../services/types/match.data";
@@ -46,7 +44,6 @@ export class McComponent implements OnInit {
     });
     this.auth.socket.emit("get-vcnv-data", (callback: VcnvData) => {
       this.vcnvData = callback;
-      this.formatStrings();
       this.imagePath =
         "../../../assets/picture-questions/vcnv/" +
         this.vcnvData.questions[5].picFileName;
@@ -84,7 +81,6 @@ export class McComponent implements OnInit {
     });
     this.auth.socket.on("update-vcnv-data", (data: VcnvData) => {
       this.vcnvData = data;
-      this.formatStrings();
       this.imagePath =
         "../../../assets/picture-questions/vcnv/" +
         this.vcnvData.questions[5].picFileName;
@@ -97,28 +93,7 @@ export class McComponent implements OnInit {
       this.ttData.playerAnswers.sort(sortByTimestamp);
     });
   }
-  VCNVStrings: string[] = [];
-  formatStrings() {
-    if (!this.vcnvData) {
-      return;
-    }
-    for (let i: number = 0; i <= 5; i++) {
-      this.VCNVStrings[i] = this.vcnvData.questions[i].answer;
-    }
-    this.VCNVStrings.forEach((element, index) => {
-      element = element.replace(/\s/g, "");
-      element = element.toUpperCase();
-      if (this.vcnvData)
-        if (this.vcnvData.questions[index].ifOpen == false) {
-          let processedString = "";
-          for (let i = 0; i < element.length; i++) {
-            processedString += "◯";
-          }
-          element = processedString;
-        }
-      this.VCNVStrings[index] = element;
-    });
-  }
+
   resolveCnvPlayers(cnvPlayers): Player[] {
     return cnvPlayers.map((player) => this.auth.matchData().players[player.id]);
   }
@@ -142,7 +117,11 @@ export class McComponent implements OnInit {
     }
     return readableTime;
   }
+  public getVcnvAnswerLength(index: number) {
+    return this.vcnvData!.questions[index].answer.replace(/\s+/, '').length;
+  }
 }
+
 function sortByTimestamp(a, b) {
   if (a.timestamp < b.timestamp) {
     return -1;

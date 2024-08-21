@@ -100,7 +100,7 @@
         <mat-card-content>
           @if (this.chosenRow){ @switch (chosenRow.type) { @case (type.NORMAL) {
           Không có media } @case (type.AUDIO) {
-          <audio controls>
+          <audio controls >
             <source
               src="../../../assets/audio-questions/{{
                 currentQuestionList()
@@ -110,7 +110,7 @@
             Your browser does not support the audio element.
           </audio>
           } @case (type.VIDEO) {
-          <video controls>
+          <video controls  >
             <source
               src="../../../assets/video-questions/{{
                 currentQuestionList()
