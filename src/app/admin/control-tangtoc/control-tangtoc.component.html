@@ -131,7 +131,7 @@
         <button
           mat-flat-button
           [disabled]="!this.displayingRow"
-          (click)="startTimer(displayingRow!.id * 10)"
+          (click)="startTimer(displayingRow.id >2 ? 30: 20)"
         >
           <mat-icon>timer_outline</mat-icon>
           Bắt đầu đếm ngược
