@@ -21,6 +21,8 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AdminComponent } from "./admin.component";
 import { AdminDashboardComponent } from "./dashboard/dashboard.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatDividerModule } from '@angular/material/divider';
+
 
 export const adminRoutes: Routes = [
   {
@@ -86,9 +88,10 @@ export const adminRoutes: Routes = [
     MatProgressSpinner,
     MatToolbarModule,
     MatTooltipModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatDividerModule
   ],
   bootstrap: [AdminComponent],
   exports: [RouterModule],
 })
-export class AdminModule {}
+export class AdminModule { }

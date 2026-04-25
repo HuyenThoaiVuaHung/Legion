@@ -1,15 +1,13 @@
 <div class="w-full h-full">
   <mat-toolbar>
-    <a
-      mat-icon-button
-      routerLink="/"
-
-      title="Quay về màn hình chính"
-    >
+    <a mat-icon-button routerLink="/" title="Quay về màn hình chính">
       <mat-icon>home</mat-icon>
     </a>
     <button mat-icon-button (click)="togglePoints()" title="Điểm số">
       <mat-icon>scoreboard</mat-icon>
+    </button>
+    <button mat-icon-button (click)="openConfigMenu()" title="Cấu hình">
+      <mat-icon>settings</mat-icon>
     </button>
     <span class="flex flex-grow"></span>
     <a mat-icon-button routerLink="/admin" title="Trang chủ">
@@ -30,6 +28,7 @@
     <a mat-icon-button routerLink="/admin/chp" title="Câu hỏi phụ">
       <mat-icon>workspaces</mat-icon>
     </a>
+
   </mat-toolbar>
   <router-outlet></router-outlet>
 </div>

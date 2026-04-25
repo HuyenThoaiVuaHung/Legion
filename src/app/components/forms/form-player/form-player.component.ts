@@ -8,7 +8,6 @@ import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'app-form-player',
   templateUrl: './form-player.component.html',
-  styleUrls: ['./form-player.component.scss'],
   standalone: true,
   imports: [
     MatFormFieldModule,
