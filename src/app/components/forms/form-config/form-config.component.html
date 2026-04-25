@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>Sửa cấu hình ứng dụng</h1>
+<div mat-dialog-content>
+    <h5>
+        Phần Thi Tăng tốc
+    </h5>
+    <mat-slide-toggle [(ngModel)]="config.automaticallyShowTangTocAnswer">Tự động hiển thị đáp án</mat-slide-toggle>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Huỷ</button>
+    <button mat-button [mat-dialog-close]="config" cdkFocusInitial>Lưu</button>
+</div>

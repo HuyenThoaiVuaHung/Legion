@@ -5,6 +5,7 @@ import { FormPlayerComponent } from "../../components/forms/form-player/form-pla
 import { FormQTtComponent } from "../../components/forms/form-q-tt/form-q-tt.component";
 import { AuthService } from "../../services/auth.service";
 import { TtData, TtQuestion } from "../../services/types/game";
+import { ConfigService } from "src/app/services/config.service";
 
 @Component({
   selector: "app-control-tangtoc",
@@ -15,8 +16,9 @@ export class ControlTangtocComponent implements OnInit {
   constructor(
     private router: Router,
     public dialog: MatDialog,
-    public auth: AuthService
-  ) {}
+    public auth: AuthService,
+    private config: ConfigService
+  ) { }
   ifPlayerCNV: boolean = true;
   tangtocData: TtData | undefined;
   currentTime: number = 0;
@@ -78,9 +80,9 @@ export class ControlTangtocComponent implements OnInit {
   editQuestion() {
     let question =
       this.tangtocData!.questions[
-        this.tangtocData!.questions.indexOf(
-          this.chosenRow || ({} as TtQuestion)
-        )
+      this.tangtocData!.questions.indexOf(
+        this.chosenRow || ({} as TtQuestion)
+      )
       ];
     const dialogRef = this.dialog.open(FormQTtComponent, {
       data: question,
@@ -155,6 +157,11 @@ export class ControlTangtocComponent implements OnInit {
       this.auth.socket.emit("change-match-position", "TT_A");
     } else if (this.auth.matchData().matchPos == "TT_A") {
       this.auth.socket.emit("change-match-position", "TT_Q");
+      if (this.config.config().automaticallyShowTangTocAnswer && this.tangtocData?.questions[this.displayingRow?.id || -1].answer_image) {
+        this.tangtocData!.showAnswer = true;
+        this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
+        setTimeout(() => this.auth.socket.emit("broadcast-tt-question", this.displayingRow?.id || -1));
+      }
       if (this.tangtocData!.showResults == true) this.toggleResultsDisplay();
     }
   }
