@@ -63,7 +63,7 @@ export class ControlKhoiDongComponent implements OnInit {
     });
     this.auth.socket.emit("change-match-position", "KD");
 
-    this.auth.socket.on(" -admin", (data) => {
+    this.auth.socket.on("update-kd-data-admin", (data) => {
       this.kdData.set(data);
     });
     this.auth.socket.on("update-number-question-kd", (max, curr) => {
