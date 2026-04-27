@@ -157,7 +157,7 @@ export class ControlTangtocComponent implements OnInit {
       this.auth.socket.emit("change-match-position", "TT_A");
     } else if (this.auth.matchData().matchPos == "TT_A") {
       this.auth.socket.emit("change-match-position", "TT_Q");
-      if (this.config.config().automaticallyShowTangTocAnswer && this.tangtocData?.questions[this.displayingRow?.id || -1].answer_image) {
+      if (this.config.config().automaticallyShowTangTocAnswer) {
         this.tangtocData!.showAnswer = true;
         this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
         setTimeout(() => this.auth.socket.emit("broadcast-tt-question", this.displayingRow?.id || -1));
