@@ -80,9 +80,7 @@ export class ControlTangtocComponent implements OnInit {
   editQuestion() {
     let question =
       this.tangtocData!.questions[
-      this.tangtocData!.questions.indexOf(
-        this.chosenRow || ({} as TtQuestion)
-      )
+      this.tangtocData!.questions.findIndex((q) => q.id === this.chosenRow!.id)
       ];
     const dialogRef = this.dialog.open(FormQTtComponent, {
       data: question,
@@ -90,7 +88,7 @@ export class ControlTangtocComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result && this.chosenRow) {
         this.tangtocData!.questions[
-          this.tangtocData!.questions.indexOf(this.chosenRow)
+          this.tangtocData!.questions.findIndex((q) => q.id === this.chosenRow!.id)
         ] = result;
         this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
       }
@@ -106,10 +104,10 @@ export class ControlTangtocComponent implements OnInit {
     this.auth.socket.emit("play-sfx", sfxId);
   }
   onClickQuestion(row) {
-    this.chosenRow = row;
+    this.chosenRow = structuredClone(row);
   }
   onDoubleClickQuestion(row) {
-    this.displayingRow = row;
+    this.displayingRow = structuredClone(row);
   }
   toggleQuestionAnswer() {
     if (this.tangtocData!.showAnswer == true) {

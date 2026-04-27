@@ -34,7 +34,7 @@
           <td
             mat-cell
             [ngClass]="{
-              highlight: displayingRow === element
+              highlight: displayingRow && displayingRow.id === element.id
             }"
             *matCellDef="let element"
           >
