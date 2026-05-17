@@ -6,7 +6,7 @@
         & Xem trước hình ảnh, video của câu hỏi.
       </mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content class="overflow-y-scroll">
       @if (this.tangtocData) {
       <table mat-table [dataSource]="tangtocData.questions">
         <ng-container matColumnDef="id">
