@@ -1,5 +1,5 @@
 <div class="base relative flex justify-center items-center">
-  <div class="question mat-elevation-z8 rounded-md overflow-hidden flex w-[70rem] flex-col mr-5">
+  <div class="question bg-surface-container mat-elevation-z8 rounded-md overflow-hidden flex w-[70rem] flex-col mr-5">
     <div class="h-12 w-full flex">
       @for (player of auth.matchData().players; track $index) {
       <div
@@ -52,8 +52,13 @@
     </div>
   </div>
   <div
-    class=" w-52 text-7xl border-2 font-semibold mat-elevation-z8 rounded-xl grid place-items-center h-52"
+    class=" w-52 text-7xl bg-surface-container border-2 font-semibold mat-elevation-z8 rounded-xl grid place-items-center h-52"
   >
-    {{ currentQuestionNo }}:{{ currentMaxQuestionNo }}
+    @if (!currentQuestion && !currentMaxQuestionNo ) {
+      -
+    }
+    @else{
+      {{ currentQuestionNo }}/{{ currentMaxQuestionNo }}
+    }
   </div>
 </div>
