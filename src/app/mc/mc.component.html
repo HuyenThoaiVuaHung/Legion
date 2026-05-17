@@ -83,7 +83,7 @@
       <div class="float-left">
         <span>
           @for (index of [0,1,2,3,4,5]; track $index) {
-          {{ index == 5 ? "HN" + (index + 1) : "CNV" }}:
+          {{ index != 5 ? "HN" + (index + 1) : "CNV" }}:
           {{ vcnvData.questions[index].answer }} |
           {{ getVcnvAnswerLength(index) }} Kí tự
           <br />

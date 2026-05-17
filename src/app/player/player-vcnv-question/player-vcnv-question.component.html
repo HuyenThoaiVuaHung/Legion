@@ -118,7 +118,7 @@
           *ngIf="curVCNVQuestion.answer != undefined"
           class="font-bold absolute m-5 right-0 bottom-0"
         >
-          HN CÓ {{ curVCNVQuestion.answer.replace(" ", "").length }} KÍ TỰ
+          HN CÓ {{ curVCNVQuestion.answer.split(" ").join("").length }} KÍ TỰ
         </div>
         <div
           *ngIf="auth.userInfo().roleId == 3 && currentTime > 0"
