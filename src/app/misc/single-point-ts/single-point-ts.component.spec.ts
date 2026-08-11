@@ -8,8 +8,8 @@ describe('SinglePointTsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SinglePointTsComponent ]
-    })
+    imports: [SinglePointTsComponent]
+})
     .compileComponents();
   });
 

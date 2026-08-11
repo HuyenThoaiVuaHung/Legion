@@ -1,18 +1,31 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { FormPlayerComponent } from "../../components/forms/form-player/form-player.component";
 import { FormQVdComponent } from "../../components/forms/form-q-vd/form-q-vd.component";
 import { AuthService } from "../../services/auth.service";
 import { VdData, VdQuestion } from "src/app/services/types/game";
 import { Player } from "src/app/services/types/match.data";
+import { MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions } from "@angular/material/card";
+import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
+import { NgClass } from "@angular/common";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MenuItemComponent } from "../../components/menu-item/menu-item.component";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 
 @Component({
-  selector: "app-control-vd",
-  templateUrl: "./control-vd.component.html",
-  styleUrls: ["./control-vd.component.scss"],
+    selector: "app-control-vd",
+    templateUrl: "./control-vd.component.html",
+    styleUrls: ["./control-vd.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatCardActions, MatButton, MatIcon, MatIconButton, MatTooltip, MenuItemComponent, MatCheckbox, ReactiveFormsModule, FormsModule]
 })
 export class ControlVdComponent implements OnInit {
-  constructor(public dialog: MatDialog, public auth: AuthService) {}
+  dialog = inject(MatDialog);
+  auth = inject(AuthService);
+
   currentQuestionPool: VdQuestion[] = [];
   vdData: VdData = {} as VdData;
   currentTime: number = 0;

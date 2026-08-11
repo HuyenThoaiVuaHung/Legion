@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { ActivatedRouteSnapshot } from "@angular/router";
 import { AuthService } from "../auth.service";
 
@@ -6,7 +6,8 @@ import { AuthService } from "../auth.service";
   providedIn: "root",
 })
 export class MatchPosGuard  {
-  constructor(private auth: AuthService) {}
+  private auth = inject(AuthService);
+
   async canActivate(
     route: ActivatedRouteSnapshot
   ): Promise<boolean> {

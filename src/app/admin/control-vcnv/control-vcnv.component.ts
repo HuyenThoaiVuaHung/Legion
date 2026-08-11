@@ -1,23 +1,34 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
 import { FormPlayerComponent } from "src/app/components/forms/form-player/form-player.component";
 import { FormQVcnvComponent } from "src/app/components/forms/form-q-vcnv/form-q-vcnv.component";
 import { VcnvData } from "src/app/services/types/game";
+import { MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions } from "@angular/material/card";
+import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
+import { NgClass } from "@angular/common";
+import { MatIconButton, MatButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { ReactiveFormsModule, FormsModule } from "@angular/forms";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MenuItemComponent } from "../../components/menu-item/menu-item.component";
 
 @Component({
-  selector: "app-control-vcnv",
-  templateUrl: "./control-vcnv.component.html",
-  styleUrls: ["./control-vcnv.component.scss"],
+    selector: "app-control-vcnv",
+    templateUrl: "./control-vcnv.component.html",
+    styleUrls: ["./control-vcnv.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatIconButton, MatTooltip, MatIcon, MatCheckbox, ReactiveFormsModule, FormsModule, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatProgressSpinner, MatCardActions, MatButton, MenuItemComponent]
 })
 export class ControlVcnvComponent implements OnInit {
+  router = inject(Router);
+  dialog = inject(MatDialog);
+  auth = inject(AuthService);
+
   ifPlayerCNV: boolean = true;
-  constructor(
-    public router: Router,
-    public dialog: MatDialog,
-    public auth: AuthService
-  ) {}
   vcnvData: VcnvData = {} as VcnvData;
   currentTime: number = 0;
   playerGetVCNV: any[] = [];

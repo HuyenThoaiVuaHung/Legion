@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { FormPlayerComponent } from "../../components/forms/form-player/form-player.component";
@@ -6,19 +6,28 @@ import { FormQTtComponent } from "../../components/forms/form-q-tt/form-q-tt.com
 import { AuthService } from "../../services/auth.service";
 import { TtData, TtQuestion } from "../../services/types/game";
 import { ConfigService } from "src/app/services/config.service";
+import { MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions } from "@angular/material/card";
+import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
+import { NgClass } from "@angular/common";
+import { MenuItemComponent } from "../../components/menu-item/menu-item.component";
+import { MatButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 
 @Component({
-  selector: "app-control-tangtoc",
-  templateUrl: "./control-tangtoc.component.html",
-  styleUrls: ["./control-tangtoc.component.scss"],
+    selector: "app-control-tangtoc",
+    templateUrl: "./control-tangtoc.component.html",
+    styleUrls: ["./control-tangtoc.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MenuItemComponent, MatCardActions, MatButton, MatIcon, MatCheckbox, ReactiveFormsModule, FormsModule]
 })
 export class ControlTangtocComponent implements OnInit {
-  constructor(
-    private router: Router,
-    public dialog: MatDialog,
-    public auth: AuthService,
-    private config: ConfigService,
-  ) {}
+  private router = inject(Router);
+  dialog = inject(MatDialog);
+  auth = inject(AuthService);
+  private config = inject(ConfigService);
+
   ifPlayerCNV: boolean = true;
   tangtocData: TtData | undefined;
   currentTime: number = 0;

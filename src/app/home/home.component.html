@@ -41,7 +41,7 @@
           </form>
           <div>
             <button
-              [disabled]="urlFormGroup.controls.legendaryUrl.errors?.['pattern']"
+              [disabled]="$safeNavigationMigration(urlFormGroup.controls.legendaryUrl.errors?.['pattern'])"
               (click)="connect()"
               mat-button
             >

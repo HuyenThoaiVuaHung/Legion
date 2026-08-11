@@ -1,13 +1,24 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 import { SfxService } from "src/app/services/sfx-service.service";
+import { CountdownComponent } from "../../components/countdown/countdown.component";
+import { PlayerListComponent } from "../../components/player-list/player-list.component";
+import { MatFormField } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { ReactiveFormsModule, FormsModule } from "@angular/forms";
+import { MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
 @Component({
-  selector: "app-player-tangtoc-q",
-  templateUrl: "./player-tangtoc-q.component.html",
-  styleUrls: ["./player-tangtoc-q.component.scss"],
+    selector: "app-player-tangtoc-q",
+    templateUrl: "./player-tangtoc-q.component.html",
+    styleUrls: ["./player-tangtoc-q.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [CountdownComponent, PlayerListComponent, MatFormField, MatInput, ReactiveFormsModule, FormsModule, MatIconButton, MatIcon]
 })
 export class PlayerTangtocQComponent implements OnInit {
-  constructor(private sfxService: SfxService, public auth: AuthService) {}
+  private sfxService = inject(SfxService);
+  auth = inject(AuthService);
+
   imageSource = "";
   videoSource = "";
   ttData: any = {};

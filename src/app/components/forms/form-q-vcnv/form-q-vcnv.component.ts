@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import {
@@ -11,17 +11,16 @@ import { MatInputModule } from "@angular/material/input";
 import { MatRadioModule } from "@angular/material/radio";
 
 @Component({
-  selector: "app-form-q-vcnv",
-  templateUrl: "./form-q-vcnv.component.html",
-  styleUrls: ["./form-q-vcnv.component.scss"],
-  standalone: true,
-  imports: [MatFormFieldModule, MatRadioModule, MatDialogModule, FormsModule, MatButtonModule, MatInputModule],
+    selector: "app-form-q-vcnv",
+    templateUrl: "./form-q-vcnv.component.html",
+    styleUrls: ["./form-q-vcnv.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatFormFieldModule, MatRadioModule, MatDialogModule, FormsModule, MatButtonModule, MatInputModule]
 })
 export class FormQVcnvComponent implements OnInit {
-  constructor(
-    public dialogRef: MatDialogRef<FormQVcnvComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  dialogRef = inject<MatDialogRef<FormQVcnvComponent>>(MatDialogRef);
+  data = inject(MAT_DIALOG_DATA);
+
 
   ngOnInit(): void {}
   onNoClick(): void {

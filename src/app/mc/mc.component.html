@@ -2,8 +2,8 @@
   <div class="absolute left-5 self-end ml-5 mt-10 w-52 h-60">
     <h6>Thí sinh trả lời CNV</h6>
     @if ( vcnvData ) {
-    <player-list [players]="resolveCnvPlayers(vcnvData.CNVPlayers)">
-    </player-list>
+      <player-list [players]="resolveCnvPlayers(vcnvData.CNVPlayers)">
+      </player-list>
 
     }
   </div>
@@ -20,19 +20,20 @@
           ? kdTurn.id - 1
           : -1
       "
-    >
+      >
     </player-list>
 
-    <div
-      *ngIf="threeSecTimer2 <= 0 && threeSecTimer1 > 0"
-      class="text-4xl disablePointerActions absolute z-2 w-64 rounded-xl mt-10 text-center"
-    >
-      {{ threeSecTimer1 / 10 }}s
-    </div>
+    @if (threeSecTimer2 <= 0 && threeSecTimer1 > 0) {
+      <div
+        class="text-4xl disablePointerActions absolute z-2 w-64 rounded-xl mt-10 text-center"
+        >
+        {{ threeSecTimer1 / 10 }}s
+      </div>
+    }
     <div
       [ngClass]="{ 'opacity-0': threeSecTimer2 <= 0 }"
       class="text-4xl disablePointerActions w-64 rounded-xl mt-10 text-center"
-    >
+      >
       {{ threeSecTimer2 / 10 }}s
     </div>
     <div class="text-center text-2xl mt-5">
@@ -41,72 +42,78 @@
   </div>
   <div
     class="disablePointerActions drop-shadow-lg questionBox float-right relative mt-5 ml-10 mr-10 p-10 text-3xl border-2 rounded-xl"
-  >
-    <span>
-      <div class="mb-5" *ngIf="auth.matchData().matchPos == 'KD'">
-        <span> Thí sinh giành quyền: {{ kdTurn.name }} </span>
-        <br />
-      </div>
-      @if (vdData) {
-      <span
-        *ngIf="vdData.ifNSHV == true"
-        class="absolute text-7xl p-5 bottom-0 right-0 text-golden-dark"
-        >★</span
-      >
-
-      } Câu hỏi: {{ question.question }}
-      <br />
-      Đáp án: {{ question.answer }}
-      <br />
-      <span *ngIf="question.value">Giá trị: {{ question.value }}</span>
-      <br />
-    </span>
-    <div
-      *ngIf="
-        auth.matchData().matchPos == 'TT_Q' ||
-        auth.matchData().matchPos == 'TT_A'
-      "
     >
-      @for (player of ttData?.playerAnswers; track $index) {
-      <div>
-        {{ auth.matchData().players[player.id - 1].name.toUpperCase() }}:
-        {{ player.answer }} &#64; {{ getTimePassed($index) }}
-      </div>
+    <span>
+      @if (auth.matchData().matchPos == 'KD') {
+        <div class="mb-5">
+          <span> Thí sinh giành quyền: {{ kdTurn.name }} </span>
+          <br />
+        </div>
       }
-    </div>
-    @if ( (auth.matchData().matchPos == 'VCNV_Q' || auth.matchData().matchPos ==
-    'VCNV_A') && vcnvData ) {
-    <div>
-      <span>
-        <img class="w-60" src="{{ imagePath }}" />
-      </span>
-      <div class="float-left">
-        <span>
-          @for (index of [0,1,2,3,4,5]; track $index) {
-          {{ index != 5 ? "HN" + (index + 1) : "CNV" }}:
-          {{ vcnvData.questions[index].answer }} |
-          {{ getVcnvAnswerLength(index) }} Kí tự
+      @if (vdData) {
+        @if (vdData.ifNSHV == true) {
+          <span
+            class="absolute text-7xl p-5 bottom-0 right-0 text-golden-dark"
+            >★</span
+            >
+          }
+
+          } Câu hỏi: {{ question.question }}
           <br />
-          } Giải thích: {{ vcnvData.questions[5].question }}
-        </span>
-      </div>
-      <div class="float-right">
-        <span>
-          {{ auth.matchData().players[0].name }}:
-          {{ vcnvData.playerAnswers[0].answer }}
+          Đáp án: {{ question.answer }}
           <br />
-          {{ auth.matchData().players[1].name }}:
-          {{ vcnvData.playerAnswers[1].answer }}
-          <br />
-          {{ auth.matchData().players[2].name }}:
-          {{ vcnvData.playerAnswers[2].answer }}
-          <br />
-          {{ auth.matchData().players[3].name }}:
-          {{ vcnvData.playerAnswers[3].answer }}
+          @if (question.value) {
+            <span>Giá trị: {{ question.value }}</span>
+          }
           <br />
         </span>
+        @if (
+          auth.matchData().matchPos == 'TT_Q' ||
+          auth.matchData().matchPos == 'TT_A'
+          ) {
+          <div
+            >
+            @for (player of ttData?.playerAnswers; track $index) {
+              <div>
+                {{ auth.matchData().players[player.id - 1].name.toUpperCase() }}:
+                {{ player.answer }} &#64; {{ getTimePassed($index) }}
+              </div>
+            }
+          </div>
+        }
+        @if ( (auth.matchData().matchPos == 'VCNV_Q' || auth.matchData().matchPos ==
+          'VCNV_A') && vcnvData ) {
+          <div>
+            <span>
+              <img class="w-60" src="{{ imagePath }}" />
+            </span>
+            <div class="float-left">
+              <span>
+                @for (index of [0,1,2,3,4,5]; track $index) {
+                  {{ index != 5 ? "HN" + (index + 1) : "CNV" }}:
+                  {{ vcnvData.questions[index].answer }} |
+                  {{ getVcnvAnswerLength(index) }} Kí tự
+                  <br />
+                  } Giải thích: {{ vcnvData.questions[5].question }}
+                </span>
+              </div>
+              <div class="float-right">
+                <span>
+                  {{ auth.matchData().players[0].name }}:
+                  {{ vcnvData.playerAnswers[0].answer }}
+                  <br />
+                  {{ auth.matchData().players[1].name }}:
+                  {{ vcnvData.playerAnswers[1].answer }}
+                  <br />
+                  {{ auth.matchData().players[2].name }}:
+                  {{ vcnvData.playerAnswers[2].answer }}
+                  <br />
+                  {{ auth.matchData().players[3].name }}:
+                  {{ vcnvData.playerAnswers[3].answer }}
+                  <br />
+                </span>
+              </div>
+            </div>
+          }
+        </div>
       </div>
-    </div>
-    }
-  </div>
-</div>

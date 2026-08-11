@@ -8,8 +8,8 @@ describe('FormQchpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FormQchpComponent ]
-    })
+    imports: [FormQchpComponent]
+})
     .compileComponents();
   });
 

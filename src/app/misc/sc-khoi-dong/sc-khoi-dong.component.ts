@@ -1,16 +1,20 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { io, Socket } from "socket.io-client";
 import { AuthService } from "src/app/services/auth.service";
 import { KdQuestion } from "src/app/services/types/game";
 import { environment } from "src/environments/environment";
+import { NgClass } from "@angular/common";
 
 @Component({
-  selector: "app-sc-khoi-dong",
-  templateUrl: "./sc-khoi-dong.component.html",
-  styleUrls: ["./sc-khoi-dong.component.scss"],
+    selector: "app-sc-khoi-dong",
+    templateUrl: "./sc-khoi-dong.component.html",
+    styleUrls: ["./sc-khoi-dong.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass]
 })
 export class ScKhoiDongComponent implements OnInit {
-  constructor(public auth: AuthService) {}
+  auth = inject(AuthService);
+
   currentQuestion: KdQuestion | undefined;
   time = 0;
   currentMaxQuestionNo = 0;

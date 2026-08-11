@@ -8,8 +8,8 @@ describe('ScVeDichComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScVeDichComponent ]
-    })
+    imports: [ScVeDichComponent]
+})
     .compileComponents();
   });
 

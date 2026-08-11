@@ -1,11 +1,4 @@
-import {
-  Component,
-  computed,
-  OnInit,
-  signal,
-  Signal,
-  WritableSignal,
-} from "@angular/core";
+import { Component, computed, OnInit, signal, Signal, WritableSignal, ChangeDetectionStrategy, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { FormPlayerComponent } from "../../components/forms/form-player/form-player.component";
@@ -13,18 +6,29 @@ import { AuthService } from "../../services/auth.service";
 import { KdData, KdQuestion, KdQuestions } from "../../services/types/game";
 import { FormQKdComponent } from "src/app/components/forms/form-q-kd/form-q-kd.component";
 import { firstValueFrom } from "rxjs";
+import { MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions } from "@angular/material/card";
+import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
+import { NgClass } from "@angular/common";
+import { MatButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { MenuItemComponent } from "../../components/menu-item/menu-item.component";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatSelect, MatOption } from "@angular/material/select";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatCheckbox } from "@angular/material/checkbox";
 
 @Component({
-  selector: "app-control-khoi-dong",
-  templateUrl: "./control-khoi-dong.component.html",
-  styleUrls: ["./control-khoi-dong.component.scss"],
+    selector: "app-control-khoi-dong",
+    templateUrl: "./control-khoi-dong.component.html",
+    styleUrls: ["./control-khoi-dong.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatCardActions, MatButton, MatIcon, MenuItemComponent, MatFormField, MatLabel, MatSelect, MatOption, MatTooltip, MatCheckbox]
 })
 export class ControlKhoiDongComponent implements OnInit {
-  constructor(
-    private router: Router,
-    public dialog: MatDialog,
-    public auth: AuthService
-  ) {}
+  private router = inject(Router);
+  dialog = inject(MatDialog);
+  auth = inject(AuthService);
+
   displayingRow: any = null;
   chosenRow: any = null;
   currentTime: number = 0;

@@ -1,18 +1,19 @@
 import { ActivatedRoute } from "@angular/router";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { MatchData } from "src/app/services/types/match.data";
 import { AuthService } from "src/app/services/auth.service";
 
 @Component({
-  selector: "app-single-point-ts",
-  templateUrl: "./single-point-ts.component.html",
-  styleUrls: ["./single-point-ts.component.scss"],
+    selector: "app-single-point-ts",
+    templateUrl: "./single-point-ts.component.html",
+    styleUrls: ["./single-point-ts.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager
 })
 export class SinglePointTsComponent implements OnInit {
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    public auth: AuthService
-  ) {
+  private activatedRoute = inject(ActivatedRoute);
+  auth = inject(AuthService);
+
+  constructor() {
     if (!localStorage.getItem("defaultUrl"))
       this.auth.connect(
         document.URL.match(/(http:\x2f\x2f)[A-Za-z0-9\.]+/)![0]

@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
 import { getControlUrlFromMatchPosition } from "../services/tools";
 import { Router } from "@angular/router";
 import { AuthService } from "../services/auth.service";
@@ -7,12 +7,18 @@ import { FormConfigComponent } from "../components/forms/form-config/form-config
 import { ConfigService } from "../services/config.service";
 
 @Component({
-  selector: "app-admin",
-  templateUrl: "./admin.component.html",
-  styleUrl: "./admin.component.scss",
+    selector: "app-admin",
+    templateUrl: "./admin.component.html",
+    styleUrl: "./admin.component.scss",
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class AdminComponent {
-  constructor(private router: Router, public auth: AuthService, private dialog: MatDialog, private config: ConfigService) {}
+  private router = inject(Router);
+  auth = inject(AuthService);
+  private dialog = inject(MatDialog);
+  private config = inject(ConfigService);
+
   changeMatchPosAdmin(pos: string) {
     this.router.navigate([getControlUrlFromMatchPosition(pos)]);
   }

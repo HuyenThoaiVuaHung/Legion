@@ -1,11 +1,5 @@
 import { FormPlayerComponent } from "src/app/components/forms/form-player/form-player.component";
-import {
-  Component,
-  computed,
-  signal,
-  Signal,
-  WritableSignal,
-} from "@angular/core";
+import { Component, computed, signal, Signal, WritableSignal, ChangeDetectionStrategy, inject } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { AuthService } from "src/app/services/auth.service";
 import * as XLSX from "xlsx";
@@ -20,14 +14,28 @@ import {
 } from "src/app/services/types/game";
 import { normalizeQuestion } from "../utils/question.adapter";
 import { ValueChangeEvent } from "@angular/forms";
+import { MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardActions } from "@angular/material/card";
+import { MenuItemComponent } from "../../components/menu-item/menu-item.component";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatSelect, MatOption } from "@angular/material/select";
+import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
+import { NgClass } from "@angular/common";
+import { MatButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { MatCheckbox } from "@angular/material/checkbox";
 
 @Component({
-  selector: "app-dashboard",
-  templateUrl: "./dashboard.component.html",
-  styleUrl: "./dashboard.component.scss",
+    selector: "app-dashboard",
+    templateUrl: "./dashboard.component.html",
+    styleUrl: "./dashboard.component.scss",
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardContent, MenuItemComponent, MatFormField, MatLabel, MatSelect, MatOption, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatCardActions, MatButton, MatIcon, MatCheckbox]
 })
 export class AdminDashboardComponent {
-  constructor(public auth: AuthService, private dialog: MatDialog) {
+  auth = inject(AuthService);
+  private dialog = inject(MatDialog);
+
+  constructor() {
     this.auth.resetListeners();
     this.auth.socket.emit("get-kd-data-admin", (callback: KdData) => {
       this.KdData.set(callback);
