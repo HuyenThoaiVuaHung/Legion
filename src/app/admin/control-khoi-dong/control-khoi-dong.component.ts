@@ -93,8 +93,8 @@ export class ControlKhoiDongComponent {
         this.currentQuestionNo.set(curr);
       }),
       this.network.on<[number]>('update-clock', (clock) => this.currentTime.set(clock)),
-      this.network.on<[Player]>('player-got-turn-kd', (player) =>
-        this.lastTurnName.set(player?.name ?? ''),
+      this.network.on<[number]>('player-got-turn-kd', (playerIndex) =>
+        this.lastTurnName.set(this.session.match()?.players[playerIndex]?.name ?? ''),
       ),
       this.network.on('next-question', () => {
         this.nextQuestion();

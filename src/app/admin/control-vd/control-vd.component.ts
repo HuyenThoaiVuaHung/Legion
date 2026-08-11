@@ -262,11 +262,13 @@ export class ControlVdComponent {
   }
 
   markIncorrect(): void {
+    const round = this.round();
     const displaying = this.displayingRow();
-    const stealing = this.stealingPlayerIndex();
-    if (!displaying || stealing === null) return;
+    if (!round || !displaying) return;
     this.playSfx('VD_WRONG');
-    this.network.emit('mark-incorrect-vd', stealing, displaying.value);
+    // A stealer answers for themselves; otherwise the active player missed.
+    const playerIndex = this.stealingPlayerIndex() ?? round.activePlayerIndex;
+    this.network.emit('mark-incorrect-vd', playerIndex, displaying.value);
     this.stealingPlayerIndex.set(null);
   }
 
