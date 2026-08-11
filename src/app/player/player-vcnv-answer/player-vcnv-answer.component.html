@@ -1,49 +1,37 @@
-<div
-  class="overflow-y-hidden relative flex text-center justify-center h-screen w-screen"
-  >
+<div class="overflow-y-hidden relative flex text-center justify-center h-screen w-screen">
   <div class="w-3 pole aurora disablePointerActions overflow-hidden"></div>
   <div class="flex-shrink-0 disablePointerActions box-container text-on-surface overflow-hidden">
-    @for (index of [0,1,2,3]; track index) {
+    @for (answer of round()?.playerAnswers ?? []; track $index) {
       <div
-      [ngClass]="{
-        'opacity-50':
-          vcnvData.playerAnswers[index].correct === false &&
-          vcnvData.showResults === true
-      }"
+        [class.opacity-50]="answer.correct === false && round()?.showResults === true"
         class="aurora w-80 h-20 p-2 mt-20 overflow-hidden"
-        >
+      >
         <p class="text-sm underline">
-          {{ auth.matchData().players[index].name }}
+          {{ session.match()?.players?.[$index]?.name }}
         </p>
         <p class="text-center font-bold text-lg">
-          {{ vcnvData.playerAnswers[index].answer.toUpperCase() }}
+          {{ answer.answer.toUpperCase() }}
         </p>
       </div>
     }
   </div>
-  @if (auth.userInfo().roleId == 0){
-    @if (auth.userInfo().roleId != 3) {
-      <div class="fixed z-50 bottom-0 right-0">
-        <button
-          [disabled]="disabledCNVButton == true"
-          (click)="attemptCNV()"
-          mat-fab
-          extended
-          class="h-12 w-64 align-bottom items-center text-right"
-          >
-          TRẢ LỜI CNV
-        </button>
-      </div>
-    }
+  @if (session.role() === Role.Player) {
+    <div class="fixed z-50 bottom-0 right-0">
+      <button
+        [disabled]="disabledObstacleButton()"
+        (click)="attemptObstacle()"
+        mat-fab
+        extended
+        class="h-12 w-64 align-bottom items-center text-right"
+      >
+        TRẢ LỜI CNV
+      </button>
+    </div>
   }
-  <div
-    class="absolute left-5 flex bottom-5 gap-2 flex-col self-end ml-5 mt-10 w-52"
-    >
-    @for (player of vcnvData.CNVPlayers; track player) {
-      <div
-        class="w-52 text-lg rounded-md special-highlight p-3"
-        >
-        {{ auth.matchData().players[player.id].name }}
+  <div class="absolute left-5 flex bottom-5 gap-2 flex-col self-end ml-5 mt-10 w-52">
+    @for (buzz of round()?.obstacleBuzzes ?? []; track buzz.playerIndex) {
+      <div class="w-52 text-lg rounded-md special-highlight p-3">
+        {{ session.match()?.players?.[buzz.playerIndex]?.name }}
       </div>
     }
   </div>

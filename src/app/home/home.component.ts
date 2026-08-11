@@ -1,84 +1,78 @@
-import { Component, OnInit, Signal, computed, ChangeDetectionStrategy, inject } from "@angular/core";
-import { Router } from "@angular/router";
-import { MatDialog } from "@angular/material/dialog";
-import { FormPlayerComponent } from "../components/forms/form-player/form-player.component";
-import { AuthService } from "../services/auth.service";
-import { Validators, FormBuilder, ReactiveFormsModule } from "@angular/forms";
-import { NetworkStatus } from "../services/types/network.enum";
-import { AppState } from "../services/types/app";
-import { MatStepper, MatStep, MatStepperNext, MatStepperIcon } from "@angular/material/stepper";
-import { MatFormField, MatLabel } from "@angular/material/form-field";
-import { MatInput } from "@angular/material/input";
-import { MatButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
-import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatStepper, MatStep, MatStepperNext, MatStepperIcon } from '@angular/material/stepper';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { Role } from '../core/contracts/api';
+import { ConnectionStatus, NetworkService } from '../core/services/network.service';
+import { SessionService } from '../core/services/session.service';
 
 @Component({
-    selector: "app-home",
-    templateUrl: "./home.component.html",
-    styleUrls: ["./home.component.scss"],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatStepper, MatStep, ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatButton, MatIcon, MatProgressSpinner, MatStepperNext, MatStepperIcon]
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [
+    MatStepper,
+    MatStep,
+    ReactiveFormsModule,
+    MatFormField,
+    MatInput,
+    MatLabel,
+    MatButton,
+    MatIcon,
+    MatProgressSpinner,
+    MatStepperNext,
+    MatStepperIcon,
+  ],
 })
-export class HomeComponent implements OnInit {
-  private _formBuilder = inject(FormBuilder);
-  auth = inject(AuthService);
-  private router = inject(Router);
-  private dialog = inject(MatDialog);
+export class HomeComponent {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
+  protected readonly network = inject(NetworkService);
+  protected readonly session = inject(SessionService);
 
-  errorMsg: string = "";
-  urlFormGroup = this._formBuilder.group({
-    legendaryUrl: [
-      "http://",
-      [Validators.pattern(/(http:\x2f\x2f)[A-Za-z0-9.\x2f:]+/)],
+  protected readonly connectionStatus = ConnectionStatus;
+
+  protected readonly urlForm = this.formBuilder.group({
+    serverUrl: [
+      this.network.serverUrl() || 'http://',
+      [Validators.required, Validators.pattern(/^https?:\/\/[A-Za-z0-9.:/_-]+$/)],
     ],
   });
-  tokenFormGroup = this._formBuilder.group({
-    token: ["", [Validators.required]],
+  protected readonly secretForm = this.formBuilder.group({
+    secret: ['', [Validators.required]],
   });
 
-  appState = AppState;
-  displayedPlayerColumns: string[] = ["id", "name", "score", "active"];
-  authString: string = "";
-  greetString: Signal<string> = computed(() => {
-    switch (this.auth.userInfo().roleId) {
-      case 0:
-        return this.auth.matchData().players[this.auth.userInfo().index || 0]
-          .name;
-      case 1:
-        this.auth.socket.emit("change-match-position", "H");
-        return "Ban tổ chức";
-      case 2:
-        return "Người dẫn chương trình";
-      case 3:
-        return "Viewer";
+  /** Display name for whoever is currently signed in, derived from session state only. */
+  protected readonly greeting = computed(() => {
+    switch (this.session.role()) {
+      case Role.Player:
+        return this.session.self()?.name ?? 'Chào bạn';
+      case Role.Admin:
+        return 'Ban tổ chức';
+      case Role.Mc:
+        return 'Người dẫn chương trình';
+      case Role.Viewer:
+        return 'Viewer';
       default:
-        return "Chào bạn";
+        return 'Chào bạn';
     }
   });
 
-  async ngOnInit(): Promise<void> {
-    this.auth.deauthenticate();
-    if (localStorage.getItem("defaultUrl")) {
-      this.urlFormGroup.setValue({
-        legendaryUrl: localStorage.getItem("defaultUrl"),
-      });
-      this.auth.connect(localStorage.getItem("defaultUrl")!);
-    }
+  async connect(): Promise<void> {
+    const url = this.urlForm.controls.serverUrl.value ?? '';
+    await this.session.connect(url);
   }
-  connect() {
-    if (
-      localStorage.getItem("defaultUrl") !==
-      this.urlFormGroup.value.legendaryUrl
-    ) {
-      this.auth.connect(this.urlFormGroup.value.legendaryUrl!);
-    }
-  }
-  login() {}
-  async authenticate() {
-    await this.auth.authenticate(this.tokenFormGroup.value.token!);
-    if (this.auth.userInfo().roleId == 1) this.router.navigate(["admin"]);
-    if (this.auth.userInfo().roleId == 2) this.router.navigate(["mc"]);
-    localStorage.setItem("authString", this.tokenFormGroup.value.token!);
+
+  async login(): Promise<void> {
+    const secret = this.secretForm.controls.secret.value ?? '';
+    const role = await this.session.login(secret);
+    if (role === Role.Admin) void this.router.navigateByUrl('/admin');
+    else if (role === Role.Mc) void this.router.navigateByUrl('/mc');
   }
 }

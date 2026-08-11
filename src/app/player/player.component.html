@@ -1,4 +1,10 @@
-
-<div class="w-full h-full" (click)="this.isBlocked = false">
+<div class="w-full h-full relative" (click)="unlockAudio()">
   <router-outlet></router-outlet>
+  @if (audioBlocked()) {
+    <div
+      class="audio-hint fixed z-50 bottom-4 right-4 px-4 py-2 rounded-md text-sm shadow-lg"
+    >
+      Vui lòng nhấn vào màn hình để cho phép bật âm thanh.
+    </div>
+  }
 </div>

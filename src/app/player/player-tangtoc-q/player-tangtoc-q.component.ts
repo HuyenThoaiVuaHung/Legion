@@ -1,141 +1,117 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
-import { AuthService } from "src/app/services/auth.service";
-import { SfxService } from "src/app/services/sfx-service.service";
-import { CountdownComponent } from "../../components/countdown/countdown.component";
-import { PlayerListComponent } from "../../components/player-list/player-list.component";
-import { MatFormField } from "@angular/material/form-field";
-import { MatInput } from "@angular/material/input";
-import { ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { MatIconButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatIconButton } from '@angular/material/button';
+import { MatFormField } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import { Role } from '../../core/contracts/api';
+import { TtRound } from '../../core/contracts/game';
+import { ApiService } from '../../core/services/api.service';
+import { MediaService } from '../../core/services/media.service';
+import { NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
+import { SfxService } from '../../core/services/sfx.service';
+import { CountdownComponent } from '../../components/countdown/countdown.component';
+import { PlayerListComponent } from '../../components/player-list/player-list.component';
+
 @Component({
-    selector: "app-player-tangtoc-q",
-    templateUrl: "./player-tangtoc-q.component.html",
-    styleUrls: ["./player-tangtoc-q.component.scss"],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [CountdownComponent, PlayerListComponent, MatFormField, MatInput, ReactiveFormsModule, FormsModule, MatIconButton, MatIcon]
+  selector: 'app-player-tangtoc-q',
+  templateUrl: './player-tangtoc-q.component.html',
+  styleUrl: './player-tangtoc-q.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CountdownComponent, PlayerListComponent, MatFormField, MatInput, FormsModule, MatIconButton, MatIcon],
 })
-export class PlayerTangtocQComponent implements OnInit {
-  private sfxService = inject(SfxService);
-  auth = inject(AuthService);
+export class PlayerTangtocQComponent {
+  private readonly api = inject(ApiService);
+  private readonly network = inject(NetworkService);
+  private readonly sfx = inject(SfxService);
+  private readonly media = inject(MediaService);
+  private readonly destroyRef = inject(DestroyRef);
+  protected readonly session = inject(SessionService);
+  protected readonly Role = Role;
 
-  imageSource = "";
-  videoSource = "";
-  ttData: any = {};
-  disabledAnswerBox = true;
-  currentTime: number = 0;
-  curQuestion: any = {};
-  highlightedVCNVQuestion: any = {};
-  readableTime: string = "";
-  answerCache: string = "";
-  playerAnswer: string = "";
-  audio: any = null;
-  public maxTime = 0;
-  ngOnInit(): void {
-    this.auth.resetListeners();
-    this.auth.socket.on("play-sfx", (sfxID) => {
-      this.sfxService.playSfx(sfxID);
-    });
-    if (this.auth.userInfo().roleId == 0) {
-      this.auth.socket.emit("clear-answer-tt");
-    }
-    this.auth.socket.emit("get-tangtoc-data", (callback) => {
-      this.ttData = callback;
-    });
+  protected readonly round = signal<TtRound | null>(null);
+  protected readonly currentTime = signal(0);
+  protected readonly maxTime = signal(0);
+  protected readonly playerAnswer = signal('');
+  protected readonly answerCache = signal('');
+  protected readonly readableTime = signal('');
 
-    this.auth.socket.on("update-tangtoc-data", (data) => {
-      this.ttData = data;
-      if (this.curQuestion.type == "TT_IMG") {
-        if (this.ttData.showAnswer == true) {
-          this.imageSource =
-            "../../../assets/picture-questions/tt/" +
-            this.ttData.questions[this.curQuestion.id - 1].answer_image;
-        } else {
-          this.imageSource =
-            "../../../assets/picture-questions/tt/" +
-            this.ttData.questions[this.curQuestion.id - 1].question_image;
-        }
-      }
-    });
-    this.auth.socket.on("update-clock", (clock) => {
-      if (clock <= 0) {
-        this.disabledAnswerBox = true;
-        this.playerAnswer = "";
-      } else {
-        if (this.currentTime == 0) {
-          console.debug(this.maxTime);
-          this.maxTime = clock;
-        }
-        this.disabledAnswerBox = false;
-      }
-      this.currentTime = clock;
-    });
-    this.auth.socket.on("update-tangtoc-question", (question) => {
-      if (question != undefined) {
-        this.curQuestion = question;
-        if (this.curQuestion.type == "TT_IMG") {
-          if (this.ttData.showAnswer == true) {
-            this.imageSource =
-              "../../../assets/picture-questions/tt/" +
-              this.ttData.questions[this.curQuestion.id - 1].answer_image;
-          } else {
-            this.imageSource =
-              "../../../assets/picture-questions/tt/" +
-              this.ttData.questions[this.curQuestion.id - 1].question_image;
-          }
-        } else if (this.curQuestion.type == "TT_VD") {
-          this.videoSource =
-            "../../../assets/video-questions/tt/" +
-            this.ttData.questions[this.curQuestion.id - 1].video_name;
-        }
-      } else {
-        this.curQuestion = {};
-        this.imageSource = "";
-        this.videoSource = "";
-      }
-    });
-    this.auth.socket.on("tangtoc-play-video", () => {
-      this.togglePlay();
-    });
+  protected readonly currentQuestion = computed(() => {
+    const round = this.round();
+    return round ? (round.questions[round.activeQuestionIndex] ?? null) : null;
+  });
+
+  protected readonly imageUrl = computed(() => {
+    const q = this.currentQuestion();
+    if (!q || q.type !== 'image') return null;
+    const round = this.round();
+    const name = round?.showAnswer ? q.answerImage : q.questionImage;
+    return this.media.resolve('tt', name);
+  });
+
+  protected readonly videoUrl = computed(() => {
+    const q = this.currentQuestion();
+    if (!q || q.type !== 'video') return null;
+    return this.media.resolve('tt', q.videoFile);
+  });
+
+  protected readonly disabledAnswerBox = computed(() => this.currentTime() <= 0);
+
+  constructor() {
+    void this.loadRound();
+
+    const offs = [
+      this.network.on<[string]>('play-sfx', (code) => this.sfx.play(code)),
+      this.network.on<[TtRound]>('update-tangtoc-data', (data) => this.round.set(data)),
+      this.network.on<[number]>('update-clock', (clock) => this.onClock(clock)),
+      this.network.on<[]>('tangtoc-play-video', () => this.toggleVideoPlay()),
+    ];
+    this.destroyRef.onDestroy(() => offs.forEach((off) => off()));
   }
 
-  togglePlay() {
-    var myPlayer: HTMLVideoElement = document.getElementById(
-      "video-1"
-    ) as HTMLVideoElement;
-    myPlayer.muted = true;
-    if (myPlayer != null) {
-      if (myPlayer.paused == true) {
-        myPlayer.play();
-      } else {
-        myPlayer.pause();
-      }
-    }
+  private async loadRound(): Promise<void> {
+    this.round.set(await this.api.getRound('tt'));
   }
-  submitAnswer() {
-    if (this.currentTime > 0) {
-      this.auth.socket.emit("player-submit-answer-tangtoc", this.playerAnswer);
-      this.answerCache = this.playerAnswer;
-      this.auth.socket.emit("");
-      this.playerAnswer = "";
-      this.getTimePassed(this.auth.userInfo().index!);
+
+  private onClock(clock: number): void {
+    if (clock <= 0) {
+      this.playerAnswer.set('');
+    } else if (this.currentTime() === 0) {
+      this.maxTime.set(clock);
     }
+    this.currentTime.set(clock);
   }
-  getTimePassed(id: number) {
+
+  private toggleVideoPlay(): void {
+    const video = document.getElementById('video-1') as HTMLVideoElement | null;
+    if (!video) return;
+    video.muted = true;
+    if (video.paused) void video.play();
+    else video.pause();
+  }
+
+  submitAnswer(): void {
+    if (this.currentTime() <= 0) return;
+    this.network.emit('player-submit-answer-tangtoc', this.playerAnswer());
+    this.answerCache.set(this.playerAnswer());
+    this.playerAnswer.set('');
+    this.updateReadableTime();
+  }
+
+  private updateReadableTime(): void {
+    const index = this.session.playerIndex();
+    if (index === null) return;
     setTimeout(() => {
-      let timePassedinMs =
-        this.ttData.playerAnswers[id].timestamp -
-        this.ttData.timerStartTimestamp;
-      this.readableTime =
-        Math.trunc(timePassedinMs / 1000) +
-        "s" +
-        (timePassedinMs % 1000) +
-        "ms";
+      const answer = this.round()?.playerAnswers.find((a) => a.playerIndex === index);
+      const round = this.round();
+      if (!answer || !round) return;
+      const elapsedMs = answer.timestamp - round.timerStartTimestamp;
+      this.readableTime.set(`${Math.trunc(elapsedMs / 1000)}s${elapsedMs % 1000}ms`);
     }, 200);
   }
-  checkIfTime() {
-    if (this.disabledAnswerBox == true) {
-      this.playerAnswer = "";
-    }
+
+  clearAnswerIfExpired(): void {
+    if (this.disabledAnswerBox()) this.playerAnswer.set('');
   }
 }

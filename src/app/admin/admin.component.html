@@ -6,9 +6,7 @@
     <button mat-icon-button (click)="togglePoints()" title="Điểm số">
       <mat-icon>scoreboard</mat-icon>
     </button>
-    <button mat-icon-button (click)="openConfigMenu()" title="Cấu hình">
-      <mat-icon>settings</mat-icon>
-    </button>
+    <span class="mat-body-medium">{{ positionLabel() }}</span>
     <span class="flex flex-grow"></span>
     <a mat-icon-button routerLink="/admin" title="Trang chủ">
       <mat-icon>table</mat-icon>
@@ -28,7 +26,6 @@
     <a mat-icon-button routerLink="/admin/chp" title="Câu hỏi phụ">
       <mat-icon>workspaces</mat-icon>
     </a>
-
   </mat-toolbar>
   <router-outlet></router-outlet>
 </div>

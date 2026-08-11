@@ -1,61 +1,66 @@
-import { Component, computed, OnInit, Signal, ChangeDetectionStrategy, inject } from "@angular/core";
-import { AuthService } from "src/app/services/auth.service";
-import { SfxService } from "src/app/services/sfx-service.service";
-import { NgClass } from "@angular/common";
-import { MatFabButton } from "@angular/material/button";
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { MatFabButton } from '@angular/material/button';
+import { Role } from '../../core/contracts/api';
+import { VcnvRound } from '../../core/contracts/game';
+import { ApiService } from '../../core/services/api.service';
+import { NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
+import { SfxService } from '../../core/services/sfx.service';
 
+/** VCNV final-guess reveal: every player's obstacle-word answer at once. */
 @Component({
-    selector: "app-player-vcnv-answer",
-    templateUrl: "./player-vcnv-answer.component.html",
-    styleUrls: ["./player-vcnv-answer.component.scss"],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [NgClass, MatFabButton]
+  selector: 'app-player-vcnv-answer',
+  templateUrl: './player-vcnv-answer.component.html',
+  styleUrl: './player-vcnv-answer.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatFabButton],
 })
-export class PlayerVcnvAnswerComponent implements OnInit {
-  private sfxService = inject(SfxService);
-  auth = inject(AuthService);
+export class PlayerVcnvAnswerComponent {
+  private readonly api = inject(ApiService);
+  private readonly network = inject(NetworkService);
+  private readonly sfx = inject(SfxService);
+  private readonly destroyRef = inject(DestroyRef);
+  protected readonly session = inject(SessionService);
+  protected readonly Role = Role;
 
-  matchData: any = {};
-  vcnvData: any = {};
-  disabledCNVButton: boolean = false;
+  protected readonly round = signal<VcnvRound | null>(null);
 
-  ngOnInit(): void {
-    this.sfxService.playSfx("VCNV_SHOWANS");
-    this.auth.resetListeners();
-    this.auth.socket.emit("get-vcnv-data", (callback) => {
-      this.vcnvData = callback;
-      if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
-        this.disabledCNVButton = true;
-      }
-    });
-    this.auth.socket.on("play-sfx", (sfx) => {
-      this.sfxService.playSfx(sfx);
-    });
-    this.auth.socket.on("update-vcnv-data", (data) => {
-      this.vcnvData = data;
-      console.debug(this.auth.userInfo());
-      if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
-        this.disabledCNVButton = true;
-      }
-      if (this.vcnvData.showResults == true) {
-        let counter = 0;
-        this.vcnvData.playerAnswers.forEach((element) => {
-          if (element.correct == true) {
-            counter++;
-          }
-        });
-        if (counter == 0) {
-          this.sfxService.playSfx("VCNV_WRONG_ROW");
-        } else {
-          this.sfxService.playSfx("VCNV_CORRECT_ROW");
-        }
-      }
-    });
+  protected readonly disabledObstacleButton = computed(() => {
+    const index = this.session.playerIndex();
+    return index === null || (this.round()?.disabledPlayers.includes(index) ?? false);
+  });
+
+  private resultsAnnounced = false;
+
+  constructor() {
+    this.sfx.play('VCNV_SHOWANS');
+    void this.loadRound();
+
+    const offs = [
+      this.network.on<[string]>('play-sfx', (code) => this.sfx.play(code)),
+      this.network.on<[VcnvRound]>('update-vcnv-data', (data) => this.onRound(data)),
+    ];
+    this.destroyRef.onDestroy(() => offs.forEach((off) => off()));
   }
 
-  attemptCNV() {
-    this.auth.socket.emit("attempt-cnv-player", Date.now());
-    this.auth.socket.emit("play-sfx", "VCNV_OBSTACLE");
-    this.disabledCNVButton = true;
+  private async loadRound(): Promise<void> {
+    this.onRound(await this.api.getRound('vcnv'));
+  }
+
+  private onRound(data: VcnvRound): void {
+    this.round.set(data);
+    if (!data.showResults) {
+      this.resultsAnnounced = false;
+      return;
+    }
+    if (this.resultsAnnounced) return;
+    this.resultsAnnounced = true;
+    const anyCorrect = data.playerAnswers.some((a) => a.correct);
+    this.sfx.play(anyCorrect ? 'VCNV_CORRECT_ROW' : 'VCNV_WRONG_ROW');
+  }
+
+  attemptObstacle(): void {
+    this.network.emit('attempt-cnv-player', Date.now());
+    this.sfx.play('VCNV_OBSTACLE');
   }
 }

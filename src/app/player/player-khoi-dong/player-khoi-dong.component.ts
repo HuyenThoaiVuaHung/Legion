@@ -1,115 +1,115 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
-import { Router } from "@angular/router";
-import { AuthService } from "src/app/services/auth.service";
-import { SfxService } from "src/app/services/sfx-service.service";
-import { KdData } from "src/app/services/types/game";
-import { MatProgressBar } from "@angular/material/progress-bar";
-import { NgClass } from "@angular/common";
-import { PlayerListComponent } from "../../components/player-list/player-list.component";
-import { MatFabButton } from "@angular/material/button";
-@Component({
-    selector: "app-player-khoi-dong",
-    templateUrl: "./player-khoi-dong.component.html",
-    styleUrls: ["./player-khoi-dong.component.scss"],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatProgressBar, NgClass, PlayerListComponent, MatFabButton]
-})
-export class PlayerKhoiDongComponent implements OnInit {
-  router = inject(Router);
-  private sfxService = inject(SfxService);
-  auth = inject(AuthService);
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { MatFabButton } from '@angular/material/button';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { ApiService } from '../../core/services/api.service';
+import { MediaService } from '../../core/services/media.service';
+import { NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
+import { SfxService } from '../../core/services/sfx.service';
+import { KdQuestion, KdRound } from '../../core/contracts/game';
+import { Role } from '../../core/contracts/api';
+import { PlayerListComponent } from '../../components/player-list/player-list.component';
 
-  answerButtonDisabled = true;
-  question: any = {};
-  threeSecTimer1: number = 0;
-  threeSecTimer2: number = 0;
-  audio: any = null;
-  gamemode: string = "";
-  currentMaxQuestionNo = 0;
-  currentQuestionNo: number = 0;
-  currentTurn: number = -1;
-  picturePath: string = "";
-  ifGotTurn: boolean = false;
-  answerCache: string = "";
-  public kdData: KdData = {} as KdData;
-  ngOnInit(): void {
-    this.auth.resetListeners();
-    this.auth.socket.on("play-sfx", (sfxID, loop) => {
-      this.sfxService.playSfx(sfxID, loop);
-    });
-    this.auth.socket.on("update-kd-question", (data) => {
-      this.currentTurn = -1;
-      this.answerCache = this.question.answer;
-      this.question = data;
-      this.ifGotTurn = false;
-      if (this.audio != null) {
-        this.audio.pause();
-      }
-      if (this.question.type == "A") {
-        this.audio = new Audio(
-          "../../../assets/audio-questions/kd/" + this.question.audioFilePath
-        );
-        this.audio.play();
-      } else if (this.question.type == "P") {
-        this.picturePath =
-          "../../../assets/picture-questions/kd/" + this.question.audioFilePath;
-      } else if (this.question.type == "N") {
-        this.picturePath = "";
-      }
-    });
-    this.auth.socket.on("clear-turn-player-kd", () => {
-      this.ifGotTurn = false;
-      this.currentTurn = -1;
-    });
-    this.auth.socket.emit("get-kd-data", (data: KdData) => {
-      this.kdData = data;
-    });
-    this.auth.socket.on("update-kd-data", (data: KdData) => {
-      this.kdData = data;
-    });
-    this.auth.socket.on("player-got-turn-kd", (data) => {
-      if (this.auth.userInfo().index == data.id - 1) {
-        this.ifGotTurn = true;
-      }
-      this.currentTurn = data.id - 1;
-      console.debug(this.currentTurn);
-    });
-    this.auth.socket.on("update-number-question-kd", (max, curr) => {
-      this.currentMaxQuestionNo = max;
-      if (curr > max) {
-        this.answerButtonDisabled = true;
-        this.currentQuestionNo = max;
-        return;
-      }
-      this.currentQuestionNo = curr;
-    });
-    this.auth.socket.on("disable-answer-button-kd", () => {
-      this.answerButtonDisabled = true;
-    });
-    this.auth.socket.on("enable-answer-button-kd", () => {
-      this.answerButtonDisabled = false;
-      console.debug("enable");
-    });
-    this.auth.socket.on("update-3s-timer-kd", (time, ifPlayer) => {
-      if (ifPlayer == true) {
-        this.threeSecTimer2 = time;
-      } else {
-        this.threeSecTimer1 = time;
-      }
-    });
-    this.auth.socket.on("stop-kd-sound", () => {
-      this.sfxService.stopLoopingAudio();
-    });
-    this.auth.socket.on("update-kd-gamemode", (gamemode) => {
-      this.gamemode = gamemode;
-      this.currentMaxQuestionNo = this.currentQuestionNo = 0;
-    });
-    this.auth.socket.emit("get-kd-gamemode", (callback) => {
-      this.gamemode = callback;
-    });
+/**
+ * Khởi động (warm-up). Question pools/answers live in KdRound (fetched via
+ * REST, since it contains every player's answers); the question currently
+ * on screen — and who currently holds the buzzer — are transient state the
+ * round contract doesn't carry, so the server keeps pushing them over the
+ * socket under their legacy event names.
+ */
+@Component({
+  selector: 'app-player-khoi-dong',
+  templateUrl: './player-khoi-dong.component.html',
+  styleUrl: './player-khoi-dong.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatProgressBar, PlayerListComponent, MatFabButton],
+})
+export class PlayerKhoiDongComponent {
+  private readonly api = inject(ApiService);
+  private readonly network = inject(NetworkService);
+  private readonly sfx = inject(SfxService);
+  private readonly media = inject(MediaService);
+  private readonly destroyRef = inject(DestroyRef);
+  protected readonly session = inject(SessionService);
+  protected readonly Role = Role;
+
+  protected readonly round = signal<KdRound | null>(null);
+  protected readonly question = signal<KdQuestion | null>(null);
+  protected readonly previousAnswer = signal<string | null>(null);
+  protected readonly turnIndex = signal(-1);
+  protected readonly answerButtonDisabled = signal(true);
+  protected readonly timerBuzz = signal(0);
+  protected readonly timerAnswer = signal(0);
+
+  protected readonly imageUrl = computed(() => {
+    const q = this.question();
+    if (!q || q.type !== 'P') return null;
+    return this.media.resolve('kd', q.mediaFile);
+  });
+
+  protected readonly gotTurn = computed(
+    () => this.turnIndex() !== -1 && this.turnIndex() === this.session.playerIndex(),
+  );
+
+  /** Question count within the current player's turn, derived locally from event order. */
+  protected readonly questionNo = signal(0);
+  protected readonly maxQuestionNo = computed(() => {
+    const round = this.round();
+    if (!round) return 0;
+    return round.gamemode === 'M'
+      ? round.questions.multiplayer.length
+      : (round.questions.singleplayer[round.activePlayerIndex]?.length ?? 0);
+  });
+
+  private turnKey: string | null = null;
+  private audio: HTMLAudioElement | null = null;
+
+  constructor() {
+    void this.loadRound();
+
+    const offs = [
+      this.network.on<[string, boolean?]>('play-sfx', (code, loop) => this.sfx.play(code, loop)),
+      this.network.on<[KdQuestion]>('update-kd-question', (data) => this.onQuestion(data)),
+      this.network.on<[number]>('player-got-turn-kd', (playerIndex) => this.turnIndex.set(playerIndex)),
+      this.network.on<[]>('clear-turn-player-kd', () => this.turnIndex.set(-1)),
+      this.network.on<[]>('enable-answer-button-kd', () => this.answerButtonDisabled.set(false)),
+      this.network.on<[]>('disable-answer-button-kd', () => this.answerButtonDisabled.set(true)),
+      this.network.on<[]>('stop-kd-sound', () => this.sfx.stopLoop()),
+      this.network.on<[number, boolean]>('update-3s-timer-kd', (time, isPlayerTimer) => {
+        if (isPlayerTimer) this.timerAnswer.set(time);
+        else this.timerBuzz.set(time);
+      }),
+    ];
+    this.destroyRef.onDestroy(() => offs.forEach((off) => off()));
   }
 
-  getAnswerTurn() {
-    this.auth.socket.emit("get-turn-kd");
+  private async loadRound(): Promise<void> {
+    this.round.set(await this.api.getRound('kd'));
+  }
+
+  private onQuestion(data: KdQuestion): void {
+    this.previousAnswer.set(this.question()?.answer ?? null);
+    this.question.set(data);
+    this.turnIndex.set(-1);
+    this.audio?.pause();
+    this.audio = null;
+    if (data.type === 'A') {
+      this.audio = new Audio(this.media.resolve('kd', data.mediaFile));
+      void this.audio.play();
+    }
+
+    const round = this.round();
+    const key = round ? `${round.gamemode}:${round.activePlayerIndex}` : null;
+    this.questionNo.set(key === this.turnKey ? this.questionNo() + 1 : 1);
+    this.turnKey = key;
+
+    // Round-level state (gamemode / active podium player) only changes
+    // between questions, so a fresh REST fetch here keeps it in sync
+    // without a bespoke push event for it.
+    void this.loadRound();
+  }
+
+  getAnswerTurn(): void {
+    this.network.emit('get-turn-kd');
   }
 }
