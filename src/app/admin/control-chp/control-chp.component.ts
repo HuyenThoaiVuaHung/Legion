@@ -53,7 +53,7 @@ export class ControlChpComponent {
   constructor() {
     const destroyRef = inject(DestroyRef);
     for (const off of [
-      this.network.on<[ChpRound]>('update-chp-data-admin', (data) => this.round.set(data)),
+      this.network.on<[ChpRound]>('update-chp-data', (data) => this.round.set(data)),
       this.network.on<[number]>('update-clock', (clock) => this.currentTime.set(clock)),
       this.network.on<[number]>('got-turn-chp', (playerIndex) =>
         this.lastTurnIndex.set(playerIndex),
