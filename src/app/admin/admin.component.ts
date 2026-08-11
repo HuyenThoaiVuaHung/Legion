@@ -1,60 +1,41 @@
-import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
-import { getControlUrlFromMatchPosition } from "../services/tools";
-import { Router } from "@angular/router";
-import { AuthService } from "../services/auth.service";
-import { MatDialog } from "@angular/material/dialog";
-import { FormConfigComponent } from "../components/forms/form-config/form-config.component";
-import { ConfigService } from "../services/config.service";
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { POSITION_LABELS } from '../core/constants';
+import { MatchPosition } from '../core/contracts/game';
+import { ApiService } from '../core/services/api.service';
+import { SessionService } from '../core/services/session.service';
 
+/** Shell for the admin control panels: toolbar navigation + points toggle. */
 @Component({
-    selector: "app-admin",
-    templateUrl: "./admin.component.html",
-    styleUrl: "./admin.component.scss",
-    changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+  selector: 'app-admin',
+  templateUrl: './admin.component.html',
+  styleUrl: './admin.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterLink, RouterOutlet, MatToolbarModule, MatIconModule, MatButtonModule],
 })
 export class AdminComponent {
-  private router = inject(Router);
-  auth = inject(AuthService);
-  private dialog = inject(MatDialog);
-  private config = inject(ConfigService);
+  private readonly api = inject(ApiService);
+  protected readonly session = inject(SessionService);
 
-  changeMatchPosAdmin(pos: string) {
-    this.router.navigate([getControlUrlFromMatchPosition(pos)]);
-  }
-  private matchPosCache: string = "";
-  togglePoints() {
-    this.auth.socket.emit("get-match-data", (data: { matchPos: string }) => {
-      if (data.matchPos == "PNTS") {
-        if (this.matchPosCache)
-          this.router.navigate([
-            getControlUrlFromMatchPosition(this.matchPosCache),
-          ]);
-        this.auth.socket.emit(
-          "change-match-position",
-          this.matchPosCache,
-          localStorage.getItem("authString")
-        );
-      } else {
-        this.matchPosCache = data.matchPos;
-        this.auth.socket.emit(
-          "change-match-position",
-          "PNTS",
-          localStorage.getItem("authString")
-        );
-      }
-    });
-  }
-  
-  openConfigMenu() {
-    const dialogRef = this.dialog.open(FormConfigComponent, {
-      width: "400px",
-      data: this.config.config()
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.config.config.set(result);
-      }
-    });
+  protected readonly positionLabel = computed(() => {
+    const position = this.session.match()?.position;
+    return position ? POSITION_LABELS[position] : '';
+  });
+
+  /** Position to restore when leaving the scoreboard. */
+  private positionBeforePoints: MatchPosition = 'H';
+
+  async togglePoints(): Promise<void> {
+    const position = this.session.match()?.position;
+    if (!position) return;
+    if (position === 'PNTS') {
+      this.session.match.set(await this.api.setPosition(this.positionBeforePoints));
+    } else {
+      this.positionBeforePoints = position;
+      this.session.match.set(await this.api.setPosition('PNTS'));
+    }
   }
 }

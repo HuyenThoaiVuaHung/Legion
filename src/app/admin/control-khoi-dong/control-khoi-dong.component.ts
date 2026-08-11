@@ -1,256 +1,241 @@
-import { Component, computed, OnInit, signal, Signal, WritableSignal, ChangeDetectionStrategy, inject } from "@angular/core";
-import { Router } from "@angular/router";
-import { MatDialog } from "@angular/material/dialog";
-import { FormPlayerComponent } from "../../components/forms/form-player/form-player.component";
-import { AuthService } from "../../services/auth.service";
-import { KdData, KdQuestion, KdQuestions } from "../../services/types/game";
-import { FormQKdComponent } from "src/app/components/forms/form-q-kd/form-q-kd.component";
-import { firstValueFrom } from "rxjs";
-import { MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions } from "@angular/material/card";
-import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
-import { NgClass } from "@angular/common";
-import { MatButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
-import { MenuItemComponent } from "../../components/menu-item/menu-item.component";
-import { MatFormField, MatLabel } from "@angular/material/form-field";
-import { MatSelect, MatOption } from "@angular/material/select";
-import { MatTooltip } from "@angular/material/tooltip";
-import { MatCheckbox } from "@angular/material/checkbox";
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
+import { FormQKdComponent } from '../../components/forms/form-q-kd/form-q-kd.component';
+import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
+import { KdGamemode, KdQuestion, KdRound, Player } from '../../core/contracts/game';
+import { ApiService } from '../../core/services/api.service';
+import { NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
+
+/** Question counts per Olympia rules: 6 per singleplayer turn, 12 head-to-head. */
+const SINGLEPLAYER_QUESTIONS = 6;
+const MULTIPLAYER_QUESTIONS = 12;
 
 @Component({
-    selector: "app-control-khoi-dong",
-    templateUrl: "./control-khoi-dong.component.html",
-    styleUrls: ["./control-khoi-dong.component.scss"],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatCardActions, MatButton, MatIcon, MenuItemComponent, MatFormField, MatLabel, MatSelect, MatOption, MatTooltip, MatCheckbox]
+  selector: 'app-control-khoi-dong',
+  templateUrl: './control-khoi-dong.component.html',
+  styleUrls: ['./control-khoi-dong.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    NgClass,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatSelectModule,
+    MatTableModule,
+    MatTooltipModule,
+    MenuItemComponent,
+  ],
 })
-export class ControlKhoiDongComponent implements OnInit {
-  private router = inject(Router);
-  dialog = inject(MatDialog);
-  auth = inject(AuthService);
+export class ControlKhoiDongComponent {
+  private readonly api = inject(ApiService);
+  private readonly network = inject(NetworkService);
+  private readonly dialog = inject(MatDialog);
+  protected readonly session = inject(SessionService);
 
-  displayingRow: any = null;
-  chosenRow: any = null;
-  currentTime: number = 0;
-  displayedQuestionColumns: string[] = ["question", "answer", "type"];
-  displayedPlayerColumns: string[] = ["id", "name", "score", "active"];
-  authString: string = "";
-  currentMaxQuestionNo: number = 0;
-  currentQuestionNo: number = 0;
+  protected readonly displayedQuestionColumns = ['question', 'answer', 'type'];
+  protected readonly displayedPlayerColumns = ['id', 'name', 'score', 'active'];
+  protected readonly singleplayerQuestions = SINGLEPLAYER_QUESTIONS;
+  protected readonly multiplayerQuestions = MULTIPLAYER_QUESTIONS;
 
-  public readonly kdData: WritableSignal<KdData> = signal({} as KdData);
-  public readonly currentQuestionList: Signal<KdQuestion[]> = computed(() => {
-    return this.kdData().gamemode == "S"
-      ? this.kdData().questions.singleplayer[
-          this.kdData().currentSingleplayerPlayer
-        ]
-      : this.kdData().questions.multiplayer;
+  protected readonly round = signal<KdRound | null>(null);
+  protected readonly currentTime = signal(0);
+  protected readonly chosenRow = signal<KdQuestion | null>(null);
+  protected readonly displayingRow = signal<KdQuestion | null>(null);
+  protected readonly chosenPlayer = signal<Player | null>(null);
+  /** Name of the player who buzzed in ('' when nobody holds the turn). */
+  protected readonly lastTurnName = signal('');
+  protected readonly maxQuestionNo = signal(0);
+  protected readonly currentQuestionNo = signal(0);
+  /** [admin countdown, player countdown] seconds. */
+  protected readonly threeSecTimers = signal<[number, number]>([0, 0]);
+
+  private questionCount = 0;
+
+  protected readonly players = computed(() => this.session.match()?.players ?? []);
+
+  protected readonly currentQuestionList = computed<KdQuestion[]>(() => {
+    const round = this.round();
+    if (!round) return [];
+    return round.gamemode === 'S'
+      ? (round.questions.singleplayer[round.activePlayerIndex] ?? [])
+      : round.questions.multiplayer;
   });
-  currentQuestionListName: Signal<string> = computed(() => {
-    if (this.kdData().gamemode == "M") return "Đối kháng";
-    if (this.kdData().gamemode == "S")
-      return (
-        "Cá nhân - Người chơi " +
-        this.auth.matchData().players[this.kdData().currentSingleplayerPlayer]
-          .name
-      );
-    else return "Không xác định";
-  });
-  chosenPlayer: any = {};
-  currentQuestionCount: number = 0;
-  lastTurn: any = { name: "" };
-  threeSecTimers: number[] = [0, 0];
-  async ngOnInit(): Promise<void> {
-    this.auth.resetListeners();
-    this.auth.socket.emit("get-kd-data-admin", (callback: KdData) => {
-      this.kdData.set(callback);
-    });
-    this.auth.socket.emit("change-match-position", "KD");
 
-    this.auth.socket.on("update-kd-data-admin", (data) => {
-      this.kdData.set(data);
-    });
-    this.auth.socket.on("update-number-question-kd", (max, curr) => {
-      this.currentMaxQuestionNo = max;
-      this.currentQuestionNo = curr;
-    });
-    this.auth.socket.on("update-clock", (clock) => {
-      this.currentTime = clock;
-    });
-
-    this.auth.socket.on("disconnect", () => {
-      this.auth.socket.emit("leave-match", this.authString);
-    });
-    this.auth.socket.on("player-got-turn-kd", (player) => {
-      this.lastTurn = player;
-    });
-    this.auth.socket.on("next-question", () => {
-      this.nextQuestion();
-      this.lastTurn.name = "";
-    });
-    this.auth.socket.on("update-3s-timer-kd", (timer, ifPlayer) => {
-      if (ifPlayer) {
-        this.threeSecTimers[1] = timer;
-      } else {
-        this.threeSecTimers[0] = timer;
-      }
-    });
-  }
-  onClickQuestion(row: any) {
-    this.chosenRow = row;
-  }
-  onDoubleClickQuestion(row: any) {
-    this.displayingRow = row;
-    this.auth.socket.emit(
-      "broadcast-kd-question",
-      row,
-      (callback: { message: any }) => {
-        console.debug(callback.message);
-      }
-    );
-  }
-  editPlayer() {
-    let player =
-      this.auth.matchData().players[
-        this.auth.matchData().players.indexOf(this.chosenPlayer)
-      ];
-    const dialogRef = this.dialog.open(FormPlayerComponent, {
-      data: player,
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        var payload: any = {
-          player: result,
-          index: this.auth.matchData().players.indexOf(this.chosenPlayer),
-        };
-        payload.player.score = parseInt(payload.player.score);
-        this.auth.socket.emit(
-          "edit-player-info",
-          payload,
-          (callback: { message: any }) => {
-            console.debug(callback.message);
-          }
-        );
-      }
-    });
-  }
-  onDoubleClickPlayer(row: any) {
-    this.auth.socket.emit("change-singleplayer-kd-turn", row.id);
-  }
-  onGamemodeChange($event: any) {
-    this.auth.socket.emit("change-kd-gamemode", this.kdData().gamemode);
-  }
-  async editQuestion() {
-    const questionIndex = this.currentQuestionList().indexOf(this.chosenRow);
-    const questionData = await firstValueFrom(
-      this.dialog
-        .open<FormQKdComponent, KdQuestion, KdQuestion>(FormQKdComponent, {
-          data: this.chosenRow,
-        })
-        .afterClosed()
-    );
-    if (questionData) {
-      this.kdData.update((data) => {
-        if (this.kdData().gamemode == "S") {
-          this.kdData().questions.singleplayer[
-            this.kdData().currentSingleplayerPlayer
-          ][questionIndex] = questionData;
-        } else {
-          data.questions.multiplayer[questionIndex] = questionData;
-        }
-        return data;
-      });
-      this.auth.socket.emit("update-kd-data", this.kdData());
+  protected readonly currentQuestionListName = computed(() => {
+    const round = this.round();
+    if (round?.gamemode === 'M') return 'Đối kháng';
+    if (round?.gamemode === 'S') {
+      const player = this.players()[round.activePlayerIndex];
+      return `Cá nhân - Người chơi ${player?.name ?? '?'}`;
     }
+    return 'Không xác định';
+  });
+
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+    for (const off of [
+      this.network.on<[KdRound]>('update-kd-data-admin', (data) => this.round.set(data)),
+      this.network.on<[number, number]>('update-number-question-kd', (max, curr) => {
+        this.maxQuestionNo.set(max);
+        this.currentQuestionNo.set(curr);
+      }),
+      this.network.on<[number]>('update-clock', (clock) => this.currentTime.set(clock)),
+      this.network.on<[Player]>('player-got-turn-kd', (player) =>
+        this.lastTurnName.set(player?.name ?? ''),
+      ),
+      this.network.on('next-question', () => {
+        this.nextQuestion();
+        this.lastTurnName.set('');
+      }),
+      this.network.on<[number, boolean]>('update-3s-timer-kd', (timer, isPlayer) => {
+        this.threeSecTimers.update(([admin, player]) =>
+          isPlayer ? [admin, timer] : [timer, player],
+        );
+      }),
+    ]) {
+      destroyRef.onDestroy(off);
+    }
+    void this.init();
   }
-  choosePlayer(row: any) {
-    this.chosenPlayer = row;
+
+  private async init(): Promise<void> {
+    this.round.set(await this.api.getRound('kd'));
+    this.session.match.set(await this.api.setPosition('KD'));
   }
-  playSfx(sfxId: string, loop?: boolean) {
-    this.auth.socket.emit("play-sfx", sfxId, loop);
+
+  onClickQuestion(row: KdQuestion): void {
+    this.chosenRow.set(row);
   }
-  roundStart(amount: number) {
-    this.auth.socket.emit("start-turn-kd", amount);
-    this.currentMaxQuestionNo = amount;
-    this.currentQuestionNo = 0;
-    this.currentQuestionCount = 0;
-    this.playSfx("KD_60S", true);
+
+  onDoubleClickQuestion(row: KdQuestion): void {
+    this.displayingRow.set(row);
+    this.network.emit('broadcast-kd-question', row);
+  }
+
+  choosePlayer(row: Player): void {
+    this.chosenPlayer.set(row);
+  }
+
+  /** Puts a player on the singleplayer podium. */
+  async onDoubleClickPlayer(row: Player): Promise<void> {
+    const index = this.players().indexOf(row);
+    if (index < 0) return;
+    this.round.set(await this.api.patchKdControl({ activePlayerIndex: index }));
+  }
+
+  async onGamemodeChange(gamemode: KdGamemode): Promise<void> {
+    this.round.set(await this.api.patchKdControl({ gamemode }));
+  }
+
+  editPlayer(): void {
+    const player = this.chosenPlayer();
+    if (!player) return;
+    const index = this.players().indexOf(player);
+    if (index < 0) return;
+    const dialogRef = this.dialog.open(FormPlayerComponent, { data: structuredClone(player) });
+    dialogRef.afterClosed().subscribe(async (result?: Player) => {
+      if (!result) return;
+      result.score = Number(result.score) || 0;
+      this.session.match.set(await this.api.updatePlayer(index, result));
+    });
+  }
+
+  editQuestion(): void {
+    const round = this.round();
+    const chosen = this.chosenRow();
+    if (!round || !chosen) return;
+    const questionIndex = this.currentQuestionList().indexOf(chosen);
+    if (questionIndex < 0) return;
+    const dialogRef = this.dialog.open<FormQKdComponent, KdQuestion, KdQuestion>(
+      FormQKdComponent,
+      { data: structuredClone(chosen) },
+    );
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (!result) return;
+      const updated = structuredClone(round);
+      if (updated.gamemode === 'S') {
+        updated.questions.singleplayer[updated.activePlayerIndex][questionIndex] = result;
+      } else {
+        updated.questions.multiplayer[questionIndex] = result;
+      }
+      this.round.set(await this.api.putRound('kd', updated));
+      this.chosenRow.set(null);
+    });
+  }
+
+  playSfx(sfxId: string, loop?: boolean): void {
+    this.network.emit('play-sfx', sfxId, loop);
+  }
+
+  roundStart(amount: number): void {
+    this.network.emit('start-turn-kd', amount);
+    this.maxQuestionNo.set(amount);
+    this.currentQuestionNo.set(0);
+    this.questionCount = 0;
+    this.playSfx('KD_60S', true);
     this.nextQuestion();
   }
-  clockPause() {
-    this.auth.socket.emit("play-pause-clock");
+
+  clockPause(): void {
+    this.network.emit('play-pause-clock');
   }
-  start3sTimer() {
-    if (this.lastTurn.name != "") {
-      this.auth.socket.emit("start-3s-timer-kd", true);
-    } else {
-      this.auth.socket.emit("start-3s-timer-kd", false);
+
+  start3sTimer(): void {
+    this.network.emit('start-3s-timer-kd', this.lastTurnName() !== '');
+  }
+
+  resetTurn(): void {
+    this.network.emit('clear-turn-kd');
+    this.lastTurnName.set('');
+  }
+
+  markCorrect(): void {
+    if (this.lastTurnName() === '' && this.round()?.gamemode !== 'S') return;
+    this.network.emit('correct-mark-kd');
+    this.network.emit('stop-3s-timer-kd');
+    this.playSfx('KD_CORRECT');
+    this.network.emit('clear-turn-kd');
+    this.nextQuestion();
+    this.lastTurnName.set('');
+  }
+
+  markWrong(): void {
+    if (this.lastTurnName() === '' && this.round()?.gamemode !== 'S') return;
+    this.network.emit('stop-3s-timer-kd');
+    this.network.emit('wrong-mark-kd');
+    this.playSfx('KD_WRONG');
+    this.network.emit('clear-turn-kd');
+    this.nextQuestion();
+    this.lastTurnName.set('');
+  }
+
+  nextQuestion(): void {
+    if (this.questionCount >= this.maxQuestionNo()) {
+      this.network.emit('stop-kd-sound');
+      return;
     }
+    const next = this.currentQuestionList()[this.questionCount];
+    if (!next) return;
+    this.displayingRow.set(next);
+    this.network.emit('broadcast-kd-question', next);
+    this.questionCount += 1;
+    this.network.emit('update-number-question-kd', this.maxQuestionNo(), this.questionCount);
   }
-  goToVCNV() {
-    this.router.navigate(["/c-vcnv"]);
-  }
-  resetTurn() {
-    this.auth.socket.emit("clear-turn-kd");
-    this.lastTurn = {};
-  }
-  markCorrect() {
-    if (this.lastTurn.name != "" || this.kdData().gamemode == "S") {
-      this.auth.socket.emit("correct-mark-kd");
-      this.auth.socket.emit("stop-3s-timer-kd");
-      this.playSfx("KD_CORRECT");
-      this.auth.socket.emit("clear-turn-kd");
-      this.nextQuestion();
-      this.lastTurn.name = "";
-    }
-  }
-  markWrong() {
-    if (this.lastTurn.name != "" || this.kdData().gamemode == "S") {
-      this.auth.socket.emit("stop-3s-timer-kd");
-      this.auth.socket.emit("wrong-mark-kd");
-      this.playSfx("KD_WRONG");
-      this.auth.socket.emit("clear-turn-kd");
-      this.nextQuestion();
-      this.lastTurn.name = "";
-    }
-  }
-  nextQuestion() {
-    console.debug(this.currentQuestionCount);
-    console.debug(this.currentMaxQuestionNo);
-    if (this.currentQuestionCount < this.currentMaxQuestionNo) {
-      // this.displayingRow = this.kdData().questions[this.kdData().questions[this.kdData().gamemode == 'S'].indexOf(this.displayingRow) + 1];
-      this.displayingRow =
-        this.kdData().gamemode == "S"
-          ? this.kdData().questions.singleplayer[
-              this.kdData().currentSingleplayerPlayer
-            ][this.currentQuestionCount]
-          : this.kdData().questions.multiplayer[this.currentQuestionCount];
-      this.auth.socket.emit(
-        "broadcast-kd-question",
-        this.displayingRow,
-        (callback: { message: any }) => {
-          console.debug(callback.message);
-        }
-      );
-      this.currentQuestionCount += 1;
-      this.auth.socket.emit(
-        "update-number-question-kd",
-        this.currentMaxQuestionNo,
-        this.currentQuestionCount
-      );
-    } else {
-      this.auth.socket.emit("stop-kd-sound");
-      console.debug("Last question reached");
-    }
-  }
-  clearQuestion() {
-    this.auth.socket.emit("clear-question-kd");
-  }
-  showPoints() {
-    if (this.auth.matchData().matchPos == "PNTS") {
-      this.auth.socket.emit("change-match-position", "KD");
-    } else {
-      this.auth.socket.emit("change-match-position", "PNTS");
-    }
+
+  clearQuestion(): void {
+    this.network.emit('clear-question-kd');
   }
 }

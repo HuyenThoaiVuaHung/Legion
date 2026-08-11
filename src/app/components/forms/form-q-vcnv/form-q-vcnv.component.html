@@ -2,21 +2,20 @@
 <div mat-dialog-content>
   <div>
     <mat-radio-group aria-label="Chọn loại câu hỏi" [(ngModel)]="data.type">
-      <mat-radio-button [disabled]="data.type == 'CNV'" class="p-5" value="HN"
+      <mat-radio-button [disabled]="data.type === 'CNV'" class="p-5" value="HN"
         >Bình thường</mat-radio-button
       >
-      <mat-radio-button [disabled]="data.type == 'CNV'" class="p-5" value="HN_S"
+      <mat-radio-button [disabled]="data.type === 'CNV'" class="p-5" value="HN_S"
         >Âm thanh</mat-radio-button
       >
-      <mat-radio-button disabled="" class="p-5" value="CNV"
+      <mat-radio-button [disabled]="true" class="p-5" value="CNV"
         >Chướng Ngại Vật</mat-radio-button
       >
     </mat-radio-group>
     <mat-form-field class="inputForm">
-      @if (data.type == 'HN') {
+      @if (data.type === 'HN') {
       <mat-label>Câu hỏi</mat-label>
       } @else {
-
       <mat-label>Giải thích</mat-label>
       }
       <input matInput [(ngModel)]="data.question" />
@@ -26,25 +25,31 @@
         <input matInput placeholder="Đáp án" [(ngModel)]="data.answer" />
       </mat-form-field>
     </div>
-    @if (data.type != 'CNV') {
-    <mat-form-field class="inputForm">
-      <input
-        [disabled]="data.type == 'HN'"
-        matInput
-        placeholder="Tên file âm thanh"
-        [(ngModel)]="data.audioFilePath"
-      />
-    </mat-form-field>
-
+    @if (data.type !== 'CNV') {
+      <div class="flex items-center gap-2 mt-2">
+        <button mat-button type="button" [disabled]="data.type === 'HN' || uploadingAudio()" (click)="audioInput.click()">
+          Tải file âm thanh
+        </button>
+        <input #audioInput class="file-input" type="file" accept="audio/*" (change)="onAudioSelected($event)" />
+        @if (uploadingAudio()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else if (data.audioFile) {
+          <span class="text-sm opacity-70">{{ data.audioFile }}</span>
+        }
+      </div>
+    } @else {
+      <div class="flex items-center gap-2 mt-2">
+        <button mat-button type="button" [disabled]="uploadingImage()" (click)="imageInput.click()">
+          Tải hình ảnh
+        </button>
+        <input #imageInput class="file-input" type="file" accept="image/*" (change)="onImageSelected($event)" />
+        @if (uploadingImage()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else if (data.imageFile) {
+          <span class="text-sm opacity-70">{{ data.imageFile }}</span>
+        }
+      </div>
     }
-    <mat-form-field class="inputForm">
-      <input
-        [disabled]="data.type != 'CNV'"
-        matInput
-        placeholder="Tên file hình ảnh"
-        [(ngModel)]="data.picFileName"
-      />
-    </mat-form-field>
   </div>
   <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()">Huỷ</button>

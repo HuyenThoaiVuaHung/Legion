@@ -1,202 +1,243 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { Router } from "@angular/router";
-import { AuthService } from "../../services/auth.service";
-import { FormPlayerComponent } from "src/app/components/forms/form-player/form-player.component";
-import { FormQVcnvComponent } from "src/app/components/forms/form-q-vcnv/form-q-vcnv.component";
-import { VcnvData } from "src/app/services/types/game";
-import { MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions } from "@angular/material/card";
-import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
-import { NgClass } from "@angular/common";
-import { MatIconButton, MatButton } from "@angular/material/button";
-import { MatTooltip } from "@angular/material/tooltip";
-import { MatIcon } from "@angular/material/icon";
-import { MatCheckbox } from "@angular/material/checkbox";
-import { ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { MatProgressSpinner } from "@angular/material/progress-spinner";
-import { MenuItemComponent } from "../../components/menu-item/menu-item.component";
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
+import { FormQVcnvComponent } from '../../components/forms/form-q-vcnv/form-q-vcnv.component';
+import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
+import { POSITION_LABELS } from '../../core/constants';
+import { Player, VcnvQuestion, VcnvRound } from '../../core/contracts/game';
+import { ApiService } from '../../core/services/api.service';
+import { MediaService } from '../../core/services/media.service';
+import { NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
+
+/** Sentinel question id the server understands as "hide all questions". */
+const HIDE_QUESTION_ID = 7;
+/** Row ids (1-based) revealed when the obstacle is solved. */
+const ALL_ROW_IDS = [1, 2, 3, 4, 5];
 
 @Component({
-    selector: "app-control-vcnv",
-    templateUrl: "./control-vcnv.component.html",
-    styleUrls: ["./control-vcnv.component.scss"],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgClass, MatIconButton, MatTooltip, MatIcon, MatCheckbox, ReactiveFormsModule, FormsModule, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatProgressSpinner, MatCardActions, MatButton, MenuItemComponent]
+  selector: 'app-control-vcnv',
+  templateUrl: './control-vcnv.component.html',
+  styleUrls: ['./control-vcnv.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    NgClass,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    MatTooltipModule,
+    MenuItemComponent,
+  ],
 })
-export class ControlVcnvComponent implements OnInit {
-  router = inject(Router);
-  dialog = inject(MatDialog);
-  auth = inject(AuthService);
+export class ControlVcnvComponent {
+  private readonly api = inject(ApiService);
+  private readonly network = inject(NetworkService);
+  private readonly dialog = inject(MatDialog);
+  protected readonly media = inject(MediaService);
+  protected readonly session = inject(SessionService);
 
-  ifPlayerCNV: boolean = true;
-  vcnvData: VcnvData = {} as VcnvData;
-  currentTime: number = 0;
-  playerGetVCNV: any[] = [];
-  displayingRow: any = {};
-  chosenRow: any = {};
-  vcnvMark: boolean[] = [];
-  displayedQuestionColumns: string[] = [
-    "id",
-    "question",
-    "answer",
-    "type",
-    "value",
-    "action",
+  protected readonly displayedQuestionColumns = [
+    'id',
+    'question',
+    'answer',
+    'type',
+    'value',
+    'action',
   ];
-  displayedPlayerColumns: string[] = [
-    "id",
-    "name",
-    "score",
-    "response",
-    "mark",
-    "active",
-  ];
-  displayedVCNVPlayersColumns: string[] = ["id", "name", "mark", "time"];
-  ngOnInit(): void {
-    this.auth.resetListeners();
-    if (
-      this.auth.matchData().matchPos != "VCNV_Q" &&
-      this.auth.matchData().matchPos != "VCNV_A"
-    ) {
-      this.auth.socket.emit("change-match-position", "VCNV_Q");
+  protected readonly displayedPlayerColumns = ['id', 'name', 'score', 'response', 'mark', 'active'];
+  protected readonly displayedBuzzColumns = ['id', 'name', 'mark', 'time'];
+
+  protected readonly round = signal<VcnvRound | null>(null);
+  protected readonly currentTime = signal(0);
+  protected readonly chosenRow = signal<VcnvQuestion | null>(null);
+  protected readonly displayingRow = signal<VcnvQuestion | null>(null);
+  /** Obstacle marking checkboxes, indexed by player index. */
+  protected readonly obstacleMarks = signal<boolean[]>([]);
+
+  protected readonly players = computed(() => this.session.match()?.players ?? []);
+  protected readonly positionLabel = computed(() => {
+    const position = this.session.match()?.position;
+    return position ? POSITION_LABELS[position] : '';
+  });
+
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+    for (const off of [
+      this.network.on<[VcnvRound]>('update-vcnv-data', (data) => this.round.set(data)),
+      this.network.on<[number]>('update-clock', (clock) => this.currentTime.set(clock)),
+    ]) {
+      destroyRef.onDestroy(off);
     }
+    void this.init();
+  }
 
-    this.auth.socket.on("update-vcnv-data", (data) => {
-      this.vcnvData = data;
-    });
-    this.auth.socket.on("update-clock", (clock) => {
-      this.currentTime = clock;
-    });
-    this.auth.socket.emit("get-vcnv-data", (callback) => {
-      this.vcnvData = callback;
-      if (this.vcnvData.showResults == true) {
-        this.toggleResultsDisplay();
-      }
-    });
-    this.auth.socket.on("player-vcnv-get", (player) => {
-      this.playerGetVCNV.push(player);
+  private async init(): Promise<void> {
+    const round = await this.api.getRound('vcnv');
+    this.round.set(round);
+    // Leftover results overlay from a previous session gets switched off.
+    if (round.showResults) this.toggleResultsDisplay();
+    const position = this.session.match()?.position;
+    if (position !== 'VCNV_Q' && position !== 'VCNV_A') {
+      this.session.match.set(await this.api.setPosition('VCNV_Q'));
+    }
+  }
+
+  playSfx(sfxId: string): void {
+    this.network.emit('play-sfx', sfxId);
+  }
+
+  onClickQuestion(row: VcnvQuestion): void {
+    this.chosenRow.set(row);
+  }
+
+  onDoubleClickQuestion(row: VcnvQuestion): void {
+    this.displayingRow.set(row);
+    this.playSfx('VCNV_CHOOSE_ROW');
+    this.network.emit('highlight-vcnv-question', row.id);
+  }
+
+  onDoubleClickPlayer(row: Player): void {
+    const index = this.players().indexOf(row);
+    if (index < 0) return;
+    const dialogRef = this.dialog.open(FormPlayerComponent, { data: structuredClone(row) });
+    dialogRef.afterClosed().subscribe(async (result?: Player) => {
+      if (!result) return;
+      result.score = Number(result.score) || 0;
+      this.session.match.set(await this.api.updatePlayer(index, result));
     });
   }
-  playSfx(sfxId: string) {
-    this.auth.socket.emit("play-sfx", sfxId);
-  }
-  onDoubleClickPlayer(row: any) {
-    let player =
-      this.auth.matchData().players[this.auth.matchData().players.indexOf(row)];
-    const dialogRef = this.dialog.open(FormPlayerComponent, {
-      data: player,
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        var payload: any = {
-          player: result,
-          index: this.auth.matchData().players.indexOf(row),
-        };
-        payload.player.score = parseInt(payload.player.score);
-        this.auth.socket.emit("edit-player-info", payload, (callback) => {});
-      }
-    });
-  }
-  editQuestion() {
-    let question =
-      this.vcnvData.questions[this.vcnvData.questions.indexOf(this.chosenRow)];
-    const dialogRef = this.dialog.open(FormQVcnvComponent, {
-      data: question,
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        var payload: any = {
-          question: result,
-          index: this.vcnvData.questions.indexOf(this.chosenRow),
-        };
-        payload.question.value = parseInt(payload.question.value);
-        this.vcnvData.questions[
-          this.vcnvData.questions.indexOf(this.chosenRow)
-        ] = payload.question;
-        this.auth.socket.emit("update-vcnv-data", this.vcnvData);
-      }
-    });
-  }
-  submitMark() {
-    this.auth.socket.emit(
-      "submit-mark-vcnv-admin",
-      this.vcnvData.playerAnswers
+
+  editQuestion(): void {
+    const round = this.round();
+    const chosen = this.chosenRow();
+    if (!round || !chosen) return;
+    const index = round.questions.indexOf(chosen);
+    if (index < 0) return;
+    const dialogRef = this.dialog.open<FormQVcnvComponent, VcnvQuestion, VcnvQuestion>(
+      FormQVcnvComponent,
+      { data: structuredClone(chosen) },
     );
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (!result) return;
+      result.value = Number(result.value) || 0;
+      const updated = structuredClone(round);
+      updated.questions[index] = result;
+      this.round.set(await this.api.putRound('vcnv', updated));
+      this.chosenRow.set(null);
+    });
   }
-  onClickQuestion(row) {
-    this.chosenRow = row;
+
+  /** Persists in-place round edits (marks, isShown toggles). */
+  async saveRound(): Promise<void> {
+    const round = this.round();
+    if (!round) return;
+    this.round.set(await this.api.putRound('vcnv', round));
   }
-  onDoubleClickQuestion(row) {
-    this.displayingRow = row;
-    this.auth.socket.emit("play-sfx", "VCNV_CHOOSE_ROW");
-    this.auth.socket.emit("highlight-vcnv-question", row.id, (callback) => {});
+
+  setAnswerMark(playerIndex: number, correct: boolean): void {
+    const round = this.round();
+    if (!round) return;
+    const playerAnswers = round.playerAnswers.map((answer, i) =>
+      i === playerIndex ? { ...answer, correct } : answer,
+    );
+    this.round.set({ ...round, playerAnswers });
+    void this.saveRound();
   }
-  openHN(id: number) {
-    this.auth.socket.emit("open-hn-vcnv", id);
+
+  setShown(question: VcnvQuestion, isShown: boolean): void {
+    const round = this.round();
+    if (!round) return;
+    const questions = round.questions.map((q) => (q === question ? { ...q, isShown } : q));
+    this.round.set({ ...round, questions });
+    void this.saveRound();
   }
-  resetCNVPlayers() {
-    this.vcnvData.CNVPlayers = [];
-    this.vcnvData.disabledPlayers = [];
-    this.auth.socket.emit("update-vcnv-data", this.vcnvData);
+
+  setObstacleMark(playerIndex: number, correct: boolean): void {
+    this.obstacleMarks.update((marks) => {
+      const next = [...marks];
+      next[playerIndex] = correct;
+      return next;
+    });
   }
-  showQuestion() {
-    this.auth.socket.emit("broadcast-vcnv-question", this.displayingRow.id);
-    this.vcnvData.questions[this.displayingRow.id - 1].ifShown = true;
-    this.auth.socket.emit("update-vcnv-data", this.vcnvData);
+
+  submitMark(): void {
+    const round = this.round();
+    if (!round) return;
+    this.network.emit('submit-mark-vcnv-admin', round.playerAnswers);
   }
-  toggleIfShown() {
-    this.auth.socket.emit("update-vcnv-data", this.vcnvData);
-  }
-  hideQuestion() {
-    this.auth.socket.emit("broadcast-vcnv-question", 7);
-  }
-  closeHN(id: number) {
-    this.auth.socket.emit("close-hn-vcnv", id);
-  }
-  start15sTimer() {
-    this.auth.socket.emit("start-clock", 15);
-  }
-  toggleResultsDisplay() {
-    this.auth.socket.emit("toggle-results-display-vcnv");
-  }
-  toggleAnswerDisplay() {
-    if (this.auth.matchData().matchPos == "VCNV_Q") {
-      this.auth.socket.emit("change-match-position", "VCNV_A");
-    } else if (this.auth.matchData().matchPos == "VCNV_A") {
-      this.auth.socket.emit("change-match-position", "VCNV_Q");
-      if (this.vcnvData.showResults == true) {
-        this.toggleResultsDisplay();
-      }
-    }
-  }
-  submitVCNVMark() {
-    let ifAnswerCorrect: boolean = false;
-    for (let i = 0; i < this.vcnvMark.length; i++) {
-      if (this.vcnvMark[i] == true) ifAnswerCorrect = true;
-    }
-    this.auth.socket.emit("submit-cnv-mark", this.vcnvMark);
-    if (ifAnswerCorrect) {
-      this.playSfx("VCNV_OBSTACLE_CORRECT");
-      this.auth.socket.emit("open-hn-vcnv", 1);
-      this.auth.socket.emit("open-hn-vcnv", 2);
-      this.auth.socket.emit("open-hn-vcnv", 3);
-      this.auth.socket.emit("open-hn-vcnv", 4);
-      this.auth.socket.emit("open-hn-vcnv", 5);
+
+  submitObstacleMark(): void {
+    const marks = this.obstacleMarks();
+    this.network.emit('submit-cnv-mark', marks);
+    if (marks.some(Boolean)) {
+      this.playSfx('VCNV_OBSTACLE_CORRECT');
+      for (const id of ALL_ROW_IDS) this.openRow(id);
     } else {
-      this.playSfx("VCNV_WRONG_ROW");
+      this.playSfx('VCNV_WRONG_ROW');
     }
   }
-  moveToTT() {
-    this.router.navigate(["/c-tt"]);
+
+  openRow(id: number): void {
+    this.network.emit('open-hn-vcnv', id);
   }
-  showPoints() {
-    if (this.auth.matchData().matchPos == "PNTS") {
-      this.auth.socket.emit("change-match-position", "VCNV_Q");
-    } else {
-      this.auth.socket.emit("change-match-position", "PNTS");
+
+  closeRow(id: number): void {
+    this.network.emit('close-hn-vcnv', id);
+  }
+
+  async resetObstacleBuzzes(): Promise<void> {
+    const round = this.round();
+    if (!round) return;
+    this.round.set(
+      await this.api.putRound('vcnv', { ...round, obstacleBuzzes: [], disabledPlayers: [] }),
+    );
+    this.obstacleMarks.set([]);
+  }
+
+  showQuestion(): void {
+    const round = this.round();
+    const displaying = this.displayingRow();
+    if (!round || !displaying) return;
+    this.network.emit('broadcast-vcnv-question', displaying.id);
+    this.setShown(displaying, true);
+  }
+
+  hideQuestion(): void {
+    this.network.emit('broadcast-vcnv-question', HIDE_QUESTION_ID);
+  }
+
+  start15sTimer(): void {
+    this.playSfx('VCNV_15S');
+    this.network.emit('start-clock', 15);
+  }
+
+  pauseClock(): void {
+    this.network.emit('play-pause-clock', this.currentTime());
+  }
+
+  toggleResultsDisplay(): void {
+    this.network.emit('toggle-results-display-vcnv');
+  }
+
+  /** Flips the audience view between the question board and player answers. */
+  async toggleAnswerDisplay(): Promise<void> {
+    const position = this.session.match()?.position;
+    if (position === 'VCNV_Q') {
+      this.session.match.set(await this.api.setPosition('VCNV_A'));
+    } else if (position === 'VCNV_A') {
+      this.session.match.set(await this.api.setPosition('VCNV_Q'));
+      if (this.round()?.showResults) this.toggleResultsDisplay();
     }
-  }
-  public pauseClock() {
-    this.auth.socket.emit("play-pause-clock", this.currentTime);
   }
 }

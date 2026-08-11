@@ -14,12 +14,12 @@
     </mat-radio-group>
     <mat-radio-group
       class="flex"
-      aria-label="Chọn loại câu hỏi"
+      aria-label="Chọn điểm"
       [(ngModel)]="data.value"
     >
       <mat-label>Điểm</mat-label>
-      <mat-radio-button class="p-5" value="30">30</mat-radio-button>
-      <mat-radio-button class="p-5" value="20">20</mat-radio-button>
+      <mat-radio-button class="p-5" [value]="30">30</mat-radio-button>
+      <mat-radio-button class="p-5" [value]="20">20</mat-radio-button>
     </mat-radio-group>
     <mat-form-field appearance="outline">
       <textarea
@@ -36,14 +36,25 @@
         [(ngModel)]="data.answer"
       ></textarea>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="w-full">
-      <input
-        [disabled]="data.type == 'N'"
-        matInput
-        placeholder="Tên file Video/Âm thanh/Hình ảnh"
-        [(ngModel)]="data.file_name"
-      />
-    </mat-form-field>
+    @if (data.type !== 'N') {
+      <div class="flex items-center gap-2 mt-2">
+        <button mat-button type="button" [disabled]="uploading()" (click)="fileInput.click()">
+          Tải file Video/Âm thanh/Hình ảnh
+        </button>
+        <input
+          #fileInput
+          class="file-input"
+          type="file"
+          [accept]="data.type === 'A' ? 'audio/*' : data.type === 'V' ? 'video/*' : 'image/*'"
+          (change)="onMediaSelected($event)"
+        />
+        @if (uploading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else if (data.mediaFile) {
+          <span class="text-sm opacity-70">{{ data.mediaFile }}</span>
+        }
+      </div>
+    }
   </div>
 </div>
 <div mat-dialog-actions>

@@ -1,80 +1,81 @@
 import {
   ChpQuestion,
   KdQuestion,
-  Question,
+  RoundKind,
   TtQuestion,
   VcnvQuestion,
   VdQuestion,
-  Type,
-} from "../../services/types/game";
+} from '../../core/contracts/game';
 
-export function normalizeQuestion(
-  data: KdQuestion | VcnvQuestion | TtQuestion | VdQuestion | ChpQuestion | any
-): Question {
-  let type: Type = Type.NORMAL;
-  if (!data.type) {
-    type = Type.NORMAL;
-  } else {
-    switch (data.type) {
-      case "A":
-      case "HN_S":
-        type = Type.AUDIO;
-        break;
-      case "V":
-      case "TT_VD":
-        type = Type.VIDEO;
-        break;
-      case "I":
-      case "TT_IMG":
-      case "P":
-      case "CNV":
-        type = Type.IMAGE;
-        type = Type.IMAGE;
-        break;
-      case "N":
-      case "HN":
-      default:
-        type = Type.NORMAL;
-        break;
+export type AnyQuestion = KdQuestion | VcnvQuestion | TtQuestion | VdQuestion | ChpQuestion;
+
+export type PreviewMedia = 'none' | 'image' | 'audio' | 'video';
+
+/** Uniform view of one question row for the dashboard preview table. */
+export interface QuestionPreview {
+  question: string;
+  answer: string;
+  typeLabel: string;
+  media: PreviewMedia;
+  /** File names to feed MediaService.resolve(kind, …). */
+  imageFile?: string;
+  secondaryImageFile?: string;
+  audioFile?: string;
+  videoFile?: string;
+}
+
+/** Normalizes any canonical question shape into a QuestionPreview. */
+export function toQuestionPreview(kind: RoundKind, question: AnyQuestion): QuestionPreview {
+  const base = { question: question.question, answer: question.answer };
+
+  switch (kind) {
+    case 'kd': {
+      const q = question as KdQuestion;
+      if (q.type === 'P') {
+        return { ...base, typeLabel: q.type, media: 'image', imageFile: q.mediaFile };
+      }
+      if (q.type === 'A') {
+        return { ...base, typeLabel: q.type, media: 'audio', audioFile: q.mediaFile };
+      }
+      return { ...base, typeLabel: q.type, media: 'none' };
     }
-  }
-  let image_name: any;
-  let secondary_image_name: any;
-  let audio_name: any;
-  let video_name: any;
-
-  if (type === Type.AUDIO) {
-    if (data.type === "HN_S") audio_name = data.audioFilePath;
-    if (data.type === "A") {
-      if (data.audioFilePath) audio_name = data.audioFilePath;
-      else audio_name = data.file_name;
+    case 'vcnv': {
+      const q = question as VcnvQuestion;
+      if (q.type === 'CNV') {
+        return { ...base, typeLabel: q.type, media: 'image', imageFile: q.imageFile };
+      }
+      if (q.type === 'HN_S') {
+        return { ...base, typeLabel: q.type, media: 'audio', audioFile: q.audioFile };
+      }
+      return { ...base, typeLabel: q.type, media: 'none' };
     }
-  }
-
-  if (type === Type.VIDEO) {
-    if (data.type === "TT_VD") video_name = data.video_name;
-
-    if (data.type === "V") video_name = data.file_name;
-  }
-
-  if (type === Type.IMAGE) {
-    if (data.type === "TT_IMG") {
-      image_name = data.question_image;
-      secondary_image_name = data.answer_image;
+    case 'tt': {
+      const q = question as TtQuestion;
+      if (q.type === 'video') {
+        return { ...base, typeLabel: q.type, media: 'video', videoFile: q.videoFile };
+      }
+      return {
+        ...base,
+        typeLabel: q.type,
+        media: 'image',
+        imageFile: q.questionImage,
+        secondaryImageFile: q.answerImage,
+      };
     }
-    if (data.type === "I") image_name = data.audioFilePath;
-    if (data.type === "P") image_name = data.file_name;
-    if (data.type === "CNV") {
-      image_name = data.picFileName;
+    case 'vd': {
+      const q = question as VdQuestion;
+      if (q.type === 'I') {
+        return { ...base, typeLabel: q.type, media: 'image', imageFile: q.mediaFile };
+      }
+      if (q.type === 'A') {
+        return { ...base, typeLabel: q.type, media: 'audio', audioFile: q.mediaFile };
+      }
+      if (q.type === 'V') {
+        return { ...base, typeLabel: q.type, media: 'video', videoFile: q.mediaFile };
+      }
+      return { ...base, typeLabel: q.type, media: 'none' };
     }
+    case 'chp':
+      return { ...base, typeLabel: 'N', media: 'none' };
   }
-  return {
-    question: data.question,
-    answer: data.answer,
-    type,
-    image_name,
-    secondary_image_name,
-    audio_name,
-    video_name,
-  };
 }

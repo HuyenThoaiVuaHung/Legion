@@ -1,66 +1,44 @@
 <div class="base relative flex justify-center items-center">
-  <div class="question bg-surface-container mat-elevation-z8 rounded-md overflow-hidden flex w-[70rem] flex-col mr-5">
+  <div
+    class="question disablePointerActions bg-surface-container rounded-md overflow-hidden flex w-[70rem] flex-col mr-5"
+  >
     <div class="h-12 w-full flex">
-      @for (player of auth.matchData().players; track $index) {
+      @for (player of players(); track player.id; let i = $index) {
         <div
-        [ngClass]="{
-                'name-highlight': playerGotTurn.id === $index + 1,
-              }"
+          [ngClass]="{ 'name-highlight': turnPlayerIndex() === i }"
           class="border-2 w-full box-border h-full bg-surface font-semibold flex justify-between gap-2 items-center p-5"
-          >
-          <span>
-            {{ auth.matchData().players[$index].name.toUpperCase() }}
-          </span>
-          <span>
-            {{ auth.matchData().players[$index].score }}
-          </span>
+        >
+          <span>{{ player.name.toUpperCase() }}</span>
+          <span>{{ player.score }}</span>
         </div>
       }
     </div>
-    <div
-      class="w-full relative text-2xl box-border p-5 h-56"
-      >
-      @if (currentQuestion) { @if (currentQuestion.type == 'P') {
-        <span class="w-full h-full justify-between flex gap-5">
-          <span class="w-full max-w-96">
-            {{ currentQuestion.question }}
+    <div class="w-full relative text-2xl box-border p-5 h-56">
+      @if (currentQuestion(); as question) {
+        @if (question.type === 'P') {
+          <span class="w-full h-full justify-between flex gap-5">
+            <span class="w-full max-w-96">{{ question.question }}</span>
+            <img class="w-40 float-right" [src]="resolveImage(question)" />
           </span>
-          <img
-            class="w-40 float-right"
-          [src]="
-            '../../../assets/picture-questions/kd/' +
-            currentQuestion.audioFilePath
-          "
-            />
-        </span>
-      } @else {
-        <span>
-          {{ currentQuestion.question }}
-        </span>
-
-        } }
-        @if (threeSecTimers[1] <= 0 && threeSecTimers[0] > 0) {
-          <span
-            class="absolute right-0 bottom-0 text-5xl p-5"
-            >{{ threeSecTimers[0] / 10 }}</span
-            >
-          }
-          @if (threeSecTimers[1] > 0) {
-            <span
-              class="absolute right-0 bottom-0 text-5xl p-5"
-              >{{ threeSecTimers[1] / 10 }}</span
-              >
-            }
-          </div>
-        </div>
-        <div
-          class=" w-52 text-7xl bg-surface-container border-2 font-semibold mat-elevation-z8 rounded-xl grid place-items-center h-52"
-          >
-          @if (!currentQuestion && !currentMaxQuestionNo ) {
-            -
-          }
-          @else{
-          {{ currentQuestionNo }}/{{ currentMaxQuestionNo }}
+        } @else {
+          <span>{{ question.question }}</span>
         }
-      </div>
+      }
+      @if (answerTimerTenths() <= 0 && turnTimerTenths() > 0) {
+        <span class="absolute right-0 bottom-0 text-5xl p-5">{{ turnTimerTenths() / 10 }}</span>
+      }
+      @if (answerTimerTenths() > 0) {
+        <span class="absolute right-0 bottom-0 text-5xl p-5">{{ answerTimerTenths() / 10 }}</span>
+      }
     </div>
+  </div>
+  <div
+    class="w-52 text-7xl bg-surface-container border-2 font-semibold rounded-xl grid place-items-center h-52"
+  >
+    @if (!currentQuestion() && !maxQuestionCount()) {
+      -
+    } @else {
+      {{ questionNumber() }}/{{ maxQuestionCount() }}
+    }
+  </div>
+</div>

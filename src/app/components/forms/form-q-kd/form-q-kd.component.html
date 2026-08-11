@@ -14,19 +14,25 @@
         <input matInput placeholder="Đáp án" [(ngModel)]="data.answer" />
       </mat-form-field>
     </div>
-    <div>
-      <mat-form-field class="inputForm mt-2 inline">
-        <input matInput placeholder="Lĩnh vực" [(ngModel)]="data.subject" />
-      </mat-form-field>
-      <mat-form-field class="inputForm mt-2 ml-2 inline">
+    @if (data.type !== 'N') {
+      <div class="mt-2 flex items-center gap-2">
+        <button mat-button type="button" [disabled]="uploading()" (click)="fileInput.click()">
+          Tải file {{ data.type === 'A' ? 'âm thanh' : 'hình ảnh' }}
+        </button>
         <input
-          [disabled]="data.type == 'N'"
-          matInput
-          placeholder="Tên file âm thanh/hình ảnh"
-          [(ngModel)]="data.audioFilePath"
+          #fileInput
+          class="file-input"
+          type="file"
+          [accept]="data.type === 'A' ? 'audio/*' : 'image/*'"
+          (change)="onMediaSelected($event)"
         />
-      </mat-form-field>
-    </div>
+        @if (uploading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else if (data.mediaFile) {
+          <span class="text-sm opacity-70">{{ data.mediaFile }}</span>
+        }
+      </div>
+    }
   </div>
   <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()">Huỷ</button>

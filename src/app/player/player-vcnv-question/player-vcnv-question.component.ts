@@ -1,144 +1,118 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
-import { AuthService } from "src/app/services/auth.service";
-import { SfxService } from "src/app/services/sfx-service.service";
-import { VcnvData } from "src/app/services/types/game";
-import { NgClass } from "@angular/common";
-import { PlayerListComponent } from "../../components/player-list/player-list.component";
-import { MatFormField } from "@angular/material/form-field";
-import { MatInput } from "@angular/material/input";
-import { ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { MatIconButton, MatFabButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatFabButton, MatIconButton } from '@angular/material/button';
+import { MatFormField } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import { Role } from '../../core/contracts/api';
+import { VcnvRound } from '../../core/contracts/game';
+import { ApiService } from '../../core/services/api.service';
+import { MediaService } from '../../core/services/media.service';
+import { NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
+import { SfxService } from '../../core/services/sfx.service';
+import { PlayerListComponent } from '../../components/player-list/player-list.component';
+
+/**
+ * VCNV question board is always laid out as 4 hàng ngang rows (index 0-3),
+ * one hàng ngang đặc biệt (index 4), and the CNV obstacle itself (index 5)
+ * — that structure is fixed by the game rules, not configurable data.
+ */
+const CNV_INDEX = 5;
+const HN_ROW_INDICES = [0, 1, 2, 3] as const;
 
 @Component({
-    selector: "app-player-vcnv-question",
-    templateUrl: "./player-vcnv-question.component.html",
-    styleUrls: ["./player-vcnv-question.component.scss"],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [NgClass, PlayerListComponent, MatFormField, MatInput, ReactiveFormsModule, FormsModule, MatIconButton, MatIcon, MatFabButton]
+  selector: 'app-player-vcnv-question',
+  templateUrl: './player-vcnv-question.component.html',
+  styleUrl: './player-vcnv-question.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [PlayerListComponent, MatFormField, MatInput, FormsModule, MatIconButton, MatIcon, MatFabButton],
 })
-export class PlayerVcnvQuestionComponent implements OnInit {
-  private sfxService = inject(SfxService);
-  auth = inject(AuthService);
+export class PlayerVcnvQuestionComponent {
+  private readonly api = inject(ApiService);
+  private readonly network = inject(NetworkService);
+  private readonly sfx = inject(SfxService);
+  private readonly media = inject(MediaService);
+  private readonly destroyRef = inject(DestroyRef);
+  protected readonly session = inject(SessionService);
+  protected readonly Role = Role;
+  protected readonly hnRowIndices = HN_ROW_INDICES;
 
-  vcnvData: VcnvData = {} as VcnvData;
-  currentTime: number = 0;
-  curVCNVQuestion: any = {};
-  highlightedVCNVQuestion: any = {};
-  VCNVStrings: string[] = [];
-  answerCache: string = "";
-  playerAnswer: string = "";
-  disabledCNVButton: boolean = false;
-  audio: any = null;
+  protected readonly round = signal<VcnvRound | null>(null);
+  protected readonly currentTime = signal(0);
+  protected readonly playerAnswer = signal('');
+  protected readonly answerCache = signal('');
 
-  async ngOnInit() {
-    this.auth.resetListeners();
-    this.auth.socket.emit("clear-player-answer");
-    this.auth.socket.on("play-sfx", (sfx) => {
-      this.sfxService.playSfx(sfx);
-    });
-    this.auth.socket.on("update-vcnv-data", (data) => {
-      this.vcnvData = data;
-      if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
-        this.disabledCNVButton = true;
-      } else {
-        this.disabledCNVButton = false;
-      }
-      try {
-        this.formatStrings();
-      } catch (error) {
-        console.debug(error);
-        this.VCNVStrings = [];
-      }
-    });
+  /** The row/obstacle currently being read out — server marks it isShown. */
+  protected readonly activeQuestion = computed(
+    () => this.round()?.questions.find((q) => q.isShown) ?? null,
+  );
 
-    this.auth.socket.on("update-clock", (clock) => {
-      this.currentTime = clock;
+  protected readonly cnvImageUrl = computed(() => {
+    const cnv = this.round()?.questions[CNV_INDEX];
+    return cnv ? this.media.resolve('vcnv', cnv.imageFile) : null;
+  });
+
+  protected readonly disabledObstacleButton = computed(() => {
+    const index = this.session.playerIndex();
+    return index === null || (this.round()?.disabledPlayers.includes(index) ?? false);
+  });
+
+  /** Row text: masked with ◯ while closed, ⬤ once shown-but-unsolved, plain once open. */
+  protected readonly rowStrings = computed(() => {
+    const round = this.round();
+    if (!round) return [] as string[];
+    return round.questions.map((q) => {
+      const clean = q.answer.replace(/\s/g, '').toUpperCase();
+      if (q.isOpen) return clean;
+      return (q.isShown ? '⬤' : '◯').repeat(clean.length);
     });
-    this.auth.socket.emit("get-vcnv-data", (callback: VcnvData) => {
-      console.debug(callback);
-      this.vcnvData = callback;
-      if (this.vcnvData.disabledPlayers.includes(this.auth.userInfo().index!)) {
-        this.disabledCNVButton = true;
-      } else {
-        this.disabledCNVButton = false;
-      }
-      try {
-        this.formatStrings();
-      } catch (error) {
-        console.debug(error);
-        this.VCNVStrings = [];
-      }
-    });
-    this.auth.socket.on("update-highlighted-vcnv-question", (index) => {
-      this.highlightedVCNVQuestion = this.vcnvData.questions[index - 1];
-    });
-    this.auth.socket.on("update-vcnv-question", (data) => {
-      this.curVCNVQuestion = data;
-      if (this.curVCNVQuestion.type == "HN_S") {
-        this.audio = new Audio(
-          "../../../assets/audio-questions/vcnv/" +
-            this.curVCNVQuestion.audioFilePath
-        );
-        this.audio.play();
-      } else if (this.audio != null) {
-        this.audio.pause();
-      }
-    });
-    this.setCnvImage();
+  });
+
+  private audio: HTMLAudioElement | null = null;
+
+  constructor() {
+    this.network.emit('clear-player-answer');
+    void this.loadRound();
+
+    const offs = [
+      this.network.on<[string]>('play-sfx', (code) => this.sfx.play(code)),
+      this.network.on<[VcnvRound]>('update-vcnv-data', (data) => this.onRound(data)),
+      this.network.on<[number]>('update-clock', (clock) => this.currentTime.set(clock)),
+    ];
+    this.destroyRef.onDestroy(() => offs.forEach((off) => off()));
   }
-  async setCnvImage() {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    document.getElementById("cnvPicBox")!.style.backgroundImage =
-      "url(../../../assets/picture-questions/vcnv/" +
-      this.vcnvData.questions[5].picFileName +
-      ")";
+
+  private async loadRound(): Promise<void> {
+    this.onRound(await this.api.getRound('vcnv'));
   }
-  formatStrings() {
-    for (let i: number = 0; i <= 5; i++) {
-      this.VCNVStrings[i] = this.vcnvData.questions[i].answer;
-    }
-    this.VCNVStrings.forEach((element, index) => {
-      element = element.toString();
-      element = element.replace(/\s/g, "");
-      element = element.toUpperCase();
-      if (
-        this.vcnvData.questions[index].ifOpen == false &&
-        this.vcnvData.questions[index].ifShown == false
-      ) {
-        let processedString = "";
-        for (let i = 0; i < element.length; i++) {
-          processedString += "◯";
-        }
-        element = processedString;
-      } else if (
-        this.vcnvData.questions[index].ifOpen == false &&
-        this.vcnvData.questions[index].ifShown == true
-      ) {
-        let processedString = "";
-        for (let i = 0; i < element.length; i++) {
-          processedString += "⬤";
-        }
-        element = processedString;
-      }
-      this.VCNVStrings[index] = element;
-    });
-  }
-  submitAnswer() {
-    if (this.currentTime > 0) {
-      this.answerCache = this.playerAnswer.toUpperCase();
-      this.auth.socket.emit("submit-answer-vcnv", this.playerAnswer);
-      this.playerAnswer = "";
+
+  private onRound(data: VcnvRound): void {
+    this.round.set(data);
+    const active = data.questions.find((q) => q.isShown);
+    if (active?.type === 'HN_S') {
+      this.audio?.pause();
+      this.audio = new Audio(this.media.resolve('vcnv', active.audioFile));
+      void this.audio.play();
+    } else {
+      this.audio?.pause();
+      this.audio = null;
     }
   }
-  attemptVCNV() {
-    this.auth.socket.emit("attempt-cnv-player", Date.now());
-    this.auth.socket.emit("play-sfx", "VCNV_OBSTACLE");
-    this.disabledCNVButton = true;
+
+  submitAnswer(): void {
+    if (this.currentTime() <= 0) return;
+    this.answerCache.set(this.playerAnswer().toUpperCase());
+    this.network.emit('submit-answer-vcnv', this.playerAnswer());
+    this.playerAnswer.set('');
   }
-  checkIfTime() {
-    if (this.currentTime <= 0) {
-      this.playerAnswer = "";
-    }
+
+  attemptObstacle(): void {
+    this.network.emit('attempt-cnv-player', Date.now());
+    this.sfx.play('VCNV_OBSTACLE');
+  }
+
+  clearAnswerIfExpired(): void {
+    if (this.currentTime() <= 0) this.playerAnswer.set('');
   }
 }

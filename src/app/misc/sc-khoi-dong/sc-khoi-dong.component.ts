@@ -1,59 +1,67 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
-import { io, Socket } from "socket.io-client";
-import { AuthService } from "src/app/services/auth.service";
-import { KdQuestion } from "src/app/services/types/game";
-import { environment } from "src/environments/environment";
-import { NgClass } from "@angular/common";
+import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { KdQuestion } from '../../core/contracts/game';
+import { ConnectionStatus, NetworkService } from '../../core/services/network.service';
+import { MediaService } from '../../core/services/media.service';
+import { SessionService } from '../../core/services/session.service';
 
+/**
+ * KD (Khởi động) broadcast overlay: current question, turn indicator and
+ * countdown, driven entirely by realtime pushes from the MC/admin screens.
+ */
 @Component({
-    selector: "app-sc-khoi-dong",
-    templateUrl: "./sc-khoi-dong.component.html",
-    styleUrls: ["./sc-khoi-dong.component.scss"],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [NgClass]
+  selector: 'app-sc-khoi-dong',
+  templateUrl: './sc-khoi-dong.component.html',
+  styleUrl: './sc-khoi-dong.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgClass],
 })
-export class ScKhoiDongComponent implements OnInit {
-  auth = inject(AuthService);
+export class ScKhoiDongComponent {
+  private readonly session = inject(SessionService);
+  private readonly network = inject(NetworkService);
+  private readonly media = inject(MediaService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  currentQuestion: KdQuestion | undefined;
-  time = 0;
-  currentMaxQuestionNo = 0;
+  readonly players = computed(() => this.session.match()?.players ?? []);
 
-  currentQuestionNo: number = 0;
+  readonly currentQuestion = signal<KdQuestion | null>(null);
+  readonly questionNumber = signal(0);
+  readonly maxQuestionCount = signal(0);
+  readonly turnPlayerIndex = signal<number | null>(null);
+  readonly clockSeconds = signal(0);
+  /** Tenths of a second left on the "get the turn" / "answer" buzzer windows. */
+  readonly turnTimerTenths = signal(0);
+  readonly answerTimerTenths = signal(0);
 
-  threeSecTimers: number[] = [0, 0];
-  playerGotTurn: any = {};
-  ngOnInit(): void {
-    this.auth.resetListeners();
+  constructor() {
+    // Overlay pages are opened directly (OBS browser source) rather than
+    // through the login flow, so connect ourselves when nothing already has.
+    if (this.network.status() === ConnectionStatus.Disconnected) {
+      void this.session.connect(this.network.serverUrl());
+    }
 
-    this.auth.socket.on("update-kd-question", (question) => {
-      if (question != undefined) {
-        this.currentQuestion = question;
-      } else {
-        this.currentQuestion = undefined;
-      }
-    });
-    this.auth.socket.on("update-number-question-kd", (max, curr) => {
-      this.currentMaxQuestionNo = max;
-      this.currentQuestionNo = curr;
-    });
-    this.auth.socket.on("player-got-turn-kd", (player) => {
-      if (player != undefined) {
-        this.playerGotTurn = player;
-      }
-    });
-    this.auth.socket.on("clear-turn-player-kd", () => {
-      this.playerGotTurn = {};
-    });
-    this.auth.socket.on("update-clock", (time) => {
-      this.time = time;
-    });
-    this.auth.socket.on("update-3s-timer-kd", (time, ifPlayer) => {
-      if (ifPlayer == true) {
-        this.threeSecTimers[1] = time;
-      } else {
-        this.threeSecTimers[0] = time;
-      }
-    });
+    const unsubs = [
+      this.network.on<[KdQuestion | null]>('update-kd-question', (question) =>
+        this.currentQuestion.set(question ?? null),
+      ),
+      this.network.on<[number, number]>('update-number-question-kd', (max, current) => {
+        this.maxQuestionCount.set(max);
+        this.questionNumber.set(current);
+      }),
+      this.network.on<[number]>('player-got-turn-kd', (playerIndex) =>
+        this.turnPlayerIndex.set(playerIndex),
+      ),
+      this.network.on<[]>('clear-turn-player-kd', () => this.turnPlayerIndex.set(null)),
+      this.network.on<[number]>('update-clock', (seconds) => this.clockSeconds.set(seconds)),
+      this.network.on<[number, boolean]>('update-3s-timer-kd', (tenths, isAnswerTimer) => {
+        if (isAnswerTimer) this.answerTimerTenths.set(tenths);
+        else this.turnTimerTenths.set(tenths);
+      }),
+    ];
+    this.destroyRef.onDestroy(() => unsubs.forEach((unsub) => unsub()));
+  }
+
+  resolveImage(question: KdQuestion): string {
+    return this.media.resolve('kd', question.mediaFile);
   }
 }

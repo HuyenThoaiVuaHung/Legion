@@ -2,6 +2,7 @@
   width: 640px;
   height: 360px;
   border-radius: 10px;
+  background-size: cover;
 }
 
 .cnvCornerCell1 {
@@ -37,7 +38,6 @@
 .cover-cell {
   width: 320px;
   height: 180px;
-  // box-shadow:0px 0px 0 1px;
 }
 
 .center {
@@ -72,11 +72,3 @@
   height: 3rem;
   width: 16rem;
 }
-
-// .highlight {
-//   background-color: goldenrod !important;
-// }
-
-// .opened-question {
-//   color: gray !important;
-// }

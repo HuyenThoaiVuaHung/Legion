@@ -1,32 +1,39 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
-import { io } from "socket.io-client";
-import { AuthService } from "src/app/services/auth.service";
-import { VdData } from "src/app/services/types/game";
-import { environment } from "src/environments/environment";
-import { MatCheckbox } from "@angular/material/checkbox";
-import { ReactiveFormsModule, FormsModule } from "@angular/forms";
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { RoundDataMap } from '../../core/contracts/game';
+import { ApiService } from '../../core/services/api.service';
+import { ConnectionStatus, NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
 
+/**
+ * VD (Về đích) broadcast overlay: shows which point-value packages have
+ * already been picked.
+ */
 @Component({
-    selector: "app-sc-question-bar",
-    templateUrl: "./sc-question-bar.component.html",
-    styleUrls: ["./sc-question-bar.component.scss"],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatCheckbox, ReactiveFormsModule, FormsModule]
+  selector: 'app-sc-question-bar',
+  templateUrl: './sc-question-bar.component.html',
+  styleUrl: './sc-question-bar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatCheckbox],
 })
 export class ScQuestionBarComponent {
-  auth = inject(AuthService);
+  private readonly session = inject(SessionService);
+  private readonly network = inject(NetworkService);
+  private readonly api = inject(ApiService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly round = signal<RoundDataMap['vd'] | null>(null);
 
   constructor() {
-    if (!localStorage.getItem("defaultUrl"))
-      this.auth.connect(
-        document.URL.match(/(http:\x2f\x2f)[A-Za-z0-9\.]+/)![0]
-      );
-    this.auth.socket.emit("get-vedich-data", (callback: VdData) => {
-      this.vdData = callback;
-    });
-    this.auth.socket.on("update-vedich-data", (data) => {
-      this.vdData = data;
-    });
+    if (this.network.status() === ConnectionStatus.Disconnected) {
+      void this.session.connect(this.network.serverUrl());
+    }
+
+    void this.api.getRound('vd').then((round) => this.round.set(round));
+
+    const unsub = this.network.on<[RoundDataMap['vd']]>('update-vedich-data', (round) =>
+      this.round.set(round),
+    );
+    this.destroyRef.onDestroy(unsub);
   }
-  vdData: VdData | undefined;
 }

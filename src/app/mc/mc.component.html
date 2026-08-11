@@ -1,119 +1,105 @@
-<div class="-dark flex h-screen sm:h-full w-screen">
+<div class="flex h-screen sm:h-full w-screen">
   <div class="absolute left-5 self-end ml-5 mt-10 w-52 h-60">
     <h6>Thí sinh trả lời CNV</h6>
-    @if ( vcnvData ) {
-      <player-list [players]="resolveCnvPlayers(vcnvData.CNVPlayers)">
-      </player-list>
-
-    }
+    <player-list [players]="obstaclePlayers()"></player-list>
   </div>
+
   <div class="float-left ml-5">
-    <countdown [currentTime]="currentTime" [maxTime]="maxTime"> </countdown>
+    <countdown [currentTime]="clockSeconds()" [maxTime]="clockMaxSeconds()"></countdown>
 
     <player-list
-      [players]="auth.matchData().players"
-      [highlightIndex]="vdData ? vdData.currentPlayerId - 1 : -1"
-      [turnIndex]="
-        auth.matchData().matchPos == 'VD'
-          ? stealingPlayerIndex
-          : auth.matchData().matchPos === 'KD'
-          ? kdTurn.id - 1
-          : -1
-      "
-      >
-    </player-list>
+      [players]="players()"
+      [highlightIndex]="highlightIndex()"
+      [turnIndex]="turnIndex()"
+    ></player-list>
 
-    @if (threeSecTimer2 <= 0 && threeSecTimer1 > 0) {
-      <div
-        class="text-4xl disablePointerActions absolute z-2 w-64 rounded-xl mt-10 text-center"
-        >
-        {{ threeSecTimer1 / 10 }}s
+    @if (kdAnswerTimerTenths() <= 0 && kdTurnTimerTenths() > 0) {
+      <div class="text-4xl disablePointerActions absolute z-2 w-64 rounded-xl mt-10 text-center">
+        {{ kdTurnTimerTenths() / 10 }}s
       </div>
     }
     <div
-      [ngClass]="{ 'opacity-0': threeSecTimer2 <= 0 }"
+      [ngClass]="{ 'opacity-0': kdAnswerTimerTenths() <= 0 }"
       class="text-4xl disablePointerActions w-64 rounded-xl mt-10 text-center"
-      >
-      {{ threeSecTimer2 / 10 }}s
+    >
+      {{ kdAnswerTimerTenths() / 10 }}s
     </div>
-    <div class="text-center text-2xl mt-5">
-      Vị trí trận đấu: {{ auth.positionMap.get(auth.matchData().matchPos) }}
-    </div>
+    <div class="text-center text-2xl mt-5">Vị trí trận đấu: {{ positionLabel() }}</div>
   </div>
+
   <div
     class="disablePointerActions drop-shadow-lg questionBox float-right relative mt-5 ml-10 mr-10 p-10 text-3xl border-2 rounded-xl"
-    >
-    <span>
-      @if (auth.matchData().matchPos == 'KD') {
-        <div class="mb-5">
-          <span> Thí sinh giành quyền: {{ kdTurn.name }} </span>
-          <br />
+  >
+    @if (position() === 'KD') {
+      <div class="mb-5">Thí sinh giành quyền: {{ kdTurnPlayerName() }}</div>
+      @if (currentKdQuestion(); as question) {
+        <div>
+          Câu hỏi: {{ question.question }}<br />
+          Đáp án: {{ question.answer }}
         </div>
       }
-      @if (vdData) {
-        @if (vdData.ifNSHV == true) {
-          <span
-            class="absolute text-7xl p-5 bottom-0 right-0 text-golden-dark"
-            >★</span
-            >
-          }
+    }
 
-          } Câu hỏi: {{ question.question }}
-          <br />
-          Đáp án: {{ question.answer }}
-          <br />
+    @if (position() === 'VD') {
+      @if (currentVdQuestion(); as question) {
+        @if (vdRound()?.hopeStarActive) {
+          <span class="absolute text-7xl p-5 bottom-0 right-0 text-primary">★</span>
+        }
+        <div>
+          Câu hỏi: {{ question.question }}<br />
+          Đáp án: {{ question.answer }}<br />
           @if (question.value) {
             <span>Giá trị: {{ question.value }}</span>
           }
-          <br />
-        </span>
-        @if (
-          auth.matchData().matchPos == 'TT_Q' ||
-          auth.matchData().matchPos == 'TT_A'
-          ) {
-          <div
-            >
-            @for (player of ttData?.playerAnswers; track $index) {
-              <div>
-                {{ auth.matchData().players[player.id - 1].name.toUpperCase() }}:
-                {{ player.answer }} &#64; {{ getTimePassed($index) }}
-              </div>
-            }
-          </div>
-        }
-        @if ( (auth.matchData().matchPos == 'VCNV_Q' || auth.matchData().matchPos ==
-          'VCNV_A') && vcnvData ) {
-          <div>
-            <span>
-              <img class="w-60" src="{{ imagePath }}" />
-            </span>
-            <div class="float-left">
-              <span>
-                @for (index of [0,1,2,3,4,5]; track $index) {
-                  {{ index != 5 ? "HN" + (index + 1) : "CNV" }}:
-                  {{ vcnvData.questions[index].answer }} |
-                  {{ getVcnvAnswerLength(index) }} Kí tự
-                  <br />
-                  } Giải thích: {{ vcnvData.questions[5].question }}
-                </span>
-              </div>
-              <div class="float-right">
-                <span>
-                  {{ auth.matchData().players[0].name }}:
-                  {{ vcnvData.playerAnswers[0].answer }}
-                  <br />
-                  {{ auth.matchData().players[1].name }}:
-                  {{ vcnvData.playerAnswers[1].answer }}
-                  <br />
-                  {{ auth.matchData().players[2].name }}:
-                  {{ vcnvData.playerAnswers[2].answer }}
-                  <br />
-                  {{ auth.matchData().players[3].name }}:
-                  {{ vcnvData.playerAnswers[3].answer }}
-                  <br />
-                </span>
-              </div>
+        </div>
+      }
+    }
+
+    @if (position() === 'TT_Q' || position() === 'TT_A') {
+      @if (currentTtQuestion(); as question) {
+        <div class="mb-5">
+          Câu hỏi: {{ question.question }}<br />
+          Đáp án: {{ question.answer }}
+        </div>
+      }
+      @if (ttRound(); as tt) {
+        <div>
+          @for (answer of tt.playerAnswers; track $index) {
+            <div>
+              {{ players()[answer.playerIndex]?.name?.toUpperCase() }}: {{ answer.answer }} &#64;
+              {{ answer.readableTime }}
             </div>
           }
         </div>
-      </div>
+      }
+    }
+
+    @if (position() === 'VCNV_Q' || position() === 'VCNV_A') {
+      @if (vcnvRound(); as vcnv) {
+        <div>
+          <span>
+            <img class="w-60" [src]="vcnvObstacleImage()" />
+          </span>
+          <div class="float-left">
+            <span>
+              @for (question of vcnv.questions; track question.id; let i = $index) {
+                {{ question.type === 'CNV' ? 'CNV' : 'HN' + (i + 1) }}: {{ question.answer }} |
+                {{ vcnvAnswerLength(question.answer) }} Kí tự
+                <br />
+              }
+              Giải thích: {{ vcnvObstacleQuestion()?.question }}
+            </span>
+          </div>
+          <div class="float-right">
+            <span>
+              @for (player of players(); track player.id; let i = $index) {
+                {{ player.name }}: {{ vcnv.playerAnswers[i]?.answer }}
+                <br />
+              }
+            </span>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
