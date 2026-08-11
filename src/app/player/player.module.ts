@@ -67,34 +67,32 @@ export const playerRoutes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    PlayerKhoiDongComponent,
-    PlayerVcnvQuestionComponent,
-    PlayerVcnvAnswerComponent,
-    PlayerTangtocQComponent,
-    PlayerTangtocAComponent,
-    PlayerVedichComponent,
-    PlayerChpComponent,
-    PointsViewComponent,
-    PlayerComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(playerRoutes),
-    MenuItemComponent,
-    PlayerListComponent,
-    MatFormFieldModule,
-    MatButtonModule,
-    MatIconModule,
-    ReactiveFormsModule,
-    FormsModule,
-    CountdownComponent,
-    MatProgressBarModule,
-    MatInputModule,
-    MatSnackBarModule,
-    MatCheckboxModule
-  ],
-  exports: [RouterModule],
-  bootstrap: [PlayerComponent]
+    declarations: [PlayerComponent],
+    imports: [
+        CommonModule,
+        RouterModule.forChild(playerRoutes),
+        MenuItemComponent,
+        PlayerListComponent,
+        MatFormFieldModule,
+        MatButtonModule,
+        MatIconModule,
+        ReactiveFormsModule,
+        FormsModule,
+        CountdownComponent,
+        MatProgressBarModule,
+        MatInputModule,
+        MatSnackBarModule,
+        MatCheckboxModule,
+        PlayerKhoiDongComponent,
+        PlayerVcnvQuestionComponent,
+        PlayerVcnvAnswerComponent,
+        PlayerTangtocQComponent,
+        PlayerTangtocAComponent,
+        PlayerVedichComponent,
+        PlayerChpComponent,
+        PointsViewComponent
+    ],
+    exports: [RouterModule],
+    bootstrap: [PlayerComponent]
 })
 export class PlayerModule {}

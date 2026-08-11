@@ -8,8 +8,8 @@ describe('ScQuestionBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScQuestionBarComponent ]
-    })
+    imports: [ScQuestionBarComponent]
+})
     .compileComponents();
   });
 

@@ -1,15 +1,19 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
-  selector: "app-player",
-  templateUrl: "./player.component.html",
-  styleUrl: "./player.component.scss",
+    selector: "app-player",
+    templateUrl: "./player.component.html",
+    styleUrl: "./player.component.scss",
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class PlayerComponent {
+  private matSnackbar = inject(MatSnackBar);
+
   isBlocked: boolean = true;
 
-  constructor(private matSnackbar: MatSnackBar) {
+  constructor() {
     this.showSnackbar(undefined);
     const blockedWarn = setInterval(() => {
       this.showSnackbar(blockedWarn);

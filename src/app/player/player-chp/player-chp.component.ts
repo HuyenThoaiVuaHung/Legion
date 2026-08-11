@@ -1,20 +1,24 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/services/auth.service";
 import { SfxService } from "src/app/services/sfx-service.service";
+import { PlayerListComponent } from "../../components/player-list/player-list.component";
+import { MatFabButton } from "@angular/material/button";
+import { NgClass } from "@angular/common";
 
 @Component({
-  selector: "app-player-chp",
-  templateUrl: "./player-chp.component.html",
-  styleUrls: ["./player-chp.component.scss"],
+    selector: "app-player-chp",
+    templateUrl: "./player-chp.component.html",
+    styleUrls: ["./player-chp.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [PlayerListComponent, MatFabButton, NgClass]
 })
 export class PlayerChpComponent implements OnInit {
+  router = inject(Router);
+  private sfxService = inject(SfxService);
+  auth = inject(AuthService);
+
   answerButtonDisabled = true;
-  constructor(
-    public router: Router,
-    private sfxService: SfxService,
-    public auth: AuthService
-  ) {}
   question: any = {};
   time: number = 0;
   chpData: any = {};

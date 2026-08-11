@@ -1,17 +1,23 @@
-import { Component, computed, OnInit, Signal } from "@angular/core";
+import { Component, computed, OnInit, Signal, ChangeDetectionStrategy, inject } from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 import { SfxService } from "src/app/services/sfx-service.service";
+import { NgClass } from "@angular/common";
+import { MatFabButton } from "@angular/material/button";
 
 @Component({
-  selector: "app-player-vcnv-answer",
-  templateUrl: "./player-vcnv-answer.component.html",
-  styleUrls: ["./player-vcnv-answer.component.scss"],
+    selector: "app-player-vcnv-answer",
+    templateUrl: "./player-vcnv-answer.component.html",
+    styleUrls: ["./player-vcnv-answer.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass, MatFabButton]
 })
 export class PlayerVcnvAnswerComponent implements OnInit {
+  private sfxService = inject(SfxService);
+  auth = inject(AuthService);
+
   matchData: any = {};
   vcnvData: any = {};
   disabledCNVButton: boolean = false;
-  constructor(private sfxService: SfxService, public auth: AuthService) {}
 
   ngOnInit(): void {
     this.sfxService.playSfx("VCNV_SHOWANS");

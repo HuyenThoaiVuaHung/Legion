@@ -8,8 +8,8 @@ describe('ScKhoiDongComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScKhoiDongComponent ]
-    })
+    imports: [ScKhoiDongComponent]
+})
     .compileComponents();
   });
 

@@ -1,18 +1,31 @@
-import { Component, OnInit, Signal, computed } from "@angular/core";
+import { Component, OnInit, Signal, computed, ChangeDetectionStrategy, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { FormPlayerComponent } from "../components/forms/form-player/form-player.component";
 import { AuthService } from "../services/auth.service";
-import { Validators, FormBuilder } from "@angular/forms";
+import { Validators, FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { NetworkStatus } from "../services/types/network.enum";
 import { AppState } from "../services/types/app";
+import { MatStepper, MatStep, MatStepperNext, MatStepperIcon } from "@angular/material/stepper";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { MatButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 @Component({
-  selector: "app-home",
-  templateUrl: "./home.component.html",
-  styleUrls: ["./home.component.scss"],
+    selector: "app-home",
+    templateUrl: "./home.component.html",
+    styleUrls: ["./home.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatStepper, MatStep, ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatButton, MatIcon, MatProgressSpinner, MatStepperNext, MatStepperIcon]
 })
 export class HomeComponent implements OnInit {
+  private _formBuilder = inject(FormBuilder);
+  auth = inject(AuthService);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+
   errorMsg: string = "";
   urlFormGroup = this._formBuilder.group({
     legendaryUrl: [
@@ -25,12 +38,6 @@ export class HomeComponent implements OnInit {
   });
 
   appState = AppState;
-  constructor(
-    private _formBuilder: FormBuilder,
-    public auth: AuthService,
-    private router: Router,
-    private dialog: MatDialog
-  ) {}
   displayedPlayerColumns: string[] = ["id", "name", "score", "active"];
   authString: string = "";
   greetString: Signal<string> = computed(() => {

@@ -1,15 +1,26 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 import { SfxService } from "src/app/services/sfx-service.service";
 import { VcnvData } from "src/app/services/types/game";
+import { NgClass } from "@angular/common";
+import { PlayerListComponent } from "../../components/player-list/player-list.component";
+import { MatFormField } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { ReactiveFormsModule, FormsModule } from "@angular/forms";
+import { MatIconButton, MatFabButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
-  selector: "app-player-vcnv-question",
-  templateUrl: "./player-vcnv-question.component.html",
-  styleUrls: ["./player-vcnv-question.component.scss"],
+    selector: "app-player-vcnv-question",
+    templateUrl: "./player-vcnv-question.component.html",
+    styleUrls: ["./player-vcnv-question.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass, PlayerListComponent, MatFormField, MatInput, ReactiveFormsModule, FormsModule, MatIconButton, MatIcon, MatFabButton]
 })
 export class PlayerVcnvQuestionComponent implements OnInit {
-  constructor(private sfxService: SfxService, public auth: AuthService) {}
+  private sfxService = inject(SfxService);
+  auth = inject(AuthService);
+
   vcnvData: VcnvData = {} as VcnvData;
   currentTime: number = 0;
   curVCNVQuestion: any = {};

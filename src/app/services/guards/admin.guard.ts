@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../auth.service';
 
@@ -6,7 +6,8 @@ import { AuthService } from '../auth.service';
   providedIn: 'root'
 })
 export class AdminGuard  {
-  constructor(private auth: AuthService){}
+  private auth = inject(AuthService);
+
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Promise<boolean> {

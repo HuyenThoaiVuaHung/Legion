@@ -1,20 +1,25 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/services/auth.service";
 import { SfxService } from "src/app/services/sfx-service.service";
 import { KdData } from "src/app/services/types/game";
+import { MatProgressBar } from "@angular/material/progress-bar";
+import { NgClass } from "@angular/common";
+import { PlayerListComponent } from "../../components/player-list/player-list.component";
+import { MatFabButton } from "@angular/material/button";
 @Component({
-  selector: "app-player-khoi-dong",
-  templateUrl: "./player-khoi-dong.component.html",
-  styleUrls: ["./player-khoi-dong.component.scss"],
+    selector: "app-player-khoi-dong",
+    templateUrl: "./player-khoi-dong.component.html",
+    styleUrls: ["./player-khoi-dong.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatProgressBar, NgClass, PlayerListComponent, MatFabButton]
 })
 export class PlayerKhoiDongComponent implements OnInit {
+  router = inject(Router);
+  private sfxService = inject(SfxService);
+  auth = inject(AuthService);
+
   answerButtonDisabled = true;
-  constructor(
-    public router: Router,
-    private sfxService: SfxService,
-    public auth: AuthService
-  ) {}
   question: any = {};
   threeSecTimer1: number = 0;
   threeSecTimer2: number = 0;

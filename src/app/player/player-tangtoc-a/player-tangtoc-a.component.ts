@@ -1,14 +1,19 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 import { SfxService } from "src/app/services/sfx-service.service";
+import { NgClass } from "@angular/common";
 @Component({
-  selector: "app-player-tangtoc-a",
-  templateUrl: "./player-tangtoc-a.component.html",
-  styleUrls: ["./player-tangtoc-a.component.scss"],
+    selector: "app-player-tangtoc-a",
+    templateUrl: "./player-tangtoc-a.component.html",
+    styleUrls: ["./player-tangtoc-a.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass]
 })
 export class PlayerTangtocAComponent implements OnInit {
+  private sfxService = inject(SfxService);
+  auth = inject(AuthService);
+
   ttData: any = {};
-  constructor(private sfxService: SfxService, public auth: AuthService) {}
   ngOnInit(): void {
     this.auth.resetListeners();
     this.sfxService.playSfx("TT_SHOWANS");

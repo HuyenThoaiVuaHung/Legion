@@ -17,18 +17,16 @@ export const miscRoutes: Routes = [
 ]
 
 @NgModule({
-  declarations: [
-    ScKhoiDongComponent,
-    ScQuestionBarComponent,
-    ScVeDichComponent,
-    SinglePointTsComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(miscRoutes),
-    MatIconModule,
-    MatCheckboxModule,
-    FormsModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(miscRoutes),
+        MatIconModule,
+        MatCheckboxModule,
+        FormsModule,
+        ScKhoiDongComponent,
+        ScQuestionBarComponent,
+        ScVeDichComponent,
+        SinglePointTsComponent
+    ]
 })
 export class MiscModule { }

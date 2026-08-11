@@ -1,16 +1,21 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { io } from "socket.io-client";
 import { AuthService } from "src/app/services/auth.service";
 import { VdData } from "src/app/services/types/game";
 import { environment } from "src/environments/environment";
+import { NgClass } from "@angular/common";
 
 @Component({
-  selector: "app-sc-ve-dich",
-  templateUrl: "./sc-ve-dich.component.html",
-  styleUrls: ["./sc-ve-dich.component.scss"],
+    selector: "app-sc-ve-dich",
+    templateUrl: "./sc-ve-dich.component.html",
+    styleUrls: ["./sc-ve-dich.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass]
 })
 export class ScVeDichComponent implements OnInit {
-  constructor(public auth: AuthService) {
+  auth = inject(AuthService);
+
+  constructor() {
     console.log(document.URL.match(/(http:\x2f\x2f)[A-Za-z0-9\.]+/)![0]);
     if (!localStorage.getItem("defaultUrl"))
       this.auth.connect(

@@ -1,16 +1,23 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { AuthService } from "../services/auth.service";
 import { TtData, VcnvData, VdData } from "../services/types/game";
 import { Player } from "../services/types/match.data";
+import { PlayerListComponent } from "../components/player-list/player-list.component";
+import { CountdownComponent } from "../components/countdown/countdown.component";
+import { NgClass } from "@angular/common";
 
 @Component({
-  selector: "app-mc",
-  templateUrl: "./mc.component.html",
-  styleUrls: ["./mc.component.scss"],
+    selector: "app-mc",
+    templateUrl: "./mc.component.html",
+    styleUrls: ["./mc.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [PlayerListComponent, CountdownComponent, NgClass]
 })
 export class McComponent implements OnInit {
-  constructor(public router: Router, public auth: AuthService) {}
+  router = inject(Router);
+  auth = inject(AuthService);
+
   question: any = {};
   currentTime: number = 0;
   maxTime: number = 0;

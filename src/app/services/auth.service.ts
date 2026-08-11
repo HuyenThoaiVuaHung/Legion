@@ -1,12 +1,4 @@
-import {
-  computed,
-  effect,
-  Injectable,
-  OnInit,
-  Signal,
-  signal,
-  WritableSignal,
-} from "@angular/core";
+import { computed, effect, Injectable, OnInit, Signal, signal, WritableSignal, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Socket, io } from "socket.io-client";
 import { environment } from "src/environments/environment";
@@ -19,6 +11,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   providedIn: "root",
 })
 export class AuthService {
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
+
   public socket: Socket = io({
     autoConnect: false,
   });
@@ -37,7 +32,7 @@ export class AuthService {
     socketId: "",
   });
 
-  constructor(private router: Router, private snackBar: MatSnackBar) {
+  constructor() {
     if (localStorage.getItem("defaultUrl"))
       this.connect(localStorage.getItem("defaultUrl")!);
     

@@ -1,14 +1,23 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, inject } from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 import { SfxService } from "src/app/services/sfx-service.service";
+import { CountdownComponent } from "../../components/countdown/countdown.component";
+import { PlayerListComponent } from "../../components/player-list/player-list.component";
+import { MatFabButton } from "@angular/material/button";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 
 @Component({
-  selector: "app-player-vedich",
-  templateUrl: "./player-vedich.component.html",
-  styleUrls: ["./player-vedich.component.scss"],
+    selector: "app-player-vedich",
+    templateUrl: "./player-vedich.component.html",
+    styleUrls: ["./player-vedich.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [CountdownComponent, PlayerListComponent, MatFabButton, MatCheckbox, ReactiveFormsModule, FormsModule]
 })
 export class PlayerVedichComponent implements OnInit {
-  constructor(private sfxService: SfxService, public auth: AuthService) {}
+  private sfxService = inject(SfxService);
+  auth = inject(AuthService);
+
   videoSource = "";
   imgSource = "";
   vdData: any = {};

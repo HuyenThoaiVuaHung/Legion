@@ -1,24 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { FormPlayerComponent } from 'src/app/components/forms/form-player/form-player.component';
 import { FormQchpComponent } from 'src/app/components/forms/form-qchp/form-qchp.component';
 import { AuthService } from 'src/app/services/auth.service';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from '@angular/material/table';
+import { NgClass } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-control-chp',
-  templateUrl: './control-chp.component.html',
-  styleUrls: ['./control-chp.component.scss']
+    selector: 'app-control-chp',
+    templateUrl: './control-chp.component.html',
+    styleUrls: ['./control-chp.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MatButton, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgClass, MatIconButton, MatIcon, MatCheckbox, ReactiveFormsModule, FormsModule]
 })
 export class ControlChpComponent implements OnInit {
+  private router = inject(Router);
+  dialog = inject(MatDialog);
+  auth = inject(AuthService);
 
-  constructor(
-    private router: Router,
-    public dialog: MatDialog,
-    public auth: AuthService
-  ) {
-
-  }
   displayingRow: any = null;
   chosenRow: any = null;
   currentTime: number = 0;

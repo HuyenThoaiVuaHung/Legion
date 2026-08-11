@@ -1,13 +1,13 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, Input, OnInit, Signal } from "@angular/core";
+import { Component, input, Input, OnInit, Signal, ChangeDetectionStrategy } from "@angular/core";
 import { Player } from "src/app/services/types/match.data";
 
 @Component({
-  selector: "player-list",
-  templateUrl: "./player-list.component.html",
-  styleUrls: ["./player-list.component.scss"],
-  standalone: true,
-  imports: [CommonModule]
+    selector: "player-list",
+    templateUrl: "./player-list.component.html",
+    styleUrls: ["./player-list.component.scss"],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [CommonModule]
 })
 export class PlayerListComponent {
   public turnIndex = input(-1);
