@@ -76,6 +76,20 @@ export class ApiService {
     );
   }
 
+  /** Uploads one cut VCNV obstacle piece to the protected store. */
+  uploadObstaclePiece(piece: Blob, name: string): Promise<MediaUploadResponse> {
+    const form = new FormData();
+    form.append(UPLOAD_FIELD, piece, name);
+    return firstValueFrom(
+      this.http.post<MediaUploadResponse>(this.url(API_PATHS.obstaclePieceUpload), form),
+    );
+  }
+
+  /** Reveal-gated URL for obstacle piece `index` (0-based). */
+  obstaclePieceUrl(index: number): string {
+    return this.url(API_PATHS.obstaclePiece(index));
+  }
+
   importLegion(file: File): Promise<LegionImportResponse> {
     const form = new FormData();
     form.append(UPLOAD_FIELD, file);
