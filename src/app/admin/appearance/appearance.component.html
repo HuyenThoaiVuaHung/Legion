@@ -1,0 +1,58 @@
+<div class="admin-container flex-col overflow-auto">
+  <section class="questionBox p-6 flex flex-col gap-4 max-w-2xl">
+    <h2 class="mat-title-medium">Bảng màu giao diện</h2>
+    <p class="mat-body-medium opacity-70">
+      Chọn một màu chủ đạo; toàn bộ giao diện sẽ được tạo lại theo chuẩn Material 3.
+    </p>
+
+    <div class="flex items-center gap-4">
+      <input
+        type="color"
+        class="w-16 h-16 rounded-md border-0 bg-transparent cursor-pointer"
+        [value]="seed()"
+        (input)="onSeedChange($any($event.target).value)"
+        aria-label="Màu chủ đạo"
+      />
+      <span class="mat-body-medium">{{ seed() }}</span>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      @for (preset of presets; track preset) {
+        <button
+          type="button"
+          class="w-8 h-8 rounded-full border border-outline-variant cursor-pointer"
+          [style.background]="preset"
+          (click)="onSeedChange(preset)"
+          [attr.aria-label]="preset"
+        ></button>
+      }
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+      <span class="px-4 py-2 rounded-md bg-primary text-on-primary">Primary</span>
+      <span class="px-4 py-2 rounded-md bg-secondary text-on-secondary">Secondary</span>
+      <span class="px-4 py-2 rounded-md bg-tertiary text-on-tertiary">Tertiary</span>
+      <span class="px-4 py-2 rounded-md bg-error text-on-error">Error</span>
+    </div>
+
+    <div>
+      <button mat-stroked-button (click)="resetPalette()">Đặt lại mặc định</button>
+    </div>
+  </section>
+
+  <section class="questionBox p-6 flex flex-col gap-2 max-w-2xl">
+    <h2 class="mat-title-medium">Thông số trận đấu (máy chủ)</h2>
+    <p class="mat-body-medium opacity-70">
+      Các giá trị này do máy chủ cấu hình (utils/config.json hoặc biến môi trường).
+    </p>
+    @let rules = config.rules();
+    <div class="grid grid-cols-2 gap-x-6 gap-y-1 mat-body-medium">
+      <span>Điểm đúng KĐ</span><span>{{ rules.kdCorrectPoints }}</span>
+      <span>Điểm trừ sai KĐ</span><span>{{ rules.kdWrongPenalty }}</span>
+      <span>Điểm mỗi hàng ngang</span><span>{{ rules.vcnvRowPoints }}</span>
+      <span>Điểm tăng tốc</span><span>{{ rules.ttPointsByPlacement.join(' / ') }}</span>
+      <span>Hệ số NSHV</span><span>×{{ rules.vdHopeStarMultiplier }}</span>
+      <span>Thời gian CHP</span><span>{{ rules.chpTurnSeconds }}s</span>
+    </div>
+  </section>
+</div>

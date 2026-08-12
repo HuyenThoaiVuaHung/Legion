@@ -6,6 +6,7 @@ import { ControlVcnvComponent } from './control-vcnv/control-vcnv.component';
 import { ControlTangtocComponent } from './control-tangtoc/control-tangtoc.component';
 import { ControlVdComponent } from './control-vd/control-vd.component';
 import { ControlChpComponent } from './control-chp/control-chp.component';
+import { AppearanceComponent } from './appearance/appearance.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -19,6 +20,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'tt', component: ControlTangtocComponent },
       { path: 'vd', component: ControlVdComponent },
       { path: 'chp', component: ControlChpComponent },
+      { path: 'appearance', component: AppearanceComponent },
     ],
   },
 ];

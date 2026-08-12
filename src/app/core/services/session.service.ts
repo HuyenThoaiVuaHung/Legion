@@ -4,6 +4,7 @@ import { Role, TokenPayload } from '../contracts/api';
 import { MatchState } from '../contracts/game';
 import { PLAYER_ROUTE_BY_POSITION, STORAGE_KEYS } from '../constants';
 import { ApiService } from './api.service';
+import { ConfigService } from './config.service';
 import { NetworkService } from './network.service';
 
 const MATCH_UPDATE_EVENT = 'update-match-data';
@@ -15,6 +16,7 @@ const MATCH_UPDATE_EVENT = 'update-match-data';
 @Injectable({ providedIn: 'root' })
 export class SessionService {
   private readonly api = inject(ApiService);
+  private readonly config = inject(ConfigService);
   private readonly network = inject(NetworkService);
   private readonly router = inject(Router);
 
@@ -60,6 +62,7 @@ export class SessionService {
         this.clearToken();
       }
     }
+    await this.config.load();
     this.match.set(await this.api.getMatch());
   }
 
