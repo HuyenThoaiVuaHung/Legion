@@ -30,7 +30,7 @@
           state="connect"
         >
           <form [formGroup]="urlForm">
-            <mat-form-field class="mt-5 w-96" appearance="outline">
+            <mat-form-field class="mt-5 w-96">
               <input
                 matInput
                 formControlName="serverUrl"
@@ -64,7 +64,7 @@
         </mat-step>
         <mat-step label="Đăng nhập" state="login" [completed]="!!session.identity()">
           <form [formGroup]="secretForm">
-            <mat-form-field class="mt-5 w-96" appearance="outline">
+            <mat-form-field class="mt-5 w-96">
               <input
                 matInput
                 formControlName="secret"

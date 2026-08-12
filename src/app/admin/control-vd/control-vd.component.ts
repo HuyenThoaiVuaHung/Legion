@@ -1,12 +1,19 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIcon } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTooltip } from '@angular/material/tooltip';
 import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
 import { FormQVdComponent } from '../../components/forms/form-q-vd/form-q-vd.component';
 import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
@@ -29,12 +36,18 @@ const QUESTION_PICKER_SLOTS = 6;
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgClass,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatIconModule,
+    MatButton,
+    MatIconButton,
+    MatCard,
+    MatCardActions,
+    MatCardContent,
+    MatCardHeader,
+    MatCardSubtitle,
+    MatCardTitle,
+    MatCheckbox,
+    MatIcon,
     MatTableModule,
-    MatTooltipModule,
+    MatTooltip,
     MenuItemComponent,
   ],
 })

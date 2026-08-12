@@ -1,13 +1,20 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTooltip } from '@angular/material/tooltip';
 import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
 import { FormQVcnvComponent } from '../../components/forms/form-q-vcnv/form-q-vcnv.component';
 import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
@@ -30,13 +37,19 @@ const ALL_ROW_IDS = [1, 2, 3, 4, 5];
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgClass,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
+    MatButton,
+    MatIconButton,
+    MatCard,
+    MatCardActions,
+    MatCardContent,
+    MatCardHeader,
+    MatCardSubtitle,
+    MatCardTitle,
+    MatCheckbox,
+    MatIcon,
+    MatProgressSpinner,
     MatTableModule,
-    MatTooltipModule,
+    MatTooltip,
     MenuItemComponent,
   ],
 })

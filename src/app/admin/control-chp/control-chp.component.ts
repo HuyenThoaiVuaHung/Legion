@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIcon } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
 import { FormQchpComponent } from '../../components/forms/form-qchp/form-qchp.component';
@@ -20,10 +19,10 @@ import { SessionService } from '../../core/services/session.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgClass,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatIconModule,
+    MatButton,
+    MatIconButton,
+    MatCheckbox,
+    MatIcon,
     MatTableModule,
   ],
 })

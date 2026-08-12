@@ -1,11 +1,18 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatIcon } from '@angular/material/icon';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
 import { FormQTtComponent } from '../../components/forms/form-q-tt/form-q-tt.component';
@@ -29,11 +36,16 @@ const VIDEO_TIMER_SECONDS = 40;
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgClass,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatIconModule,
-    MatSlideToggleModule,
+    MatButton,
+    MatCard,
+    MatCardActions,
+    MatCardContent,
+    MatCardHeader,
+    MatCardSubtitle,
+    MatCardTitle,
+    MatCheckbox,
+    MatIcon,
+    MatSlideToggle,
     MatTableModule,
     MenuItemComponent,
   ],

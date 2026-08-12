@@ -1,149 +1,152 @@
-@use "sass:map";
-@use "@angular/material" as mat;
+// Player/game-screen surfaces, on Material system tokens so they follow the
+// active color scheme at runtime.
 
-@mixin color($theme) {
-  .question-box-border {
-    border: 1px solid mat.get-theme-color($theme, primary) !important;
-  }
+.question-box-border {
+  border: 1px solid var(--mat-sys-primary) !important;
+}
 
-  .opened-question {
-    opacity: 0.3;
-  }
-  .question-highlight {
-    background: mat.get-theme-color($theme, primary) !important;
-    color: mat.get-theme-color($theme, on-primary) !important;
-  }
+.opened-question {
+  opacity: 0.3;
+}
 
-  .bg-names {
-    background: mat.get-theme-color($theme, surface-container-high);
-  }
+.question-highlight {
+  background: var(--mat-sys-primary) !important;
+  color: var(--mat-sys-on-primary) !important;
+}
 
-  .questionBox {
-    background: mat.get-theme-color($theme, surface-container);
-    color: mat.get-theme-color($theme, on-surface);
-    border: 1px solid mat.get-theme-color($theme, outline-variant);
-    box-shadow: 0 0 0 1px mat.get-theme-color($theme, shadow);
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-  }
-  .answer-box {
-    background: mat.get-theme-color($theme, surface-container-high);
-    color: mat.get-theme-color($theme, on-surface);
-    border: 1px solid mat.get-theme-color($theme, outline-variant);
-    border-radius: 0.5rem;
-  }
-  .boxes div {
-    background: mat.get-theme-color($theme, surface);
-    color: mat.get-theme-color($theme, outline-variant);
-    border: 1px solid mat.get-theme-color($theme, outline-variant);
-    box-sizing: border-box;
-  }
+.bg-names {
+  background: var(--mat-sys-surface-container-high);
+}
 
-  .pole {
-    background: mat.get-theme-color($theme, on-surface);
-  }
+.questionBox {
+  background: var(--mat-sys-surface-container);
+  color: var(--mat-sys-on-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  box-shadow: 0 0 0 1px var(--mat-sys-shadow);
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+}
 
-  .box-container div {
-    border: 1px solid mat.get-theme-color($theme, outline);
-    box-sizing: border-box;
-  }
-  .cnvPicBox {
-    color: mat.get-theme-color($theme, outline-variant);
-    border: 1px solid mat.get-theme-color($theme, outline-variant);
-    div {
-      background: mat.get-theme-color($theme, surface) !important;
-    }
-    .bg-transparent {
-      background: transparent !important;
-    }
-    .text {
-      color: mat.get-theme-color($theme, on-surface);
-      position: absolute;
-      top: calc(50% - 1rem);
-      left: calc(50% - 1rem);
-    }
-    .center {
-      color: mat.get-theme-color($theme, on-surface);
-      border-color: mat.get-theme-color($theme, outline-variant);
-    }
-  }
-  .bg-surface {
-    background: mat.get-theme-color($theme, surface);
-  }
-  .bg-surface-container {
-    background: mat.get-theme-color($theme, surface-container);
-  }
+.answer-box {
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0.5rem;
+}
 
-  .bg-primary {
-    background: mat.get-theme-color($theme, primary);
-  }
+.boxes div {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-outline-variant);
+  border: 1px solid var(--mat-sys-outline-variant);
+  box-sizing: border-box;
+}
 
-  .bg-tertiary {
-    background: mat.get-theme-color($theme, tertiary);
-  }
-  .border-primary {
-    border-color: mat.get-theme-color($theme, primary);
-    border-style: solid;
-  }
-  .bg-error {
-    background: mat.get-theme-color($theme, error);
-  }
-  .hangngang-box {
-    background: mat.get-theme-color($theme, surface-container-high);
-    color: mat.get-theme-color($theme, on-surface);
-  }
-  .answers > div {
-    background: mat.get-theme-color($theme, surface-container-lowest);
-    color: mat.get-theme-color($theme, on-surface);
-    border: 2px solid mat.get-theme-color($theme, primary);
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-    .name-box {
-      background: mat.get-theme-color($theme, surface-container-low);
-      color: mat.get-theme-color($theme, on-surface);
-      border-bottom: 2px solid mat.get-theme-color($theme, primary);
-      border-radius: 0.5rem 0.5rem 0 0;
-      box-sizing: border-box;
-    }
-    .timer-box {
-      background: mat.get-theme-color($theme, surface-container-low);
-      color: mat.get-theme-color($theme, on-surface);
-      border: 1px solid mat.get-theme-color($theme, primary);
-      border-radius: 0.5rem;
-      box-sizing: border-box;
-    }
-  }
-  .answer-incorrect {
-    background: mat.get-theme-color($theme, error-container) !important;
-    color: mat.get-theme-color($theme, on-error-container) !important;
-    border: 1px solid mat.get-theme-color($theme, error) !important;
-    opacity: 0.2;
-  }
-  .answer-correct {
-    color: mat.get-theme-color($theme, primary) !important;
-    border: 1px solid mat.get-theme-color($theme, primary) !important;
-  }
+.pole {
+  background: var(--mat-sys-on-surface);
+}
 
-  .name-highlight {
-    background: mat.get-theme-color($theme, primary) !important;
-    color: mat.get-theme-color($theme, on-primary) !important;
-  }
+.box-container div {
+  border: 1px solid var(--mat-sys-outline);
+  box-sizing: border-box;
+}
 
-  .special-highlight {
-    background: mat.get-theme-color($theme, tertiary) !important;
-    color: mat.get-theme-color($theme, on-tertiary) !important;
+.cnvPicBox {
+  color: var(--mat-sys-outline-variant);
+  border: 1px solid var(--mat-sys-outline-variant);
+
+  div {
+    background: var(--mat-sys-surface) !important;
   }
-  .text-primary {
-    color: mat.get-theme-color($theme, primary);
+  .bg-transparent {
+    background: transparent !important;
+  }
+  .text {
+    color: var(--mat-sys-on-surface);
+    position: absolute;
+    top: calc(50% - 1rem);
+    left: calc(50% - 1rem);
+  }
+  .center {
+    color: var(--mat-sys-on-surface);
+    border-color: var(--mat-sys-outline-variant);
   }
 }
 
-@mixin theme($theme) {
-  @if mat.theme-has($theme, color) {
-    @include color($theme);
+.bg-surface {
+  background: var(--mat-sys-surface);
+}
+.bg-surface-container {
+  background: var(--mat-sys-surface-container);
+}
+.bg-primary {
+  background: var(--mat-sys-primary);
+}
+.bg-tertiary {
+  background: var(--mat-sys-tertiary);
+}
+.border-primary {
+  border-color: var(--mat-sys-primary);
+  border-style: solid;
+}
+.bg-error {
+  background: var(--mat-sys-error);
+}
+
+.hangngang-box {
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+}
+
+.answers > div {
+  background: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-on-surface);
+  border: 2px solid var(--mat-sys-primary);
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+
+  .name-box {
+    background: var(--mat-sys-surface-container-low);
+    color: var(--mat-sys-on-surface);
+    border-bottom: 2px solid var(--mat-sys-primary);
+    border-radius: 0.5rem 0.5rem 0 0;
+    box-sizing: border-box;
   }
-  .big-button {
-    width: 100%;
-    min-height: 10rem;
+  .timer-box {
+    background: var(--mat-sys-surface-container-low);
+    color: var(--mat-sys-on-surface);
+    border: 1px solid var(--mat-sys-primary);
+    border-radius: 0.5rem;
+    box-sizing: border-box;
   }
+}
+
+.answer-incorrect {
+  background: var(--mat-sys-error-container) !important;
+  color: var(--mat-sys-on-error-container) !important;
+  border: 1px solid var(--mat-sys-error) !important;
+  opacity: 0.2;
+}
+
+.answer-correct {
+  color: var(--mat-sys-primary) !important;
+  border: 1px solid var(--mat-sys-primary) !important;
+}
+
+.name-highlight {
+  background: var(--mat-sys-primary) !important;
+  color: var(--mat-sys-on-primary) !important;
+}
+
+.special-highlight {
+  background: var(--mat-sys-tertiary) !important;
+  color: var(--mat-sys-on-tertiary) !important;
+}
+
+.text-primary {
+  color: var(--mat-sys-primary);
+}
+
+.big-button {
+  width: 100%;
+  min-height: 10rem;
 }

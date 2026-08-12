@@ -1,5 +1,5 @@
 import { Component, effect, input, Signal, ChangeDetectionStrategy } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
     selector: 'countdown',
@@ -7,7 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     styleUrl: './countdown.component.scss',
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
-        MatProgressSpinnerModule
+        MatProgressSpinner
     ]
 })
 export class CountdownComponent {
