@@ -21,7 +21,7 @@
     </mat-card-header>
     <mat-card-content class="h-full overflow-y-auto">
       <menu-item title="Phần thi" description="Lựa chọn phần thi để xem trước đề." class="flex">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-form-field subscriptSizing="dynamic">
           <mat-label>Chọn chế độ</mat-label>
           <mat-select [value]="selectedKind()" (valueChange)="selectedKind.set($event)">
             <mat-option value="kd">Khởi động</mat-option>
@@ -34,7 +34,7 @@
       </menu-item>
       @if (selectedKind() === 'kd') {
         <menu-item title="Chọn gói câu hỏi">
-          <mat-form-field appearance="outline">
+          <mat-form-field>
             <mat-select
               [disabled]="kdPreviewGamemode() === 'M'"
               [value]="kdPreviewPlayerIndex()"
@@ -45,7 +45,7 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field appearance="outline">
+          <mat-form-field>
             <mat-select
               [value]="kdPreviewGamemode()"
               (valueChange)="kdPreviewGamemode.set($event)"
@@ -58,7 +58,7 @@
       }
       @if (selectedKind() === 'vd') {
         <menu-item title="Người chơi">
-          <mat-form-field appearance="outline">
+          <mat-form-field>
             <mat-select
               [value]="vdPreviewPlayerIndex()"
               (valueChange)="vdPreviewPlayerIndex.set($event)"

@@ -1,18 +1,23 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import * as XLSX from 'xlsx';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatOption, MatSelect } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { NgClass } from '@angular/common';
 import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
 import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
-import { SNACKBAR_DURATION_MS } from '../../core/constants';
 import {
   ChpRound,
   KdGamemode,
@@ -36,12 +41,18 @@ import { QuestionPreview, toQuestionPreview } from '../utils/question.adapter';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgClass,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatSelectModule,
+    MatButton,
+    MatCard,
+    MatCardActions,
+    MatCardContent,
+    MatCardHeader,
+    MatCardTitle,
+    MatCheckbox,
+    MatFormField,
+    MatLabel,
+    MatIcon,
+    MatOption,
+    MatSelect,
     MatTableModule,
     MenuItemComponent,
   ],
@@ -161,14 +172,10 @@ export class AdminDashboardComponent {
     const payload = { kd: sheet(0), vcnv: sheet(1), tt: sheet(2), vd: sheet(3) };
     try {
       await this.api.importExcel(payload);
-      this.snackBar.open('Đã nhập đề từ file Excel.', undefined, {
-        duration: SNACKBAR_DURATION_MS,
-      });
+      this.snackBar.open('Đã nhập đề từ file Excel.', undefined);
       await this.loadRounds();
     } catch {
-      this.snackBar.open('Nhập file Excel thất bại.', undefined, {
-        duration: SNACKBAR_DURATION_MS,
-      });
+      this.snackBar.open('Nhập file Excel thất bại.', undefined);
     }
   }
 
@@ -178,14 +185,10 @@ export class AdminDashboardComponent {
     this.importedFileName.set(file.name);
     try {
       const response = await this.api.importLegion(file);
-      this.snackBar.open(`Đã nhập trận đấu: ${response.matchName}`, undefined, {
-        duration: SNACKBAR_DURATION_MS,
-      });
+      this.snackBar.open(`Đã nhập trận đấu: ${response.matchName}`, undefined);
       await this.loadRounds();
     } catch {
-      this.snackBar.open('Nhập file .legion thất bại.', undefined, {
-        duration: SNACKBAR_DURATION_MS,
-      });
+      this.snackBar.open('Nhập file .legion thất bại.', undefined);
     }
   }
 

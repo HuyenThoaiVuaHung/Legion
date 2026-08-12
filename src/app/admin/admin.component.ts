@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatToolbar } from '@angular/material/toolbar';
 import { POSITION_LABELS } from '../core/constants';
 import { MatchPosition } from '../core/contracts/game';
 import { ApiService } from '../core/services/api.service';
@@ -14,7 +14,7 @@ import { SessionService } from '../core/services/session.service';
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterOutlet, MatToolbarModule, MatIconModule, MatButtonModule],
+  imports: [RouterLink, RouterOutlet, MatToolbar, MatIcon, MatIconButton],
 })
 export class AdminComponent {
   private readonly api = inject(ApiService);

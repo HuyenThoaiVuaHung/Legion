@@ -5,47 +5,57 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-$Legion-theme: mat.define-theme(
-  (
-    color: (
-      theme-type: light,
-      primary: mat.$violet-palette,
-      tertiary: mat.$magenta-palette,
-    ),
-    typography: (
-      plain-family: "Lexend",
-      brand-family: "Lexend",
-    ),
-  )
-);
+// Material theme — modern token API. Emits `--mat-sys-*` custom properties at
+// runtime; `color-scheme: light dark` makes every token (and therefore every
+// component and theme partial) follow the OS scheme automatically.
+html {
+  color-scheme: light dark;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$violet-palette,
+        tertiary: mat.$magenta-palette,
+      ),
+      typography: (
+        plain-family: "Lexend",
+        brand-family: "Lexend",
+      ),
+      density: 0,
+    )
+  );
+}
+
+// The three typography-hierarchy classes the templates actually use, backed
+// by system tokens instead of the legacy hierarchy mixin.
+.mat-headline-1 {
+  font: var(--mat-sys-display-large);
+}
+.mat-title-medium {
+  font: var(--mat-sys-title-medium);
+}
+.mat-body-medium {
+  font: var(--mat-sys-body-medium);
+}
+
 html {
   ::-webkit-scrollbar-track {
-    background: mat.get-theme-color($Legion-theme, surface-dim);
+    background: var(--mat-sys-surface-dim);
     border-radius: 12px;
   }
-
-  ::-webkit-scrollbar-track {
-    background: mat.get-theme-color($Legion-theme, surface-dim);
-    border-radius: 12px;
-  }
-
-  /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: mat.get-theme-color($Legion-theme, on-surface);
+    background: var(--mat-sys-on-surface);
     border-radius: 12px;
   }
-
-  /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: mat.get-theme-color($Legion-theme, primary);
+    background: var(--mat-sys-primary);
   }
   ::selection {
-    background: mat.get-theme-color($Legion-theme, primary);
-    color: mat.get-theme-color($Legion-theme, on-primary);
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
   }
   ::-moz-selection {
-    background: mat.get-theme-color($Legion-theme, primary);
-    color: mat.get-theme-color($Legion-theme, on-primary);
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
   }
 }
 ::-webkit-scrollbar {
@@ -54,27 +64,23 @@ html {
 
 html,
 body {
-  @include mat.elevation-classes();
-  @include mat.app-background();
   height: 100%;
-  @include mat.all-component-themes($Legion-theme);
-  @include mat.typography-hierarchy($Legion-theme);
-  // @include mat.all-component-typograph
-  @include table-theme.theme($Legion-theme);
-  @include player-ui-theme.theme($Legion-theme);
-  .admin-container {
-    height: calc(100vh - 64px);
-    width: 100%;
-    padding: 0.75rem;
-    gap: 0.75rem;
-    box-sizing: border-box;
-    display: flex;
-    background: mat.get-theme-color($Legion-theme, surface-container);
-  }
-  .mat-mdc-card-actions {
-    @apply gap-3;
-  }
-}
-body {
   margin: 0;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+}
+
+.admin-container {
+  height: calc(100vh - 64px);
+  width: 100%;
+  padding: 0.75rem;
+  gap: 0.75rem;
+  box-sizing: border-box;
+  display: flex;
+  background: var(--mat-sys-surface-container);
+}
+
+.mat-mdc-card-actions {
+  @apply gap-3;
 }

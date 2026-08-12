@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { VcnvQuestion } from '../../../core/contracts/game';
 import { ApiService } from '../../../core/services/api.service';
 
@@ -15,13 +15,15 @@ import { ApiService } from '../../../core/services/api.service';
   styleUrl: './form-q-vcnv.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
-    MatFormFieldModule,
-    MatRadioModule,
+    MatFormField,
+    MatLabel,
+    MatRadioGroup,
+    MatRadioButton,
     MatDialogModule,
     FormsModule,
-    MatButtonModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
+    MatButton,
+    MatInput,
+    MatProgressSpinner,
   ],
 })
 export class FormQVcnvComponent {

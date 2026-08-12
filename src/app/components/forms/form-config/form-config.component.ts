@@ -1,9 +1,8 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatButton } from '@angular/material/button';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 /**
  * Client-local UI preferences — not part of the server-synced game state, so
@@ -18,7 +17,7 @@ export interface AppConfig {
   selector: 'app-form-config',
   templateUrl: './form-config.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [MatFormFieldModule, FormsModule, MatDialogModule, MatSlideToggleModule, MatButtonModule],
+  imports: [FormsModule, MatDialogModule, MatSlideToggle, MatButton],
 })
 export class FormConfigComponent {
   readonly dialogRef = inject<MatDialogRef<FormConfigComponent, AppConfig>>(MatDialogRef);
