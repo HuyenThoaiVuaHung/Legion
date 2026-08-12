@@ -3,7 +3,7 @@
     @for (player of session.match()?.players ?? []; track $index) {
       <div class="p-5 animate_cards_visible_after cards">
         <div class="bg-gradient-to-r from-white to-transparent w-96 kinda-tall rounded-2xl absolute drop-shadow-lg">
-          <img class="z-0 flex-shrink-0 rounded-2xl" src="assets/contestants/{{ $index + 1 }}.png" />
+          <img class="z-0 flex-shrink-0 rounded-2xl" [src]="assets.image('contestants/' + ($index + 1) + '.png')" />
         </div>
         <div class="bg-gradient-to-t from-white via-white to-transparent w-96 kinda-tall rounded-xl relative shadow-2xl">
           <div class="w-full absolute h-52"></div>

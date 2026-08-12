@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AssetService } from '../../core/services/asset.service';
 import { SessionService } from '../../core/services/session.service';
 
 @Component({
@@ -10,4 +11,5 @@ import { SessionService } from '../../core/services/session.service';
 })
 export class PointsViewComponent {
   protected readonly session = inject(SessionService);
+  protected readonly assets = inject(AssetService);
 }

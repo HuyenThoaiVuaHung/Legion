@@ -8,6 +8,7 @@ import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { Role } from '../core/contracts/api';
+import { AssetService } from '../core/services/asset.service';
 import { ConnectionStatus, NetworkService } from '../core/services/network.service';
 import { SessionService } from '../core/services/session.service';
 
@@ -35,6 +36,7 @@ export class HomeComponent {
   private readonly router = inject(Router);
   protected readonly network = inject(NetworkService);
   protected readonly session = inject(SessionService);
+  protected readonly assets = inject(AssetService);
 
   protected readonly connectionStatus = ConnectionStatus;
 

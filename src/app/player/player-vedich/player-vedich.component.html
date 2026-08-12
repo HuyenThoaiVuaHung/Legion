@@ -27,7 +27,7 @@
                 id="vedich-video"
                 class="videoBox"
                 preload="auto"
-                poster="../../assets/misc/placeholder.png"
+                [attr.poster]="media.placeholder"
               >
                 <source [src]="videoUrl()" type="video/mp4" />
               </video>

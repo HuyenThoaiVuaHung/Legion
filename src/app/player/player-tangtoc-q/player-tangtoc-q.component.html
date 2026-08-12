@@ -18,7 +18,7 @@
         id="video-1"
         class="disablePointerActions questionBox z-10 w-full h-full"
         preload="auto"
-        poster="../../assets/misc/placeholder.png"
+        [attr.poster]="media.placeholder"
       >
         <source [src]="videoUrl()" type="video/mp4" />
       </video>
@@ -26,7 +26,7 @@
       <img [src]="imageUrl()" class="disablePointerActions questionBox object-cover w-full h-full" />
     } @else {
       <img
-        src="../../assets/misc/placeholder.png"
+        [src]="media.placeholder"
         class="shadow-xl disablePointerActions questionBox w-full h-full"
       />
     }
