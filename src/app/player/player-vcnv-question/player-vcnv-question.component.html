@@ -17,51 +17,26 @@
     <div
       draggable="false"
       (dragstart)="(false)"
-      class="relative text-4xl font-semibold mt-10 ml-10 cnvPicBox overflow-hidden"
-      [style.background-image]="cnvImageUrl() ? 'url(' + cnvImageUrl() + ')' : null"
+      class="relative text-4xl font-semibold mt-10 ml-10 cnvPicBox overflow-hidden bg-surface-container"
     >
-      <div
-        [class.opacity-0]="round()?.questions?.[4]?.isOpen === true"
-        class="center grid place-items-center cover-cell absolute z-20"
-      >
-        5
-      </div>
-
-      <div
-        [class.opacity-0]="round()?.questions?.[0]?.isOpen === true"
-        class="cover-cell absolute top-0 left-0 z-10 bg-transparent"
-      >
-        <div class="cnvCornerCell1 CCell1"></div>
-        <div class="cnvCornerCell2 items-start justify-end flex CCell2"></div>
-        <div class="bg-transparent cnvCornerCell2 CCell3"></div>
-        <span class="text"> 1 </span>
-      </div>
-      <div
-        [class.opacity-0]="round()?.questions?.[1]?.isOpen === true"
-        class="cover-cell top-0 right-0 absolute z-10 bg-transparent"
-      >
-        <div class="cnvCornerCell1 CCell4"></div>
-        <div class="bg-transparent absolute cnvCornerCell2 CCell5"></div>
-        <div class="absolute ml-40 items-start justify-start flex cnvCornerCell2 CCell6"></div>
-        <span class="text"> 2 </span>
-      </div>
-      <div
-        [class.opacity-0]="round()?.questions?.[2]?.isOpen === true"
-        class="cover-cell left-0 bottom-0 absolute z-10 bg-transparent"
-      >
-        <div class="cnvCornerCell2 items-end justify-end flex CCell7"></div>
-        <div class="cnvCornerCell1 CCell8"></div>
-        <span class="text"> 3 </span>
-      </div>
-      <div
-        [class.opacity-0]="round()?.questions?.[3]?.isOpen === true"
-        class="cover-cell right-0 bottom-0 absolute bg-transparent z-10"
-      >
-        <div class="bg-transparent absolute cnvCornerCell2 CCell9"></div>
-        <div class="absolute ml-40 items-end justify-start flex cnvCornerCell2 CCell10"></div>
-        <div class="absolute bottom-0 cnvCornerCell1 CCell12"></div>
-        <span class="text"> 4 </span>
-      </div>
+      <!-- Revealed pieces: each is a full-canvas PNG transparent outside its
+           own region, so layering them reconstructs only the revealed part.
+           The server refuses any piece whose row is still closed. -->
+      @for (piece of obstaclePieces(); track piece.index) {
+        @if (piece.open) {
+          <img
+            draggable="false"
+            (dragstart)="(false)"
+            class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+            [src]="piece.url"
+            alt=""
+          />
+        } @else {
+          <div class="cover-cell absolute grid place-items-center {{ piece.cover }}">
+            {{ piece.label }}
+          </div>
+        }
+      }
     </div>
     <div class="overflow-hidden justify-center tracking-hangngang gap-2 p-2 flex-col flex mr-10">
       @for (i of hnRowIndices; track i) {

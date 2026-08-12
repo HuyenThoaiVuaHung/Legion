@@ -21,6 +21,19 @@ import { PlayerListComponent } from '../../components/player-list/player-list.co
 const CNV_INDEX = 5;
 const HN_ROW_INDICES = [0, 1, 2, 3] as const;
 
+/**
+ * The five obstacle reveal pieces: four corners tied to rows 0-3 and the
+ * centre tied to row 4. `cover` positions the placeholder shown while the
+ * piece is still hidden.
+ */
+const OBSTACLE_PIECES = [
+  { index: 0, cover: 'top-0 left-0 z-10 bg-primary text-on-primary' },
+  { index: 1, cover: 'top-0 right-0 z-10 bg-primary text-on-primary' },
+  { index: 2, cover: 'bottom-0 left-0 z-10 bg-primary text-on-primary' },
+  { index: 3, cover: 'bottom-0 right-0 z-10 bg-primary text-on-primary' },
+  { index: 4, cover: 'center z-20 bg-tertiary text-on-tertiary' },
+] as const;
+
 @Component({
   selector: 'app-player-vcnv-question',
   templateUrl: './player-vcnv-question.component.html',
@@ -48,9 +61,21 @@ export class PlayerVcnvQuestionComponent {
     () => this.round()?.questions.find((q) => q.isShown) ?? null,
   );
 
-  protected readonly cnvImageUrl = computed(() => {
-    const cnv = this.round()?.questions[CNV_INDEX];
-    return cnv ? this.media.resolve('vcnv', cnv.imageFile) : null;
+  /**
+   * One layer per obstacle piece. `open` mirrors the server's reveal state;
+   * only open pieces get a URL, and the server independently refuses any piece
+   * whose row is still closed — so the hidden image never reaches the client.
+   */
+  protected readonly obstaclePieces = computed(() => {
+    const round = this.round();
+    if (!round) return [];
+    const token = round.questions[CNV_INDEX]?.imagePieceFiles?.join(',') ?? '';
+    return OBSTACLE_PIECES.map((piece) => ({
+      ...piece,
+      label: piece.index + 1,
+      open: round.questions[piece.index]?.isOpen === true,
+      url: `${this.api.obstaclePieceUrl(piece.index)}?v=${encodeURIComponent(token)}`,
+    }));
   });
 
   protected readonly disabledObstacleButton = computed(() => {
