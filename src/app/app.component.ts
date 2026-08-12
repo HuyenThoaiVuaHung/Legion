@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { RouterOutlet } from '@angular/router';
+import { PaletteService } from './core/services/palette.service';
 import { SessionService } from './core/services/session.service';
 
 @Component({
@@ -16,5 +17,6 @@ export class AppComponent {
 
   constructor() {
     inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
+    inject(PaletteService).init();
   }
 }
