@@ -25,7 +25,7 @@ export class PlayerTangtocQComponent {
   private readonly api = inject(ApiService);
   private readonly network = inject(NetworkService);
   private readonly sfx = inject(SfxService);
-  private readonly media = inject(MediaService);
+  protected readonly media = inject(MediaService);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly session = inject(SessionService);
   protected readonly Role = Role;
