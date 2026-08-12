@@ -61,13 +61,6 @@
   -ms-user-select: none;
   pointer-events: none;
 }
-.disablePointerActions {
-  pointer-events: none;
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  user-select: none;
-}
-
 [mat-fab] {
   height: 3rem;
   width: 16rem;

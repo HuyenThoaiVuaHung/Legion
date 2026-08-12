@@ -20,7 +20,7 @@
         @if (uploadingQuestionImage()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else if (data.questionImage) {
-          <span class="text-sm opacity-70">{{ data.questionImage }}</span>
+          <span class="hint-text">{{ data.questionImage }}</span>
         }
       </div>
       <div class="flex items-center gap-2 mt-2">
@@ -31,7 +31,7 @@
         @if (uploadingAnswerImage()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else if (data.answerImage) {
-          <span class="text-sm opacity-70">{{ data.answerImage }}</span>
+          <span class="hint-text">{{ data.answerImage }}</span>
         }
       </div>
     } @else {
@@ -43,7 +43,7 @@
         @if (uploadingVideo()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else if (data.videoFile) {
-          <span class="text-sm opacity-70">{{ data.videoFile }}</span>
+          <span class="hint-text">{{ data.videoFile }}</span>
         }
       </div>
     }
