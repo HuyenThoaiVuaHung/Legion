@@ -42,12 +42,6 @@
 .cards {
   opacity: 1;
 }
-.disablePointerActions {
-  pointer-events: none;
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  user-select: none;
-}
 .zoom-out {
   transform: scale(0.8);
 }

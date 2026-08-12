@@ -51,7 +51,7 @@
         @if (uploading()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else if (data.mediaFile) {
-          <span class="text-sm opacity-70">{{ data.mediaFile }}</span>
+          <span class="hint-text">{{ data.mediaFile }}</span>
         }
       </div>
     }

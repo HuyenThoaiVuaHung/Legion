@@ -34,7 +34,7 @@
         @if (uploadingAudio()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else if (data.audioFile) {
-          <span class="text-sm opacity-70">{{ data.audioFile }}</span>
+          <span class="hint-text">{{ data.audioFile }}</span>
         }
       </div>
     } @else {
@@ -46,7 +46,7 @@
         @if (uploadingImage()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else if (data.imageFile) {
-          <span class="text-sm opacity-70">{{ data.imageFile }}</span>
+          <span class="hint-text">{{ data.imageFile }}</span>
         }
       </div>
     }

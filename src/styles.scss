@@ -81,6 +81,31 @@ body {
   background: var(--mat-sys-surface-container);
 }
 
+// Shared UI classes, defined once globally. Previously copy-pasted into
+// several component stylesheets (and, under Angular's scoped encapsulation,
+// silently inert wherever a template used them without a local definition).
+@layer components {
+  .inputForm {
+    @apply p-2;
+  }
+  .file-input {
+    display: none;
+  }
+  .disablePointerActions {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  .hint-text {
+    @apply text-sm opacity-70;
+  }
+  // The Về đích / question-bar answer tile.
+  .pick-tile {
+    @apply grid place-items-center justify-center rounded-xl border-2 border-primary bg-surface text-6xl font-semibold h-40 w-40;
+  }
+}
+
 .mat-mdc-card-actions {
   @apply gap-3;
 }
