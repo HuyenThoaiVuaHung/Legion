@@ -1,64 +1,64 @@
-import { Component, OnInit } from "@angular/core";
-import { AuthService } from "src/app/services/auth.service";
-import { SfxService } from "src/app/services/sfx-service.service";
-@Component({
-  selector: "app-player-tangtoc-a",
-  templateUrl: "./player-tangtoc-a.component.html",
-  styleUrls: ["./player-tangtoc-a.component.scss"],
-})
-export class PlayerTangtocAComponent implements OnInit {
-  ttData: any = {};
-  constructor(private sfxService: SfxService, public auth: AuthService) {}
-  ngOnInit(): void {
-    this.auth.resetListeners();
-    this.sfxService.playSfx("TT_SHOWANS");
-    this.auth.socket.on("play-sfx", (sfxID) => {
-      this.sfxService.playSfx(sfxID);
-    });
-    this.auth.socket.emit("get-tangtoc-data", (callback) => {
-      this.ttData = callback;
-      this.ttData.playerAnswers.sort(sortByTimestamp);
-    });
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { TtAnswer, TtRound } from '../../core/contracts/game';
+import { ApiService } from '../../core/services/api.service';
+import { NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
+import { SfxService } from '../../core/services/sfx.service';
 
-    this.auth.socket.on("update-tangtoc-data", (data) => {
-      this.ttData = data;
-      this.ttData.playerAnswers.sort(sortByTimestamp);
-      if (this.ttData.showResults == true) {
-        let counter = 0;
-        this.ttData.playerAnswers.forEach((element) => {
-          if (element.correct == true) {
-            counter++;
-          }
-        });
-        if (counter == 0) {
-          this.sfxService.playSfx("TT_WRONG");
-        } else {
-          this.sfxService.playSfx("TT_CORRECT");
-        }
-      }
-    });
+@Component({
+  selector: 'app-player-tangtoc-a',
+  templateUrl: './player-tangtoc-a.component.html',
+  styleUrl: './player-tangtoc-a.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [],
+})
+export class PlayerTangtocAComponent {
+  private readonly api = inject(ApiService);
+  private readonly network = inject(NetworkService);
+  private readonly sfx = inject(SfxService);
+  private readonly destroyRef = inject(DestroyRef);
+  protected readonly session = inject(SessionService);
+
+  protected readonly round = signal<TtRound | null>(null);
+
+  /** Fastest-first, without mutating the pushed round payload. */
+  protected readonly sortedAnswers = computed<TtAnswer[]>(() =>
+    [...(this.round()?.playerAnswers ?? [])].sort((a, b) => a.timestamp - b.timestamp),
+  );
+
+  private resultsAnnounced = false;
+
+  constructor() {
+    this.sfx.play('TT_SHOWANS');
+    void this.loadRound();
+
+    const offs = [
+      this.network.on<[string]>('play-sfx', (code) => this.sfx.play(code)),
+      this.network.on<[TtRound]>('update-tangtoc-data', (data) => this.onRound(data)),
+    ];
+    this.destroyRef.onDestroy(() => offs.forEach((off) => off()));
   }
-  getTimePassed(id: number): string {
-    let readableTime = "0s0ms";
-    if (this.ttData.playerAnswers[id].timestamp > 0) {
-      let timePassedinMs =
-        this.ttData.playerAnswers[id].timestamp -
-        this.ttData.timerStartTimestamp;
-      readableTime =
-        Math.trunc(timePassedinMs / 1000) +
-        "s" +
-        (timePassedinMs % 1000) +
-        "ms";
+
+  private async loadRound(): Promise<void> {
+    this.onRound(await this.api.getRound('tt'));
+  }
+
+  private onRound(data: TtRound): void {
+    this.round.set(data);
+    if (!data.showResults) {
+      this.resultsAnnounced = false;
+      return;
     }
-    return readableTime;
+    if (this.resultsAnnounced) return;
+    this.resultsAnnounced = true;
+    const anyCorrect = data.playerAnswers.some((a) => a.correct);
+    this.sfx.play(anyCorrect ? 'TT_CORRECT' : 'TT_WRONG');
   }
-}
-function sortByTimestamp(a, b) {
-  if (a.timestamp < b.timestamp) {
-    return -1;
+
+  getTimePassed(answer: TtAnswer): string {
+    const round = this.round();
+    if (!round || answer.timestamp <= 0) return '0s0ms';
+    const elapsedMs = answer.timestamp - round.timerStartTimestamp;
+    return `${Math.trunc(elapsedMs / 1000)}s${elapsedMs % 1000}ms`;
   }
-  if (a.timestamp > b.timestamp) {
-    return 1;
-  }
-  return 0;
 }

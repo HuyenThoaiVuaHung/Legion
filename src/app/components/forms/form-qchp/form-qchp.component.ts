@@ -1,33 +1,23 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { ChpQuestion } from '../../../core/contracts/game';
 
 @Component({
   selector: 'app-form-qchp',
   templateUrl: './form-qchp.component.html',
-  styleUrls: ['./form-qchp.component.scss'],
-  standalone: true,
-  imports: [
-    MatFormFieldModule,
-    FormsModule,
-    MatDialogModule,
-    MatInputModule,
-    MatButtonModule
-  ]
-
+  styleUrl: './form-qchp.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [MatFormField, FormsModule, MatDialogModule, MatInput, MatButton],
 })
-export class FormQchpComponent implements OnInit {
-  constructor(
-    public dialogRef: MatDialogRef<FormQchpComponent>,
-    @Inject(MAT_DIALOG_DATA) public data : any
-  ) {
-   }
+export class FormQchpComponent {
+  readonly dialogRef = inject<MatDialogRef<FormQchpComponent, ChpQuestion>>(MatDialogRef);
+  readonly data = inject<ChpQuestion>(MAT_DIALOG_DATA);
 
-  ngOnInit(): void {}
-  onNoClick() : void {
+  onNoClick(): void {
     this.dialogRef.close();
   }
 }

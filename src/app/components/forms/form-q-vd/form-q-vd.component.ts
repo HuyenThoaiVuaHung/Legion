@@ -1,42 +1,55 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { VdQuestion } from '../../../core/contracts/game';
+import { ApiService } from '../../../core/services/api.service';
 
 @Component({
   selector: 'app-form-q-vd',
   templateUrl: './form-q-vd.component.html',
-  styleUrls: ['./form-q-vd.component.scss'],
-  standalone: true,
+  styleUrl: './form-q-vd.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
-    MatFormFieldModule,
+    MatFormField,
+    MatLabel,
     FormsModule,
     MatDialogModule,
-    MatRadioModule,
-    MatInputModule,
-    MatButtonModule
-  ]
-
+    MatRadioGroup,
+    MatRadioButton,
+    MatInput,
+    MatButton,
+    MatProgressSpinner,
+  ],
 })
-export class FormQVdComponent implements OnInit {
+export class FormQVdComponent {
+  private readonly api = inject(ApiService);
+  readonly dialogRef = inject<MatDialogRef<FormQVdComponent, VdQuestion>>(MatDialogRef);
+  readonly data = inject<VdQuestion>(MAT_DIALOG_DATA);
 
+  readonly uploading = signal(false);
 
-  constructor(
-    public dialogRef: MatDialogRef<FormQVdComponent>,
-    @Inject(MAT_DIALOG_DATA) public data : any
-  ) {
-    if (!data.type){
-      data.type = 'N';
-    }
-   }
-
-  ngOnInit(): void {
-    
+  constructor() {
+    this.data.type ??= 'N';
   }
-  onNoClick() : void {
+
+  async onMediaSelected(event: Event): Promise<void> {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploading.set(true);
+    try {
+      const { fileName } = await this.api.uploadMedia('vd', file);
+      this.data.mediaFile = fileName;
+    } finally {
+      this.uploading.set(false);
+    }
+  }
+
+  onNoClick(): void {
     this.dialogRef.close();
   }
 }

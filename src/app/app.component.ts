@@ -1,19 +1,22 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
-import { AuthService } from "./services/auth.service";
-import { getControlUrlFromMatchPosition } from "./services/tools";
-import { MatIconRegistry } from "@angular/material/icon";
-@Component({
-  selector: "app-root",
-  templateUrl: "./app.component.html",
-  styleUrls: ["./app.component.scss"],
-})
-export class AppComponent implements OnInit {
-  title = "Legion";
-  matchPosCache: string = "";
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MatIconRegistry } from '@angular/material/icon';
+import { RouterOutlet } from '@angular/router';
+import { PaletteService } from './core/services/palette.service';
+import { SessionService } from './core/services/session.service';
 
-  constructor(private router: Router, public auth: AuthService, private iconRegistry: MatIconRegistry) {
-    iconRegistry.setDefaultFontSetClass('material-symbols-outlined')
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterOutlet],
+})
+export class AppComponent {
+  /** Instantiated eagerly so the saved-server reconnect runs at startup. */
+  protected readonly session = inject(SessionService);
+
+  constructor() {
+    inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
+    inject(PaletteService).init();
   }
-  ngOnInit(): void {}
 }

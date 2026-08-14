@@ -1,29 +1,29 @@
-import { ActivatedRoute } from "@angular/router";
-import { Component, OnInit } from "@angular/core";
-import { MatchData } from "src/app/services/types/match.data";
-import { AuthService } from "src/app/services/auth.service";
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ConnectionStatus, NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
 
+/**
+ * Single-player scoreboard overlay: one contestant's name and score, picked
+ * by the (0-based) `:id` route param bound via withComponentInputBinding.
+ */
 @Component({
-  selector: "app-single-point-ts",
-  templateUrl: "./single-point-ts.component.html",
-  styleUrls: ["./single-point-ts.component.scss"],
+  selector: 'app-single-point-ts',
+  templateUrl: './single-point-ts.component.html',
+  styleUrl: './single-point-ts.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SinglePointTsComponent implements OnInit {
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    public auth: AuthService
-  ) {
-    if (!localStorage.getItem("defaultUrl"))
-      this.auth.connect(
-        document.URL.match(/(http:\x2f\x2f)[A-Za-z0-9\.]+/)![0]
-      );
-  }
-  public index = -1;
-  ngOnInit(): void {
-    this.activatedRoute.params.subscribe((params) => {
-      if (params["id"]) {
-        this.index = +params["id"];
-      }
-    });
+export class SinglePointTsComponent {
+  private readonly session = inject(SessionService);
+  private readonly network = inject(NetworkService);
+
+  readonly id = input('');
+
+  private readonly playerIndex = computed(() => Number(this.id()));
+  readonly player = computed(() => this.session.match()?.players[this.playerIndex()] ?? null);
+
+  constructor() {
+    if (this.network.status() === ConnectionStatus.Disconnected) {
+      void this.session.connect(this.network.serverUrl());
+    }
   }
 }

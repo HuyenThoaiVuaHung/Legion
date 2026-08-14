@@ -1,32 +1,30 @@
-import { Component, Inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { FormPlayerComponent } from '../form-player/form-player.component';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { ApplicationConfig } from 'src/app/services/config.service';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatButton } from '@angular/material/button';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+
+/**
+ * Client-local UI preferences — not part of the server-synced game state, so
+ * there is no core contract for it. Structurally compatible with whatever
+ * config store the caller injects as MAT_DIALOG_DATA.
+ */
+export interface AppConfig {
+  automaticallyShowTangTocAnswer: boolean;
+}
 
 @Component({
   selector: 'app-form-config',
-  standalone: true,
   templateUrl: './form-config.component.html',
-  imports: [
-    MatFormFieldModule,
-    FormsModule,
-    MatDialogModule,
-    MatSlideToggleModule,
-    MatButtonModule
-  ]
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [FormsModule, MatDialogModule, MatSlideToggle, MatButton],
 })
 export class FormConfigComponent {
-  constructor(
-    public dialogRef: MatDialogRef<FormConfigComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ApplicationConfig
-  ) { }
-  public config: ApplicationConfig = { ...this.data };
-  ngOnInit(): void {
-  }
+  readonly dialogRef = inject<MatDialogRef<FormConfigComponent, AppConfig>>(MatDialogRef);
+  readonly data = inject<AppConfig>(MAT_DIALOG_DATA);
+
+  config: AppConfig = { ...this.data };
+
   onNoClick(): void {
     this.dialogRef.close();
   }
