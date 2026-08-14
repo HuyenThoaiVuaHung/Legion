@@ -1,38 +1,51 @@
 <h1 mat-dialog-title>Sửa câu hỏi</h1>
 <div mat-dialog-content class="h-full">
   <div>
+    <mat-radio-group aria-label="Chọn loại câu hỏi" [(ngModel)]="data.type">
+      <mat-radio-button class="p-5" value="image">Hình ảnh</mat-radio-button>
+      <mat-radio-button class="p-5" value="video">Video</mat-radio-button>
+    </mat-radio-group>
     <mat-form-field class="inputForm">
       <input matInput placeholder="Câu hỏi" [(ngModel)]="data.question" />
     </mat-form-field>
     <mat-form-field class="inputForm">
       <input matInput placeholder="Đáp án" [(ngModel)]="data.answer" />
     </mat-form-field>
-    @if(data.type == 'TT_IMG') {
-    <div>
-      <mat-form-field class="inputForm">
-        <input
-          matInput
-          placeholder="Tên file ảnh câu hỏi"
-          [(ngModel)]="data.question_image"
-        />
-      </mat-form-field>
-      <mat-form-field class="inputForm">
-        <input
-          matInput
-          placeholder="Tên file ảnh đáp án"
-          [(ngModel)]="data.answer_image"
-        />
-      </mat-form-field>
-    </div>
-    <div>
-      <mat-form-field class="inputForm">
-        <input
-          matInput
-          placeholder="Tên file video"
-          [(ngModel)]="data.video_name"
-        />
-      </mat-form-field>
-    </div>
+    @if (data.type === 'image') {
+      <div class="flex items-center gap-2 mt-2">
+        <button mat-button type="button" [disabled]="uploadingQuestionImage()" (click)="questionImageInput.click()">
+          Tải ảnh câu hỏi
+        </button>
+        <input #questionImageInput class="file-input" type="file" accept="image/*" (change)="onQuestionImageSelected($event)" />
+        @if (uploadingQuestionImage()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else if (data.questionImage) {
+          <span class="hint-text">{{ data.questionImage }}</span>
+        }
+      </div>
+      <div class="flex items-center gap-2 mt-2">
+        <button mat-button type="button" [disabled]="uploadingAnswerImage()" (click)="answerImageInput.click()">
+          Tải ảnh đáp án
+        </button>
+        <input #answerImageInput class="file-input" type="file" accept="image/*" (change)="onAnswerImageSelected($event)" />
+        @if (uploadingAnswerImage()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else if (data.answerImage) {
+          <span class="hint-text">{{ data.answerImage }}</span>
+        }
+      </div>
+    } @else {
+      <div class="flex items-center gap-2 mt-2">
+        <button mat-button type="button" [disabled]="uploadingVideo()" (click)="videoInput.click()">
+          Tải video
+        </button>
+        <input #videoInput class="file-input" type="file" accept="video/*" (change)="onVideoSelected($event)" />
+        @if (uploadingVideo()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else if (data.videoFile) {
+          <span class="hint-text">{{ data.videoFile }}</span>
+        }
+      </div>
     }
   </div>
   <div mat-dialog-actions>

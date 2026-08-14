@@ -1,38 +1,39 @@
 <div class="w-screen h-screen flex justify-center items-center">
   <div class="w-[72rem] h-[30rem] flex flex-row">
     <div class="w-1/2 h-full flex flex-col justify-center">
-      <img
-        src="../../assets/misc/legion.png"
-        alt="Legion"
-        class="object-cover w-96"
-      />
+      <img [src]="assets.image('misc/legion.png')" alt="Legion" class="object-cover w-96" />
       <div>
-        <h3 class="">
+        <h3>
           <strong>
-            @if(stepper.selectedIndex == 0) { Hãy kết nối với Legendary. }
-             @else if (stepper.selectedIndex == 1) { Cung cấp mã đăng nhập của bạn. }
+            @if (stepper.selectedIndex === 0) { Hãy kết nối với Legendary. }
+            @else if (stepper.selectedIndex === 1) { Cung cấp mã đăng nhập của bạn. }
           </strong>
         </h3>
         <h6 class="font-semibold opacity-70">
-          @if(stepper.selectedIndex == 0) { hoặc tải Legendary
-          <a href="https://github.com/huyenthoaivuahung/legendary">tại đây</a>.}
-          @else if (stepper.selectedIndex == 1) { Được thiết lập trong khi khởi
-          động Legendary. }
+          @if (stepper.selectedIndex === 0) {
+            hoặc tải Legendary
+            <a href="https://github.com/huyenthoaivuahung/legendary">tại đây</a>.
+          } @else if (stepper.selectedIndex === 1) {
+            Được thiết lập trong khi khởi động Legendary.
+          }
         </h6>
+        @if (session.identity(); as identity) {
+          <h6 class="font-semibold">Xin chào, {{ greeting() }}!</h6>
+        }
       </div>
     </div>
     <div class="w-1/2 h-full flex flex-col gap-5 justify-center">
       <mat-stepper [linear]="true" #stepper>
         <mat-step
           label="Kết nối tới Legendary"
-          [completed]="auth.state === appState.CONNECTED"
+          [completed]="network.status() === connectionStatus.Connected"
           state="connect"
         >
-          <form [formGroup]="urlFormGroup">
-            <mat-form-field class="mt-5 w-96" appearance="outline">
+          <form [formGroup]="urlForm">
+            <mat-form-field class="mt-5 w-96">
               <input
                 matInput
-                formControlName="legendaryUrl"
+                formControlName="serverUrl"
                 placeholder="http://legendary.com"
                 required
               />
@@ -40,34 +41,33 @@
             </mat-form-field>
           </form>
           <div>
-            <button
-              [disabled]="urlFormGroup.controls.legendaryUrl.errors?.['pattern']"
-              (click)="connect()"
-              mat-button
-            >
+            <button [disabled]="urlForm.invalid" (click)="connect()" mat-button>
               <mat-icon>arrow_right</mat-icon>
-              @if (auth.state == appState.ERROR) {
-              Không thể kết nối với máy chủ. } @else if (auth.state
-              == appState.CONNECTING) {
-              <mat-spinner [diameter]="23"></mat-spinner>
-              } @else if (auth.state === appState.CONNECTED) {
-              Đã kết nối } @else { Kết nối }
+              @if (network.status() === connectionStatus.Error) {
+                Không thể kết nối với máy chủ.
+              } @else if (network.status() === connectionStatus.Connecting) {
+                <mat-spinner [diameter]="23"></mat-spinner>
+              } @else if (network.status() === connectionStatus.Connected) {
+                Đã kết nối
+              } @else {
+                Kết nối
+              }
             </button>
             <button
               mat-button
-              [disabled]="auth.state != appState.CONNECTED"
+              [disabled]="network.status() !== connectionStatus.Connected"
               matStepperNext
             >
               Tiếp tục
             </button>
           </div>
         </mat-step>
-        <mat-step label="Đăng nhập" state="login">
-          <form [formGroup]="tokenFormGroup">
-            <mat-form-field class="mt-5 w-96" appearance="outline">
+        <mat-step label="Đăng nhập" state="login" [completed]="!!session.identity()">
+          <form [formGroup]="secretForm">
+            <mat-form-field class="mt-5 w-96">
               <input
                 matInput
-                formControlName="token"
+                formControlName="secret"
                 placeholder="Nhập mã đăng nhập của bạn."
                 required
               />
@@ -76,7 +76,7 @@
           </form>
 
           <div>
-            <button mat-button (click)="this.authenticate()">
+            <button mat-button (click)="login()">
               <mat-icon>arrow_right</mat-icon>
               Đăng nhập
             </button>

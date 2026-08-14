@@ -1,17 +1,17 @@
-import { CommonModule } from "@angular/common";
-import { Component, input, Input, OnInit, Signal } from "@angular/core";
-import { Player } from "src/app/services/types/match.data";
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
+import { Player } from '../../core/contracts/game';
 
 @Component({
-  selector: "player-list",
-  templateUrl: "./player-list.component.html",
-  styleUrls: ["./player-list.component.scss"],
-  standalone: true,
-  imports: [CommonModule]
+  selector: 'player-list',
+  templateUrl: './player-list.component.html',
+  styleUrl: './player-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [],
 })
 export class PlayerListComponent {
-  public turnIndex = input(-1);
-  public highlightIndex = input(-1);
-  public players: Signal<Player[]> = input([]);
-  constructor() {}
+  /** 0-based index of the player currently taking their turn, -1 for none. */
+  readonly turnIndex = input(-1);
+  /** 0-based index of the player to visually highlight, -1 for none. */
+  readonly highlightIndex = input(-1);
+  readonly players = input<Player[]>([]);
 }

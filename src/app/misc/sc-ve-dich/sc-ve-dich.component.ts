@@ -1,49 +1,51 @@
-import { Component, OnInit } from "@angular/core";
-import { io } from "socket.io-client";
-import { AuthService } from "src/app/services/auth.service";
-import { VdData } from "src/app/services/types/game";
-import { environment } from "src/environments/environment";
+import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { RoundDataMap, VdQuestion } from '../../core/contracts/game';
+import { ApiService } from '../../core/services/api.service';
+import { ConnectionStatus, NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
 
+/**
+ * VD (Về đích) broadcast overlay: active player, current question and the
+ * "Ngôi sao hy vọng" indicator.
+ */
 @Component({
-  selector: "app-sc-ve-dich",
-  templateUrl: "./sc-ve-dich.component.html",
-  styleUrls: ["./sc-ve-dich.component.scss"],
+  selector: 'app-sc-ve-dich',
+  templateUrl: './sc-ve-dich.component.html',
+  styleUrl: './sc-ve-dich.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgClass],
 })
-export class ScVeDichComponent implements OnInit {
-  constructor(public auth: AuthService) {
-    console.log(document.URL.match(/(http:\x2f\x2f)[A-Za-z0-9\.]+/)![0]);
-    if (!localStorage.getItem("defaultUrl"))
-      this.auth.connect(
-        document.URL.match(/(http:\x2f\x2f)[A-Za-z0-9\.]+/)![0]
-      );
-    
-    this.auth.socket.emit("get-vedich-data", (callback) => {
-      this.vdData = callback;
-    });
-    this.auth.socket.on("update-vedich-data", (data) => {
-      this.vdData = data;
-    });
-  }
-  public vdData: VdData | undefined;
-  currentQuestion: any = {};
-  time = 0;
-  playerStealingQuestion: number = -1;
-  ngOnInit(): void {
-    this.auth.socket.on("update-vedich-question", (question) => {
-      if (question != undefined) {
-        this.currentQuestion = question;
-      } else {
-        this.currentQuestion = {};
-      }
-    });
-    this.auth.socket.on("player-steal-question", (id) => {
-      this.playerStealingQuestion = id;
-    });
-    this.auth.socket.on("clear-stealing-player", () => {
-      this.playerStealingQuestion = -1;
-    });
-    this.auth.socket.on("update-clock", (time) => {
-      this.time = time;
-    });
+export class ScVeDichComponent {
+  private readonly session = inject(SessionService);
+  private readonly network = inject(NetworkService);
+  private readonly api = inject(ApiService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly players = computed(() => this.session.match()?.players ?? []);
+  readonly round = signal<RoundDataMap['vd'] | null>(null);
+  readonly currentQuestion = signal<VdQuestion | null>(null);
+  readonly stealingPlayerIndex = signal<number | null>(null);
+  readonly clockSeconds = signal(0);
+
+  constructor() {
+    if (this.network.status() === ConnectionStatus.Disconnected) {
+      void this.session.connect(this.network.serverUrl());
+    }
+
+    void this.api.getRound('vd').then((round) => this.round.set(round));
+
+    const unsubs = [
+      this.network.on<[RoundDataMap['vd']]>('update-vedich-data', (round) => this.round.set(round)),
+      this.network.on<[VdQuestion | null]>('update-vedich-question', (question) =>
+        this.currentQuestion.set(question ?? null),
+      ),
+      this.network.on<[number]>('player-steal-question', (playerIndex) =>
+        this.stealingPlayerIndex.set(playerIndex),
+      ),
+      this.network.on<[]>('clear-stealing-player', () => this.stealingPlayerIndex.set(null)),
+      this.network.on<[number]>('update-clock', (seconds) => this.clockSeconds.set(seconds)),
+    ];
+    this.destroyRef.onDestroy(() => unsubs.forEach((unsub) => unsub()));
   }
 }

@@ -1,18 +1,11 @@
-
-.disablePointerActions {
-    pointer-events: none;
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-            user-select: none; 
-}
 .text-gold {
-    color: goldenrod !important;
+  color: goldenrod !important;
 }
 .name-highlight {
-    background-color: goldenrod !important;
-    color: black !important;
+  background-color: goldenrod !important;
+  color: black !important;
 }
 
 .aurora {
-    @apply relative drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
-  }
+  @apply relative drop-shadow-lg rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60;
+}

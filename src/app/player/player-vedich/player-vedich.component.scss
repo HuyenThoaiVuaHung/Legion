@@ -1,4 +1,3 @@
-
 .videoBox {
   width: 42rem;
 }
@@ -8,12 +7,6 @@
 .very-long {
   height: 64px;
   width: 600px;
-}
-.disablePointerActions {
-  pointer-events: none;
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  user-select: none;
 }
 .name-highlight {
   background-color: goldenrod !important;
@@ -31,7 +24,6 @@
   width: 100%;
   margin: 10px;
 }
-
 
 .mat-mdc-checkbox {
   transform: scale(1.5);
