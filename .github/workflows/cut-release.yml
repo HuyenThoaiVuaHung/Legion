@@ -98,7 +98,7 @@ jobs:
             --generate-notes
 
       - name: Upload release archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: legendary-v${{ inputs.version }}
           path: legendary-v${{ inputs.version }}.tar.gz
