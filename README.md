@@ -1,21 +1,36 @@
 # Legion
-![Legion Logo - name](https://user-images.githubusercontent.com/34957236/180366753-f463eb91-bc95-4641-863a-457c9b11607f.png)
 
+Angular Material client for Legendary, the self-hosted quiz-show server.
 
-Đây là phần giao diện (Frontend) cho app mô phỏng chương trình Đường Lên Đỉnh Olympia thuộc Đài Truyền Hình Việt Nam (VTV)
-## Thông tin cơ bản
+## Requirements
 
-Sử dụng chủ yếu là Angular và TailwindCSS, được viết ban đầu bởi Ban Kỹ Thuật thuộc CLB Huyền Thoại Vua Hùng thuộc THPT Chuyên Hùng Vương, Gia Lai. 
-## Cách khởi tạo server
-## Bạn cần Angular CLI phiên bản `>13.0.0` để chạy server!
-### Server local
-Dùng `ng serve` để khởi tạo một server trên `localhost`
-### Server LAN
-Dùng `ng serve 0.0.0.0` để cho phép các thiết bị khác trên cùng một mạng kết nối vào server theo IP của máy chủ. 
-```Lưu ý: Bạn phải thay đổi địa chỉ server socket.io và CORS cho hợp lý với tình huống```
+- Node **22.22.3** or newer compatible with Angular 22
+- npm
+
+## Local development
+
+```bash
+npm ci
+npm start
+```
+
+The home screen connects to a Legendary server. The browser-only **Bộ biên tập** works without a server connection and keeps its drafts/media in the browser's private local storage until you export a `.legion` archive.
+
 ## Build
-Chạy `ng build` để tạo ra file để host trên các nền tảng hosting đặt trong `/dist`
-## Hỗ trợ thêm
-Liên hệ với CLB Huyền Thoại Vua Hùng qua địa chỉ facebook sau:  [Huyền Thoại Vua Hùng](http://facebook.com/huyenthoaivuahung)
-# Lưu ý
-Đây là phần mềm nguồn mở theo bản quyền GPLv3, tức nếu có chỉnh sửa và thay đổi cho mục đích riêng thì phải chia sẻ mã nguồn. Chi tiết đọc file `LICENSE`
+
+```bash
+npm run build
+```
+
+The production browser bundle is emitted to `dist/Legion` and is intended to be hosted by Legendary.
+
+## Automation and releases
+
+- Pull requests and `main` pushes run a locked dependency install and production build. The project follows a build-only policy; CI does not run tests.
+1. Update both `package.json` versions to the same SemVer and merge them to `main`.
+2. Run **Legendary Release Tag**, then **Legion Release Tag**, with that version (for example `2.1.0`).
+3. Run **Cut Legion Release** from Legion `main`. It builds both tagged projects, packages the self-hosted Legendary distribution, and publishes the generated notes and archive to the [Legion GitHub Releases](https://github.com/HuyenThoaiVuaHung/Legion/releases) page.
+
+## License
+
+GPLv3. See `LICENSE`.
