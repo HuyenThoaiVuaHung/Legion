@@ -1,0 +1,50 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.brand-logo {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
+.position-badge {
+  padding: 0.125rem 0.75rem;
+  border-radius: 999px;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  font: var(--mat-sys-label-medium);
+}
+
+// Tab links carry an icon beside their label.
+nav[mat-tab-nav-bar] a mat-icon {
+  margin-right: 0.5rem;
+}
+
+mat-tab-nav-panel {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+mat-tab-nav-panel > * {
+  display: block;
+  height: 100%;
+}

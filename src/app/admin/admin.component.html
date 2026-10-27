@@ -1,34 +1,45 @@
-<div class="w-full h-full">
-  <mat-toolbar>
-    <a mat-icon-button routerLink="/" title="Quay về màn hình chính">
-      <mat-icon>home</mat-icon>
+<mat-toolbar>
+  <button type="button" class="brand" (click)="logout()" matTooltip="Đăng xuất">
+    <img class="brand-logo" [src]="assets.image('misc/logo.png')" alt="Legion" />
+  </button>
+  @if (positionLabel()) {
+    <span class="position-badge">{{ positionLabel() }}</span>
+  }
+
+  <span class="toolbar-spacer"></span>
+
+  <button
+    mat-button
+    (click)="togglePoints()"
+    [matTooltip]="showingPoints() ? 'Đang chiếu bảng điểm' : 'Chiếu bảng điểm'"
+  >
+    <mat-icon>scoreboard</mat-icon>
+    {{ showingPoints() ? 'Đang chiếu' : 'Điểm số' }}
+  </button>
+  <a mat-icon-button routerLink="/editor" matTooltip="Mở bộ biên tập cục bộ">
+    <mat-icon>edit_note</mat-icon>
+  </a>
+  <a mat-icon-button routerLink="/admin/appearance" matTooltip="Cài đặt & giao diện">
+    <mat-icon>settings</mat-icon>
+  </a>
+</mat-toolbar>
+
+<nav mat-tab-nav-bar [tabPanel]="tabPanel" mat-stretch-tabs="false">
+  @for (item of navItems; track item.route) {
+    <a
+      mat-tab-link
+      #rla="routerLinkActive"
+      [routerLink]="item.route"
+      routerLinkActive
+      [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+      [active]="rla.isActive"
+    >
+      <mat-icon>{{ item.icon }}</mat-icon>
+      {{ item.label }}
     </a>
-    <button mat-icon-button (click)="togglePoints()" title="Điểm số">
-      <mat-icon>scoreboard</mat-icon>
-    </button>
-    <span class="mat-body-medium">{{ positionLabel() }}</span>
-    <span class="flex flex-grow"></span>
-    <a mat-icon-button routerLink="/admin" title="Trang chủ">
-      <mat-icon>table</mat-icon>
-    </a>
-    <a mat-icon-button routerLink="/admin/kd" title="Khởi động">
-      <mat-icon>grass</mat-icon>
-    </a>
-    <a mat-icon-button routerLink="/admin/vcnv" title="Vượt chướng ngại vật">
-      <mat-icon>landscape</mat-icon>
-    </a>
-    <a mat-icon-button routerLink="/admin/tt" title="Tăng tốc">
-      <mat-icon>rocket_launch</mat-icon>
-    </a>
-    <a mat-icon-button routerLink="/admin/vd" title="Về đích">
-      <mat-icon>military_tech</mat-icon>
-    </a>
-    <a mat-icon-button routerLink="/admin/chp" title="Câu hỏi phụ">
-      <mat-icon>workspaces</mat-icon>
-    </a>
-    <a mat-icon-button routerLink="/admin/appearance" title="Giao diện">
-      <mat-icon>palette</mat-icon>
-    </a>
-  </mat-toolbar>
+  }
+</nav>
+
+<mat-tab-nav-panel #tabPanel>
   <router-outlet></router-outlet>
-</div>
+</mat-tab-nav-panel>

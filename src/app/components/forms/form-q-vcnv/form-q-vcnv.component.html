@@ -1,58 +1,59 @@
-<h1 mat-dialog-title>Sửa câu hỏi</h1>
-<div mat-dialog-content>
-  <div>
-    <mat-radio-group aria-label="Chọn loại câu hỏi" [(ngModel)]="data.type">
-      <mat-radio-button [disabled]="data.type === 'CNV'" class="p-5" value="HN"
-        >Bình thường</mat-radio-button
-      >
-      <mat-radio-button [disabled]="data.type === 'CNV'" class="p-5" value="HN_S"
-        >Âm thanh</mat-radio-button
-      >
-      <mat-radio-button [disabled]="true" class="p-5" value="CNV"
-        >Chướng Ngại Vật</mat-radio-button
-      >
-    </mat-radio-group>
-    <mat-form-field class="inputForm">
-      @if (data.type === 'HN') {
-      <mat-label>Câu hỏi</mat-label>
-      } @else {
-      <mat-label>Giải thích</mat-label>
-      }
-      <input matInput [(ngModel)]="data.question" />
+<h2 mat-dialog-title>Chỉnh sửa câu hỏi Vượt chướng ngại vật</h2>
+<div mat-dialog-content class="operator-dialog-content">
+  <mat-radio-group class="operator-dialog-radio-group" aria-label="Loại câu hỏi" [(ngModel)]="form.type">
+    <mat-radio-button [disabled]="isObstacle" value="HN">Hàng ngang</mat-radio-button>
+    <mat-radio-button [disabled]="isObstacle" value="HN_S">Hàng ngang có âm thanh</mat-radio-button>
+    <mat-radio-button [disabled]="!isObstacle" value="CNV">Chướng ngại vật</mat-radio-button>
+  </mat-radio-group>
+
+  <div class="operator-dialog-fields">
+    <mat-form-field class="wide-field">
+      <mat-label>{{ isObstacle ? 'Giải thích chướng ngại vật' : 'Câu hỏi' }}</mat-label>
+      <input matInput [(ngModel)]="form.question" autocomplete="off" required />
     </mat-form-field>
-    <div>
-      <mat-form-field class="inputForm">
-        <input matInput placeholder="Đáp án" [(ngModel)]="data.answer" />
-      </mat-form-field>
+    <mat-form-field class="wide-field">
+      <mat-label>Đáp án</mat-label>
+      <input matInput [(ngModel)]="form.answer" autocomplete="off" required />
+    </mat-form-field>
+  </div>
+
+  @if (form.type === 'HN_S') {
+    <div class="operator-dialog-upload">
+      <button mat-stroked-button type="button" [disabled]="uploadingAudio()" (click)="audioInput.click()">
+        Tải file âm thanh
+      </button>
+      <input #audioInput class="file-input" type="file" accept="audio/*" (change)="onAudioSelected($event)" />
+      @if (uploadingAudio()) {
+        <mat-spinner diameter="20" aria-label="Đang tải file âm thanh"></mat-spinner>
+      } @else if (form.audioFile) {
+        <span>{{ form.audioFile }}</span>
+      }
     </div>
-    @if (data.type !== 'CNV') {
-      <div class="flex items-center gap-2 mt-2">
-        <button mat-button type="button" [disabled]="data.type === 'HN' || uploadingAudio()" (click)="audioInput.click()">
-          Tải file âm thanh
-        </button>
-        <input #audioInput class="file-input" type="file" accept="audio/*" (change)="onAudioSelected($event)" />
-        @if (uploadingAudio()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else if (data.audioFile) {
-          <span class="hint-text">{{ data.audioFile }}</span>
-        }
-      </div>
-    } @else {
-      <div class="flex items-center gap-2 mt-2">
-        <button mat-button type="button" [disabled]="uploadingImage()" (click)="imageInput.click()">
-          Tải hình ảnh
-        </button>
-        <input #imageInput class="file-input" type="file" accept="image/*" (change)="onImageSelected($event)" />
-        @if (uploadingImage()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else if (data.imageFile) {
-          <span class="hint-text">{{ data.imageFile }}</span>
-        }
-      </div>
-    }
-  </div>
-  <div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()">Huỷ</button>
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
-  </div>
+  }
+
+  @if (isObstacle) {
+    <div class="operator-dialog-upload">
+      <button mat-stroked-button type="button" [disabled]="uploadingImage()" (click)="imageInput.click()">
+        Tải ảnh chướng ngại vật
+      </button>
+      <input #imageInput class="file-input" type="file" accept="image/*" (change)="onImageSelected($event)" />
+      @if (uploadingImage()) {
+        <mat-spinner diameter="20" aria-label="Đang cắt và tải ảnh"></mat-spinner>
+      } @else if (form.imageFile) {
+        <span>{{ form.imagePieceFiles?.length === 5 ? 'Đã tạo 5 mảnh bảo mật · ' : '' }}{{ form.imageFile }}</span>
+      }
+    </div>
+  }
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Huỷ</button>
+  <button
+    mat-flat-button
+    type="button"
+    [disabled]="uploadingImage() || uploadingAudio()"
+    (click)="save()"
+    cdkFocusInitial
+  >
+    Lưu câu hỏi
+  </button>
 </div>

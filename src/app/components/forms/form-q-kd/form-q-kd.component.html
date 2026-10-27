@@ -1,41 +1,45 @@
-<h1 mat-dialog-title>Thêm/Sửa câu hỏi</h1>
-<div mat-dialog-content>
-  <div>
-    <mat-radio-group aria-label="Chọn loại câu hỏi" [(ngModel)]="data.type">
-      <mat-radio-button class="p-5" value="N">Bình thường</mat-radio-button>
-      <mat-radio-button class="p-5" value="A">Âm thanh</mat-radio-button>
-      <mat-radio-button class="p-5" value="P">Hình ảnh</mat-radio-button>
-    </mat-radio-group>
-    <div>
-      <mat-form-field class="inputForm mt-2 inline">
-        <input matInput placeholder="Câu hỏi" [(ngModel)]="data.question" />
-      </mat-form-field>
-      <mat-form-field class="inputForm mt-2 ml-2 inline">
-        <input matInput placeholder="Đáp án" [(ngModel)]="data.answer" />
-      </mat-form-field>
+<h2 mat-dialog-title>Chỉnh sửa câu hỏi Khởi động</h2>
+<div mat-dialog-content class="operator-dialog-content">
+  <mat-radio-group class="operator-dialog-radio-group" aria-label="Loại câu hỏi" [(ngModel)]="form.type">
+    <mat-radio-button value="N">Văn bản</mat-radio-button>
+    <mat-radio-button value="A">Âm thanh</mat-radio-button>
+    <mat-radio-button value="P">Hình ảnh</mat-radio-button>
+  </mat-radio-group>
+
+  <div class="operator-dialog-fields">
+    <mat-form-field class="wide-field">
+      <mat-label>Câu hỏi</mat-label>
+      <input matInput [(ngModel)]="form.question" autocomplete="off" required />
+    </mat-form-field>
+    <mat-form-field class="wide-field">
+      <mat-label>Đáp án</mat-label>
+      <input matInput [(ngModel)]="form.answer" autocomplete="off" required />
+    </mat-form-field>
+  </div>
+
+  @if (form.type !== 'N') {
+    <div class="operator-dialog-upload">
+      <button mat-stroked-button type="button" [disabled]="uploading()" (click)="mediaInput.click()">
+        Tải {{ form.type === 'A' ? 'file âm thanh' : 'hình ảnh' }}
+      </button>
+      <input
+        #mediaInput
+        class="file-input"
+        type="file"
+        [accept]="form.type === 'A' ? 'audio/*' : 'image/*'"
+        (change)="onMediaSelected($event)"
+      />
+      @if (uploading()) {
+        <mat-spinner diameter="20" aria-label="Đang tải file"></mat-spinner>
+      } @else if (form.mediaFile) {
+        <span>{{ form.mediaFile }}</span>
+      }
     </div>
-    @if (data.type !== 'N') {
-      <div class="mt-2 flex items-center gap-2">
-        <button mat-button type="button" [disabled]="uploading()" (click)="fileInput.click()">
-          Tải file {{ data.type === 'A' ? 'âm thanh' : 'hình ảnh' }}
-        </button>
-        <input
-          #fileInput
-          class="file-input"
-          type="file"
-          [accept]="data.type === 'A' ? 'audio/*' : 'image/*'"
-          (change)="onMediaSelected($event)"
-        />
-        @if (uploading()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else if (data.mediaFile) {
-          <span class="hint-text">{{ data.mediaFile }}</span>
-        }
-      </div>
-    }
-  </div>
-  <div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()">Huỷ</button>
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
-  </div>
+  }
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Huỷ</button>
+  <button mat-flat-button type="button" [disabled]="uploading()" (click)="save()" cdkFocusInitial>
+    Lưu câu hỏi
+  </button>
 </div>

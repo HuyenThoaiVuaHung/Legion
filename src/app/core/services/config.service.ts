@@ -33,7 +33,7 @@ export interface PublicConfig {
 }
 
 /** Defaults used until the server config loads (and if it can't be reached). */
-export const DEFAULT_RULES: GameRules = {
+const DEFAULT_RULES: Readonly<GameRules> = {
   playerCount: 4,
   mainClockTickMs: 1000,
   decisionTickMs: 100,
@@ -51,13 +51,21 @@ export const DEFAULT_RULES: GameRules = {
   chpCorrectPoints: 1,
 };
 
+function copyRules(rules: GameRules): GameRules {
+  return {
+    ...rules,
+    obstacleValueByRevealedCount: { ...rules.obstacleValueByRevealedCount },
+    ttPointsByPlacement: [...rules.ttPointsByPlacement],
+  };
+}
+
 /** Fetches and caches the server's runtime knobs. */
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
   private readonly http = inject(HttpClient);
   private readonly network = inject(NetworkService);
 
-  readonly rules = signal<GameRules>(DEFAULT_RULES);
+  readonly rules = signal<GameRules>(copyRules(DEFAULT_RULES));
   readonly uploadLimitBytes = signal<number>(0);
 
   /** Load the config for the connected server; falls back to defaults. */
@@ -66,10 +74,24 @@ export class ConfigService {
       const config = await firstValueFrom(
         this.http.get<PublicConfig>(`${this.network.apiBase()}/api/config`),
       );
-      this.rules.set(config.rules);
-      this.uploadLimitBytes.set(config.uploadLimitBytes);
+      this.apply(config);
     } catch {
-      this.rules.set(DEFAULT_RULES);
+      this.rules.set(copyRules(DEFAULT_RULES));
+      this.uploadLimitBytes.set(0);
     }
+  }
+
+  /** Apply a config payload (from GET, PATCH, or the update-config push). */
+  apply(config: PublicConfig): void {
+    this.rules.set(copyRules(config.rules));
+    this.uploadLimitBytes.set(config.uploadLimitBytes);
+  }
+
+  /** Admin: persist edited game rules; the server echoes the full config. */
+  async updateRules(patch: Partial<GameRules>): Promise<void> {
+    const config = await firstValueFrom(
+      this.http.patch<PublicConfig>(`${this.network.apiBase()}/api/config`, patch),
+    );
+    this.apply(config);
   }
 }

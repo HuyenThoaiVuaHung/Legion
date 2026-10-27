@@ -21,6 +21,27 @@
           <h6 class="font-semibold">Xin chào, {{ greeting() }}!</h6>
         }
       </div>
+      <div class="mt-4">
+        <button mat-stroked-button type="button" (click)="openEditor()">
+          <mat-icon>edit_note</mat-icon>
+          Mở bộ biên tập
+        </button>
+      </div>
+      @if (defaultUrl()) {
+        <div class="mt-4 flex flex-col gap-2 w-96">
+          <div class="flex gap-2">
+            <button mat-flat-button (click)="joinAsViewer()">
+              <mat-icon>visibility</mat-icon>
+              Xem trực tiếp
+            </button>
+            <button mat-stroked-button (click)="setupBackScreen()" matTooltip="Toàn màn hình & giữ màn hình sáng">
+              <mat-icon>cast</mat-icon>
+              Màn hình chiếu
+            </button>
+          </div>
+          <span class="mat-label-medium opacity-70">Kết nối gần đây: {{ defaultUrl() }}</span>
+        </div>
+      }
     </div>
     <div class="w-1/2 h-full flex flex-col gap-5 justify-center">
       <mat-stepper [linear]="true" #stepper>

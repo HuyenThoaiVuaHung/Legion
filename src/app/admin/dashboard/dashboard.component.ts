@@ -6,6 +6,7 @@ import {
   MatCardActions,
   MatCardContent,
   MatCardHeader,
+  MatCardSubtitle,
   MatCardTitle,
 } from '@angular/material/card';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -17,15 +18,25 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { NgClass } from '@angular/common';
 import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
+import { FormQKdComponent } from '../../components/forms/form-q-kd/form-q-kd.component';
+import { FormQTtComponent } from '../../components/forms/form-q-tt/form-q-tt.component';
+import { FormQVcnvComponent } from '../../components/forms/form-q-vcnv/form-q-vcnv.component';
+import { FormQVdComponent } from '../../components/forms/form-q-vd/form-q-vd.component';
+import { FormQchpComponent } from '../../components/forms/form-qchp/form-qchp.component';
 import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
 import {
+  ChpQuestion,
   ChpRound,
   KdGamemode,
+  KdQuestion,
   KdRound,
   Player,
   RoundKind,
+  TtQuestion,
   TtRound,
+  VcnvQuestion,
   VcnvRound,
+  VdQuestion,
   VdRound,
 } from '../../core/contracts/game';
 import { ApiService } from '../../core/services/api.service';
@@ -46,6 +57,7 @@ import { QuestionPreview, toQuestionPreview } from '../utils/question.adapter';
     MatCardActions,
     MatCardContent,
     MatCardHeader,
+    MatCardSubtitle,
     MatCardTitle,
     MatCheckbox,
     MatFormField,
@@ -108,7 +120,7 @@ export class AdminDashboardComponent {
           return this.chpRound()?.questions ?? [];
       }
     })();
-    return questions.map((question) => toQuestionPreview(kind, question));
+    return questions.map((question, index) => toQuestionPreview(kind, question, index));
   });
 
   protected readonly obstacleImage = computed(() => {
@@ -149,6 +161,99 @@ export class AdminDashboardComponent {
 
   onClickRow(row: QuestionPreview): void {
     this.chosenRow.set(row);
+  }
+
+  /** Open the matching Material editor for the selected canonical question. */
+  editSelectedQuestion(): void {
+    const selected = this.chosenRow();
+    if (!selected) return;
+
+    const data = structuredClone(selected.source);
+    switch (this.selectedKind()) {
+      case 'kd':
+        this.dialog
+          .open(FormQKdComponent, { data: data as KdQuestion })
+          .afterClosed()
+          .subscribe((result?: KdQuestion) => this.saveEditedQuestion(selected, result));
+        break;
+      case 'vcnv':
+        this.dialog
+          .open(FormQVcnvComponent, { data: data as VcnvQuestion })
+          .afterClosed()
+          .subscribe((result?: VcnvQuestion) => this.saveEditedQuestion(selected, result));
+        break;
+      case 'tt':
+        this.dialog
+          .open(FormQTtComponent, { data: data as TtQuestion })
+          .afterClosed()
+          .subscribe((result?: TtQuestion) => this.saveEditedQuestion(selected, result));
+        break;
+      case 'vd':
+        this.dialog
+          .open(FormQVdComponent, { data: data as VdQuestion })
+          .afterClosed()
+          .subscribe((result?: VdQuestion) => this.saveEditedQuestion(selected, result));
+        break;
+      case 'chp':
+        this.dialog
+          .open(FormQchpComponent, { data: data as ChpQuestion })
+          .afterClosed()
+          .subscribe((result?: ChpQuestion) => this.saveEditedQuestion(selected, result));
+        break;
+    }
+  }
+
+  private async saveEditedQuestion(selected: QuestionPreview, result?: QuestionPreview['source']): Promise<void> {
+    if (!result) return;
+
+    try {
+      switch (this.selectedKind()) {
+        case 'kd': {
+          const round = structuredClone(this.kdRound());
+          if (!round) return;
+          if (this.kdPreviewGamemode() === 'M') {
+            round.questions.multiplayer[selected.index] = result as KdQuestion;
+          } else {
+            round.questions.singleplayer[this.kdPreviewPlayerIndex()][selected.index] = result as KdQuestion;
+          }
+          this.kdRound.set(await this.api.putRound('kd', round));
+          break;
+        }
+        case 'vcnv': {
+          const round = structuredClone(this.vcnvRound());
+          if (!round) return;
+          round.questions[selected.index] = result as VcnvQuestion;
+          this.vcnvRound.set(await this.api.putRound('vcnv', round));
+          break;
+        }
+        case 'tt': {
+          const round = structuredClone(this.ttRound());
+          if (!round) return;
+          round.questions[selected.index] = result as TtQuestion;
+          this.ttRound.set(await this.api.putRound('tt', round));
+          break;
+        }
+        case 'vd': {
+          const playerIndex = this.vdPreviewPlayerIndex();
+          const round = structuredClone(this.vdRound());
+          if (!round || playerIndex < 0) return;
+          round.questionPools[playerIndex][selected.index] = result as VdQuestion;
+          this.vdRound.set(await this.api.putRound('vd', round));
+          break;
+        }
+        case 'chp': {
+          const round = structuredClone(this.chpRound());
+          if (!round) return;
+          round.questions[selected.index] = result as ChpQuestion;
+          this.chpRound.set(await this.api.putRound('chp', round));
+          break;
+        }
+      }
+      this.chosenRow.set(null);
+      this.snackBar.open('Đã lưu câu hỏi.', 'Đóng');
+    } catch {
+      this.snackBar.open('Không thể lưu câu hỏi.', 'Đóng');
+    }
   }
 
   editPlayer(player: Player): void {

@@ -1,21 +1,24 @@
 <div class="flex answers disablePointerActions flex-col gap-10 items-center justify-center h-screen w-screen">
   @for (answer of sortedAnswers(); track answer.playerIndex) {
-    <div
+    <mat-card
+      appearance="outlined"
       [class.answer-incorrect]="answer.correct === false && round()?.showResults === true"
       [class.answer-correct]="answer.correct === true && round()?.showResults === true"
-      class="w-2/5 h-max rounded-xl"
+      class="w-2/5 h-max overflow-hidden"
     >
-      <div class="w-full h-10 p-2 name-box box-border text-left border-b-2 mb-1 text-lg font-semibold">
-        {{ session.match()?.players?.[answer.playerIndex]?.name }}
-      </div>
-      <div class="flex h-20 justify-center items-center">
-        <div class="w-8/12 text-center justify-center text-2xl font-bold">
-          {{ answer.answer.toUpperCase() }}
+      <mat-card-content class="flex flex-col gap-2">
+        <div class="text-left text-lg font-semibold pb-2 border-b border-outline-variant">
+          {{ session.match()?.players?.[answer.playerIndex]?.name }}
         </div>
-        <div class="w-max p-2 timer-box justify-center items-center h-max text-2xl">
-          {{ getTimePassed(answer) }}
+        <div class="flex h-16 justify-center items-center gap-3">
+          <div class="w-8/12 text-center text-2xl font-bold">
+            {{ answer.answer.toUpperCase() }}
+          </div>
+          <div class="text-2xl font-mono">
+            {{ getTimePassed(answer) }}
+          </div>
         </div>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
   }
 </div>

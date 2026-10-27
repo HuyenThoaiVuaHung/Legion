@@ -1,58 +1,225 @@
-<div class="admin-container flex-col overflow-auto">
-  <section class="questionBox p-6 flex flex-col gap-4 max-w-2xl">
-    <h2 class="mat-title-medium">Bảng màu giao diện</h2>
-    <p class="mat-body-medium opacity-70">
-      Chọn một màu chủ đạo; toàn bộ giao diện sẽ được tạo lại theo chuẩn Material 3.
-    </p>
+<div class="admin-container flex-col overflow-auto gap-3">
+  <mat-card appearance="outlined" class="w-full">
+    <mat-card-header>
+      <mat-card-title>Bảng màu giao diện</mat-card-title>
+      <mat-card-subtitle>
+        Chọn màu chủ đạo; toàn bộ giao diện được tạo lại theo chuẩn Material 3.
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <menu-item title="Màu chủ đạo" description="Áp dụng ngay cho mọi màn hình.">
+        <input
+          type="color"
+          class="w-12 h-12 rounded-md border-0 bg-transparent cursor-pointer"
+          [value]="seed()"
+          (input)="onSeedChange($any($event.target).value)"
+          aria-label="Màu chủ đạo"
+        />
+        @for (preset of presets; track preset) {
+          <button
+            type="button"
+            class="w-8 h-8 self-center rounded-full border border-outline-variant cursor-pointer"
+            [style.background]="preset"
+            (click)="onSeedChange(preset)"
+            [attr.aria-label]="preset"
+          ></button>
+        }
+      </menu-item>
+      <menu-item title="Chế độ sáng/tối" description="Chọn giao diện sáng, tối, hoặc theo hệ thống.">
+        <mat-button-toggle-group
+          [value]="palette.mode()"
+          (change)="onModeChange($event.value)"
+          hideSingleSelectionIndicator
+        >
+          <mat-button-toggle value="light">
+            <mat-icon>light_mode</mat-icon>
+            Sáng
+          </mat-button-toggle>
+          <mat-button-toggle value="dark">
+            <mat-icon>dark_mode</mat-icon>
+            Tối
+          </mat-button-toggle>
+          <mat-button-toggle value="system">
+            <mat-icon>brightness_auto</mat-icon>
+            Hệ thống
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </menu-item>
+      <menu-item title="Xem trước" description="Các vai trò màu sinh ra từ màu chủ đạo.">
+        <span class="px-4 py-2 rounded-md bg-primary text-on-primary">Primary</span>
+        <span class="px-4 py-2 rounded-md bg-secondary text-on-secondary">Secondary</span>
+        <span class="px-4 py-2 rounded-md bg-tertiary text-on-tertiary">Tertiary</span>
+        <span class="px-4 py-2 rounded-md bg-error text-on-error">Error</span>
+      </menu-item>
+      <menu-item title="Khôi phục" description="Trở về bảng màu mặc định.">
+        <button mat-stroked-button (click)="resetPalette()">
+          <mat-icon>restart_alt</mat-icon>
+          Đặt lại mặc định
+        </button>
+      </menu-item>
+    </mat-card-content>
+  </mat-card>
 
-    <div class="flex items-center gap-4">
-      <input
-        type="color"
-        class="w-16 h-16 rounded-md border-0 bg-transparent cursor-pointer"
-        [value]="seed()"
-        (input)="onSeedChange($any($event.target).value)"
-        aria-label="Màu chủ đạo"
-      />
-      <span class="mat-body-medium">{{ seed() }}</span>
-    </div>
-
-    <div class="flex flex-wrap gap-2">
-      @for (preset of presets; track preset) {
-        <button
-          type="button"
-          class="w-8 h-8 rounded-full border border-outline-variant cursor-pointer"
-          [style.background]="preset"
-          (click)="onSeedChange(preset)"
-          [attr.aria-label]="preset"
-        ></button>
+  <mat-card appearance="outlined" class="w-full">
+    <mat-card-header>
+      <mat-card-title>Thương hiệu</mat-card-title>
+      <mat-card-subtitle>Ảnh tải lên sẽ ghi đè tài sản Legion mặc định.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @for (asset of brandAssets; track asset.key) {
+        <menu-item [title]="asset.label" [description]="asset.description">
+          <img class="brand-asset-preview" [src]="brandAssetUrl(asset.path)" [alt]="asset.label" />
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="uploadingBrandAsset() !== null"
+            (click)="assetInput.click()"
+          >
+            Thay ảnh
+          </button>
+          <input
+            #assetInput
+            class="file-input"
+            type="file"
+            accept="image/png"
+            (change)="onBrandAssetSelected(asset.key, $event)"
+          />
+          @if (uploadingBrandAsset() === asset.key) {
+            <mat-spinner diameter="20" aria-label="Đang tải ảnh"></mat-spinner>
+          }
+        </menu-item>
       }
-    </div>
+    </mat-card-content>
+  </mat-card>
 
-    <div class="flex gap-3 flex-wrap">
-      <span class="px-4 py-2 rounded-md bg-primary text-on-primary">Primary</span>
-      <span class="px-4 py-2 rounded-md bg-secondary text-on-secondary">Secondary</span>
-      <span class="px-4 py-2 rounded-md bg-tertiary text-on-tertiary">Tertiary</span>
-      <span class="px-4 py-2 rounded-md bg-error text-on-error">Error</span>
-    </div>
+  <mat-card appearance="outlined" class="w-full">
+    <mat-card-header>
+      <mat-card-title>Thông số trận đấu</mat-card-title>
+      <mat-card-subtitle>
+        Thay đổi được áp dụng cho máy chủ và mọi thiết bị ngay khi lưu.
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @for (group of ruleGroups; track group.title) {
+        <h3 class="mat-title-medium mt-4 mb-1">{{ group.title }}</h3>
+        @for (field of group.fields; track field.key) {
+          <menu-item [title]="field.label" [description]="field.description">
+            <mat-form-field subscriptSizing="dynamic" class="w-40">
+              <input
+                matInput
+                type="number"
+                [attr.min]="field.min"
+                [ngModel]="draft()[field.key]"
+                (ngModelChange)="setField(field.key, $event)"
+              />
+              @if (field.suffix) {
+                <span matSuffix class="pr-2 opacity-70">{{ field.suffix }}</span>
+              }
+            </mat-form-field>
+          </menu-item>
+        }
+      }
 
-    <div>
-      <button mat-stroked-button (click)="resetPalette()">Đặt lại mặc định</button>
-    </div>
-  </section>
+      <h3 class="mat-title-medium mt-4 mb-1">Điểm chướng ngại vật</h3>
+      @for (revealedCount of obstacleRevealCounts; track revealedCount) {
+        <menu-item
+          [title]="'Mở ' + revealedCount + ' hàng ngang'"
+          description="Điểm cho chướng ngại vật ở thời điểm tương ứng."
+        >
+          <mat-form-field subscriptSizing="dynamic" class="w-40">
+            <input
+              matInput
+              type="number"
+              min="0"
+              [ngModel]="draft().obstacleValueByRevealedCount[revealedCount]"
+              (ngModelChange)="setObstacleValue(revealedCount, $event)"
+            />
+            <span matSuffix class="pr-2 opacity-70">điểm</span>
+          </mat-form-field>
+        </menu-item>
+      }
 
-  <section class="questionBox p-6 flex flex-col gap-2 max-w-2xl">
-    <h2 class="mat-title-medium">Thông số trận đấu (máy chủ)</h2>
-    <p class="mat-body-medium opacity-70">
-      Các giá trị này do máy chủ cấu hình (utils/config.json hoặc biến môi trường).
-    </p>
-    @let rules = config.rules();
-    <div class="grid grid-cols-2 gap-x-6 gap-y-1 mat-body-medium">
-      <span>Điểm đúng KĐ</span><span>{{ rules.kdCorrectPoints }}</span>
-      <span>Điểm trừ sai KĐ</span><span>{{ rules.kdWrongPenalty }}</span>
-      <span>Điểm mỗi hàng ngang</span><span>{{ rules.vcnvRowPoints }}</span>
-      <span>Điểm tăng tốc</span><span>{{ rules.ttPointsByPlacement.join(' / ') }}</span>
-      <span>Hệ số NSHV</span><span>×{{ rules.vdHopeStarMultiplier }}</span>
-      <span>Thời gian CHP</span><span>{{ rules.chpTurnSeconds }}s</span>
-    </div>
-  </section>
+      <h3 class="mat-title-medium mt-4 mb-1">Tăng tốc</h3>
+      @for (placement of ttPlacements; track placement) {
+        <menu-item
+          [title]="'Điểm về thứ ' + (placement + 1)"
+          description="Điểm cho thí sinh có tốc độ trả lời tương ứng."
+        >
+          <mat-form-field subscriptSizing="dynamic" class="w-40">
+            <input
+              matInput
+              type="number"
+              min="0"
+              [ngModel]="draft().ttPointsByPlacement[placement]"
+              (ngModelChange)="setTtPlacementPoints(placement, $event)"
+            />
+            <span matSuffix class="pr-2 opacity-70">điểm</span>
+          </mat-form-field>
+        </menu-item>
+      }
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-button [disabled]="!dirty() || saving()" (click)="revert()">Hoàn tác</button>
+      <button mat-flat-button [disabled]="!dirty() || saving()" (click)="saveRules()">
+        <mat-icon>save</mat-icon>
+        Lưu thay đổi
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card appearance="outlined" class="w-full">
+    <mat-card-header>
+      <mat-card-title>OBS Studio</mat-card-title>
+      <mat-card-subtitle>
+        Điều khiển cảnh OBS qua WebSocket; tự động chuyển cảnh theo phần thi.
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <menu-item
+        title="Kết nối"
+        [description]="obs.connected() ? 'Đã kết nối · cảnh hiện tại: ' + obs.currentScene() : 'Bật WebSocket server trong OBS (Tools → WebSocket Server Settings).'"
+      >
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Địa chỉ</mat-label>
+          <input matInput [ngModel]="obsUrl()" (ngModelChange)="obsUrl.set($event)" />
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Mật khẩu</mat-label>
+          <input matInput type="password" [ngModel]="obsPassword()" (ngModelChange)="obsPassword.set($event)" />
+        </mat-form-field>
+        @if (obs.connected()) {
+          <button mat-stroked-button (click)="obs.disconnect()">Ngắt kết nối</button>
+        } @else {
+          <button mat-flat-button (click)="connectObs()">Kết nối</button>
+        }
+      </menu-item>
+
+      <menu-item title="Tự động chuyển cảnh" description="Chuyển cảnh OBS theo vị trí phần thi.">
+        <mat-slide-toggle
+          [checked]="obs.autoSwitch()"
+          (change)="obs.setAutoSwitch($event.checked)"
+        ></mat-slide-toggle>
+      </menu-item>
+
+      @if (obs.connected()) {
+        <h3 class="mat-title-medium mt-4 mb-1">Gán cảnh theo phần thi</h3>
+        @for (item of positions; track item.position) {
+          <menu-item [title]="item.label">
+            <mat-form-field subscriptSizing="dynamic" class="w-56">
+              <mat-label>Cảnh OBS</mat-label>
+              <mat-select
+                [value]="obs.sceneMap()[item.position] ?? ''"
+                (valueChange)="mapScene(item.position, $event)"
+              >
+                <mat-option value="">— Không —</mat-option>
+                @for (scene of obs.scenes(); track scene) {
+                  <mat-option [value]="scene">{{ scene }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </menu-item>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
 </div>

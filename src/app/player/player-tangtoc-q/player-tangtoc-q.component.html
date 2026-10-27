@@ -47,10 +47,10 @@
         <button (click)="submitAnswer()" [disabled]="disabledAnswerBox()" mat-icon-button>
           <mat-icon>done</mat-icon>
         </button>
-        <span class="disablePointerActions w-3/12 flex-wrap text-2xl ml-5 p-2 rounded-xl inline text-center">
+        <span class="disablePointerActions answer-box w-3/12 flex-wrap text-2xl ml-5 p-2 inline text-center">
           {{ answerCache().toUpperCase() }}
         </span>
-        <span class="disablePointerActions text-4xl flex-grow ml-5 p-2 rounded-xl inline-block text-center">
+        <span class="disablePointerActions answer-box text-4xl flex-grow ml-5 p-2 inline-block text-center">
           {{ readableTime() }}
         </span>
       }

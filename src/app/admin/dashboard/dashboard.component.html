@@ -1,23 +1,24 @@
 <div class="admin-container">
   <mat-card appearance="outlined" class="w-full h-full">
     <mat-card-header>
-      <mat-card-title class="flex">
-        <div class="w-full"></div>
-        <input
-          type="file"
-          class="hidden"
-          accept=".xlsx"
-          (change)="onExcelSelected($event)"
-          #excelUpload
-        />
-        <input
-          type="file"
-          class="hidden"
-          accept=".legion,.lg"
-          (change)="onLegionSelected($event)"
-          #legionUpload
-        />
-      </mat-card-title>
+      <mat-card-title>Tổng quan trận đấu</mat-card-title>
+      <mat-card-subtitle>
+        Quản lý dữ liệu, nội dung đa phương tiện và thông tin thí sinh trên Legendary.
+      </mat-card-subtitle>
+      <input
+        type="file"
+        class="file-input"
+        accept=".xlsx"
+        (change)="onExcelSelected($event)"
+        #excelUpload
+      />
+      <input
+        type="file"
+        class="file-input"
+        accept=".legion,.lg"
+        (change)="onLegionSelected($event)"
+        #legionUpload
+      />
     </mat-card-header>
     <mat-card-content class="h-full overflow-y-auto">
       <menu-item title="Phần thi" description="Lựa chọn phần thi để xem trước đề." class="flex">
@@ -93,10 +94,21 @@
         <tr
           mat-row
           *matRowDef="let row; columns: displayedQuestionColumns"
+          tabindex="0"
           (click)="onClickRow(row)"
+          (dblclick)="editSelectedQuestion()"
+          (keydown.enter)="onClickRow(row); editSelectedQuestion()"
+          (keydown.space)="$event.preventDefault(); onClickRow(row); editSelectedQuestion()"
+          [attr.aria-label]="'Chỉnh sửa câu hỏi: ' + row.question"
         ></tr>
       </table>
-      <mat-card>
+      <div class="operator-table-actions">
+        <button mat-stroked-button type="button" [disabled]="!chosenRow()" (click)="editSelectedQuestion()">
+          <mat-icon>edit</mat-icon>
+          Chỉnh sửa câu hỏi
+        </button>
+      </div>
+      <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title>Xem trước media</mat-card-title>
         </mat-card-header>
@@ -132,21 +144,21 @@
       </mat-card>
     </mat-card-content>
     <mat-card-actions align="end">
-      <button mat-button class="upload-btn" (click)="excelUpload.click()">
-        <mat-icon>attach_file</mat-icon>
-        {{ importedFileName() || "Nhập đề mới" }}
+      <button mat-stroked-button type="button" (click)="excelUpload.click()">
+        <mat-icon>table_view</mat-icon>
+        {{ importedFileName() || 'Nhập đề Excel' }}
       </button>
-      <button mat-button (click)="legionUpload.click()">
+      <button mat-flat-button type="button" (click)="legionUpload.click()">
         <mat-icon>upload_file</mat-icon>
         Nhập file .legion
       </button>
-      <button mat-button (click)="exportLegion()">
+      <button mat-stroked-button type="button" (click)="exportLegion()">
         <mat-icon>download</mat-icon>
         Xuất file .legion
       </button>
     </mat-card-actions>
   </mat-card>
-  <mat-card appearance="outlined" class="w-full h-full">
+  <mat-card appearance="outlined" class="player-table-card w-full h-full">
     <mat-card-header>
       <mat-card-title> Quản lý thông tin người chơi </mat-card-title>
     </mat-card-header>

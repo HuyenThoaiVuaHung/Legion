@@ -1,10 +1,15 @@
 import { Routes } from '@angular/router';
-import { adminGuard } from './core/guards';
+import { adminGuard, mcGuard } from './core/guards';
 
 export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
+  },
+  {
+    path: 'editor',
+    loadComponent: () =>
+      import('./editor/browser-editor.component').then((m) => m.BrowserEditorComponent),
   },
   {
     path: 'player',
@@ -21,6 +26,7 @@ export const routes: Routes = [
   },
   {
     path: 'mc',
+    canActivate: [mcGuard],
     loadComponent: () => import('./mc/mc.component').then((m) => m.McComponent),
   },
   {

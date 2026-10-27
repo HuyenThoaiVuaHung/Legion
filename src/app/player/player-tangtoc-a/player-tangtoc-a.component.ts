@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { MatCard, MatCardContent } from '@angular/material/card';
 import { TtAnswer, TtRound } from '../../core/contracts/game';
 import { ApiService } from '../../core/services/api.service';
 import { NetworkService } from '../../core/services/network.service';
@@ -10,7 +11,7 @@ import { SfxService } from '../../core/services/sfx.service';
   templateUrl: './player-tangtoc-a.component.html',
   styleUrl: './player-tangtoc-a.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [MatCard, MatCardContent],
 })
 export class PlayerTangtocAComponent {
   private readonly api = inject(ApiService);

@@ -1,0 +1,338 @@
+@if (editor.activeDocument(); as document) {
+  <div class="browser-editor-shell">
+    <mat-card appearance="outlined" class="editor-heading">
+      <mat-card-header>
+        <mat-card-title>{{ document.matchData.matchName || 'Trận đấu chưa đặt tên' }}</mat-card-title>
+        <mat-card-subtitle>
+          Bộ biên tập cục bộ · chỉ lưu trong trình duyệt đến khi bạn xuất file.
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions align="end">
+        <span class="editor-status" [attr.data-status]="editor.status()">{{ editor.status() }}</span>
+        <button mat-stroked-button type="button" (click)="editor.saveNow()">
+          <mat-icon>save</mat-icon>
+          Lưu nháp
+        </button>
+        <button mat-flat-button type="button" (click)="exportArchive()">
+          <mat-icon>download</mat-icon>
+          Xuất .legion
+        </button>
+        <button mat-icon-button type="button" matTooltip="Đóng bộ biên tập" (click)="editor.closeDocument()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <nav mat-tab-nav-bar [tabPanel]="editorPanel" mat-stretch-tabs="false" aria-label="Các phần biên tập">
+      @for (section of sections; track section.id) {
+        <a
+          mat-tab-link
+          href=""
+          [active]="selectedSection() === section.id"
+          (click)="$event.preventDefault(); selectSection(section.id)"
+        >
+          <mat-icon>{{ section.icon }}</mat-icon>
+          {{ section.label }}
+        </a>
+      }
+    </nav>
+
+    <mat-tab-nav-panel #editorPanel class="editor-panel">
+      @switch (selectedSection()) {
+        @case ('general') {
+          <div class="editor-layout editor-layout--single">
+            <mat-card appearance="outlined">
+              <mat-card-header>
+                <mat-card-title>Thông tin trận đấu</mat-card-title>
+                <mat-card-subtitle>Nội dung sẽ đi cùng file .legion khi xuất.</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content class="editor-card-content">
+                <mat-form-field>
+                  <mat-label>Tên trận đấu</mat-label>
+                  <input matInput [ngModel]="document.matchData.matchName" (ngModelChange)="updateMatchName($event)" />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Bảng màu</mat-label>
+                  <mat-select [value]="document.uiConfig.pallette" (valueChange)="updateEditorPalette($event)">
+                    <mat-option [value]="0">Đỏ</mat-option>
+                    <mat-option [value]="1">Xanh lá</mat-option>
+                    <mat-option [value]="2">Xanh biển</mat-option>
+                    <mat-option [value]="3">Vàng</mat-option>
+                    <mat-option [value]="9">Tím</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-slide-toggle
+                  [checked]="document.uiConfig.darkMode"
+                  (change)="updateEditorDarkMode($event.checked)"
+                >
+                  Giao diện tối
+                </mat-slide-toggle>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card appearance="outlined">
+              <mat-card-header>
+                <mat-card-title>Nhận diện trận đấu</mat-card-title>
+                <mat-card-subtitle>Các ảnh này ở lại trong trình duyệt và được gói vào file .legion.</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content class="editor-brand-grid">
+                @for (asset of brandAssets; track asset.key) {
+                  <div class="editor-brand-item">
+                    @if (brandPreviews()[asset.key]; as preview) {
+                      <img [src]="preview" [alt]="asset.label" />
+                    } @else {
+                      <mat-icon>image</mat-icon>
+                    }
+                    <span>{{ asset.label }}</span>
+                    <button mat-stroked-button type="button" (click)="brandInput.click()">Chọn ảnh</button>
+                    <input #brandInput class="file-input" type="file" accept="image/*" (change)="uploadBrandAsset(asset.key, $event)" />
+                  </div>
+                }
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card appearance="outlined" class="player-table-card">
+              <mat-card-header>
+                <mat-card-title>Thí sinh</mat-card-title>
+                <mat-card-subtitle>Chỉnh sửa đội hình và điểm khởi tạo.</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content class="editor-player-grid">
+                @for (player of document.matchData.players; track $index) {
+                  <mat-card appearance="outlined">
+                    <mat-card-content class="editor-player-card">
+                      <mat-icon>person</mat-icon>
+                      <mat-form-field>
+                        <mat-label>Thí sinh {{ $index + 1 }}</mat-label>
+                        <input matInput [ngModel]="player.name" (ngModelChange)="updatePlayerName($index, $event)" />
+                      </mat-form-field>
+                      <mat-form-field>
+                        <mat-label>Điểm</mat-label>
+                        <input matInput type="number" [ngModel]="player.score" (ngModelChange)="updatePlayerScore($index, $event)" />
+                      </mat-form-field>
+                    </mat-card-content>
+                  </mat-card>
+                }
+              </mat-card-content>
+            </mat-card>
+          </div>
+        }
+
+        @case ('vcnv') {
+          <mat-card appearance="outlined" class="editor-obstacle-card">
+            <mat-card-header>
+              <mat-card-title>Chướng ngại vật</mat-card-title>
+              <mat-card-subtitle>Ảnh được giữ cục bộ; khi nhập vào máy chủ, ảnh sẽ được cắt và bảo vệ.</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="editor-obstacle-content">
+              <mat-form-field>
+                <mat-label>Đáp án chướng ngại vật</mat-label>
+                <input matInput [ngModel]="document.questionBank.vcnv.cnv" (ngModelChange)="updateObstacleAnswer($event)" />
+              </mat-form-field>
+              <button mat-stroked-button type="button" (click)="obstacleInput.click()">
+                <mat-icon>image</mat-icon>
+                Chọn ảnh
+              </button>
+              <input #obstacleInput class="file-input" type="file" accept="image/*" (change)="uploadObstacle($event)" />
+              @if (obstaclePreview(); as obstacle) {
+                <img class="editor-obstacle-preview" [src]="obstacle" alt="Chướng ngại vật" />
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+      }
+
+      @if (selectedSection() !== 'general') {
+        <div class="editor-layout">
+          <mat-card appearance="outlined" class="editor-question-list">
+            <mat-card-header>
+              <mat-card-title>Danh sách câu hỏi</mat-card-title>
+              <mat-card-subtitle>Chọn một câu để chỉnh sửa chi tiết.</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="editor-list-content">
+              @if (selectedSection() === 'kd') {
+                <div class="editor-context-controls">
+                  <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Chế độ</mat-label>
+                    <mat-select [value]="kdMode()" (valueChange)="setKdMode($event)">
+                      <mat-option value="singleplayer">Cá nhân</mat-option>
+                      <mat-option value="multiplayer">Đối kháng</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  @if (kdMode() === 'singleplayer') {
+                    <mat-form-field subscriptSizing="dynamic">
+                      <mat-label>Thí sinh</mat-label>
+                      <mat-select [value]="kdPlayerIndex()" (valueChange)="setKdPlayerIndex($event)">
+                        @for (player of document.matchData.players; track $index) {
+                          <mat-option [value]="$index">{{ player.name }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  }
+                </div>
+              }
+              @if (selectedSection() === 'vd') {
+                <mat-form-field subscriptSizing="dynamic">
+                  <mat-label>Thí sinh</mat-label>
+                  <mat-select [value]="vdPlayerIndex()" (valueChange)="setVdPlayerIndex($event)">
+                    @for (player of document.matchData.players; track $index) {
+                      <mat-option [value]="$index">{{ player.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+              @for (question of questions(); track $index) {
+                <button
+                  type="button"
+                  class="editor-question-row"
+                  [class.editor-question-row--active]="selectedQuestionIndex() === $index"
+                  (click)="selectQuestion($index)"
+                >
+                  <span>{{ $index + 1 }}</span>
+                  <strong>{{ question.question || 'Câu hỏi chưa có nội dung' }}</strong>
+                  <small>{{ question.answer || 'Chưa có đáp án' }}</small>
+                </button>
+              } @empty {
+                <p class="editor-empty">Chưa có câu hỏi.</p>
+              }
+            </mat-card-content>
+            @if (selectedSection() === 'kd' || selectedSection() === 'vd' || selectedSection() === 'chp') {
+              <mat-card-actions align="end">
+                <button mat-flat-button type="button" (click)="addQuestion()">
+                  <mat-icon>add</mat-icon>
+                  Thêm câu hỏi
+                </button>
+              </mat-card-actions>
+            }
+          </mat-card>
+
+          <mat-card appearance="outlined" class="editor-question-detail">
+            @if (selectedQuestionIndex() !== null) {
+              @let index = selectedQuestionIndex()!;
+              @if (questions()[index]; as question) {
+                <mat-card-header>
+                  <mat-card-title>Câu hỏi {{ index + 1 }}</mat-card-title>
+                  <mat-card-subtitle>Thay đổi được lưu vào bản nháp cục bộ.</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="editor-detail-content">
+                  @if (selectedSection() === 'tt') {
+                    <mat-form-field>
+                      <mat-label>Loại media</mat-label>
+                      <mat-select [ngModel]="question.type" (ngModelChange)="updateQuestion(index, 'type', $event)">
+                        <mat-option [value]="1">Hình ảnh</mat-option>
+                        <mat-option [value]="3">Video</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  }
+                  @if (selectedSection() === 'vd') {
+                    <mat-form-field>
+                      <mat-label>Giá trị</mat-label>
+                      <input matInput type="number" [ngModel]="question.value" (ngModelChange)="updateQuestion(index, 'value', $event)" />
+                    </mat-form-field>
+                  }
+                  <mat-form-field>
+                    <mat-label>Câu hỏi</mat-label>
+                    <textarea matInput rows="5" [ngModel]="question.question" (ngModelChange)="updateQuestion(index, 'question', $event)"></textarea>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Đáp án</mat-label>
+                    <textarea matInput rows="2" [ngModel]="question.answer" (ngModelChange)="updateQuestion(index, 'answer', $event)"></textarea>
+                  </mat-form-field>
+                  @if (selectedSection() !== 'chp') {
+                    <div class="editor-media-actions">
+                      <button mat-stroked-button type="button" (click)="mediaInput.click()">
+                        <mat-icon>attach_file</mat-icon>
+                        {{ question.mediaSrcName ? 'Đổi media' : 'Thêm media' }}
+                      </button>
+                      <input #mediaInput class="file-input" type="file" accept="image/*,audio/*,video/*" (change)="uploadQuestionMedia(index, false, $event)" />
+                      @if (selectedSection() === 'tt') {
+                        <button mat-stroked-button type="button" (click)="secondaryMediaInput.click()">
+                          <mat-icon>image</mat-icon>
+                          Ảnh đáp án
+                        </button>
+                        <input #secondaryMediaInput class="file-input" type="file" accept="image/*" (change)="uploadQuestionMedia(index, true, $event)" />
+                      }
+                    </div>
+                    @if (primaryPreview(); as media) {
+                      @switch (question.type) {
+                        @case (1) {
+                          <img class="editor-media-preview" [src]="media" alt="Media câu hỏi" />
+                        }
+                        @case (2) {
+                          <audio controls [src]="media"></audio>
+                        }
+                        @case (3) {
+                          <video class="editor-media-preview" controls [src]="media"></video>
+                        }
+                      }
+                    }
+                    @if (secondaryPreview(); as secondary) {
+                      <img class="editor-media-preview" [src]="secondary" alt="Media đáp án" />
+                    }
+                  }
+                </mat-card-content>
+                @if (selectedSection() === 'kd' || selectedSection() === 'vd' || selectedSection() === 'chp') {
+                  <mat-card-actions align="end">
+                    <button mat-button type="button" (click)="confirmDelete(index)">
+                      <mat-icon>delete</mat-icon>
+                      Xoá
+                    </button>
+                  </mat-card-actions>
+                }
+              }
+            } @else {
+              <mat-card-content class="editor-empty editor-empty--detail">
+                <mat-icon>edit_note</mat-icon>
+                Chọn một câu hỏi để chỉnh sửa.
+              </mat-card-content>
+            }
+          </mat-card>
+        </div>
+      }
+    </mat-tab-nav-panel>
+  </div>
+} @else {
+  <div class="browser-editor-home">
+    <mat-card appearance="outlined" class="editor-intro">
+      <mat-card-header>
+        <mat-card-title>Bộ biên tập</mat-card-title>
+        <mat-card-subtitle>Tạo, mở và xuất đề ngay trong trình duyệt.</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions>
+        <button mat-flat-button type="button" (click)="create()" [disabled]="!editor.supported()">
+          <mat-icon>add</mat-icon>
+          Tạo trận đấu
+        </button>
+        <button mat-stroked-button type="button" (click)="archiveInput.click()" [disabled]="!editor.supported()">
+          <mat-icon>upload_file</mat-icon>
+          Mở .legion
+        </button>
+        <input #archiveInput class="file-input" type="file" accept=".legion,.lg,application/zip" (change)="importArchive($event)" />
+      </mat-card-actions>
+      @if (!editor.supported()) {
+        <mat-card-content class="editor-error">Trình duyệt này không hỗ trợ bộ nhớ cục bộ cho Editor.</mat-card-content>
+      }
+      @if (editor.lastError()) {
+        <mat-card-content class="editor-error">{{ editor.lastError() }}</mat-card-content>
+      }
+    </mat-card>
+
+    @if (editor.documents().length) {
+      <section class="editor-document-grid" aria-label="Các trận đấu đã lưu">
+        @for (entry of editor.documents(); track entry.uid) {
+          <mat-card appearance="outlined">
+            <mat-card-header>
+              <mat-card-title>{{ entry.matchName }}</mat-card-title>
+              <mat-card-subtitle>{{ entry.dateModified | date: 'short' }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions align="end">
+              <button mat-stroked-button type="button" (click)="open(entry.uid)">Mở</button>
+              <button mat-icon-button type="button" matTooltip="Xoá" (click)="confirmDeleteDocument(entry.uid, entry.matchName)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </section>
+    }
+  </div>
+}

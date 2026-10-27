@@ -97,29 +97,6 @@
   color: var(--mat-sys-on-surface);
 }
 
-.answers > div {
-  background: var(--mat-sys-surface-container-lowest);
-  color: var(--mat-sys-on-surface);
-  border: 2px solid var(--mat-sys-primary);
-  border-radius: 0.5rem;
-  box-sizing: border-box;
-
-  .name-box {
-    background: var(--mat-sys-surface-container-low);
-    color: var(--mat-sys-on-surface);
-    border-bottom: 2px solid var(--mat-sys-primary);
-    border-radius: 0.5rem 0.5rem 0 0;
-    box-sizing: border-box;
-  }
-  .timer-box {
-    background: var(--mat-sys-surface-container-low);
-    color: var(--mat-sys-on-surface);
-    border: 1px solid var(--mat-sys-primary);
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-  }
-}
-
 .answer-incorrect {
   background: var(--mat-sys-error-container) !important;
   color: var(--mat-sys-on-error-container) !important;

@@ -1,55 +1,67 @@
-<h1 mat-dialog-title>Sửa câu hỏi</h1>
-<div mat-dialog-content class="h-full">
-  <div>
-    <mat-radio-group aria-label="Chọn loại câu hỏi" [(ngModel)]="data.type">
-      <mat-radio-button class="p-5" value="image">Hình ảnh</mat-radio-button>
-      <mat-radio-button class="p-5" value="video">Video</mat-radio-button>
-    </mat-radio-group>
-    <mat-form-field class="inputForm">
-      <input matInput placeholder="Câu hỏi" [(ngModel)]="data.question" />
+<h2 mat-dialog-title>Chỉnh sửa câu hỏi Tăng tốc</h2>
+<div mat-dialog-content class="operator-dialog-content">
+  <mat-radio-group class="operator-dialog-radio-group" aria-label="Loại câu hỏi" [(ngModel)]="form.type">
+    <mat-radio-button value="image">Hình ảnh</mat-radio-button>
+    <mat-radio-button value="video">Video</mat-radio-button>
+  </mat-radio-group>
+
+  <div class="operator-dialog-fields">
+    <mat-form-field class="wide-field">
+      <mat-label>Câu hỏi</mat-label>
+      <input matInput [(ngModel)]="form.question" autocomplete="off" required />
     </mat-form-field>
-    <mat-form-field class="inputForm">
-      <input matInput placeholder="Đáp án" [(ngModel)]="data.answer" />
+    <mat-form-field class="wide-field">
+      <mat-label>Đáp án</mat-label>
+      <input matInput [(ngModel)]="form.answer" autocomplete="off" required />
     </mat-form-field>
-    @if (data.type === 'image') {
-      <div class="flex items-center gap-2 mt-2">
-        <button mat-button type="button" [disabled]="uploadingQuestionImage()" (click)="questionImageInput.click()">
-          Tải ảnh câu hỏi
-        </button>
-        <input #questionImageInput class="file-input" type="file" accept="image/*" (change)="onQuestionImageSelected($event)" />
-        @if (uploadingQuestionImage()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else if (data.questionImage) {
-          <span class="hint-text">{{ data.questionImage }}</span>
-        }
-      </div>
-      <div class="flex items-center gap-2 mt-2">
-        <button mat-button type="button" [disabled]="uploadingAnswerImage()" (click)="answerImageInput.click()">
-          Tải ảnh đáp án
-        </button>
-        <input #answerImageInput class="file-input" type="file" accept="image/*" (change)="onAnswerImageSelected($event)" />
-        @if (uploadingAnswerImage()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else if (data.answerImage) {
-          <span class="hint-text">{{ data.answerImage }}</span>
-        }
-      </div>
-    } @else {
-      <div class="flex items-center gap-2 mt-2">
-        <button mat-button type="button" [disabled]="uploadingVideo()" (click)="videoInput.click()">
-          Tải video
-        </button>
-        <input #videoInput class="file-input" type="file" accept="video/*" (change)="onVideoSelected($event)" />
-        @if (uploadingVideo()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else if (data.videoFile) {
-          <span class="hint-text">{{ data.videoFile }}</span>
-        }
-      </div>
-    }
   </div>
-  <div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()">Huỷ</button>
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
-  </div>
+
+  @if (form.type === 'image') {
+    <div class="operator-dialog-upload">
+      <button mat-stroked-button type="button" [disabled]="uploadingQuestionImage()" (click)="questionImageInput.click()">
+        Tải ảnh câu hỏi
+      </button>
+      <input #questionImageInput class="file-input" type="file" accept="image/*" (change)="onQuestionImageSelected($event)" />
+      @if (uploadingQuestionImage()) {
+        <mat-spinner diameter="20" aria-label="Đang tải ảnh câu hỏi"></mat-spinner>
+      } @else if (form.questionImage) {
+        <span>{{ form.questionImage }}</span>
+      }
+    </div>
+    <div class="operator-dialog-upload">
+      <button mat-stroked-button type="button" [disabled]="uploadingAnswerImage()" (click)="answerImageInput.click()">
+        Tải ảnh đáp án
+      </button>
+      <input #answerImageInput class="file-input" type="file" accept="image/*" (change)="onAnswerImageSelected($event)" />
+      @if (uploadingAnswerImage()) {
+        <mat-spinner diameter="20" aria-label="Đang tải ảnh đáp án"></mat-spinner>
+      } @else if (form.answerImage) {
+        <span>{{ form.answerImage }}</span>
+      }
+    </div>
+  } @else {
+    <div class="operator-dialog-upload">
+      <button mat-stroked-button type="button" [disabled]="uploadingVideo()" (click)="videoInput.click()">
+        Tải video câu hỏi
+      </button>
+      <input #videoInput class="file-input" type="file" accept="video/*" (change)="onVideoSelected($event)" />
+      @if (uploadingVideo()) {
+        <mat-spinner diameter="20" aria-label="Đang tải video"></mat-spinner>
+      } @else if (form.videoFile) {
+        <span>{{ form.videoFile }}</span>
+      }
+    </div>
+  }
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Huỷ</button>
+  <button
+    mat-flat-button
+    type="button"
+    [disabled]="uploadingQuestionImage() || uploadingAnswerImage() || uploadingVideo()"
+    (click)="save()"
+    cdkFocusInitial
+  >
+    Lưu câu hỏi
+  </button>
 </div>

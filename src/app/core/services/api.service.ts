@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import {
   API_PATHS,
+  BrandAssetKey,
   LegionImportResponse,
   LoginResponse,
   MediaUploadResponse,
@@ -73,6 +74,15 @@ export class ApiService {
     form.append(UPLOAD_FIELD, file);
     return firstValueFrom(
       this.http.post<MediaUploadResponse>(this.url(API_PATHS.media(kind)), form),
+    );
+  }
+
+  /** Replace a mutable Legion brand asset in the backend override layer. */
+  uploadBrandAsset(key: BrandAssetKey, file: File): Promise<MediaUploadResponse> {
+    const form = new FormData();
+    form.append(UPLOAD_FIELD, file);
+    return firstValueFrom(
+      this.http.post<MediaUploadResponse>(this.url(API_PATHS.brandAsset(key)), form),
     );
   }
 

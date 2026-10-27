@@ -4,7 +4,7 @@ import { Role, TokenPayload } from '../contracts/api';
 import { MatchState } from '../contracts/game';
 import { PLAYER_ROUTE_BY_POSITION, STORAGE_KEYS } from '../constants';
 import { ApiService } from './api.service';
-import { ConfigService } from './config.service';
+import { ConfigService, PublicConfig } from './config.service';
 import { NetworkService } from './network.service';
 
 const MATCH_UPDATE_EVENT = 'update-match-data';
@@ -63,6 +63,7 @@ export class SessionService {
       }
     }
     await this.config.load();
+    this.network.on<[PublicConfig]>('update-config', (config) => this.config.apply(config));
     this.match.set(await this.api.getMatch());
   }
 
@@ -76,12 +77,21 @@ export class SessionService {
     return response.roleId;
   }
 
+  /**
+   * Drop any authenticated session and fall back to an anonymous viewer
+   * connection. Idempotent: a no-op when already logged out, so repeated calls
+   * (e.g. every visit to the home screen) don't churn the socket.
+   */
   logout(): void {
+    const wasAuthenticated = this.token !== null || this.identity() !== null;
+    if (!wasAuthenticated) return;
     this.clearToken();
     this.identity.set(null);
     const url = this.network.serverUrl();
-    if (url) this.network.connect(url); // drop to viewer connection
-    this.network.on<[MatchState]>(MATCH_UPDATE_EVENT, (match) => this.match.set(match));
+    if (url) {
+      this.network.connect(url); // drop the authenticated socket, reconnect as viewer
+      this.network.on<[MatchState]>(MATCH_UPDATE_EVENT, (match) => this.match.set(match));
+    }
   }
 
   disconnect(): void {
