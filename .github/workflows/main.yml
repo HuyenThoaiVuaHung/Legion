@@ -1,42 +1,45 @@
-name: Angular GitHub CI
+name: Legion CI
+
 on:
+  pull_request:
+    branches: [main]
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: legion-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  ci:
+  build:
+    name: Build browser client
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out source
+        uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22.22.3
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Cache node modules
-        id: cache-nodemodules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
+      - name: Install locked dependencies
+        run: npm ci
+
+      # Intentionally no test command: the project release policy is build-only.
+      - name: Build production client
+        run: npm run build
+
+      - name: Upload browser artifact
+        uses: actions/upload-artifact@v4
         with:
-          # caching node_modules
-          path: node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Install Dependencies
-        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-        run: |
-          npm ci
-      - name: Build
-        run: |
-          npm run build
+          name: legion-dist
+          path: dist/Legion
+          if-no-files-found: error
+          retention-days: 14
