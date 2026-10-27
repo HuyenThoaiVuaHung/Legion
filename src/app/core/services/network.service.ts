@@ -30,6 +30,7 @@ export class NetworkService {
     this.socketRef?.removeAllListeners();
     this.socketRef?.disconnect();
 
+    this.serverUrl.set(url);
     this.status.set(ConnectionStatus.Connecting);
     const socket = io(url || window.location.origin, {
       auth: token ? { token } : undefined,

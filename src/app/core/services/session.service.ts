@@ -1,6 +1,6 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Role, TokenPayload } from '../contracts/api';
+import { Role, TokenPayload, JoinRoomResponse } from '../contracts/api';
 import { MatchState } from '../contracts/game';
 import { PLAYER_ROUTE_BY_POSITION, STORAGE_KEYS } from '../constants';
 import { ApiService } from './api.service';
@@ -21,6 +21,12 @@ export class SessionService {
   private readonly router = inject(Router);
 
   readonly identity = signal<TokenPayload | null>(null);
+  readonly multiRoom = signal(false);
+  readonly serverReady = signal(false);
+  readonly followMatch = signal(true);
+  readonly roomId = computed(() => this.identity()?.roomId ?? null);
+  readonly createdRoomAdmin = computed(() => this.role() === Role.Admin && this.multiRoom() && !!this.roomId() && this.roomId() !== 'default');
+  readonly roomExpiring = signal<number | null>(null);
   readonly match = signal<MatchState | null>(null);
 
   readonly role = computed<Role | null>(() => this.identity()?.roleId ?? null);
@@ -37,13 +43,13 @@ export class SessionService {
     effect(() => {
       const position = this.match()?.position;
       const role = this.role();
-      if (!position || (role !== Role.Player && role !== Role.Viewer)) return;
+      if (!this.followMatch() || !position || position === 'H' || (role !== Role.Player && role !== Role.Viewer)) return;
       const route = PLAYER_ROUTE_BY_POSITION[position];
       if (route) void this.router.navigateByUrl(route);
     });
 
     const savedUrl = this.network.serverUrl();
-    if (savedUrl) void this.connect(savedUrl);
+    if (savedUrl) void this.connect(savedUrl).catch(() => undefined);
   }
 
   get token(): string | null {
@@ -52,7 +58,16 @@ export class SessionService {
 
   /** Connect (or reconnect) to a server; reuses a stored token when present. */
   async connect(url: string): Promise<void> {
+    const previousUrl = this.network.serverUrl();
+    if (previousUrl && previousUrl.replace(/\/$/, '') !== url.replace(/\/$/, '')) {
+      this.clearToken();
+      localStorage.removeItem(STORAGE_KEYS.accountToken);
+      this.identity.set(null);
+    }
+    this.serverReady.set(false);
     this.network.connect(url, this.token ?? undefined);
+    this.multiRoom.set((await this.api.serverInfo()).multiRoom);
+    this.serverReady.set(true);
     this.network.on<[MatchState]>(MATCH_UPDATE_EVENT, (match) => this.match.set(match));
     if (this.token) {
       // Restore identity from a previous login on this server.
@@ -64,17 +79,27 @@ export class SessionService {
     }
     await this.config.load();
     this.network.on<[PublicConfig]>('update-config', (config) => this.config.apply(config));
-    this.match.set(await this.api.getMatch());
+    this.watchRoomExpiry();
+    try { this.match.set(await this.api.getMatch()); } catch { this.match.set(null); }
   }
 
   /** Exchange a secret for a token, reconnect the socket with it. */
   async login(secret: string): Promise<Role> {
     const response = await this.api.login(secret);
-    localStorage.setItem(STORAGE_KEYS.authToken, response.token);
-    this.identity.set({ roleId: response.roleId, index: response.index });
+    await this.acceptRoomSession(response);
+    return response.roleId;
+  }
+
+  async acceptRoomSession(response: JoinRoomResponse | { token: string; roleId: Role; index?: number; roomId?: string }): Promise<void> {
+    this.roomExpiring.set(null);
+    localStorage.setItem(STORAGE_KEYS.roomToken, response.token);
+    this.identity.set({ roleId: response.roleId, index: response.index, roomId: response.roomId });
     this.network.connect(this.network.serverUrl(), response.token);
     this.network.on<[MatchState]>(MATCH_UPDATE_EVENT, (match) => this.match.set(match));
-    return response.roleId;
+    this.network.on<[PublicConfig]>('update-config', (config) => this.config.apply(config));
+    this.watchRoomExpiry();
+    await this.config.load();
+    try { this.match.set(await this.api.getMatch()); } catch { this.match.set(null); }
   }
 
   /**
@@ -87,6 +112,7 @@ export class SessionService {
     if (!wasAuthenticated) return;
     this.clearToken();
     this.identity.set(null);
+    this.roomExpiring.set(null);
     const url = this.network.serverUrl();
     if (url) {
       this.network.connect(url); // drop the authenticated socket, reconnect as viewer
@@ -97,7 +123,9 @@ export class SessionService {
   disconnect(): void {
     this.clearToken();
     this.identity.set(null);
+    this.roomExpiring.set(null);
     this.match.set(null);
+    this.serverReady.set(false);
     this.network.disconnect();
   }
 
@@ -105,15 +133,12 @@ export class SessionService {
     localStorage.removeItem(STORAGE_KEYS.authToken);
   }
 
+  private watchRoomExpiry(): void {
+    this.network.on<[{ expiresAt: number }]>('room-expiring', ({ expiresAt }) => this.roomExpiring.set(expiresAt));
+  }
+
   private async refreshIdentityFromToken(): Promise<void> {
-    // The token is opaque to us; a viewer-visible endpoint that echoes the
-    // role would be nicer, but decoding the JWT payload locally is enough
-    // (display-only — the server enforces the real authorization).
-    const token = this.token;
-    if (!token) return;
-    const [, payload] = token.split('.');
-    if (!payload) throw new Error('malformed token');
-    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-    this.identity.set({ roleId: decoded.roleId, index: decoded.index });
+    if (!this.token) return;
+    this.identity.set(await this.api.session());
   }
 }

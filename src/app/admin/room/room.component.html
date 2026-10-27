@@ -1,0 +1,78 @@
+<div class="admin-container flex-col overflow-auto gap-3">
+  @if (room(); as info) {
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title>Phòng {{ info.code }}</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <p>Mã phòng: <strong>{{ info.code }}</strong> <button mat-button (click)="copy(info.code)">Sao chép</button></p>
+        <p>Liên kết khán giả: {{ spectatorUrl(info.code) }} <button mat-button (click)="copy(spectatorUrl(info.code))">Sao chép</button></p>
+        <p>Hết hạn sau: {{ countdown() }}</p>
+        <p>Dung lượng media: {{ info.mediaBytes }} / {{ info.mediaQuotaBytes }} byte</p>
+        <mat-progress-bar [value]="info.mediaQuotaBytes ? info.mediaBytes / info.mediaQuotaBytes * 100 : 0" aria-label="Dung lượng media" />
+      </mat-card-content>
+    </mat-card>
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title>Mã bí mật</mat-card-title></mat-card-header>
+      <mat-card-content>
+        @if (info.secrets; as secrets) {
+          @for (role of roles; track role.key) {
+            <div class="row"><strong>{{ role.label }}</strong><span>{{ revealed()[role.key] ? secrets[role.key] : '••••••••' }}</span>
+              <button mat-button (click)="toggleSecret(role.key)">{{ revealed()[role.key] ? 'Ẩn' : 'Hiện' }}</button>
+              <button mat-button (click)="copy(secrets[role.key])">Sao chép</button><button mat-button (click)="rotate(role.key)">Đổi</button>
+            </div>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title>Chỗ thí sinh</mat-card-title></mat-card-header>
+      <mat-card-content>
+        @for (seat of info.seats; track $index) {
+          <div class="row">Chỗ {{ $index + 1 }}: {{ seat || 'Trống' }}
+            @if (seat) { <button mat-button (click)="release($index)">Giải phóng</button> }
+          </div>
+        }
+        <mat-form-field><mat-label>Chế độ khán giả</mat-label>
+          <mat-select [value]="info.spectatorMode" (selectionChange)="setMode($event.value)">
+            <mat-option value="open">Mở</mat-option><mat-option value="secret">Mã bí mật</mat-option><mat-option value="off">Tắt</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title>Liên kết chia sẻ</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="form-row">
+          <mat-form-field><mat-label>Vai trò</mat-label><mat-select [(ngModel)]="role"><mat-option value="viewer">Khán giả</mat-option><mat-option value="mc">MC</mat-option><mat-option value="player">Thí sinh</mat-option></mat-select></mat-form-field>
+          <mat-form-field><mat-label>Màn hình (tùy chọn)</mat-label><input matInput [(ngModel)]="view" maxlength="32" /></mat-form-field>
+          <mat-form-field><mat-label>Nhãn</mat-label><input matInput [(ngModel)]="label" maxlength="60" /></mat-form-field>
+          <mat-form-field><mat-label>Thời hạn (giờ, tùy chọn)</mat-label><input matInput type="number" min="0" [(ngModel)]="expiryHours" /></mat-form-field>
+          <mat-slide-toggle [(ngModel)]="singleUse">Dùng một lần</mat-slide-toggle>
+          <button mat-flat-button (click)="createLink()">Tạo liên kết</button>
+        </div>
+        @if (newLink()) { <p>Liên kết chỉ hiển thị một lần: {{ newLink() }} <button mat-button (click)="copy(newLink())">Sao chép</button></p> }
+        @for (link of links(); track link.id) {
+          <div class="row"><strong>{{ link.label }}</strong> {{ link.role }} {{ link.view || '' }}
+            @if (link.singleUse) { · Một lần }
+            @if (link.usedAt) { · Đã dùng }
+            @if (link.expiresAt) { · Hết hạn: {{ link.expiresAt | date:'short' }} }
+            <button mat-button (click)="revoke(link.id)">Thu hồi</button>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+    @if (owner()) {
+      <mat-card id="bank" appearance="outlined">
+        <mat-card-header><mat-card-title>Ngân hàng</mat-card-title></mat-card-header>
+        <mat-card-content><div class="form-row">
+          <mat-form-field><mat-label>Bản lưu</mat-label><mat-select [(ngModel)]="bankItemId"><mat-option value="">Tạo mới</mat-option>@for (item of bank(); track item.id) { <mat-option [value]="item.id">{{ item.name }}</mat-option> }</mat-select></mat-form-field>
+          @if (!bankItemId) { <mat-form-field><mat-label>Tên bản lưu (tùy chọn)</mat-label><input matInput [(ngModel)]="bankName" /></mat-form-field> }
+          <button mat-flat-button (click)="save()">Lưu vào ngân hàng</button>
+        </div></mat-card-content>
+      </mat-card>
+      <mat-card appearance="outlined"><mat-card-header><mat-card-title>Chuyển quyền sở hữu</mat-card-title></mat-card-header>
+        <mat-card-content><div class="form-row"><mat-form-field><mat-label>Tên chủ phòng mới</mat-label><input matInput [(ngModel)]="username" /></mat-form-field><button mat-stroked-button (click)="transfer()" [disabled]="!username.trim()">Chuyển phòng</button></div></mat-card-content>
+      </mat-card>
+    }
+    <mat-card appearance="outlined"><mat-card-content><button mat-stroked-button (click)="close()">Đóng phòng</button></mat-card-content></mat-card>
+  }
+</div>

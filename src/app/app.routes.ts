@@ -1,11 +1,15 @@
 import { Routes } from '@angular/router';
-import { adminGuard, mcGuard } from './core/guards';
+import { adminGuard, mcGuard, hostGuard } from './core/guards';
 
 export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
   },
+  { path: 'r/:code/:view', loadComponent: () => import('./host/room-link.component').then(m => m.RoomLinkComponent) },
+  { path: 'r/:code', loadComponent: () => import('./host/room-link.component').then(m => m.RoomLinkComponent) },
+  { path: 'host/auth', loadComponent: () => import('./host/host-auth.component').then(m => m.HostAuthComponent) },
+  { path: 'host', canActivate: [hostGuard], loadComponent: () => import('./host/host.component').then(m => m.HostComponent) },
   {
     path: 'editor',
     loadComponent: () =>

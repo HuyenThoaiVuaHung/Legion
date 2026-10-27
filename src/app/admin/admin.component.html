@@ -1,6 +1,6 @@
 <mat-toolbar>
   <button type="button" class="brand" (click)="logout()" matTooltip="Đăng xuất">
-    <img class="brand-logo" [src]="assets.image('misc/logo.png')" alt="Legion" />
+    <img class="brand-logo" [src]="assets.brand('logo')" alt="Legion" />
   </button>
   @if (positionLabel()) {
     <span class="position-badge">{{ positionLabel() }}</span>
@@ -24,6 +24,14 @@
   </a>
 </mat-toolbar>
 
+@if (session.createdRoomAdmin() && session.roomExpiring()) {
+  <div role="status" class="flex flex-wrap items-center gap-3 p-4">
+    <span>Phòng sắp hết hạn. Hãy lưu dữ liệu trước khi phòng đóng.</span>
+    @if (roomOwner()) { <a mat-button routerLink="/admin/room" fragment="bank">Lưu vào ngân hàng</a> }
+    <button mat-button (click)="exportRoom()">Xuất .legion</button>
+  </div>
+}
+
 <nav mat-tab-nav-bar [tabPanel]="tabPanel" mat-stretch-tabs="false">
   @for (item of navItems; track item.route) {
     <a
@@ -36,6 +44,11 @@
     >
       <mat-icon>{{ item.icon }}</mat-icon>
       {{ item.label }}
+    </a>
+  }
+  @if (session.createdRoomAdmin()) {
+    <a mat-tab-link routerLink="/admin/room" routerLinkActive #roomLink="routerLinkActive" [active]="roomLink.isActive">
+      <mat-icon>meeting_room</mat-icon> Phòng
     </a>
   }
 </nav>
