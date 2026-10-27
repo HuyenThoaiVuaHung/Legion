@@ -7,6 +7,10 @@ import { ControlTangtocComponent } from './control-tangtoc/control-tangtoc.compo
 import { ControlVdComponent } from './control-vd/control-vd.component';
 import { ControlChpComponent } from './control-chp/control-chp.component';
 import { AppearanceComponent } from './appearance/appearance.component';
+import { RoomComponent } from './room/room.component';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { SessionService } from '../core/services/session.service';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -21,6 +25,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'vd', component: ControlVdComponent },
       { path: 'chp', component: ControlChpComponent },
       { path: 'appearance', component: AppearanceComponent },
+      { path: 'room', component: RoomComponent, canActivate: [() => inject(SessionService).createdRoomAdmin() || inject(Router).parseUrl('/admin/dashboard')] },
     ],
   },
 ];

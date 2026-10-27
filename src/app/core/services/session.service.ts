@@ -25,6 +25,8 @@ export class SessionService {
   readonly serverReady = signal(false);
   readonly followMatch = signal(true);
   readonly roomId = computed(() => this.identity()?.roomId ?? null);
+  readonly createdRoomAdmin = computed(() => this.role() === Role.Admin && this.multiRoom() && !!this.roomId() && this.roomId() !== 'default');
+  readonly roomExpiring = signal<number | null>(null);
   readonly match = signal<MatchState | null>(null);
 
   readonly role = computed<Role | null>(() => this.identity()?.roleId ?? null);
@@ -77,6 +79,7 @@ export class SessionService {
     }
     await this.config.load();
     this.network.on<[PublicConfig]>('update-config', (config) => this.config.apply(config));
+    this.watchRoomExpiry();
     try { this.match.set(await this.api.getMatch()); } catch { this.match.set(null); }
   }
 
@@ -88,11 +91,13 @@ export class SessionService {
   }
 
   async acceptRoomSession(response: JoinRoomResponse | { token: string; roleId: Role; index?: number; roomId?: string }): Promise<void> {
+    this.roomExpiring.set(null);
     localStorage.setItem(STORAGE_KEYS.roomToken, response.token);
     this.identity.set({ roleId: response.roleId, index: response.index, roomId: response.roomId });
     this.network.connect(this.network.serverUrl(), response.token);
     this.network.on<[MatchState]>(MATCH_UPDATE_EVENT, (match) => this.match.set(match));
     this.network.on<[PublicConfig]>('update-config', (config) => this.config.apply(config));
+    this.watchRoomExpiry();
     await this.config.load();
     try { this.match.set(await this.api.getMatch()); } catch { this.match.set(null); }
   }
@@ -107,6 +112,7 @@ export class SessionService {
     if (!wasAuthenticated) return;
     this.clearToken();
     this.identity.set(null);
+    this.roomExpiring.set(null);
     const url = this.network.serverUrl();
     if (url) {
       this.network.connect(url); // drop the authenticated socket, reconnect as viewer
@@ -117,6 +123,7 @@ export class SessionService {
   disconnect(): void {
     this.clearToken();
     this.identity.set(null);
+    this.roomExpiring.set(null);
     this.match.set(null);
     this.serverReady.set(false);
     this.network.disconnect();
@@ -124,6 +131,10 @@ export class SessionService {
 
   private clearToken(): void {
     localStorage.removeItem(STORAGE_KEYS.authToken);
+  }
+
+  private watchRoomExpiry(): void {
+    this.network.on<[{ expiresAt: number }]>('room-expiring', ({ expiresAt }) => this.roomExpiring.set(expiresAt));
   }
 
   private async refreshIdentityFromToken(): Promise<void> {

@@ -147,6 +147,10 @@ export class ApiService {
     return this.url(API_PATHS.exportLegion);
   }
 
+  exportLegion(): Promise<Blob> {
+    return firstValueFrom(this.http.get(this.url(API_PATHS.exportLegion), { responseType: 'blob' }));
+  }
+
   importExcel(workbookJson: unknown): Promise<void> {
     return firstValueFrom(
       this.http.post<void>(this.url('/api/match/import-excel'), workbookJson),

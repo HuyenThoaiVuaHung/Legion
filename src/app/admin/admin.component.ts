@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltip } from '@angular/material/tooltip';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
 import { POSITION_LABELS } from '../core/constants';
 import { MatchPosition } from '../core/contracts/game';
 import { ApiService } from '../core/services/api.service';
@@ -52,6 +54,28 @@ export class AdminComponent {
   private readonly router = inject(Router);
   protected readonly session = inject(SessionService);
   protected readonly assets = inject(AssetService);
+  private readonly snackBar = inject(MatSnackBar);
+  protected readonly roomOwner = signal(false);
+
+  constructor() {
+    effect(() => {
+      const roomId = this.session.createdRoomAdmin() ? this.session.roomId() : null;
+      this.roomOwner.set(false);
+      if (roomId) void this.api.me().then((profile) => {
+        if (this.session.roomId() === roomId) this.roomOwner.set(profile.rooms.some((room) => room.roomId === roomId));
+      }).catch(() => undefined);
+    });
+  }
+
+  async exportRoom(): Promise<void> {
+    try {
+      const url = URL.createObjectURL(await this.api.exportLegion());
+      const link = document.createElement('a'); link.href = url; link.download = 'match.legion'; link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      this.snackBar.open(error instanceof HttpErrorResponse && typeof error.error?.error === 'string' ? error.error.error : 'Không thể xuất phòng.', 'Đóng');
+    }
+  }
 
   protected readonly navItems = NAV_ITEMS;
 

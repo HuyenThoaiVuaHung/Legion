@@ -66,6 +66,18 @@
       <mat-card-subtitle>Ảnh tải lên sẽ ghi đè tài sản Legion mặc định.</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
+      @if (session.createdRoomAdmin()) {
+        @for (asset of roomBrandAssets; track asset.key) {
+          <menu-item [title]="asset.label" description="Ảnh PNG của phòng">
+            @if (assets.brand(asset.key)) {
+              <img class="brand-asset-preview" [src]="assets.brand(asset.key)" [alt]="asset.label" />
+            }
+            <button mat-stroked-button type="button" (click)="roomInput.click()">Thay ảnh</button>
+            <button mat-button type="button" (click)="changeRoomBrand(asset.key)">Xóa</button>
+            <input #roomInput class="file-input" type="file" accept="image/png" (change)="changeRoomBrand(asset.key, $event)" />
+          </menu-item>
+        }
+      } @else {
       @for (asset of brandAssets; track asset.key) {
         <menu-item [title]="asset.label" [description]="asset.description">
           <img class="brand-asset-preview" [src]="brandAssetUrl(asset.path)" [alt]="asset.label" />
@@ -88,6 +100,7 @@
             <mat-spinner diameter="20" aria-label="Đang tải ảnh"></mat-spinner>
           }
         </menu-item>
+      }
       }
     </mat-card-content>
   </mat-card>
