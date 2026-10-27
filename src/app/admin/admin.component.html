@@ -1,6 +1,6 @@
 <mat-toolbar>
   <button type="button" class="brand" (click)="logout()" matTooltip="Đăng xuất">
-    <img class="brand-logo" [src]="assets.image('misc/logo.png')" alt="Legion" />
+    <img class="brand-logo" [src]="assets.brand('logo')" alt="Legion" />
   </button>
   @if (positionLabel()) {
     <span class="position-badge">{{ positionLabel() }}</span>

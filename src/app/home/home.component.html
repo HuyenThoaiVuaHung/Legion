@@ -1,7 +1,7 @@
 <div class="w-screen h-screen flex justify-center items-center">
   <div class="w-[72rem] h-[30rem] flex flex-row">
     <div class="w-1/2 h-full flex flex-col justify-center">
-      <img [src]="assets.image('misc/legion.png')" alt="Legion" class="object-cover w-96" />
+      <img [src]="assets.brand('logo-long')" alt="Legion" class="object-cover w-96" />
       <div>
         <h3>
           <strong>
@@ -27,7 +27,7 @@
           Mở bộ biên tập
         </button>
       </div>
-      @if (defaultUrl()) {
+      @if (defaultUrl() && !session.multiRoom()) {
         <div class="mt-4 flex flex-col gap-2 w-96">
           <div class="flex gap-2">
             <button mat-flat-button (click)="joinAsViewer()">
@@ -47,7 +47,7 @@
       <mat-stepper [linear]="true" #stepper>
         <mat-step
           label="Kết nối tới Legendary"
-          [completed]="network.status() === connectionStatus.Connected"
+          [completed]="session.serverReady()"
           state="connect"
         >
           <form [formGroup]="urlForm">
@@ -64,11 +64,11 @@
           <div>
             <button [disabled]="urlForm.invalid" (click)="connect()" mat-button>
               <mat-icon>arrow_right</mat-icon>
-              @if (network.status() === connectionStatus.Error) {
+              @if (network.status() === connectionStatus.Error && !session.serverReady()) {
                 Không thể kết nối với máy chủ.
               } @else if (network.status() === connectionStatus.Connecting) {
                 <mat-spinner [diameter]="23"></mat-spinner>
-              } @else if (network.status() === connectionStatus.Connected) {
+              } @else if (session.serverReady()) {
                 Đã kết nối
               } @else {
                 Kết nối
@@ -76,7 +76,7 @@
             </button>
             <button
               mat-button
-              [disabled]="network.status() !== connectionStatus.Connected"
+              [disabled]="!session.serverReady()"
               matStepperNext
             >
               Tiếp tục
@@ -84,6 +84,19 @@
           </div>
         </mat-step>
         <mat-step label="Đăng nhập" state="login" [completed]="!!session.identity()">
+          @if (session.multiRoom()) {
+            <h3>V?o ph?ng</h3>
+            <form [formGroup]="joinForm" class="flex flex-col">
+              <mat-form-field><mat-label>M? ph?ng</mat-label><input matInput formControlName="code" /></mat-form-field>
+              <mat-form-field><mat-label>M?t m? (kh?ng b?t bu?c)</mat-label><input matInput formControlName="secret" /></mat-form-field>
+              @if (usernameNeeded()) {
+                <mat-form-field><mat-label>T?n ng??i ch?i</mat-label><input matInput formControlName="username" maxlength="32" /></mat-form-field>
+              }
+            </form>
+            @if (joinMessage()) { <p role="alert">{{ joinMessage() }}</p> }
+            <button mat-flat-button (click)="joinRoom()">V?o ph?ng</button>
+            <button mat-button (click)="openHost()">Ch? ph?ng</button>
+          } @else {
           <form [formGroup]="secretForm">
             <mat-form-field class="mt-5 w-96">
               <input
@@ -102,6 +115,7 @@
               Đăng nhập
             </button>
           </div>
+          }
         </mat-step>
 
         <!-- Icon overrides. -->

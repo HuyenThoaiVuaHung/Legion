@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { RouterOutlet } from '@angular/router';
+import { AssetService } from './core/services/asset.service';
 import { PaletteService } from './core/services/palette.service';
 import { SessionService } from './core/services/session.service';
 
@@ -13,6 +14,7 @@ import { SessionService } from './core/services/session.service';
 })
 export class AppComponent {
   /** Instantiated eagerly so the saved-server reconnect runs at startup. */
+  protected readonly assets = inject(AssetService);
   protected readonly session = inject(SessionService);
 
   constructor() {

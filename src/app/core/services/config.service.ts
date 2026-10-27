@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { PublicUi } from '../contracts/api';
+import { PaletteService } from './palette.service';
 import { NetworkService } from './network.service';
 
 /**
@@ -28,6 +30,7 @@ export interface GameRules {
 
 export interface PublicConfig {
   rules: GameRules;
+  ui: PublicUi;
   playerCount: number;
   uploadLimitBytes: number;
 }
@@ -64,6 +67,8 @@ function copyRules(rules: GameRules): GameRules {
 export class ConfigService {
   private readonly http = inject(HttpClient);
   private readonly network = inject(NetworkService);
+  private readonly palette = inject(PaletteService);
+  readonly ui = signal<PublicUi | null>(null);
 
   readonly rules = signal<GameRules>(copyRules(DEFAULT_RULES));
   readonly uploadLimitBytes = signal<number>(0);
@@ -77,6 +82,7 @@ export class ConfigService {
       this.apply(config);
     } catch {
       this.rules.set(copyRules(DEFAULT_RULES));
+      this.ui.set(null);
       this.uploadLimitBytes.set(0);
     }
   }
@@ -84,6 +90,8 @@ export class ConfigService {
   /** Apply a config payload (from GET, PATCH, or the update-config push). */
   apply(config: PublicConfig): void {
     this.rules.set(copyRules(config.rules));
+    this.ui.set(config.ui ?? null);
+    if (config.ui) this.palette.applyServer(config.ui.palette, config.ui.darkMode);
     this.uploadLimitBytes.set(config.uploadLimitBytes);
   }
 

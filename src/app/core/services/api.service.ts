@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import {
-  API_PATHS,
+  API_PATHS, AccountCredentials, AccountProfile, AccountSession, AccountSessionWithRecovery, RecoverAccountRequest, ServerInfo, SessionResponse, JoinRoomRequest, JoinRoomResponse, JoinLinkRequest, CreateRoomResponse, RoomInfo, RoomSecrets, RoomSettingsRequest, CreateRoomLinkRequest, CreateRoomLinkResponse, RoomLink, BankItem, BrandSlot,
   BrandAssetKey,
   LegionImportResponse,
   LoginResponse,
@@ -17,6 +17,8 @@ import {
   RoundDataMap,
   RoundKind,
 } from '../contracts/game';
+import { STORAGE_KEYS } from '../constants';
+import { PublicConfig } from './config.service';
 import { NetworkService } from './network.service';
 
 /** Typed client for the Legendary REST API. One method per endpoint. */
@@ -34,6 +36,38 @@ export class ApiService {
       this.http.post<LoginResponse>(this.url(API_PATHS.login), { secret }),
     );
   }
+
+  private accountHeaders(): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${localStorage.getItem(STORAGE_KEYS.accountToken) ?? ''}` });
+  }
+  serverInfo(): Promise<ServerInfo> { return firstValueFrom(this.http.get<ServerInfo>(this.url(API_PATHS.server))); }
+  session(): Promise<SessionResponse> { return firstValueFrom(this.http.get<SessionResponse>(this.url(API_PATHS.session))); }
+  signup(body: AccountCredentials): Promise<AccountSessionWithRecovery> { return firstValueFrom(this.http.post<AccountSessionWithRecovery>(this.url(API_PATHS.signup), body)); }
+  accountLogin(body: AccountCredentials): Promise<AccountSession> { return firstValueFrom(this.http.post<AccountSession>(this.url(API_PATHS.accountLogin), body)); }
+  recoverAccount(body: RecoverAccountRequest): Promise<AccountSessionWithRecovery> { return firstValueFrom(this.http.post<AccountSessionWithRecovery>(this.url(API_PATHS.recoverAccount), body)); }
+  accountLogout(): Promise<void> { return firstValueFrom(this.http.post<void>(this.url(API_PATHS.accountLogout), {}, { headers: this.accountHeaders() })); }
+  me(): Promise<AccountProfile> { return firstValueFrom(this.http.get<AccountProfile>(this.url(API_PATHS.me), { headers: this.accountHeaders() })); }
+  createRoom(bankItemId?: string): Promise<CreateRoomResponse> { return firstValueFrom(this.http.post<CreateRoomResponse>(this.url(API_PATHS.rooms), bankItemId ? { bankItemId } : {}, { headers: this.accountHeaders() })); }
+  enterRoom(id: string): Promise<JoinRoomResponse> { return firstValueFrom(this.http.post<JoinRoomResponse>(this.url(API_PATHS.enterRoom(id)), {}, { headers: this.accountHeaders() })); }
+  joinRoom(body: JoinRoomRequest): Promise<JoinRoomResponse> { return firstValueFrom(this.http.post<JoinRoomResponse>(this.url(API_PATHS.joinRoom), body)); }
+  joinLink(body: JoinLinkRequest): Promise<JoinRoomResponse> { return firstValueFrom(this.http.post<JoinRoomResponse>(this.url(API_PATHS.joinLink), body)); }
+  currentRoom(): Promise<RoomInfo> { return firstValueFrom(this.http.get<RoomInfo>(this.url(API_PATHS.currentRoom))); }
+  closeRoom(): Promise<void> { return firstValueFrom(this.http.delete<void>(this.url(API_PATHS.currentRoom))); }
+  rotateSecret(role: keyof RoomSecrets): Promise<RoomSecrets> { return firstValueFrom(this.http.post<RoomSecrets>(this.url(API_PATHS.rotateSecret), { role })); }
+  releaseSeat(index: number): Promise<void> { return firstValueFrom(this.http.delete<void>(this.url(API_PATHS.releaseSeat(index)))); }
+  transferRoom(username: string): Promise<void> { return firstValueFrom(this.http.post<void>(this.url(API_PATHS.transferRoom), { username })); }
+  roomSettings(body: RoomSettingsRequest): Promise<RoomSettingsRequest> { return firstValueFrom(this.http.patch<RoomSettingsRequest>(this.url(API_PATHS.roomSettings), body)); }
+  roomLinks(): Promise<RoomLink[]> { return firstValueFrom(this.http.get<RoomLink[]>(this.url(API_PATHS.roomLinks))); }
+  createRoomLink(body: CreateRoomLinkRequest): Promise<CreateRoomLinkResponse> { return firstValueFrom(this.http.post<CreateRoomLinkResponse>(this.url(API_PATHS.roomLinks), body)); }
+  deleteRoomLink(id: string): Promise<void> { return firstValueFrom(this.http.delete<void>(this.url(API_PATHS.roomLink(id)))); }
+  saveToBank(body: { name?: string; bankItemId?: string }): Promise<BankItem> { return firstValueFrom(this.http.post<BankItem>(this.url(API_PATHS.saveToBank), body)); }
+  bank(): Promise<{ items: BankItem[]; usedBytes: number; maxBytes: number; maxItems: number }> { return firstValueFrom(this.http.get<{ items: BankItem[]; usedBytes: number; maxBytes: number; maxItems: number }>(this.url(API_PATHS.bank), { headers: this.accountHeaders() })); }
+  uploadBank(file: File): Promise<BankItem> { const form = new FormData(); form.append(UPLOAD_FIELD, file); return firstValueFrom(this.http.post<BankItem>(this.url(API_PATHS.bank), form, { headers: this.accountHeaders() })); }
+  downloadBank(id: string): Promise<Blob> { return firstValueFrom(this.http.get(this.url(API_PATHS.bankItem(id)), { headers: this.accountHeaders(), responseType: 'blob' })); }
+  renameBank(id: string, name: string): Promise<BankItem> { return firstValueFrom(this.http.patch<BankItem>(this.url(API_PATHS.bankItem(id)), { name }, { headers: this.accountHeaders() })); }
+  deleteBank(id: string): Promise<void> { return firstValueFrom(this.http.delete<void>(this.url(API_PATHS.bankItem(id)), { headers: this.accountHeaders() })); }
+  uploadBrand(slot: BrandSlot, file: File): Promise<PublicConfig> { const form = new FormData(); form.append(UPLOAD_FIELD, file); return firstValueFrom(this.http.post<PublicConfig>(this.url(API_PATHS.brand(slot)), form)); }
+  deleteBrand(slot: BrandSlot): Promise<PublicConfig> { return firstValueFrom(this.http.delete<PublicConfig>(this.url(API_PATHS.brand(slot)))); }
 
   getMatch(): Promise<MatchState> {
     return firstValueFrom(this.http.get<MatchState>(this.url(API_PATHS.match)));

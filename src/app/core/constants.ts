@@ -4,6 +4,8 @@ import { MatchPosition } from './contracts/game';
 export const STORAGE_KEYS = {
   serverUrl: 'legion.serverUrl',
   authToken: 'legion.authToken',
+  roomToken: 'legion.authToken',
+  accountToken: 'legion.accountToken',
   paletteSeed: 'legion.paletteSeed',
   paletteMode: 'legion.paletteMode',
   obsUrl: 'legion.obs.url',

@@ -107,6 +107,12 @@ export class PaletteService {
     localStorage.setItem(STORAGE_KEYS.paletteMode, mode);
   }
 
+  /** Apply the palette identifiers stored in a .legion archive. */
+  applyServer(palette: number, dark: boolean): void {
+    const seeds: Record<number, string> = { 0: '#d32f2f', 1: '#388e3c', 2: '#1976d2', 3: '#f9a825', 9: PaletteService.DEFAULT_SEED };
+    this.apply(seeds[palette] ?? PaletteService.DEFAULT_SEED, dark ? 'dark' : 'light');
+  }
+
   /** Clear the custom seed/mode, reverting to the stylesheet's base theme. */
   reset(): void {
     localStorage.removeItem(STORAGE_KEYS.paletteSeed);
