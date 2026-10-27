@@ -1,12 +1,21 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
 import { FormQchpComponent } from '../../components/forms/form-qchp/form-qchp.component';
+import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
 import { ChpQuestion, ChpRound, Player } from '../../core/contracts/game';
 import { ApiService } from '../../core/services/api.service';
 import { NetworkService } from '../../core/services/network.service';
@@ -20,10 +29,16 @@ import { SessionService } from '../../core/services/session.service';
   imports: [
     NgClass,
     MatButton,
-    MatIconButton,
+    MatCard,
+    MatCardActions,
+    MatCardContent,
+    MatCardHeader,
+    MatCardSubtitle,
+    MatCardTitle,
     MatCheckbox,
     MatIcon,
     MatTableModule,
+    MenuItemComponent,
   ],
 })
 export class ControlChpComponent {

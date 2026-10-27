@@ -63,16 +63,29 @@ html {
 }
 
 html,
-body {
+body,
+app-root {
   height: 100%;
+}
+
+body {
   margin: 0;
   background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
 }
 
+app-root {
+  display: block;
+}
+
+// Operator pages are hosted inside the admin tab panel, whose height is already
+// constrained by the shell. Use that available height instead of a viewport
+// calculation so tab navigation never clips controls at the bottom.
 .admin-container {
-  height: calc(100vh - 64px);
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
   width: 100%;
   padding: 0.75rem;
   gap: 0.75rem;
@@ -108,4 +121,79 @@ body {
 
 .mat-mdc-card-actions {
   @apply gap-3;
+}
+
+// Player tables live inside nested cards. Let only those tables inherit their
+// card surface; unrelated data tables keep Material's default visual hierarchy.
+.player-table-card {
+  .mat-mdc-card-content {
+    overflow: auto;
+  }
+
+  .mat-mdc-table,
+  .mat-mdc-header-row,
+  .mat-mdc-row,
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    background-color: transparent;
+  }
+}
+
+// Shared Material dialog anatomy for every question/player editor. The dialog
+// content scrolls independently while actions remain stable and predictable.
+.operator-dialog-content {
+  display: grid;
+  gap: 1rem;
+  min-width: min(34rem, 72vw);
+  padding-top: 0.5rem;
+}
+
+.operator-dialog-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.operator-dialog-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.operator-dialog-fields .wide-field {
+  grid-column: 1 / -1;
+}
+
+.operator-dialog-upload {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.5rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.operator-table-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 0;
+}
+
+.brand-asset-preview {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  background: var(--mat-sys-surface-container-high);
+}
+
+@media (max-width: 40rem) {
+  .operator-dialog-content {
+    min-width: 0;
+  }
+
+  .operator-dialog-fields {
+    grid-template-columns: 1fr;
+  }
 }

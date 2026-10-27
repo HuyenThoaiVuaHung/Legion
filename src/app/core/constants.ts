@@ -5,6 +5,10 @@ export const STORAGE_KEYS = {
   serverUrl: 'legion.serverUrl',
   authToken: 'legion.authToken',
   paletteSeed: 'legion.paletteSeed',
+  paletteMode: 'legion.paletteMode',
+  obsUrl: 'legion.obs.url',
+  obsAutoSwitch: 'legion.obs.autoSwitch',
+  obsSceneMap: 'legion.obs.sceneMap',
 } as const;
 
 /** Where each match position sends a player/viewer. */

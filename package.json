@@ -1,6 +1,6 @@
 {
   "name": "legion",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -23,6 +23,8 @@
     "@material/material-color-utilities": "^0.4.0",
     "ajv": "^8.8.0",
     "autoprefixer": "^10.4.0",
+    "jszip": "^3.10.1",
+    "obs-websocket-js": "^5.0.8",
     "rxjs": "~7.4.0",
     "socket.io-client": "^4.4.0",
     "tslib": "^2.3.0",

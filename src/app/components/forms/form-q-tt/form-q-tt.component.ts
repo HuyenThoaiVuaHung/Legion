@@ -1,11 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatFormField } from '@angular/material/form-field';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TtQuestion } from '../../../core/contracts/game';
 import { ApiService } from '../../../core/services/api.service';
 
@@ -13,30 +14,29 @@ import { ApiService } from '../../../core/services/api.service';
   selector: 'app-form-q-tt',
   templateUrl: './form-q-tt.component.html',
   styleUrl: './form-q-tt.component.scss',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatFormField,
     FormsModule,
-    MatDialogModule,
-    MatRadioGroup,
-    MatRadioButton,
-    MatInput,
     MatButton,
+    MatDialogModule,
+    MatFormField,
+    MatInput,
+    MatLabel,
     MatProgressSpinner,
+    MatRadioButton,
+    MatRadioGroup,
   ],
 })
 export class FormQTtComponent {
   private readonly api = inject(ApiService);
+  private readonly snackBar = inject(MatSnackBar);
   readonly dialogRef = inject<MatDialogRef<FormQTtComponent, TtQuestion>>(MatDialogRef);
-  readonly data = inject<TtQuestion>(MAT_DIALOG_DATA);
+  private readonly initial = inject<TtQuestion>(MAT_DIALOG_DATA);
 
+  readonly form: TtQuestion = { ...this.initial, type: this.initial.type ?? 'image' };
   readonly uploadingQuestionImage = signal(false);
   readonly uploadingAnswerImage = signal(false);
   readonly uploadingVideo = signal(false);
-
-  constructor() {
-    this.data.type ??= 'image';
-  }
 
   async onQuestionImageSelected(event: Event): Promise<void> {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -44,7 +44,9 @@ export class FormQTtComponent {
     this.uploadingQuestionImage.set(true);
     try {
       const { fileName } = await this.api.uploadMedia('tt', file);
-      this.data.questionImage = fileName;
+      this.form.questionImage = fileName;
+    } catch {
+      this.snackBar.open('Không thể tải ảnh câu hỏi lên máy chủ.', 'Đóng');
     } finally {
       this.uploadingQuestionImage.set(false);
     }
@@ -56,7 +58,9 @@ export class FormQTtComponent {
     this.uploadingAnswerImage.set(true);
     try {
       const { fileName } = await this.api.uploadMedia('tt', file);
-      this.data.answerImage = fileName;
+      this.form.answerImage = fileName;
+    } catch {
+      this.snackBar.open('Không thể tải ảnh đáp án lên máy chủ.', 'Đóng');
     } finally {
       this.uploadingAnswerImage.set(false);
     }
@@ -68,13 +72,31 @@ export class FormQTtComponent {
     this.uploadingVideo.set(true);
     try {
       const { fileName } = await this.api.uploadMedia('tt', file);
-      this.data.videoFile = fileName;
+      this.form.videoFile = fileName;
+    } catch {
+      this.snackBar.open('Không thể tải video lên máy chủ.', 'Đóng');
     } finally {
       this.uploadingVideo.set(false);
     }
   }
 
-  onNoClick(): void {
+  save(): void {
+    if (!this.form.question.trim() || !this.form.answer.trim()) {
+      this.snackBar.open('Nhập đầy đủ câu hỏi và đáp án trước khi lưu.', 'Đóng');
+      return;
+    }
+    if (this.form.type === 'image' && (!this.form.questionImage || !this.form.answerImage)) {
+      this.snackBar.open('Tải đủ ảnh câu hỏi và đáp án trước khi lưu.', 'Đóng');
+      return;
+    }
+    if (this.form.type === 'video' && !this.form.videoFile) {
+      this.snackBar.open('Tải video câu hỏi trước khi lưu.', 'Đóng');
+      return;
+    }
+    this.dialogRef.close({ ...this.form });
+  }
+
+  cancel(): void {
     this.dialogRef.close();
   }
 }

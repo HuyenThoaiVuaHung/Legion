@@ -13,6 +13,10 @@ export type PreviewMedia = 'none' | 'image' | 'audio' | 'video';
 
 /** Uniform view of one question row for the dashboard preview table. */
 export interface QuestionPreview {
+  /** Index in the active round collection, used by the editor's save action. */
+  index: number;
+  /** The canonical question shape; dialog editors receive a cloned copy. */
+  source: AnyQuestion;
   question: string;
   answer: string;
   typeLabel: string;
@@ -25,8 +29,12 @@ export interface QuestionPreview {
 }
 
 /** Normalizes any canonical question shape into a QuestionPreview. */
-export function toQuestionPreview(kind: RoundKind, question: AnyQuestion): QuestionPreview {
-  const base = { question: question.question, answer: question.answer };
+export function toQuestionPreview(
+  kind: RoundKind,
+  question: AnyQuestion,
+  index: number,
+): QuestionPreview {
+  const base = { index, source: question, question: question.question, answer: question.answer };
 
   switch (kind) {
     case 'kd': {
