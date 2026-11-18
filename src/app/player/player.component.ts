@@ -1,34 +1,24 @@
-import { Component } from "@angular/core";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
+/**
+ * Shell for every player/viewer screen. Browsers block audio autoplay until
+ * the user interacts with the page at least once, so this shows a one-shot
+ * overlay hint instead of the old code's self-rescheduling snackbar (which
+ * kept re-showing itself every 5s via a setInterval closure bug even after
+ * the audio had already been unlocked on a previous route).
+ */
 @Component({
-  selector: "app-player",
-  templateUrl: "./player.component.html",
-  styleUrl: "./player.component.scss",
+  selector: 'app-player',
+  templateUrl: './player.component.html',
+  styleUrl: './player.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterOutlet],
 })
 export class PlayerComponent {
-  isBlocked: boolean = true;
+  readonly audioBlocked = signal(true);
 
-  constructor(private matSnackbar: MatSnackBar) {
-    this.showSnackbar(undefined);
-    const blockedWarn = setInterval(() => {
-      this.showSnackbar(blockedWarn);
-    }, 5000);
-  }
-  private showSnackbar(interval: any) {
-    if (this.isBlocked) {
-      const ref = this.matSnackbar.open(
-        "Vui lòng nhấn vào màn hình để cho phép bật âm thanh.",
-        undefined,
-        {
-          duration: 2000,
-          horizontalPosition: "end",
-        }
-      );
-      ref.onAction().subscribe(() => {
-        this.isBlocked = false;
-        ref.dismiss();
-      });
-    } else clearInterval(interval);
+  unlockAudio(): void {
+    this.audioBlocked.set(false);
   }
 }

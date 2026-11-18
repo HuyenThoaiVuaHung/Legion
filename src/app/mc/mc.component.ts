@@ -4,10 +4,17 @@ import { AuthService } from "../services/auth.service";
 import { ChpData, TtData, VcnvData, VdData } from "../services/types/game";
 import { Player } from "../services/types/match.data";
 
+/**
+ * MC overview screen: live snapshot of the current round question, player
+ * turn/steal state and the running clock, for whoever is hosting the show.
+ * Realtime pushes keep the old event names; round data is fetched over REST.
+ */
 @Component({
-  selector: "app-mc",
-  templateUrl: "./mc.component.html",
-  styleUrls: ["./mc.component.scss"],
+  selector: 'app-mc',
+  templateUrl: './mc.component.html',
+  styleUrl: './mc.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [PlayerListComponent, CountdownComponent, NgClass],
 })
 export class McComponent implements OnInit {
   constructor(public router: Router, public auth: AuthService) {}
@@ -132,12 +139,60 @@ export class McComponent implements OnInit {
   }
 }
 
-function sortByTimestamp(a, b) {
-  if (a.timestamp < b.timestamp) {
-    return -1;
+  constructor() {
+    void this.api.getRound('vcnv').then((round) => this.vcnvRound.set(round));
+    void this.api.getRound('tt').then((round) => this.ttRound.set(round));
+    void this.api.getRound('vd').then((round) => this.vdRound.set(round));
+
+    const unsubs = [
+      this.network.on<[KdQuestion | null]>('update-kd-question', (question) =>
+        this.currentKdQuestion.set(question ?? null),
+      ),
+      this.network.on<[VcnvQuestion | null]>('update-vcnv-question', (question) =>
+        this.currentVcnvQuestion.set(question ?? null),
+      ),
+      this.network.on<[TtQuestion | null]>('update-tangtoc-question', (question) =>
+        this.currentTtQuestion.set(question ?? null),
+      ),
+      this.network.on<[VdQuestion | null]>('update-vedich-question', (question) =>
+        this.currentVdQuestion.set(question ?? null),
+      ),
+      this.network.on<[RoundDataMap['vcnv']]>('update-vcnv-data', (round) =>
+        this.vcnvRound.set(round),
+      ),
+      this.network.on<[RoundDataMap['tt']]>('update-tangtoc-data', (round) =>
+        this.ttRound.set(round),
+      ),
+      this.network.on<[RoundDataMap['vd']]>('update-vedich-data', (round) =>
+        this.vdRound.set(round),
+      ),
+      this.network.on<[number]>('update-clock', (seconds) => {
+        if (this.clockSeconds() === 0) this.clockPeakSeconds.set(seconds);
+        this.clockSeconds.set(seconds);
+      }),
+      this.network.on<[number]>('player-got-turn-kd', (playerIndex) =>
+        this.kdTurnPlayerIndex.set(playerIndex),
+      ),
+      this.network.on<[]>('clear-turn-player-kd', () => this.kdTurnPlayerIndex.set(null)),
+      // Old code reset the turn to a bare 0 here, which broke the turn-name
+      // lookup on the next render — treat it the same as clearing the turn.
+      this.network.on<[]>('next-question', () => this.kdTurnPlayerIndex.set(null)),
+      this.network.on<[number, boolean]>('update-3s-timer-kd', (tenths, isAnswerTimer) => {
+        if (isAnswerTimer) this.kdAnswerTimerTenths.set(tenths);
+        else this.kdTurnTimerTenths.set(tenths);
+      }),
+      this.network.on<[number]>('player-steal-question', (playerIndex) =>
+        this.stealingPlayerIndex.set(playerIndex),
+      ),
+      this.network.on<[]>('clear-stealing-player', () => this.stealingPlayerIndex.set(null)),
+    ];
+    this.destroyRef.onDestroy(() => unsubs.forEach((unsub) => unsub()));
   }
-  if (a.timestamp > b.timestamp) {
-    return 1;
+
+  /** Displayed max for the countdown ring; falls back to the live value. */
+  readonly clockMaxSeconds = computed(() => this.clockPeakSeconds() || this.clockSeconds() || 1);
+
+  vcnvAnswerLength(answer: string): number {
+    return answer.split(' ').join('').length;
   }
-  return 0;
 }

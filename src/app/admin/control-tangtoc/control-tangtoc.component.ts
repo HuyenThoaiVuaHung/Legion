@@ -1,16 +1,54 @@
-import { Component, OnInit } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { Router } from "@angular/router";
-import { FormPlayerComponent } from "../../components/forms/form-player/form-player.component";
-import { FormQTtComponent } from "../../components/forms/form-q-tt/form-q-tt.component";
-import { AuthService } from "../../services/auth.service";
-import { TtData, TtQuestion } from "../../services/types/game";
-import { ConfigService } from "src/app/services/config.service";
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { MatButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatTableModule } from '@angular/material/table';
+import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
+import { FormQTtComponent } from '../../components/forms/form-q-tt/form-q-tt.component';
+import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
+import { POSITION_LABELS } from '../../core/constants';
+import { Player, TtQuestion, TtRound } from '../../core/contracts/game';
+import { ApiService } from '../../core/services/api.service';
+import { MediaService } from '../../core/services/media.service';
+import { NetworkService } from '../../core/services/network.service';
+import { SessionService } from '../../core/services/session.service';
+
+/** Sentinel question id the server understands as "hide the question". */
+const HIDE_QUESTION_ID = -1;
+/** Countdown length while the video question plays. */
+const VIDEO_TIMER_SECONDS = 40;
 
 @Component({
-  selector: "app-control-tangtoc",
-  templateUrl: "./control-tangtoc.component.html",
-  styleUrls: ["./control-tangtoc.component.scss"],
+  selector: 'app-control-tangtoc',
+  templateUrl: './control-tangtoc.component.html',
+  styleUrls: ['./control-tangtoc.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    NgClass,
+    MatButton,
+    MatCard,
+    MatCardActions,
+    MatCardContent,
+    MatCardHeader,
+    MatCardSubtitle,
+    MatCardTitle,
+    MatCheckbox,
+    MatIcon,
+    MatSlideToggle,
+    MatTableModule,
+    MenuItemComponent,
+  ],
 })
 export class ControlTangtocComponent implements OnInit {
   constructor(
@@ -35,47 +73,39 @@ export class ControlTangtocComponent implements OnInit {
     "mark",
     "active",
   ];
-  ngOnInit(): void {
-    this.auth.resetListeners();
-    if (
-      this.auth.matchData().matchPos != "TT_Q" &&
-      this.auth.matchData().matchPos != "TT_A"
-    ) {
-      this.auth.socket.emit("change-match-position", "TT_Q");
+
+  protected readonly round = signal<TtRound | null>(null);
+  protected readonly currentTime = signal(0);
+  protected readonly chosenRow = signal<TtQuestion | null>(null);
+  protected readonly displayingRow = signal<TtQuestion | null>(null);
+  /** Replaces the old global config flag: re-show the answer when returning to the question view. */
+  protected readonly autoShowAnswer = signal(false);
+
+  protected readonly players = computed(() => this.session.match()?.players ?? []);
+  protected readonly positionLabel = computed(() => {
+    const position = this.session.match()?.position;
+    return position ? POSITION_LABELS[position] : '';
+  });
+
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+    for (const off of [
+      this.network.on<[TtRound]>('update-tangtoc-data', (data) => this.round.set(data)),
+      this.network.on<[number]>('update-clock', (clock) => this.currentTime.set(clock)),
+    ]) {
+      destroyRef.onDestroy(off);
     }
-    this.auth.socket.on("update-match-data", (data) => {
-      this.auth.matchData.set(data);
-    });
-    this.auth.socket.on("update-tangtoc-data", (data) => {
-      this.tangtocData = data;
-    });
-    this.auth.socket.on("update-clock", (clock) => {
-      this.currentTime = clock;
-    });
-    this.auth.socket.emit("get-tangtoc-data", (callback: TtData) => {
-      this.tangtocData = callback;
-      if (this.tangtocData.showResults == true) this.toggleResultsDisplay();
-    });
+    void this.init();
   }
 
-  onDoubleClickPlayer(row: any) {
-    let player =
-      this.auth.matchData().players[this.auth.matchData().players.indexOf(row)];
-    const dialogRef = this.dialog.open(FormPlayerComponent, {
-      data: player,
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        var payload: any = {
-          player: result,
-          index: this.auth.matchData().players.indexOf(row),
-        };
-        payload.player.score = parseInt(payload.player.score);
-        this.auth.socket.emit("edit-player-info", payload, (callback) => {
-          console.debug(callback.message);
-        });
-      }
-    });
+  private async init(): Promise<void> {
+    const round = await this.api.getRound('tt');
+    this.round.set(round);
+    if (round.showResults) this.toggleResultsDisplay();
+    const position = this.session.match()?.position;
+    if (position !== 'TT_Q' && position !== 'TT_A') {
+      this.session.match.set(await this.api.setPosition('TT_Q'));
+    }
   }
   editQuestion() {
     let question =
@@ -103,9 +133,16 @@ export class ControlTangtocComponent implements OnInit {
       "submit-mark-tangtoc-admin",
       this.tangtocData!.playerAnswers,
     );
+    this.round.set({ ...round, playerAnswers });
+    void this.saveRound();
   }
-  playSfx(sfxId: string) {
-    this.auth.socket.emit("play-sfx", sfxId);
+
+  private async saveRound(): Promise<TtRound | null> {
+    const round = this.round();
+    if (!round) return null;
+    const saved = await this.api.putRound('tt', round);
+    this.round.set(saved);
+    return saved;
   }
   onClickQuestion(row) {
     this.chosenRow = structuredClone(row);
@@ -113,35 +150,13 @@ export class ControlTangtocComponent implements OnInit {
   onDoubleClickQuestion(row) {
     this.displayingRow = structuredClone(row);
   }
-  toggleQuestionAnswer() {
-    if (this.tangtocData!.showAnswer == true) {
-      this.tangtocData!.showAnswer = false;
-    } else {
-      this.tangtocData!.showAnswer = true;
-    }
-    this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
-  }
-  getTimePassed(id: number): string {
-    let readableTime = "0s0ms";
-    if (this.tangtocData!.playerAnswers[id].timestamp > 0) {
-      let timePassedinMs =
-        this.tangtocData!.playerAnswers[id].timestamp -
-        this.tangtocData!.timerStartTimestamp;
-      readableTime =
-        Math.trunc(timePassedinMs / 1000) +
-        "s" +
-        (timePassedinMs % 1000) +
-        "ms";
-    }
-    return readableTime;
-  }
-  showQuestion() {
-    this.tangtocData!.showAnswer = false;
-    this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
-    this.auth.socket.emit("broadcast-tt-question", this.displayingRow!.id);
-    if (this.tangtocData!.showAnswer == false) {
-      this.playSfx("TT_QUESTION_SHOW");
-    }
+
+  getTimePassed(playerIndex: number): string {
+    const round = this.round();
+    const answer = round?.playerAnswers[playerIndex];
+    if (!round || !answer || answer.timestamp <= 0) return '0s0ms';
+    const passedMs = answer.timestamp - round.timerStartTimestamp;
+    return `${Math.trunc(passedMs / 1000)}s${passedMs % 1000}ms`;
   }
   hideQuestion() {
     this.auth.socket.emit("broadcast-tt-question", -1);
@@ -175,17 +190,42 @@ export class ControlTangtocComponent implements OnInit {
     this.auth.socket.emit("tangtoc-play-video");
     this.startTimer(30);
   }
-  goToVD() {
-    this.router.navigate(["/c-vd"]);
+
+  /** Countdown length for an image question, per Olympia pacing. */
+  imageTimerSeconds(question: TtQuestion): number {
+    return question.id > 2 ? 30 : 20;
   }
-  showPoints() {
-    if (this.auth.matchData().matchPos == "PNTS") {
-      this.auth.socket.emit("change-match-position", "TT_Q");
-    } else {
-      this.auth.socket.emit("change-match-position", "PNTS");
+
+  togglePlayVideo(): void {
+    this.network.emit('tangtoc-play-video');
+    this.startTimer(VIDEO_TIMER_SECONDS);
+  }
+
+  toggleResultsDisplay(): void {
+    this.network.emit('toggle-results-display-tangtoc');
+  }
+
+  pauseClock(): void {
+    this.network.emit('play-pause-clock', this.currentTime());
+  }
+
+  /** Flips the audience view between the question and the players' answers. */
+  async toggleAnswerDisplay(): Promise<void> {
+    const position = this.session.match()?.position;
+    if (position === 'TT_Q') {
+      this.session.match.set(await this.api.setPosition('TT_A'));
+      return;
     }
-  }
-  public pauseClock() {
-    this.auth.socket.emit("play-pause-clock", this.currentTime);
+    if (position !== 'TT_A') return;
+    this.session.match.set(await this.api.setPosition('TT_Q'));
+    if (this.autoShowAnswer()) {
+      const round = this.round();
+      if (round) {
+        this.round.set({ ...round, showAnswer: true });
+        await this.saveRound();
+        this.network.emit('broadcast-tt-question', this.displayingRow()?.id ?? HIDE_QUESTION_ID);
+      }
+    }
+    if (this.round()?.showResults) this.toggleResultsDisplay();
   }
 }

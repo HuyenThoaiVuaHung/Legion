@@ -1,16 +1,15 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
-import { AuthService } from "src/app/services/auth.service";
-import { MatchData } from "src/app/services/types/match.data";
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AssetService } from '../../core/services/asset.service';
+import { SessionService } from '../../core/services/session.service';
 
 @Component({
-  selector: "app-points-view",
-  templateUrl: "./points-view.component.html",
-  styleUrls: ["./points-view.component.scss"],
+  selector: 'app-points-view',
+  templateUrl: './points-view.component.html',
+  styleUrl: './points-view.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [],
 })
-export class PointsViewComponent implements OnInit {
-  slideIndex = 5;
-  matchData: MatchData = this.authService.matchData();
-  constructor(private router: Router, public authService: AuthService) {}
-  ngOnInit(): void {}
+export class PointsViewComponent {
+  protected readonly session = inject(SessionService);
+  protected readonly assets = inject(AssetService);
 }

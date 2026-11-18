@@ -1,12 +1,12 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, Signal } from "@angular/core";
+import { Component, input, Signal, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
-  selector: "menu-item",
-  templateUrl: "./menu-item.component.html",
-  standalone: true,
-  imports: [CommonModule],
-  styleUrl: "./menu-item.component.scss",
+    selector: "menu-item",
+    templateUrl: "./menu-item.component.html",
+    imports: [CommonModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: "./menu-item.component.scss"
 })
 export class MenuItemComponent {
   public description: Signal<string> = input("");
