@@ -1,7 +1,12 @@
-<div #container>
-  <div class="name-box name-highlight" color="accent">
-    <div class="text-box">
-      <p class="name-text">{{ auth.matchData().players[index].name }}</p>
+@if (player(); as player) {
+  <div #container>
+    <div class="name-box name-highlight" color="accent">
+      <div class="text-box">
+        <p class="name-text">{{ player.name }}</p>
+      </div>
+    </div>
+    <div class="score-box">
+      <p class="score-text">{{ player.score }}</p>
     </div>
   </div>
 }

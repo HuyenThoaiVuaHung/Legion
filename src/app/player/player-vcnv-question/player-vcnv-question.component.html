@@ -65,19 +65,18 @@
       <div
         class="disablePointerActions h-full text-left w-9/12 relative box-border items p-5 text-2xl questionBox flex overflow-auto rounded-md"
       >
-        {{ curVCNVQuestion.question }}
-        <div
-          *ngIf="curVCNVQuestion.answer != undefined"
-          class="font-bold absolute m-5 right-0 bottom-0"
-        >
-          HN CÓ {{ curVCNVQuestion.answer.split(" ").join("").length }} KÍ TỰ
-        </div>
-        <div
-          *ngIf="auth.userInfo().roleId == 3 && currentTime > 0"
-          class="font-thin absolute m-5 right-left bottom-0"
-        >
-          {{ currentTime }}
-        </div>
+        @if (activeQuestion(); as question) {
+          {{ question.question }}
+          <div class="font-bold absolute m-5 right-0 bottom-0">
+            {{ question.type === 'CNV' ? 'CNV' : 'HN' }} CÓ
+            {{ question.answer.split(' ').join('').length }} KÍ TỰ
+          </div>
+        }
+        @if (session.role() === Role.Viewer && currentTime() > 0) {
+          <div class="font-thin absolute m-5 left-0 bottom-0">
+            {{ currentTime() }}
+          </div>
+        }
       </div>
       <div class="disablePointerActions w-max overflow-hidden h-full text-center items-center justify-center flex flex-col">
         <player-list

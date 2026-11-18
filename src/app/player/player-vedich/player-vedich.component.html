@@ -14,65 +14,67 @@
       [turnIndex]="stealingPlayerIndex()"
     ></player-list>
   </div>
-  @if(vdData.ifQuestionPickerShowing == false) {
-  <div class="flex-grow flex flex-col gap-5">
-    <div
-      class="disablePointerActions flex flex-col questionBox h-full w-full text-4xl p-10 box-border border-2 rounded-xl gap-y-6 "
-    >
-      <div class="rounded-xl w-full">
-        {{ curQuestion.question }}
-      </div>
-      @if (curQuestion.type != 'N' && curQuestion.type != 'A'){
-      <div class="w-full flex justify-around">
-        @if (curQuestion.type == 'V'){
-        <video
-          id="vedich-video"
-          class="videoBox"
-          preload="auto"
-          poster="../../assets/misc/placeholder.png"
+  @if (round(); as data) {
+    <div class="flex-grow flex flex-col gap-5">
+      @if (!data.isQuestionPickerShown) {
+        <div
+          class="disablePointerActions flex flex-col questionBox h-full w-full text-4xl p-10 box-border border-2 rounded-xl gap-y-6"
         >
-          <source src="{{ videoSource }}" type="video/mp4" />
-        </video>
-
-        } @if (curQuestion.type == 'I'){
-        <img class="h-72" src="{{ imgSource }}" />
-        }
-      </div>
-      @if (session.role() !== Role.Viewer) {
-        <div class="grid place-items-center">
-          <button
-            mat-fab
-            extended
-            [disabled]="buttonDisabled()"
-            (click)="stealQuestion()"
-            matRipple
-            class="very-long"
-          >
-            GIÀNH CHUÔNG TRẢ LỜI
-          </button>
+          @if (currentQuestion(); as question) {
+            <div class="rounded-xl w-full">{{ question.question }}</div>
+            @if (question.type === 'V' && videoUrl(); as url) {
+              <div class="w-full flex justify-around">
+                <video
+                  id="vedich-video"
+                  class="videoBox"
+                  preload="auto"
+                  poster="../../assets/misc/placeholder.png"
+                  [src]="url"
+                ></video>
+              </div>
+            } @else if (question.type === 'I' && imageUrl(); as url) {
+              <div class="w-full flex justify-around">
+                <img class="h-72" [src]="url" alt="" />
+              </div>
+            }
+          }
+          @if (session.role() !== Role.Viewer) {
+            <div class="grid place-items-center">
+              <button
+                mat-fab
+                extended
+                [disabled]="buttonDisabled()"
+                (click)="stealQuestion()"
+                class="very-long"
+              >
+                GIÀNH CHUÔNG TRẢ LỜI
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="flex w-full h-full justify-end items-center p-5 box-border">
+          <div class="disablePointerActions gap-5 flex flex-col h-96 w-52">
+            @for (row of pickerRows; track row.points) {
+              <div class="flex items-center h-max">
+                <div class="grid place-items-center h-40 w-12">
+                  @for (index of row.indices; track index) {
+                    <span>
+                      <mat-checkbox
+                        disabled
+                        [ngModel]="data.pickedQuestions[index] ?? false"
+                      ></mat-checkbox>
+                    </span>
+                  }
+                </div>
+                <div class="pick-tile">
+                  {{ row.points }}
+                </div>
+              </div>
+            }
+          </div>
         </div>
       }
-    </div>
-  } @else {
-    <div class="flex w-full h-full justify-end items-center p-5 box-border">
-      <div class="disablePointerActions gap-5 flex flex-col h-96 w-52">
-        @for (row of pickerRows; track row.points) {
-          <div class="flex items-center h-max">
-            <div class="grid place-items-center h-40 w-12">
-              @for (index of row.indices; track index) {
-                <span>
-                  <mat-checkbox disabled [ngModel]="round()?.pickedQuestions?.[index]"></mat-checkbox>
-                </span>
-              }
-            </div>
-            <div
-              class="pick-tile"
-            >
-              {{ row.points }}
-            </div>
-          </div>
-        }
-      </div>
     </div>
   }
 </div>

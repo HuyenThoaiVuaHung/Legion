@@ -1,14 +1,21 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
-import { AuthService } from "../services/auth.service";
-import { ChpData, TtData, VcnvData, VdData } from "../services/types/game";
-import { Player } from "../services/types/match.data";
+import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import {
+  KdQuestion,
+  Player,
+  RoundDataMap,
+  TtQuestion,
+  VcnvQuestion,
+  VdQuestion,
+} from '../core/contracts/game';
+import { POSITION_LABELS } from '../core/constants';
+import { ApiService } from '../core/services/api.service';
+import { MediaService } from '../core/services/media.service';
+import { NetworkService } from '../core/services/network.service';
+import { SessionService } from '../core/services/session.service';
+import { CountdownComponent } from '../components/countdown/countdown.component';
+import { PlayerListComponent } from '../components/player-list/player-list.component';
 
-/**
- * MC overview screen: live snapshot of the current round question, player
- * turn/steal state and the running clock, for whoever is hosting the show.
- * Realtime pushes keep the old event names; round data is fetched over REST.
- */
 @Component({
   selector: 'app-mc',
   templateUrl: './mc.component.html',
@@ -16,130 +23,67 @@ import { Player } from "../services/types/match.data";
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PlayerListComponent, CountdownComponent, NgClass],
 })
-export class McComponent implements OnInit {
-  constructor(public router: Router, public auth: AuthService) {}
-  question: any = {};
-  currentTime: number = 0;
-  maxTime: number = 0;
-  vdData?: VdData;
-  vcnvData?: VcnvData;
-  threeSecTimer1: number = 0;
-  threeSecTimer2: number = 0;
-  ttData?: TtData;
-  chpData?: ChpData;
-  kdTurn: any = {};
-  imagePath: string = "../../../assets/images/";
-  stealingPlayerIndex: number = -1;
-  answerCache: string = "";
-  ngOnInit(): void {
-    this.auth.resetListeners();
-    this.auth.socket.on("update-kd-question", (data) => {
-      this.answerCache = this.question.answer;
-      this.question = data;
-    });
-    this.auth.socket.on("update-clock", (clock) => {
-      if (this.currentTime == 0) {
-        this.maxTime = clock;
-      }
+export class McComponent {
+  private readonly api = inject(ApiService);
+  private readonly media = inject(MediaService);
+  private readonly network = inject(NetworkService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly session = inject(SessionService);
 
-      this.currentTime = clock;
-    });
-    this.auth.socket.on("player-got-turn-kd", (player) => {
-      this.kdTurn = player;
-    });
-    this.auth.socket.on("player-steal-question", (id) => {
-      this.stealingPlayerIndex = id;
-    });
-    this.auth.socket.emit("get-vcnv-data", (callback: VcnvData) => {
-      this.vcnvData = callback;
-      this.imagePath =
-        "../../../assets/picture-questions/vcnv/" +
-        this.vcnvData.questions[5].picFileName;
-    });
-    this.auth.socket.emit("get-vedich-data", (callback: VdData) => {
-      this.vdData = callback;
-    });
-    this.auth.socket.on("clear-turn-player-kd", () => {
-      this.kdTurn = {};
-    });
-    this.auth.socket.emit("get-tangtoc-data", (callback: TtData) => {
-      this.ttData = callback;
-    });
-    this.auth.socket.on("next-question", () => {
-      this.kdTurn = 0;
-    });
-    this.auth.socket.on("update-vcnv-question", (question) => {
-      this.question = question;
-    });
-    this.auth.socket.on("update-tangtoc-question", (question) => {
-      this.question = question;
-    });
-    this.auth.socket.on("update-3s-timer-kd", (time, ifPlayer) => {
-      if (ifPlayer == true) {
-        this.threeSecTimer2 = time;
-      } else {
-        this.threeSecTimer1 = time;
-      }
-    });
-    this.auth.socket.on("update-vedich-question", (question) => {
-      this.question = question;
-    });
-    this.auth.socket.on("clear-stealing-player", () => {
-      this.stealingPlayerIndex = -1;
-    });
-    this.auth.socket.on("update-vcnv-data", (data: VcnvData) => {
-      this.vcnvData = data;
-      this.imagePath =
-        "../../../assets/picture-questions/vcnv/" +
-        this.vcnvData.questions[5].picFileName;
-    });
-    this.auth.socket.on("update-vedich-data", (data) => {
-      this.vdData = data;
-    });
-    this.auth.socket.on("update-tangtoc-data", (data: TtData) => {
-      this.ttData = data;
-      this.ttData.playerAnswers.sort(sortByTimestamp);
-    });
-    this.auth.socket.emit("get-chp-data", (data) => {
-      this.chpData = data;
-    });
-    this.auth.socket.on('update-chp-question', (question) => {
-      this.question = question;
-    })
-    this.auth.socket.on("update-chp-data", (data) => {
-      this.chpData = data;
-    });
+  readonly kdRound = signal<RoundDataMap['kd'] | null>(null);
+  readonly vcnvRound = signal<RoundDataMap['vcnv'] | null>(null);
+  readonly ttRound = signal<RoundDataMap['tt'] | null>(null);
+  readonly vdRound = signal<RoundDataMap['vd'] | null>(null);
+  readonly currentKdQuestion = signal<KdQuestion | null>(null);
+  readonly currentVcnvQuestion = signal<VcnvQuestion | null>(null);
+  readonly currentTtQuestion = signal<TtQuestion | null>(null);
+  readonly currentVdQuestion = signal<VdQuestion | null>(null);
+  readonly clockSeconds = signal(0);
+  readonly clockPeakSeconds = signal(0);
+  readonly kdAnswerTimerTenths = signal(0);
+  readonly kdTurnTimerTenths = signal(0);
+  readonly kdTurnPlayerIndex = signal<number | null>(null);
+  readonly stealingPlayerIndex = signal<number | null>(null);
 
-  }
-  resolveCnvPlayers(cnvPlayers): Player[] {
-    return cnvPlayers.map((player) => this.auth.matchData().players[player.id]);
-  }
-  counter: number = 0;
-  getAnswerTurn() {
-    this.auth.socket.emit("get-turn-kd");
-    this.auth.socket.emit("start-3s-timer-kd", true);
-  }
-  passQuestion() {}
-  getTimePassed(id: number): string {
-    let readableTime = "0s0ms";
-    if (this.ttData!.playerAnswers[id].timestamp > 0) {
-      let timePassedinMs =
-        this.ttData!.playerAnswers[id].timestamp -
-        this.ttData!.timerStartTimestamp;
-      readableTime =
-        Math.trunc(timePassedinMs / 1000) +
-        "s" +
-        (timePassedinMs % 1000) +
-        "ms";
+  readonly players = computed(() => this.session.match()?.players ?? []);
+  readonly position = computed(() => this.session.match()?.position ?? 'H');
+  readonly positionLabel = computed(() => POSITION_LABELS[this.position()]);
+  readonly highlightIndex = computed(() => {
+    if (this.position() === 'VD') return this.vdRound()?.activePlayerIndex ?? -1;
+    if (this.position() === 'KD' && this.kdRound()?.gamemode === 'S') {
+      return this.kdRound()?.activePlayerIndex ?? -1;
     }
-    return readableTime;
-  }
-  public getVcnvAnswerLength(index: number) {
-    return this.vcnvData!.questions[index].answer.split(' ').join("").length;
-  }
-}
+    return -1;
+  });
+  readonly turnIndex = computed(
+    () => this.stealingPlayerIndex() ?? this.kdTurnPlayerIndex() ?? -1,
+  );
+  readonly kdTurnPlayerName = computed(() => {
+    const index = this.kdTurnPlayerIndex();
+    return index === null ? '' : (this.players()[index]?.name ?? '');
+  });
+  readonly obstaclePlayers = computed(() => {
+    const players = this.players();
+    return [...(this.vcnvRound()?.obstacleBuzzes ?? [])]
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .flatMap((buzz): Player[] => {
+        const player = players[buzz.playerIndex];
+        return player ? [player] : [];
+      });
+  });
+  readonly vcnvObstacleQuestion = computed(
+    () => this.vcnvRound()?.questions.find((question) => question.type === 'CNV') ?? null,
+  );
+  readonly vcnvObstacleImage = computed(() => {
+    const file = this.vcnvObstacleQuestion()?.imageFile;
+    return file ? this.media.resolve('vcnv', file) : null;
+  });
+  readonly clockMaxSeconds = computed(
+    () => this.clockPeakSeconds() || this.clockSeconds() || 1,
+  );
 
   constructor() {
+    void this.api.getRound('kd').then((round) => this.kdRound.set(round));
     void this.api.getRound('vcnv').then((round) => this.vcnvRound.set(round));
     void this.api.getRound('tt').then((round) => this.ttRound.set(round));
     void this.api.getRound('vd').then((round) => this.vdRound.set(round));
@@ -174,8 +118,6 @@ export class McComponent implements OnInit {
         this.kdTurnPlayerIndex.set(playerIndex),
       ),
       this.network.on<[]>('clear-turn-player-kd', () => this.kdTurnPlayerIndex.set(null)),
-      // Old code reset the turn to a bare 0 here, which broke the turn-name
-      // lookup on the next render — treat it the same as clearing the turn.
       this.network.on<[]>('next-question', () => this.kdTurnPlayerIndex.set(null)),
       this.network.on<[number, boolean]>('update-3s-timer-kd', (tenths, isAnswerTimer) => {
         if (isAnswerTimer) this.kdAnswerTimerTenths.set(tenths);
@@ -188,9 +130,6 @@ export class McComponent implements OnInit {
     ];
     this.destroyRef.onDestroy(() => unsubs.forEach((unsub) => unsub()));
   }
-
-  /** Displayed max for the countdown ring; falls back to the live value. */
-  readonly clockMaxSeconds = computed(() => this.clockPeakSeconds() || this.clockSeconds() || 1);
 
   vcnvAnswerLength(answer: string): number {
     return answer.split(' ').join('').length;
