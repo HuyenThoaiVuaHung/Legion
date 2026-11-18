@@ -1,0 +1,106 @@
+name: Cut Legion Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: SemVer without the v prefix (for example 2.1.0)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish Legendary distribution in Legion
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
+      BACKEND_DIR: _release/Legendary
+    steps:
+      - name: Check out Legion main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check out matching Legendary tag
+        uses: actions/checkout@v4
+        with:
+          repository: HuyenThoaiVuaHung/Legendary
+          ref: v${{ inputs.version }}
+          path: _release/Legendary
+
+      - name: Validate release train
+        run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Version must be SemVer, e.g. 2.1.0" >&2
+            exit 1
+          fi
+          test "$(node -p "require('./package.json').version")" = "$VERSION"
+          test "$(node -p "require('./$BACKEND_DIR/package.json').version")" = "$VERSION"
+          test "$(git rev-parse "v$VERSION^{commit}")" = "$GITHUB_SHA"
+          test "$(git -C "$BACKEND_DIR" describe --exact-match --tags HEAD)" = "v$VERSION"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.3
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install Legion dependencies
+        run: npm ci
+
+      # Build-only release policy: no test command runs in the release train.
+      - name: Build Legion browser client
+        run: npm run build
+
+      - name: Install Legendary dependencies
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: npm ci
+
+      - name: Type-check and build Legendary
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: |
+          npm run typecheck
+          npm run build
+
+      - name: Assemble portable release archive
+        run: |
+          rm -rf release "$BACKEND_DIR/Legion"
+          mkdir -p "release/legendary-v$VERSION" "$BACKEND_DIR/Legion"
+          cp -R dist/Legion/. "$BACKEND_DIR/Legion/"
+          cp "$BACKEND_DIR/package.json" "$BACKEND_DIR/package-lock.json" "release/legendary-v$VERSION/"
+          cp -R "$BACKEND_DIR/dist" "$BACKEND_DIR/assets" "$BACKEND_DIR/Legion" "release/legendary-v$VERSION/"
+          cat > "release/legendary-v$VERSION/release-manifest.json" <<EOF
+          {
+            "version": "$VERSION",
+            "frontend": { "repository": "$GITHUB_REPOSITORY", "commit": "$GITHUB_SHA", "tag": "v$VERSION" },
+            "backend": {
+              "repository": "HuyenThoaiVuaHung/Legendary",
+              "commit": "$(git -C "$BACKEND_DIR" rev-parse HEAD)",
+              "tag": "v$VERSION"
+            },
+            "node": "22.22.3",
+            "persistentDataDirectory": "match_data"
+          }
+          EOF
+          tar -C release -czf "legendary-v$VERSION.tar.gz" "legendary-v$VERSION"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$VERSION" "legendary-v$VERSION.tar.gz" \
+            --title "Legion + Legendary v$VERSION" \
+            --generate-notes
+
+      - name: Upload release archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: legendary-v${{ inputs.version }}
+          path: legendary-v${{ inputs.version }}.tar.gz
+          if-no-files-found: error
+          retention-days: 90

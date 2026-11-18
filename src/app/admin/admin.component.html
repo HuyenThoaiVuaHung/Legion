@@ -28,7 +28,9 @@
     <a mat-icon-button (click)="stopKdLoopingAudio()" routerLink="/admin/chp" title="Câu hỏi phụ">
       <mat-icon>workspaces</mat-icon>
     </a>
+  }
+</nav>
 
-  </mat-toolbar>
+<mat-tab-nav-panel #tabPanel>
   <router-outlet></router-outlet>
-</div>
+</mat-tab-nav-panel>
