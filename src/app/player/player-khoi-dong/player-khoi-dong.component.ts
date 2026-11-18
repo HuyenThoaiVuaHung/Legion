@@ -107,4 +107,5 @@ export class PlayerKhoiDongComponent implements OnInit {
   getAnswerTurn() {
     this.auth.socket.emit("get-turn-kd");
   }
+  
 }

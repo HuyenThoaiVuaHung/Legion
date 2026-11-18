@@ -5,6 +5,7 @@ import { AuthService } from "../services/auth.service";
 import { MatDialog } from "@angular/material/dialog";
 import { FormConfigComponent } from "../components/forms/form-config/form-config.component";
 import { ConfigService } from "../services/config.service";
+import { SfxService } from "../services/sfx-service.service";
 
 @Component({
   selector: "app-admin",
@@ -12,7 +13,7 @@ import { ConfigService } from "../services/config.service";
   styleUrl: "./admin.component.scss",
 })
 export class AdminComponent {
-  constructor(private router: Router, public auth: AuthService, private dialog: MatDialog, private config: ConfigService) {}
+  constructor(private router: Router, public auth: AuthService, private dialog: MatDialog, private config: ConfigService, private sfxService: SfxService) {}
   changeMatchPosAdmin(pos: string) {
     this.router.navigate([getControlUrlFromMatchPosition(pos)]);
   }
@@ -50,5 +51,8 @@ export class AdminComponent {
         this.config.config.set(result);
       }
     });
+  }
+  stopKdLoopingAudio() {
+    this.auth.socket.emit("stop-kd-sound");
   }
 }

@@ -17,8 +17,8 @@ export class ControlTangtocComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog,
     public auth: AuthService,
-    private config: ConfigService
-  ) { }
+    private config: ConfigService,
+  ) {}
   ifPlayerCNV: boolean = true;
   tangtocData: TtData | undefined;
   currentTime: number = 0;
@@ -80,9 +80,9 @@ export class ControlTangtocComponent implements OnInit {
   editQuestion() {
     let question =
       this.tangtocData!.questions[
-      this.tangtocData!.questions.indexOf(
-        this.chosenRow || ({} as TtQuestion)
-      )
+        this.tangtocData!.questions.findIndex(
+          (q) => q.id === this.chosenRow!.id,
+        )
       ];
     const dialogRef = this.dialog.open(FormQTtComponent, {
       data: question,
@@ -90,7 +90,9 @@ export class ControlTangtocComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result && this.chosenRow) {
         this.tangtocData!.questions[
-          this.tangtocData!.questions.indexOf(this.chosenRow)
+          this.tangtocData!.questions.findIndex(
+            (q) => q.id === this.chosenRow!.id,
+          )
         ] = result;
         this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
       }
@@ -99,17 +101,17 @@ export class ControlTangtocComponent implements OnInit {
   submitMark() {
     this.auth.socket.emit(
       "submit-mark-tangtoc-admin",
-      this.tangtocData!.playerAnswers
+      this.tangtocData!.playerAnswers,
     );
   }
   playSfx(sfxId: string) {
     this.auth.socket.emit("play-sfx", sfxId);
   }
   onClickQuestion(row) {
-    this.chosenRow = row;
+    this.chosenRow = structuredClone(row);
   }
   onDoubleClickQuestion(row) {
-    this.displayingRow = row;
+    this.displayingRow = structuredClone(row);
   }
   toggleQuestionAnswer() {
     if (this.tangtocData!.showAnswer == true) {
@@ -157,17 +159,21 @@ export class ControlTangtocComponent implements OnInit {
       this.auth.socket.emit("change-match-position", "TT_A");
     } else if (this.auth.matchData().matchPos == "TT_A") {
       this.auth.socket.emit("change-match-position", "TT_Q");
-      if (this.config.config().automaticallyShowTangTocAnswer && this.tangtocData?.questions[this.displayingRow?.id || -1].answer_image) {
+      if (this.config.config().automaticallyShowTangTocAnswer) {
         this.tangtocData!.showAnswer = true;
-        this.auth.socket.emit("update-tangtoc-data", this.tangtocData);
-        setTimeout(() => this.auth.socket.emit("broadcast-tt-question", this.displayingRow?.id || -1));
+        this.auth.socket.emit("update-tangtoc-data", this.tangtocData, () => {
+          this.auth.socket.emit(
+            "broadcast-tt-question",
+            this.displayingRow?.id || -1,
+          );
+        });
       }
       if (this.tangtocData!.showResults == true) this.toggleResultsDisplay();
     }
   }
   togglePlayVideo() {
     this.auth.socket.emit("tangtoc-play-video");
-    this.startTimer(40);
+    this.startTimer(30);
   }
   goToVD() {
     this.router.navigate(["/c-vd"]);

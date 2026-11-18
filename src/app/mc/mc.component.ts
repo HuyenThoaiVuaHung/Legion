@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { AuthService } from "../services/auth.service";
-import { TtData, VcnvData, VdData } from "../services/types/game";
+import { ChpData, TtData, VcnvData, VdData } from "../services/types/game";
 import { Player } from "../services/types/match.data";
 
 @Component({
@@ -19,6 +19,7 @@ export class McComponent implements OnInit {
   threeSecTimer1: number = 0;
   threeSecTimer2: number = 0;
   ttData?: TtData;
+  chpData?: ChpData;
   kdTurn: any = {};
   imagePath: string = "../../../assets/images/";
   stealingPlayerIndex: number = -1;
@@ -92,8 +93,17 @@ export class McComponent implements OnInit {
       this.ttData = data;
       this.ttData.playerAnswers.sort(sortByTimestamp);
     });
-  }
+    this.auth.socket.emit("get-chp-data", (data) => {
+      this.chpData = data;
+    });
+    this.auth.socket.on('update-chp-question', (question) => {
+      this.question = question;
+    })
+    this.auth.socket.on("update-chp-data", (data) => {
+      this.chpData = data;
+    });
 
+  }
   resolveCnvPlayers(cnvPlayers): Player[] {
     return cnvPlayers.map((player) => this.auth.matchData().players[player.id]);
   }
@@ -118,7 +128,7 @@ export class McComponent implements OnInit {
     return readableTime;
   }
   public getVcnvAnswerLength(index: number) {
-    return this.vcnvData!.questions[index].answer.replace(/\s+/, '').length;
+    return this.vcnvData!.questions[index].answer.split(' ').join("").length;
   }
 }
 
