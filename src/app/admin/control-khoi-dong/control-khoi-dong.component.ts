@@ -167,6 +167,7 @@ export class ControlKhoiDongComponent implements OnInit {
   }
   roundStart(amount: number) {
     this.auth.socket.emit("start-turn-kd", amount);
+    this.auth.socket.emit("stop-kd-sound");
     this.currentMaxQuestionNo = amount;
     this.currentQuestionNo = 0;
     this.currentQuestionCount = 0;

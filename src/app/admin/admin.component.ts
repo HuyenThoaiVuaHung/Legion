@@ -51,4 +51,8 @@ export class AdminComponent {
       }
     });
   }
+
+  stopKdLoopingAudio() {
+    this.auth.socket.emit("stop-kd-sound");
+  }
 }
