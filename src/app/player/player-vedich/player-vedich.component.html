@@ -20,13 +20,13 @@
   @if(vdData.ifQuestionPickerShowing == false) {
   <div class="flex-grow flex flex-col gap-5">
     <div
-      class="disablePointerActions flex questionBox h-full w-full text-4xl p-10 box-border border-2 rounded-xl"
+      class="disablePointerActions flex flex-col questionBox h-full w-full text-4xl p-10 box-border border-2 rounded-xl gap-y-6"
     >
       <div class="rounded-xl w-full">
         {{ curQuestion.question }}
       </div>
       @if (curQuestion.type != 'N' && curQuestion.type != 'A'){
-      <div class="w-full">
+      <div class="w-full flex justify-around">
         @if (curQuestion.type == 'V'){
         <video
           id="vedich-video"
