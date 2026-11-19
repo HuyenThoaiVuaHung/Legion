@@ -118,7 +118,7 @@ export class McComponent implements OnInit {
     return readableTime;
   }
   public getVcnvAnswerLength(index: number) {
-    return this.vcnvData!.questions[index].answer.replace(/\s+/, '').length;
+    return this.vcnvData!.questions[index].answer.split(' ').join("").length;
   }
 }
 
