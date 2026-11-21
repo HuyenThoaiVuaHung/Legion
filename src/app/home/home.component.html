@@ -1,7 +1,38 @@
+@if (session.multiRoom()) {
+<app-navbar><button mat-button (click)="openHost()">{{ hostSignedIn() ? 'Phòng của tôi' : 'Chủ phòng' }}</button></app-navbar>
+<div class="w-full box-border px-10 pb-10 flex flex-col gap-5">
+  <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+    <mat-label>Tìm phòng hoặc nhập mã phòng</mat-label>
+    <input matInput [value]="query()" (input)="setQuery($any($event.target).value)" autocomplete="off" />
+    @if (exactRoom(); as room) {
+      <button mat-button matSuffix (click)="openRoom(room)"><mat-icon>login</mat-icon> Vào phòng {{ room.code }}</button>
+    }
+  </mat-form-field>
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-5">
+    @for (room of visibleRooms(); track room.code) {
+      <mat-card appearance="outlined" class="group cursor-pointer" (click)="openRoom(room)">
+        <mat-card-content>
+          <h6>{{ room.name }}</h6>
+          <small class="text-xs opacity-70">{{ statusText[room.status] }}</small>
+        </mat-card-content>
+        <div class="w-full h-full !absolute top-0 left-0 flex justify-end items-end box-border p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+          <button mat-raised-button><mat-icon>login</mat-icon> Vào phòng</button>
+        </div>
+      </mat-card>
+    } @empty {
+      @if (query().trim()) {
+        <app-empty-state icon="search_off" title="Không tìm thấy phòng nào" hint="Thử tên khác, hoặc nhập đúng mã phòng nếu bạn có." />
+      } @else {
+        <app-empty-state icon="meeting_room" title="Chưa có phòng nào" hint="Phòng được chủ phòng bật hiển thị sẽ xuất hiện ở đây." />
+      }
+    }
+  </div>
+</div>
+} @else {
 <div class="w-screen h-screen flex justify-center items-center">
   <div class="w-[72rem] h-[30rem] flex flex-row">
     <div class="w-1/2 h-full flex flex-col justify-center">
-      <img [src]="assets.image('misc/legion.png')" alt="Legion" class="object-cover w-96" />
+      <img [src]="assets.brand('logo-long')" alt="Legion" class="object-cover w-96" />
       <div>
         <h3>
           <strong>
@@ -21,13 +52,7 @@
           <h6 class="font-semibold">Xin chào, {{ greeting() }}!</h6>
         }
       </div>
-      <div class="mt-4">
-        <button mat-stroked-button type="button" (click)="openEditor()">
-          <mat-icon>edit_note</mat-icon>
-          Mở bộ biên tập
-        </button>
-      </div>
-      @if (defaultUrl()) {
+      @if (defaultUrl() && !session.multiRoom()) {
         <div class="mt-4 flex flex-col gap-2 w-96">
           <div class="flex gap-2">
             <button mat-flat-button (click)="joinAsViewer()">
@@ -47,7 +72,7 @@
       <mat-stepper [linear]="true" #stepper>
         <mat-step
           label="Kết nối tới Legendary"
-          [completed]="network.status() === connectionStatus.Connected"
+          [completed]="session.serverReady()"
           state="connect"
         >
           <form [formGroup]="urlForm">
@@ -64,11 +89,11 @@
           <div>
             <button [disabled]="urlForm.invalid" (click)="connect()" mat-button>
               <mat-icon>arrow_right</mat-icon>
-              @if (network.status() === connectionStatus.Error) {
+              @if (network.status() === connectionStatus.Error && !session.serverReady()) {
                 Không thể kết nối với máy chủ.
               } @else if (network.status() === connectionStatus.Connecting) {
                 <mat-spinner [diameter]="23"></mat-spinner>
-              } @else if (network.status() === connectionStatus.Connected) {
+              } @else if (session.serverReady()) {
                 Đã kết nối
               } @else {
                 Kết nối
@@ -76,7 +101,7 @@
             </button>
             <button
               mat-button
-              [disabled]="network.status() !== connectionStatus.Connected"
+              [disabled]="!session.serverReady()"
               matStepperNext
             >
               Tiếp tục
@@ -84,6 +109,18 @@
           </div>
         </mat-step>
         <mat-step label="Đăng nhập" state="login" [completed]="!!session.identity()">
+          @if (session.multiRoom()) {
+            <h3>Vào phòng</h3>
+            <form [formGroup]="joinForm" class="flex flex-col">
+              <mat-form-field><mat-label>Mã phòng</mat-label><input matInput formControlName="code" /></mat-form-field>
+              <mat-form-field><mat-label>Mật mã (không bắt buộc)</mat-label><input matInput formControlName="secret" /></mat-form-field>
+              @if (usernameNeeded()) {
+                <mat-form-field><mat-label>Tên người chơi</mat-label><input matInput formControlName="username" maxlength="32" /></mat-form-field>
+              }
+            </form>
+            @if (joinMessage()) { <p role="alert">{{ joinMessage() }}</p> }
+            <button mat-flat-button (click)="joinRoom()">Vào phòng</button>
+          } @else {
           <form [formGroup]="secretForm">
             <mat-form-field class="mt-5 w-96">
               <input
@@ -102,9 +139,9 @@
               Đăng nhập
             </button>
           </div>
+          }
         </mat-step>
 
-        <!-- Icon overrides. -->
         <ng-template matStepperIcon="connect">
           <mat-icon>leak_add</mat-icon>
         </ng-template>
@@ -118,3 +155,4 @@
     </div>
   </div>
 </div>
+}

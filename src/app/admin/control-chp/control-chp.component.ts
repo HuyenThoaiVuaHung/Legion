@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import {
   MatCard,
@@ -12,14 +11,16 @@ import {
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
+import { CellEdit, EditableTableComponent, TableCellDirective, TableColumn } from '../../components/editable-table/editable-table.component';
 import { FormQchpComponent } from '../../components/forms/form-qchp/form-qchp.component';
 import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
 import { ChpQuestion, ChpRound, Player } from '../../core/contracts/game';
+import { queryParamState } from '../../core/query-param';
 import { ApiService } from '../../core/services/api.service';
 import { NetworkService } from '../../core/services/network.service';
 import { SessionService } from '../../core/services/session.service';
+
+import { ResizeGroupDirective } from '../../components/resizable/resize-group.directive';
 
 @Component({
   selector: 'app-control-chp',
@@ -27,7 +28,7 @@ import { SessionService } from '../../core/services/session.service';
   styleUrls: ['./control-chp.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
+    ResizeGroupDirective,
     MatButton,
     MatCard,
     MatCardActions,
@@ -37,7 +38,8 @@ import { SessionService } from '../../core/services/session.service';
     MatCardTitle,
     MatCheckbox,
     MatIcon,
-    MatTableModule,
+    EditableTableComponent,
+    TableCellDirective,
     MenuItemComponent,
   ],
 })
@@ -47,8 +49,18 @@ export class ControlChpComponent {
   private readonly dialog = inject(MatDialog);
   protected readonly session = inject(SessionService);
 
-  protected readonly displayedQuestionColumns = ['question', 'answer'];
-  protected readonly displayedPlayerColumns = ['id', 'name', 'score', 'active', 'playing'];
+  protected readonly questionColumns: readonly TableColumn[] = [
+    { key: 'question', label: 'Câu hỏi', flex: 3, edit: 'text' },
+    { key: 'answer', label: 'Đáp án', flex: 2, edit: 'text' },
+    { key: 'shown', label: 'Đang hiện', flex: 1 },
+  ];
+  protected readonly playerColumns: readonly TableColumn[] = [
+    { key: 'id', label: 'ID', flex: 0.5 },
+    { key: 'name', label: 'Tên', flex: 2, edit: 'text', sortable: true },
+    { key: 'score', label: 'Điểm', flex: 1, edit: 'number', sortable: true, align: 'end' },
+    { key: 'active', label: 'Đã kết nối?', flex: 1 },
+    { key: 'playing', label: 'Đã chơi', flex: 1 },
+  ];
 
   protected readonly round = signal<ChpRound | null>(null);
   protected readonly currentTime = signal(0);
@@ -56,6 +68,15 @@ export class ControlChpComponent {
   protected readonly displayingRow = signal<ChpQuestion | null>(null);
   /** 0-based index of the player who buzzed in; null when nobody did. */
   protected readonly lastTurnIndex = signal<number | null>(null);
+
+
+  private readonly selectedQuestion = queryParamState('q');
+
+  private select(row: ChpQuestion | null): void {
+    this.chosenRow.set(row);
+    const index = row ? this.round()?.questions.indexOf(row) ?? -1 : -1;
+    this.selectedQuestion.set(index >= 0 ? String(index) : null);
+  }
 
   protected readonly players = computed(() => this.session.match()?.players ?? []);
   protected readonly position = computed(() => this.session.match()?.position ?? 'H');
@@ -75,6 +96,14 @@ export class ControlChpComponent {
     ]) {
       destroyRef.onDestroy(off);
     }
+
+    effect(() => {
+      const round = this.round();
+      const raw = this.selectedQuestion.value();
+      if (!round || raw === null) return;
+      const row = round.questions[Number(raw)];
+      if (row) this.chosenRow.set(row);
+    });
     void this.init();
   }
 
@@ -88,7 +117,7 @@ export class ControlChpComponent {
   }
 
   onClickQuestion(row: ChpQuestion): void {
-    this.chosenRow.set(row);
+    this.select(row);
   }
 
   onDoubleClickQuestion(row: ChpQuestion): void {
@@ -98,15 +127,18 @@ export class ControlChpComponent {
     this.network.emit('broadcast-chp-question', round.questions.indexOf(row));
   }
 
-  onDoubleClickPlayer(row: Player): void {
-    const index = this.players().indexOf(row);
-    if (index < 0) return;
-    const dialogRef = this.dialog.open(FormPlayerComponent, { data: structuredClone(row) });
-    dialogRef.afterClosed().subscribe(async (result?: Player) => {
-      if (!result) return;
-      result.score = Number(result.score) || 0;
-      this.session.match.set(await this.api.updatePlayer(index, result));
-    });
+  async saveQuestionCell(edit: CellEdit<ChpQuestion>): Promise<void> {
+    const round = this.round();
+    if (!round) return;
+    const updated = structuredClone(round);
+    const question = updated.questions[edit.index];
+    if (!question) return;
+    Object.assign(question, { [edit.key]: edit.value });
+    this.round.set(await this.api.putRound('chp', updated));
+  }
+
+  async savePlayerCell(edit: CellEdit<Player>): Promise<void> {
+    this.session.match.set(await this.api.updatePlayer(edit.index, { ...edit.row, [edit.key]: edit.value }));
   }
 
   editQuestion(): void {
@@ -124,7 +156,7 @@ export class ControlChpComponent {
       const updated = structuredClone(round);
       updated.questions[index] = result;
       this.round.set(await this.api.putRound('chp', updated));
-      this.chosenRow.set(null);
+      this.select(null);
     });
   }
 
@@ -153,6 +185,11 @@ export class ControlChpComponent {
   markWrong(): void {
     if (this.lastTurnIndex() === null) return;
     this.network.emit('mark-wrong-chp');
+    this.lastTurnIndex.set(null);
+  }
+
+  resetTurn(): void {
+    this.network.emit('clear-turn-chp');
     this.lastTurnIndex.set(null);
   }
 

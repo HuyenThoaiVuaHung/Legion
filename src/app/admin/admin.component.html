@@ -1,45 +1,40 @@
-<mat-toolbar>
-  <button type="button" class="brand" (click)="logout()" matTooltip="Đăng xuất">
-    <img class="brand-logo" [src]="assets.image('misc/logo.png')" alt="Legion" />
-  </button>
+<app-navbar [trail]="trail()">
   @if (positionLabel()) {
-    <span class="position-badge">{{ positionLabel() }}</span>
+    <small class="opacity-70 mr-2">{{ positionLabel() }}</small>
   }
+  <a mat-icon-button routerLink="/editor" matTooltip="Mở bộ biên tập cục bộ"><mat-icon>edit_note</mat-icon></a>
+</app-navbar>
 
-  <span class="toolbar-spacer"></span>
+@if (session.createdRoomAdmin() && session.roomExpiring()) {
+  <div role="status" class="flex flex-wrap items-center gap-3 px-10 py-4">
+    <span>Phòng sắp hết hạn. Hãy lưu dữ liệu trước khi phòng đóng.</span>
+    @if (roomOwner()) { <a mat-button [routerLink]="session.base() + '/admin/room'" fragment="bank">Lưu vào ngân hàng</a> }
+    <button mat-button (click)="exportRoom()">Xuất .legion</button>
+  </div>
+}
 
-  <button
-    mat-button
-    (click)="togglePoints()"
-    [matTooltip]="showingPoints() ? 'Đang chiếu bảng điểm' : 'Chiếu bảng điểm'"
-  >
-    <mat-icon>scoreboard</mat-icon>
-    {{ showingPoints() ? 'Đang chiếu' : 'Điểm số' }}
-  </button>
-  <a mat-icon-button routerLink="/editor" matTooltip="Mở bộ biên tập cục bộ">
-    <mat-icon>edit_note</mat-icon>
-  </a>
-  <a mat-icon-button routerLink="/admin/appearance" matTooltip="Cài đặt & giao diện">
-    <mat-icon>settings</mat-icon>
-  </a>
-</mat-toolbar>
+<div class="flex-1 min-h-0 px-4 pb-4 box-border grid grid-rows-[minmax(0,1fr)] gap-3 transition-[grid-template-columns] duration-200" [style.grid-template-columns]="menuOpen() ? '14rem minmax(0,1fr)' : '4rem minmax(0,1fr)'">
+  <nav class="side-nav min-h-0" [class.collapsed]="!menuOpen()" aria-label="Menu quản trị">
+    <button mat-icon-button class="side-nav-toggle" (click)="menuOpen.set(!menuOpen())" [matTooltip]="menuOpen() ? 'Thu gọn menu' : 'Mở rộng menu'" [attr.aria-expanded]="menuOpen()">
+      <mat-icon>{{ menuOpen() ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right' }}</mat-icon>
+    </button>
+    @for (item of menus(); track item.route) {
+      <a class="side-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.exact ?? false }" [routerLink]="item.route" [matTooltip]="menuOpen() ? '' : item.label" matTooltipPosition="right">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span class="side-nav-label">{{ item.label }}</span>
+      </a>
+    }
+    <button type="button" class="side-nav-item side-nav-action side-nav-score" [class.active]="showingPoints()" (click)="togglePoints()" [matTooltip]="showingPoints() ? 'Đang chiếu bảng điểm, bấm để dừng' : 'Chiếu bảng điểm'" matTooltipPosition="right">
+      <mat-icon>scoreboard</mat-icon>
+      <span class="side-nav-label">{{ showingPoints() ? 'Đang chiếu' : 'Điểm số' }}</span>
+    </button>
+    <button type="button" class="side-nav-item side-nav-action" (click)="leave()" [matTooltip]="menuOpen() ? '' : leaveLabel()" matTooltipPosition="right">
+      <mat-icon>{{ leaveIcon() }}</mat-icon>
+      <span class="side-nav-label">{{ leaveLabel() }}</span>
+    </button>
+  </nav>
 
-<nav mat-tab-nav-bar [tabPanel]="tabPanel" mat-stretch-tabs="false">
-  @for (item of navItems; track item.route) {
-    <a
-      mat-tab-link
-      #rla="routerLinkActive"
-      [routerLink]="item.route"
-      routerLinkActive
-      [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-      [active]="rla.isActive"
-    >
-      <mat-icon>{{ item.icon }}</mat-icon>
-      {{ item.label }}
-    </a>
-  }
-</nav>
-
-<mat-tab-nav-panel #tabPanel>
-  <router-outlet></router-outlet>
-</mat-tab-nav-panel>
+  <div class="admin-outlet min-w-0 min-h-0 overflow-auto">
+    <router-outlet></router-outlet>
+  </div>
+</div>

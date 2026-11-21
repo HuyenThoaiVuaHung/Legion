@@ -21,8 +21,12 @@ export type ThemeMode = 'light' | 'dark' | 'system';
  */
 @Injectable({ providedIn: 'root' })
 export class PaletteService {
-  /** Default seed matches the violet primary in styles.scss. */
-  static readonly DEFAULT_SEED = '#7C4DFF';
+  /** Default seed matches the orange primary in styles.scss (the v2 theme). */
+  static readonly DEFAULT_SEED = '#FF8C00';
+  /** Seed the rewrite used to persist on every startup; treated as "no choice made". */
+  private static readonly LEGACY_DEFAULT_SEED = '#7C4DFF';
+  /** Seeds written without a user choice (old default, old per-match palettes); cleared on startup. */
+  private static readonly NON_USER_SEEDS = [PaletteService.LEGACY_DEFAULT_SEED, '#d32f2f', '#388e3c', '#1976d2', '#f9a825'];
   private static readonly STYLE_ID = 'legion-palette';
 
   /** The dynamic-color roles we publish as --mat-sys-* tokens. */
@@ -59,8 +63,19 @@ export class PaletteService {
 
   readonly mode = signal<ThemeMode>(this.savedMode());
 
-  /** Applies the saved seed and mode — call once at startup. */
+  /**
+   * Applies the saved seed and mode — call once at startup. With no saved
+   * choice the stylesheet's base theme stands, so nothing is generated or persisted.
+   */
   init(): void {
+    if (PaletteService.NON_USER_SEEDS.includes(localStorage.getItem(STORAGE_KEYS.paletteSeed) ?? '')) {
+      localStorage.removeItem(STORAGE_KEYS.paletteSeed);
+      localStorage.removeItem(STORAGE_KEYS.paletteMode);
+    }
+    if (localStorage.getItem(STORAGE_KEYS.paletteSeed) === null && localStorage.getItem(STORAGE_KEYS.paletteMode) === null) {
+      this.mode.set('dark');
+      return;
+    }
     this.apply(this.savedSeed(), this.savedMode());
   }
 
@@ -69,7 +84,7 @@ export class PaletteService {
   }
 
   savedMode(): ThemeMode {
-    return (localStorage.getItem(STORAGE_KEYS.paletteMode) as ThemeMode) ?? 'system';
+    return (localStorage.getItem(STORAGE_KEYS.paletteMode) as ThemeMode) ?? 'dark';
   }
 
   /** Regenerate with a new seed, keeping the current mode. */
@@ -113,7 +128,7 @@ export class PaletteService {
     localStorage.removeItem(STORAGE_KEYS.paletteMode);
     this.clearOverrides();
     document.documentElement.style.removeProperty('color-scheme');
-    this.mode.set('system');
+    this.mode.set('dark');
   }
 
   private tokens(source: Hct, dark: boolean): [string, string][] {

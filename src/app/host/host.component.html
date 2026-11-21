@@ -1,0 +1,48 @@
+<div class="w-full h-screen box-border flex flex-col">
+  <app-navbar [trail]="trail">
+    <a mat-button routerLink="/editor"><mat-icon>edit_note</mat-icon>Trình biên tập</a>
+    <small class="opacity-70 mx-2">{{ store.profile()?.username }}</small>
+    <button mat-button (click)="store.logout()"><mat-icon>logout</mat-icon>Đăng xuất</button>
+  </app-navbar>
+
+  <div class="flex-1 min-h-0 px-10 pb-10 box-border grid grid-rows-[minmax(0,1fr)] gap-10 grid-cols-1 2xl:grid-cols-[20rem_minmax(0,1fr)]">
+      <div class="hidden 2xl:flex min-h-0">
+        <mat-card class="w-full" appearance="raised">
+          <mat-card-content class="!flex h-full flex-col">
+            <h6><strong>Menu</strong></h6>
+            <div class="w-full h-max flex flex-col gap-4">
+              @for (item of menus; track item.nav) {
+                <a routerLinkActive #rla="routerLinkActive" [disabled]="rla.isActive" [routerLink]="item.nav" class="w-full !justify-start" mat-stroked-button>
+                  <mat-icon>{{ item.icon }}</mat-icon>
+                  {{ item.name }}
+                </a>
+              }
+            </div>
+            <div class="flex flex-col flex-grow justify-end">
+              <h6><strong>Dung lượng</strong></h6>
+              <mat-card appearance="outlined">
+                <mat-card-content class="!flex flex-col gap-2">
+                  <mat-progress-bar mode="determinate" [value]="store.usage()"></mat-progress-bar>
+                  <span class="mat-body-medium">{{ store.formatBytes(store.bank()?.usedBytes ?? 0) }} / {{ store.formatBytes(store.bank()?.maxBytes ?? 0) }}</span>
+                  <small class="text-xs opacity-70">{{ store.bank()?.items?.length ?? 0 }} / {{ store.bank()?.maxItems ?? 0 }} tệp</small>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="min-w-0 min-h-0 overflow-y-auto relative 2xl:px-10 px-4 flex flex-col gap-5">
+        <nav class="flex gap-2 flex-wrap 2xl:hidden">
+          @for (item of menus; track item.nav) {
+            <a routerLinkActive #rlb="routerLinkActive" [disabled]="rlb.isActive" [routerLink]="item.nav" mat-stroked-button>
+              <mat-icon>{{ item.icon }}</mat-icon>
+              {{ item.name }}
+            </a>
+          }
+        </nav>
+        @if (store.error()) { <small role="alert" class="text-[var(--mat-sys-error)]">{{ store.error() }}</small> }
+        <router-outlet></router-outlet>
+      </div>
+  </div>
+</div>

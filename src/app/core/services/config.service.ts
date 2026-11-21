@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { PublicUi } from '../contracts/api';
 import { NetworkService } from './network.service';
 
 /**
@@ -19,6 +20,7 @@ export interface GameRules {
   vcnvRowPoints: number;
   obstacleValueByRevealedCount: Record<number, number>;
   ttPointsByPlacement: number[];
+  ttVideoSeconds: number;
   vdStealTicks: number;
   vdWrongPenaltyDivisor: number;
   vdHopeStarMultiplier: number;
@@ -28,6 +30,7 @@ export interface GameRules {
 
 export interface PublicConfig {
   rules: GameRules;
+  ui: PublicUi;
   playerCount: number;
   uploadLimitBytes: number;
 }
@@ -44,6 +47,7 @@ const DEFAULT_RULES: Readonly<GameRules> = {
   vcnvRowPoints: 10,
   obstacleValueByRevealedCount: { 0: 50, 1: 50, 2: 40, 3: 30, 4: 20, 5: 10 },
   ttPointsByPlacement: [40, 30, 20, 10],
+  ttVideoSeconds: 30,
   vdStealTicks: 50,
   vdWrongPenaltyDivisor: 2,
   vdHopeStarMultiplier: 2,
@@ -64,6 +68,7 @@ function copyRules(rules: GameRules): GameRules {
 export class ConfigService {
   private readonly http = inject(HttpClient);
   private readonly network = inject(NetworkService);
+  readonly ui = signal<PublicUi | null>(null);
 
   readonly rules = signal<GameRules>(copyRules(DEFAULT_RULES));
   readonly uploadLimitBytes = signal<number>(0);
@@ -77,6 +82,7 @@ export class ConfigService {
       this.apply(config);
     } catch {
       this.rules.set(copyRules(DEFAULT_RULES));
+      this.ui.set(null);
       this.uploadLimitBytes.set(0);
     }
   }
@@ -84,6 +90,7 @@ export class ConfigService {
   /** Apply a config payload (from GET, PATCH, or the update-config push). */
   apply(config: PublicConfig): void {
     this.rules.set(copyRules(config.rules));
+    this.ui.set(config.ui ?? null);
     this.uploadLimitBytes.set(config.uploadLimitBytes);
   }
 

@@ -1,0 +1,24 @@
+<div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-5">
+  <input #picker type="file" class="file-input" accept=".legion,.lg" (change)="store.upload($event)" />
+  <button class="new-card" [disabled]="store.busy()" (click)="picker.click()">
+    <mat-icon>upload_file</mat-icon>
+    Tải lên tệp .legion
+  </button>
+  @for (item of store.bank()?.items ?? []; track item.id) {
+    <mat-card appearance="outlined" class="group">
+      <mat-card-content>
+        <h6>{{ item.name }}</h6>
+        <small class="text-xs opacity-70">{{ store.formatBytes(item.sizeBytes) }}</small>
+      </mat-card-content>
+      <div class="w-full h-full !absolute top-0 left-0 flex justify-end items-end box-border p-2 gap-1 rounded-xl opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+        <button mat-icon-button matTooltip="Tải xuống" (click)="store.download(item)"><mat-icon>file_download</mat-icon></button>
+        <button mat-icon-button matTooltip="Đổi tên" (click)="store.rename(item)"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button matTooltip="Xoá" (click)="store.remove(item)"><mat-icon>delete</mat-icon></button>
+        <button mat-raised-button [disabled]="store.busy()" (click)="store.create(item.id)">
+          <mat-icon>add</mat-icon>
+          Tạo phòng
+        </button>
+      </div>
+    </mat-card>
+  }
+</div>

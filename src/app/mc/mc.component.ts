@@ -3,7 +3,7 @@ import { NgClass } from '@angular/common';
 import { CountdownComponent } from '../components/countdown/countdown.component';
 import { PlayerListComponent } from '../components/player-list/player-list.component';
 import { POSITION_LABELS } from '../core/constants';
-import { KdQuestion, RoundDataMap, TtQuestion, VcnvQuestion, VdQuestion } from '../core/contracts/game';
+import { ChpQuestion, KdQuestion, RoundDataMap, TtQuestion, VcnvQuestion, VdQuestion } from '../core/contracts/game';
 import { ApiService } from '../core/services/api.service';
 import { MediaService } from '../core/services/media.service';
 import { NetworkService } from '../core/services/network.service';
@@ -52,17 +52,16 @@ export class McComponent {
   readonly currentVcnvQuestion = signal<VcnvQuestion | null>(null);
   readonly currentTtQuestion = signal<TtQuestion | null>(null);
   readonly currentVdQuestion = signal<VdQuestion | null>(null);
+  readonly currentChpQuestion = signal<ChpQuestion | null>(null);
 
   readonly vcnvRound = signal<RoundDataMap['vcnv'] | null>(null);
   readonly ttRound = signal<RoundDataMap['tt'] | null>(null);
   readonly vdRound = signal<RoundDataMap['vd'] | null>(null);
+  readonly chpRound = signal<RoundDataMap['chp'] | null>(null);
 
-  /** The obstacle (CNV) row — not always at a fixed index once HN_S rows exist. */
-  readonly vcnvObstacleQuestion = computed(
-    () => this.vcnvRound()?.questions.find((q) => q.type === 'CNV') ?? null,
-  );
+  readonly vcnvObstacle = computed(() => this.vcnvRound()?.obstacle ?? null);
   readonly vcnvObstacleImage = computed(() =>
-    this.media.resolve('vcnv', this.vcnvObstacleQuestion()?.imageFile),
+    this.media.resolve('vcnv', this.vcnvObstacle()?.imageFile),
   );
 
   /** Contestants who have buzzed in for the obstacle, in buzz-in order. */
@@ -90,6 +89,7 @@ export class McComponent {
     void this.api.getRound('vcnv').then((round) => this.vcnvRound.set(round));
     void this.api.getRound('tt').then((round) => this.ttRound.set(round));
     void this.api.getRound('vd').then((round) => this.vdRound.set(round));
+    void this.api.getRound('chp').then((round) => this.chpRound.set(round));
 
     const unsubs = [
       this.network.on<[KdQuestion | null]>('update-kd-question', (question) =>
@@ -103,6 +103,12 @@ export class McComponent {
       ),
       this.network.on<[VdQuestion | null]>('update-vedich-question', (question) =>
         this.currentVdQuestion.set(question ?? null),
+      ),
+      this.network.on<[ChpQuestion | null]>('update-chp-question', (question) =>
+        this.currentChpQuestion.set(question ?? null),
+      ),
+      this.network.on<[RoundDataMap['chp']]>('update-chp-data', (round) =>
+        this.chpRound.set(round),
       ),
       this.network.on<[RoundDataMap['vcnv']]>('update-vcnv-data', (round) =>
         this.vcnvRound.set(round),

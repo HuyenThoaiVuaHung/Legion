@@ -40,6 +40,22 @@
       }
     }
 
+    @if (position() === 'CHP') {
+      @if (currentChpQuestion(); as question) {
+        <div class="mb-5">
+          Câu hỏi: {{ question.question }}<br />
+          Đáp án: {{ question.answer }}
+        </div>
+      }
+      @if (chpRound(); as chp) {
+        <div>
+          @for (player of players(); track player.id; let i = $index) {
+            <div>{{ player.name }}: {{ chp.playedPlayers[i] ? 'đã chơi' : 'chưa chơi' }}</div>
+          }
+        </div>
+      }
+    }
+
     @if (position() === 'VD') {
       @if (currentVdQuestion(); as question) {
         @if (vdRound()?.hopeStarActive) {
@@ -83,11 +99,13 @@
           <div class="float-left">
             <span>
               @for (question of vcnv.questions; track question.id; let i = $index) {
-                {{ question.type === 'CNV' ? 'CNV' : 'HN' + (i + 1) }}: {{ question.answer }} |
+                HN{{ i + 1 }}: {{ question.answer }} |
                 {{ vcnvAnswerLength(question.answer) }} Kí tự
                 <br />
               }
-              Giải thích: {{ vcnvObstacleQuestion()?.question }}
+              CNV: {{ vcnv.obstacle.answer }} | {{ vcnvAnswerLength(vcnv.obstacle.answer) }} Kí tự
+              <br />
+              Giải thích: {{ vcnv.obstacle.question }}
             </span>
           </div>
           <div class="float-right">

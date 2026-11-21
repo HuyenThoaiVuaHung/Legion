@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import {
   MatCard,
@@ -12,15 +11,15 @@ import {
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
+import { CellEdit, EditableTableComponent, TableCellDirective, TableColumn } from '../../components/editable-table/editable-table.component';
 import { MatTooltip } from '@angular/material/tooltip';
-import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
 import { FormQVdComponent } from '../../components/forms/form-q-vd/form-q-vd.component';
 import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
 import { Player, VdQuestion, VdRound } from '../../core/contracts/game';
 import { ApiService } from '../../core/services/api.service';
 import { NetworkService } from '../../core/services/network.service';
 import { SessionService } from '../../core/services/session.service';
+import { queryParamState } from '../../core/query-param';
 
 /** activePlayerIndex value meaning "no player on the podium". */
 const NO_ACTIVE_PLAYER = -1;
@@ -29,13 +28,15 @@ const HIDE_QUESTION_INDEX = -1;
 /** Slots on the on-screen question picker. */
 const QUESTION_PICKER_SLOTS = 6;
 
+import { ResizeGroupDirective } from '../../components/resizable/resize-group.directive';
+
 @Component({
   selector: 'app-control-vd',
   templateUrl: './control-vd.component.html',
   styleUrls: ['./control-vd.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
+    ResizeGroupDirective,
     MatButton,
     MatIconButton,
     MatCard,
@@ -46,7 +47,8 @@ const QUESTION_PICKER_SLOTS = 6;
     MatCardTitle,
     MatCheckbox,
     MatIcon,
-    MatTableModule,
+    EditableTableComponent,
+    TableCellDirective,
     MatTooltip,
     MenuItemComponent,
   ],
@@ -57,16 +59,24 @@ export class ControlVdComponent {
   private readonly dialog = inject(MatDialog);
   protected readonly session = inject(SessionService);
 
-  protected readonly displayedQuestionColumns = ['question', 'answer', 'type', 'value'];
-  protected readonly displayedPlayerColumns = ['id', 'name', 'score', 'active'];
+  protected readonly questionColumns: readonly TableColumn[] = [
+    { key: 'question', label: 'Câu hỏi', flex: 3, edit: 'text' },
+    { key: 'answer', label: 'Đáp án', flex: 2, edit: 'text' },
+    { key: 'type', label: 'Loại', flex: 1 },
+    { key: 'value', label: 'Giá trị', flex: 1, edit: 'number' },
+  ];
+  protected readonly playerColumns: readonly TableColumn[] = [
+    { key: 'id', label: 'ID', flex: 0.5 },
+    { key: 'name', label: 'Tên', flex: 2, edit: 'text', sortable: true },
+    { key: 'score', label: 'Điểm', flex: 1, edit: 'number', sortable: true, align: 'end' },
+    { key: 'active', label: 'Đã kết nối?', flex: 1 },
+  ];
   protected readonly pickerSlots20 = [0, 1, 2];
   protected readonly pickerSlots30 = [3, 4, 5];
 
   protected readonly round = signal<VdRound | null>(null);
   protected readonly currentTime = signal(0);
-  protected readonly chosenRow = signal<VdQuestion | null>(null);
   protected readonly displayingRow = signal<VdQuestion | null>(null);
-  protected readonly chosenPlayer = signal<Player | null>(null);
   /** 0-based index of the player who buzzed to steal; null when nobody did. */
   protected readonly stealingPlayerIndex = signal<number | null>(null);
 
@@ -81,6 +91,14 @@ export class ControlVdComponent {
     const round = this.round();
     if (!round || round.activePlayerIndex < 0) return [];
     return round.questionPools[round.activePlayerIndex] ?? [];
+  });
+
+  /** Chosen question index within the active pool, kept in the URL ("q"). */
+  private readonly chosenIndex = queryParamState('q');
+  protected readonly chosenRow = computed<VdQuestion | null>(() => {
+    const raw = this.chosenIndex.value();
+    const index = raw !== null && /^\d+$/.test(raw) ? Number(raw) : -1;
+    return this.currentQuestionPool()[index] ?? null;
   });
 
   constructor() {
@@ -112,15 +130,26 @@ export class ControlVdComponent {
   }
 
   onClickQuestion(row: VdQuestion): void {
-    this.chosenRow.set(row);
+    const index = this.currentQuestionPool().indexOf(row);
+    this.chosenIndex.set(index >= 0 ? String(index) : null);
   }
 
   onDoubleClickQuestion(row: VdQuestion): void {
     this.displayingRow.set(row);
   }
 
-  choosePlayer(row: Player): void {
-    this.chosenPlayer.set(row);
+  async saveQuestionCell(edit: CellEdit<VdQuestion>): Promise<void> {
+    const round = this.round();
+    if (!round || round.activePlayerIndex < 0) return;
+    const updated = structuredClone(round);
+    const question = updated.questionPools[updated.activePlayerIndex]?.[edit.index];
+    if (!question) return;
+    Object.assign(question, { [edit.key]: edit.value });
+    await this.saveRound(updated);
+  }
+
+  async savePlayerCell(edit: CellEdit<Player>): Promise<void> {
+    this.session.match.set(await this.api.updatePlayer(edit.index, { ...edit.row, [edit.key]: edit.value }));
   }
 
   /** Starts a player's turn: their question pool becomes active. */
@@ -128,7 +157,7 @@ export class ControlVdComponent {
     const round = this.round();
     const index = this.players().indexOf(row);
     if (!round || index < 0) return;
-    this.chosenRow.set(null);
+    this.chosenIndex.set(null);
     this.displayingRow.set(null);
     this.playSfx('VD_START_TURN');
     await this.saveRound({ ...round, activePlayerIndex: index });
@@ -138,19 +167,6 @@ export class ControlVdComponent {
     const round = this.round();
     if (!round) return;
     await this.saveRound({ ...round, activePlayerIndex: NO_ACTIVE_PLAYER });
-  }
-
-  editPlayer(): void {
-    const player = this.chosenPlayer();
-    if (!player) return;
-    const index = this.players().indexOf(player);
-    if (index < 0) return;
-    const dialogRef = this.dialog.open(FormPlayerComponent, { data: structuredClone(player) });
-    dialogRef.afterClosed().subscribe(async (result?: Player) => {
-      if (!result) return;
-      result.score = Number(result.score) || 0;
-      this.session.match.set(await this.api.updatePlayer(index, result));
-    });
   }
 
   async toggleHopeStar(): Promise<void> {
@@ -181,7 +197,7 @@ export class ControlVdComponent {
       const updated = structuredClone(round);
       updated.questionPools[updated.activePlayerIndex][poolIndex] = result;
       await this.saveRound(updated);
-      this.chosenRow.set(null);
+      this.chosenIndex.set(null);
     });
   }
 
@@ -214,7 +230,7 @@ export class ControlVdComponent {
     if (poolIndex < 0) return;
     const updated = structuredClone(round);
     updated.questionPools[updated.activePlayerIndex].splice(poolIndex, 1);
-    this.chosenRow.set(null);
+    this.chosenIndex.set(null);
     this.displayingRow.set(null);
     await this.saveRound(updated);
   }

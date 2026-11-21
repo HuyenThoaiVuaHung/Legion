@@ -59,3 +59,8 @@ td.mat-mdc-footer-cell:first-of-type {
 // .row:hover{
 //   background-color: rgb(64, 64, 64);
 // }
+
+.obstacle-image { border: 0; padding: 0; background: var(--mat-sys-surface-container-high); cursor: pointer; color: var(--mat-sys-on-surface); }
+.obstacle-image-hint { background: color-mix(in srgb, var(--mat-sys-scrim) 55%, transparent); color: var(--mat-sys-inverse-on-surface); }
+.obstacle-image.empty { background: transparent; border: 2px dashed var(--mat-sys-outline-variant); }
+.obstacle-image.empty .obstacle-image-hint { background: transparent; color: var(--mat-sys-on-surface-variant); }

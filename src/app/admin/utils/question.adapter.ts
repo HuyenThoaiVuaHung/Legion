@@ -49,9 +49,6 @@ export function toQuestionPreview(
     }
     case 'vcnv': {
       const q = question as VcnvQuestion;
-      if (q.type === 'CNV') {
-        return { ...base, typeLabel: q.type, media: 'image', imageFile: q.imageFile };
-      }
       if (q.type === 'HN_S') {
         return { ...base, typeLabel: q.type, media: 'audio', audioFile: q.audioFile };
       }

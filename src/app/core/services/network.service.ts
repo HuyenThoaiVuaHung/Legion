@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { STORAGE_KEYS } from '../constants';
+import { PublicRoom } from '../contracts/api';
 
 export enum ConnectionStatus {
   Disconnected = 'disconnected',
@@ -30,6 +31,7 @@ export class NetworkService {
     this.socketRef?.removeAllListeners();
     this.socketRef?.disconnect();
 
+    this.serverUrl.set(url);
     this.status.set(ConnectionStatus.Connecting);
     const socket = io(url || window.location.origin, {
       auth: token ? { token } : undefined,
@@ -51,6 +53,13 @@ export class NetworkService {
       }
     });
     return socket;
+  }
+
+  /** Landing-page room list: a tokenless lobby socket, independent of the session socket. */
+  watchRooms(url: string, handler: (rooms: PublicRoom[]) => void): () => void {
+    const lobby = io(url || window.location.origin, { auth: { lobby: true } });
+    lobby.on('rooms-list', handler);
+    return () => { lobby.removeAllListeners(); lobby.disconnect(); };
   }
 
   disconnect(): void {

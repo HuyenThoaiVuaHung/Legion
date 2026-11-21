@@ -1,16 +1,8 @@
 import { Routes } from '@angular/router';
-import { adminGuard, mcGuard } from './core/guards';
+import { adminGuard, hostGuard, mcGuard, roomGuard } from './core/guards';
 
-export const routes: Routes = [
-  {
-    path: '',
-    loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
-  },
-  {
-    path: 'editor',
-    loadComponent: () =>
-      import('./editor/browser-editor.component').then((m) => m.BrowserEditorComponent),
-  },
+/** Pages a signed-in room member sees; mounted at the root for the single-room server and under room/:code when hosted. */
+const roomPages = (): Routes => [
   {
     path: 'player',
     loadChildren: () => import('./player/player.routes').then((m) => m.PLAYER_ROUTES),
@@ -29,6 +21,28 @@ export const routes: Routes = [
     canActivate: [mcGuard],
     loadComponent: () => import('./mc/mc.component').then((m) => m.McComponent),
   },
+];
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
+  },
+  { path: 'r/:code/:view', loadComponent: () => import('./host/room-link.component').then(m => m.RoomLinkComponent) },
+  { path: 'r/:code', loadComponent: () => import('./host/room-link.component').then(m => m.RoomLinkComponent) },
+  {
+    path: 'host',
+    canActivate: [hostGuard],
+    loadComponent: () => import('./host/host.component').then((m) => m.HostComponent),
+    loadChildren: () => import('./host/host.routes').then((m) => m.HOST_ROUTES),
+  },
+  {
+    path: 'editor',
+    loadComponent: () => import('./editor/editor.component').then((m) => m.EditorComponent),
+    loadChildren: () => import('./editor/editor.routing').then((m) => m.routes),
+  },
+  { path: 'room/:code', canActivate: [roomGuard], children: roomPages() },
+  ...roomPages(),
   {
     path: '**',
     loadComponent: () =>

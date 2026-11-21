@@ -1,0 +1,66 @@
+<div class="w-full h-screen box-border flex flex-col">
+  <app-navbar [trail]="trail" />
+  <div class="flex-1 min-h-0 px-10 pb-10 box-border grid grid-rows-[auto_minmax(0,1fr)] gap-5">
+  <div class="ml-4 flex flex-col">
+    @if(editorDataService.editorData){
+    <h6 class="flex gap-5">
+      Đang chỉnh sửa: {{ editorDataService.editorData.matchData.matchName }}
+      <button (click)="editorDataService.unloadEditorData()" mat-icon-button matTooltip="Ngưng chỉnh sửa">
+        <mat-icon>close</mat-icon>
+      </button>
+      <button (click)="fileHandler.downloadEditorData(editorDataService.editorData.uid)" mat-icon-button matTooltip="Tải xuống">
+        <mat-icon>file_download</mat-icon>
+      </button>
+    </h6>
+    }
+    @else {
+      <h6>
+        Hãy chọn một trận đấu để chỉnh sửa
+      </h6>
+    }
+  </div>
+  <div class="grid min-h-0 gap-10 grid-cols-1 2xl:grid-cols-[20rem_minmax(0,1fr)]">
+    <div class="hidden 2xl:flex min-h-0">
+      <mat-card class="w-full" appearance="raised">
+        <mat-card-content class="!flex h-full flex-col">
+          <h6>
+            <strong>Menu</strong>
+          </h6>
+          <div class="w-full h-max relative overflow-y-auto pb-5 overflow-x-hidden flex flex-col gap-4">
+            @for (item of menus; track $index) {
+            <a
+              routerLinkActive
+              #rla="routerLinkActive"
+              [disabled]="rla.isActive || !this.editorDataService.editorData"
+              [routerLink]="item.nav"
+              class="w-full !justify-start"
+              mat-stroked-button
+            >
+              <mat-icon>{{ item.icon }}</mat-icon>
+              {{ item.name }}
+            </a>
+            @if ($index + 1 < menus.length) {
+            <mat-divider></mat-divider>
+            } }
+          </div>
+          <div class="flex flex-col flex-grow justify-end">
+            <h6>
+              <strong>Trạng thái</strong>
+            </h6>
+            <mat-card appearance="outlined">
+              <mat-card-content>
+              {{this.editorStatusNameMap[editorDataService.editorStatus]}}
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div
+      class="min-w-0 min-h-0 overflow-y-auto relative 2xl:px-10 px-4"
+    >
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+</div>

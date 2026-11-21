@@ -19,7 +19,9 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
 import { POSITION_LABELS } from '../../core/constants';
-import { BrandAssetKey } from '../../core/contracts/api';
+import { BrandAssetKey, BrandSlot } from '../../core/contracts/api';
+import { SessionService } from '../../core/services/session.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MATCH_POSITIONS, MatchPosition } from '../../core/contracts/game';
 import { GameRules } from '../../core/services/config.service';
 import { ApiService } from '../../core/services/api.service';
@@ -149,6 +151,11 @@ export class AppearanceComponent {
   private readonly snackBar = inject(MatSnackBar);
   protected readonly config = inject(ConfigService);
   protected readonly obs = inject(ObsService);
+  protected readonly session = inject(SessionService);
+  protected readonly roomBrandAssets: readonly { key: BrandSlot; label: string }[] = [
+    { key: 'logo', label: 'Logo' }, { key: 'logo-long', label: 'Logo dài' },
+    { key: 'placeholder', label: 'Ảnh chờ' }, { key: 'background', label: 'Hình nền' },
+  ];
 
   protected readonly presets = PRESET_SEEDS;
   protected readonly brandAssets = BRAND_ASSETS;
@@ -197,6 +204,25 @@ export class AppearanceComponent {
       this.snackBar.open('Không thể tải tài sản thương hiệu lên máy chủ.', 'Đóng');
     } finally {
       this.uploadingBrandAsset.set(null);
+    }
+  }
+
+  async changeRoomBrand(slot: BrandSlot, event?: Event): Promise<void> {
+    const input = event?.target as HTMLInputElement | undefined;
+    const file = input?.files?.[0];
+    if (input && !file) return;
+    if (file && (file.type !== 'image/png' || !file.name.toLowerCase().endsWith('.png'))) {
+      this.snackBar.open('Ảnh phải là PNG.', 'Đóng');
+      input!.value = '';
+      return;
+    }
+    try {
+      this.config.apply(file ? await this.api.uploadBrand(slot, file) : await this.api.deleteBrand(slot));
+      this.snackBar.open('Đã cập nhật thương hiệu phòng.', 'Đóng');
+    } catch (error) {
+      this.snackBar.open(error instanceof HttpErrorResponse && typeof error.error?.error === 'string' ? error.error.error : 'Không thể cập nhật thương hiệu.', 'Đóng');
+    } finally {
+      if (input) input.value = '';
     }
   }
 
