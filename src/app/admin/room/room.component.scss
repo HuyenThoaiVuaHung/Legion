@@ -1,1 +1,4 @@
-.row, .form-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 8px 0; }
+.row, .form-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; min-height: 3rem; }
+.form-row { padding: 8px 0; }
+.seat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 8px; }
+.seat { display: flex; align-items: center; gap: 12px; min-height: 3rem; padding: 4px 16px; border-radius: 12px; border: 1px solid var(--mat-sys-outline-variant, rgba(255,255,255,.2)); }

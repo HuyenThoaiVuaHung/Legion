@@ -4,47 +4,48 @@
   height: 100%;
 }
 
-.toolbar-spacer {
-  flex: 1 1 auto;
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  margin-right: 0.5rem;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-
-.brand-logo {
-  height: 28px;
-  width: auto;
-  display: block;
-}
-
-.position-badge {
-  padding: 0.125rem 0.75rem;
-  border-radius: 999px;
-  background: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary);
-  font: var(--mat-sys-label-medium);
-}
-
-// Tab links carry an icon beside their label.
-nav[mat-tab-nav-bar] a mat-icon {
-  margin-right: 0.5rem;
-}
-
-mat-tab-nav-panel {
-  display: block;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-mat-tab-nav-panel > * {
+:host ::ng-deep .admin-outlet > :not(router-outlet) {
   display: block;
   height: 100%;
 }
+
+:host ::ng-deep .admin-outlet .admin-container {
+  padding: 0;
+  background: transparent;
+}
+
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  border-radius: 16px;
+  background: var(--mat-sys-surface-container-low);
+}
+.side-nav-toggle { align-self: flex-end; margin-bottom: 4px; color: var(--mat-sys-on-surface-variant); }
+.side-nav.collapsed .side-nav-toggle { align-self: center; }
+.side-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 999px;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-label-large);
+  letter-spacing: var(--mat-sys-label-large-tracking);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 120ms;
+}
+.side-nav-action { border: 0; background: transparent; cursor: pointer; width: 100%; }
+.side-nav-score { margin-top: auto; }
+.side-nav-item:hover { background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent); }
+.side-nav-item:focus-visible { outline: 2px solid var(--mat-sys-primary); outline-offset: -2px; }
+.side-nav-item.active { background: var(--mat-sys-secondary-container); color: var(--mat-sys-on-secondary-container); }
+.side-nav-label { overflow: hidden; text-overflow: ellipsis; }
+.side-nav.collapsed .side-nav-item { justify-content: center; padding: 0; }
+.side-nav.collapsed .side-nav-label { display: none; }

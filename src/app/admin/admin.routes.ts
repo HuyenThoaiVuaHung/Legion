@@ -25,7 +25,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'vd', component: ControlVdComponent },
       { path: 'chp', component: ControlChpComponent },
       { path: 'appearance', component: AppearanceComponent },
-      { path: 'room', component: RoomComponent, canActivate: [() => inject(SessionService).createdRoomAdmin() || inject(Router).parseUrl('/admin/dashboard')] },
+      { path: 'room', component: RoomComponent, canActivate: [() => inject(SessionService).createdRoomAdmin() || inject(Router).parseUrl(inject(SessionService).base() + '/admin/dashboard')] },
     ],
   },
 ];

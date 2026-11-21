@@ -1,3 +1,4 @@
+import { ApiService } from './services/api.service';
 /**
  * VCNV obstacle image splitting — port of github.com/maik205/image-to-vcnv.
  *
@@ -93,4 +94,12 @@ export async function splitVcnvImage(source: Blob): Promise<Blob[]> {
   pieces.push(await toBlob(centerCanvas));
 
   return pieces;
+}
+
+/** Uploads an obstacle image and its five protected reveal pieces. */
+export async function uploadObstacleImage(api: ApiService, file: File): Promise<{ imageFile: string; imagePieceFiles: string[] }> {
+  const { fileName } = await api.uploadMedia('vcnv', file);
+  const pieces = await splitVcnvImage(file);
+  const uploaded = await Promise.all(pieces.map((piece, index) => api.uploadObstaclePiece(piece, `piece-${index}.png`)));
+  return { imageFile: fileName, imagePieceFiles: uploaded.map(({ fileName: name }) => name) };
 }

@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>Chỉnh sửa chướng ngại vật</h2>
+<div mat-dialog-content class="operator-dialog-content">
+  <div class="operator-dialog-fields">
+    <mat-form-field class="wide-field">
+      <mat-label>Giải thích chướng ngại vật</mat-label>
+      <input matInput [(ngModel)]="form.question" autocomplete="off" required />
+    </mat-form-field>
+    <mat-form-field class="wide-field">
+      <mat-label>Đáp án</mat-label>
+      <input matInput [(ngModel)]="form.answer" autocomplete="off" required />
+    </mat-form-field>
+  </div>
+
+  <div class="operator-dialog-upload">
+    <button mat-stroked-button type="button" [disabled]="uploadingImage()" (click)="imageInput.click()">
+      Tải ảnh chướng ngại vật
+    </button>
+    <input #imageInput class="file-input" type="file" accept="image/*" (change)="onImageSelected($event)" />
+    @if (uploadingImage()) {
+      <mat-spinner diameter="20" aria-label="Đang cắt và tải ảnh"></mat-spinner>
+    } @else if (form.imageFile) {
+      <span>{{ form.imagePieceFiles?.length === 5 ? 'Đã tạo 5 mảnh bảo mật, ' : '' }}{{ form.imageFile }}</span>
+    }
+  </div>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Huỷ</button>
+  <button mat-flat-button type="button" [disabled]="uploadingImage()" (click)="save()" cdkFocusInitial>
+    Lưu
+  </button>
+</div>

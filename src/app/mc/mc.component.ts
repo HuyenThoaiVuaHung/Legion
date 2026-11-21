@@ -57,12 +57,9 @@ export class McComponent {
   readonly ttRound = signal<RoundDataMap['tt'] | null>(null);
   readonly vdRound = signal<RoundDataMap['vd'] | null>(null);
 
-  /** The obstacle (CNV) row — not always at a fixed index once HN_S rows exist. */
-  readonly vcnvObstacleQuestion = computed(
-    () => this.vcnvRound()?.questions.find((q) => q.type === 'CNV') ?? null,
-  );
+  readonly vcnvObstacle = computed(() => this.vcnvRound()?.obstacle ?? null);
   readonly vcnvObstacleImage = computed(() =>
-    this.media.resolve('vcnv', this.vcnvObstacleQuestion()?.imageFile),
+    this.media.resolve('vcnv', this.vcnvObstacle()?.imageFile),
   );
 
   /** Contestants who have buzzed in for the obstacle, in buzz-in order. */

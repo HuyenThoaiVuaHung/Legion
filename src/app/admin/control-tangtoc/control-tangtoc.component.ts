@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import {
   MatCard,
@@ -13,12 +12,12 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { MatTableModule } from '@angular/material/table';
-import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
+import { CellEdit, EditableTableComponent, TableCellDirective, TableColumn } from '../../components/editable-table/editable-table.component';
 import { FormQTtComponent } from '../../components/forms/form-q-tt/form-q-tt.component';
 import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
 import { POSITION_LABELS } from '../../core/constants';
 import { Player, TtQuestion, TtRound } from '../../core/contracts/game';
+import { queryParamState } from '../../core/query-param';
 import { ApiService } from '../../core/services/api.service';
 import { MediaService } from '../../core/services/media.service';
 import { NetworkService } from '../../core/services/network.service';
@@ -29,13 +28,15 @@ const HIDE_QUESTION_ID = -1;
 /** Countdown length while the video question plays. */
 const VIDEO_TIMER_SECONDS = 40;
 
+import { ResizeGroupDirective } from '../../components/resizable/resize-group.directive';
+
 @Component({
   selector: 'app-control-tangtoc',
   templateUrl: './control-tangtoc.component.html',
   styleUrls: ['./control-tangtoc.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
+    ResizeGroupDirective,
     MatButton,
     MatCard,
     MatCardActions,
@@ -46,7 +47,8 @@ const VIDEO_TIMER_SECONDS = 40;
     MatCheckbox,
     MatIcon,
     MatSlideToggle,
-    MatTableModule,
+    EditableTableComponent,
+    TableCellDirective,
     MenuItemComponent,
   ],
 })
@@ -57,15 +59,20 @@ export class ControlTangtocComponent {
   protected readonly media = inject(MediaService);
   protected readonly session = inject(SessionService);
 
-  protected readonly displayedQuestionColumns = ['id', 'question', 'answer', 'type'];
-  protected readonly displayedPlayerColumns = [
-    'id',
-    'name',
-    'score',
-    'response',
-    'timestamp',
-    'mark',
-    'active',
+  protected readonly questionColumns: readonly TableColumn[] = [
+    { key: 'id', label: 'ID', flex: 0.5 },
+    { key: 'question', label: 'Câu hỏi', flex: 3, edit: 'text' },
+    { key: 'answer', label: 'Đáp án', flex: 2, edit: 'text' },
+    { key: 'type', label: 'Loại', flex: 1 },
+  ];
+  protected readonly playerColumns: readonly TableColumn[] = [
+    { key: 'id', label: 'ID', flex: 0.5 },
+    { key: 'name', label: 'Tên', flex: 2, edit: 'text', sortable: true },
+    { key: 'score', label: 'Điểm', flex: 1, edit: 'number', sortable: true, align: 'end' },
+    { key: 'response', label: 'Trả lời', flex: 1 },
+    { key: 'timestamp', label: 'Thời điểm', flex: 1.5 },
+    { key: 'mark', label: 'Chấm', flex: 1.5 },
+    { key: 'active', label: 'Đã kết nối?', flex: 1 },
   ];
 
   protected readonly round = signal<TtRound | null>(null);
@@ -74,6 +81,15 @@ export class ControlTangtocComponent {
   protected readonly displayingRow = signal<TtQuestion | null>(null);
   /** Replaces the old global config flag: re-show the answer when returning to the question view. */
   protected readonly autoShowAnswer = signal(false);
+
+
+  private readonly selectedQuestion = queryParamState('q');
+
+  private select(row: TtQuestion | null): void {
+    this.chosenRow.set(row);
+    const index = row ? this.round()?.questions.findIndex((q) => q.id === row.id) ?? -1 : -1;
+    this.selectedQuestion.set(index >= 0 ? String(index) : null);
+  }
 
   protected readonly players = computed(() => this.session.match()?.players ?? []);
   protected readonly positionLabel = computed(() => {
@@ -89,6 +105,14 @@ export class ControlTangtocComponent {
     ]) {
       destroyRef.onDestroy(off);
     }
+
+    effect(() => {
+      const round = this.round();
+      const raw = this.selectedQuestion.value();
+      if (!round || raw === null) return;
+      const row = round.questions[Number(raw)];
+      if (row) this.chosenRow.set(row);
+    });
     void this.init();
   }
 
@@ -107,22 +131,25 @@ export class ControlTangtocComponent {
   }
 
   onClickQuestion(row: TtQuestion): void {
-    this.chosenRow.set(row);
+    this.select(row);
   }
 
   onDoubleClickQuestion(row: TtQuestion): void {
     this.displayingRow.set(row);
   }
 
-  onDoubleClickPlayer(row: Player): void {
-    const index = this.players().indexOf(row);
-    if (index < 0) return;
-    const dialogRef = this.dialog.open(FormPlayerComponent, { data: structuredClone(row) });
-    dialogRef.afterClosed().subscribe(async (result?: Player) => {
-      if (!result) return;
-      result.score = Number(result.score) || 0;
-      this.session.match.set(await this.api.updatePlayer(index, result));
-    });
+  async saveQuestionCell(edit: CellEdit<TtQuestion>): Promise<void> {
+    const round = this.round();
+    if (!round) return;
+    const updated = structuredClone(round);
+    const question = updated.questions.find((q) => q.id === edit.row.id);
+    if (!question) return;
+    Object.assign(question, { [edit.key]: edit.value });
+    this.round.set(await this.api.putRound('tt', updated));
+  }
+
+  async savePlayerCell(edit: CellEdit<Player>): Promise<void> {
+    this.session.match.set(await this.api.updatePlayer(edit.index, { ...edit.row, [edit.key]: edit.value }));
   }
 
   editQuestion(): void {
@@ -140,7 +167,7 @@ export class ControlTangtocComponent {
       const updated = structuredClone(round);
       updated.questions[index] = result;
       this.round.set(await this.api.putRound('tt', updated));
-      this.chosenRow.set(null);
+      this.select(null);
     });
   }
 

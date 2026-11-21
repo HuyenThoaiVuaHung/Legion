@@ -47,9 +47,6 @@ export class MediaPreviewComponent {
       }
       case 'vcnv': {
         const q = question as VcnvQuestion;
-        if (q.type === 'CNV' && q.imageFile) {
-          return [{ kind: 'image', url: this.media.resolve('vcnv', q.imageFile), alt: 'Hình ảnh chướng ngại vật' }];
-        }
         if (q.type === 'HN_S' && q.audioFile) {
           return [{ kind: 'audio', url: this.media.resolve('vcnv', q.audioFile), alt: 'Âm thanh câu hỏi' }];
         }

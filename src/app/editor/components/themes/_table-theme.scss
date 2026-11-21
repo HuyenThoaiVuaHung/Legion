@@ -1,0 +1,60 @@
+// Editor table + image-input classes, on Material system tokens so they follow
+// the active color scheme at runtime. Included once from src/styles.scss.
+// (v2 built these through mat.get-theme-color mixins, which no longer exist.)
+
+.table-item-color {
+  background-color: var(--mat-sys-secondary-container);
+  border: 1px solid var(--mat-sys-on-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+.table-header {
+  background-color: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-label-large);
+  letter-spacing: var(--mat-sys-label-large-tracking);
+}
+.cdk-drag-preview {
+  font: var(--mat-sys-body-large);
+  letter-spacing: var(--mat-sys-body-large-tracking);
+  color: var(--mat-sys-on-surface);
+  background-color: var(--mat-sys-surface);
+  box-sizing: border-box;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  cursor: move;
+}
+.table-item .error {
+  background-color: var(--mat-sys-error);
+}
+.error-text {
+  color: var(--mat-sys-error);
+}
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+.table-list.cdk-drop-list-dragging .table-item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+.item-shadow {
+  box-shadow: 0px 2px 1px -1px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+    0px 1px 1px 0px color-mix(in srgb, var(--mat-sys-shadow) 14%, transparent),
+    0px 1px 3px 0px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+}
+.item-border {
+  border: 1px solid var(--mat-sys-on-secondary-container);
+}
+
+// From v2's components/image-input/_image-input-theme.scss.
+.border-theme {
+  border-color: var(--mat-sys-on-secondary-container);
+}
+.base-theme {
+  background-color: var(--mat-sys-secondary-container);
+}
+.bg-theme {
+  background-color: color-mix(in srgb, var(--mat-sys-on-secondary-container) 10%, transparent);
+}
+:root {
+  --cropper-outline-color: color-mix(in srgb, var(--mat-sys-surface) 70%, transparent);
+  --cropper-overlay-color: rgba(0, 0, 0, 0);
+}

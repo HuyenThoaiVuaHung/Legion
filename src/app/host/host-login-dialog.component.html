@@ -1,0 +1,42 @@
+@if (recoveryCode()) {
+  <h2 mat-dialog-title>Lưu mã khôi phục</h2>
+  <mat-dialog-content>
+    <p class="mat-body-medium opacity-70 !mt-0">Mã này chỉ hiển thị một lần. Hãy lưu ở nơi an toàn.</p>
+    <p class="mat-title-large !m-0 break-all select-all"><strong>{{ recoveryCode() }}</strong></p>
+    @if (error()) { <small role="alert" class="block mt-3 text-[var(--mat-sys-error)]">{{ error() }}</small> }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="copy()">{{ copied() ? 'Đã sao chép' : 'Sao chép' }}</button>
+    <button mat-button (click)="saved()"><mat-icon>check</mat-icon> Tôi đã lưu mã</button>
+  </mat-dialog-actions>
+} @else {
+  <h2 mat-dialog-title>{{ title[mode()] }}</h2>
+  <mat-dialog-content>
+    <form id="host-auth" (ngSubmit)="submit()" class="flex flex-col pt-2">
+      <mat-form-field appearance="outline">
+        <mat-label>Tên tài khoản</mat-label>
+        <input matInput name="username" [(ngModel)]="username" autocomplete="username" required />
+      </mat-form-field>
+      @if (mode() === 'recover') {
+        <mat-form-field appearance="outline">
+          <mat-label>Mã khôi phục</mat-label>
+          <input matInput name="code" [(ngModel)]="code" autocomplete="off" required />
+        </mat-form-field>
+      }
+      <mat-form-field appearance="outline">
+        <mat-label>{{ mode() === 'recover' ? 'Mật khẩu mới' : 'Mật khẩu' }}</mat-label>
+        <input matInput type="password" name="password" [(ngModel)]="password"
+               [attr.autocomplete]="mode() === 'login' ? 'current-password' : 'new-password'" required />
+      </mat-form-field>
+      @if (error()) { <small role="alert" class="text-[var(--mat-sys-error)]">{{ error() }}</small> }
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="mr-auto flex">
+      @for (m of modes; track m) {
+        @if (m !== mode()) { <button mat-button type="button" (click)="switchTo(m)">{{ switchLabel[m] }}</button> }
+      }
+    </div>
+    <button mat-button type="submit" form="host-auth" [disabled]="busy()"><mat-icon>{{ actionIcon[mode()] }}</mat-icon> {{ action[mode()] }}</button>
+  </mat-dialog-actions>
+}

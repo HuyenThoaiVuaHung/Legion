@@ -1,0 +1,207 @@
+<h3 class="mb-6">
+  <strong> Cài đặt chung </strong>
+</h3>
+@if (this.editorDataService.editorData) {
+<mat-accordion multi class="">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header class="h-max">
+      <span class="w-max grid place-items-center pr-6">
+        <mat-icon>groups</mat-icon>
+      </span>
+      <editor-item
+        title="Thông tin thí sinh"
+        description="Nhập thông tin và hình ảnh của thí sinh"
+      ></editor-item>
+    </mat-expansion-panel-header>
+    <player-table
+      (playersChangeEvent)="this.save()"
+      [players]="this.editorDataService.editorData.matchData.players"
+    >
+    </player-table>
+    <div class="mt-5">
+      <editor-item
+        title="Hình ảnh thí sinh"
+        description="Sẽ xuất hiện ở phần tổng kết điểm các thí sinh."
+      />
+      <div class="w-full my-5 grid grid-flow-col">
+        @for (player of this.editorDataService.editorData.matchData.players;
+        track $index) {
+        <image-input
+          class="border"
+          [src]="
+            editorDataService.editorData.uiConfig.miscImageSrc?.players? editorDataService.editorData.uiConfig.miscImageSrc?.players![$index] || '../../assets/misc/logo.png' : '../../assets/misc/logo.png'
+          "
+          (imageChangeEvent)="handleImageChange($event, 'players', $index)"
+          [title]="player.name"
+        >
+        </image-input>
+        }
+      </div>
+    </div>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <span class="w-max grid place-items-center pr-6">
+        <mat-icon>crossword</mat-icon>
+      </span>
+      <editor-item
+        title="Thông tin về trận đấu"
+        description="Đặt tên và chọn thể thức của trận đấu."
+      />
+    </mat-expansion-panel-header>
+    <div class="flex flex-col gap-3">
+      <editor-item
+        title="Tên trận đấu"
+        description="Tên trận đấu sẽ được hiển thị ở màn hình chờ."
+      >
+        <mat-form-field
+          appearance="outline"
+          class="w-[30rem]"
+          subscriptSizing="dynamic"
+        >
+          <input
+            (ngModelChange)="save()"
+            [(ngModel)]="editorDataService.editorData.matchData.matchName"
+            matInput
+            placeholder="Tên trận đấu"
+          />
+          <mat-label>Tên trận đấu</mat-label>
+        </mat-form-field>
+      </editor-item>
+      <mat-divider></mat-divider>
+      <editor-item
+        title="Thể thức"
+        description="Chọn giữa thể thức thi đấu của Olympia 2023 và 2024."
+      >
+        <mat-form-field
+          appearance="outline"
+          class="w-[30rem]"
+          subscriptSizing="dynamic"
+        >
+          <mat-select
+            matInput
+            (opened)="
+              this.matchVersionSnapshot =
+                this.editorDataService.editorData.matchData.matchVersion
+            "
+            (ngModelChange)="
+              this.editorDataService.handleMatchVersionChange(
+                matchVersionSnapshot
+              )
+            "
+            [(ngModel)]="
+              this.editorDataService.editorData.matchData.matchVersion
+            "
+          >
+            <mat-option [value]="23">O23</mat-option>
+            <mat-option [value]="24">O24</mat-option>
+          </mat-select>
+          <mat-label>Thể thức thi đấu</mat-label>
+        </mat-form-field>
+      </editor-item>
+    </div>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <span class="w-max grid place-items-center pr-6">
+        <mat-icon>palette</mat-icon>
+      </span>
+      <editor-item
+        title="Bộ nhận diện thương hiệu"
+        description="Lựa chọn bảng màu và tải bộ nhận diện thương hiệu của bạn."
+      />
+    </mat-expansion-panel-header>
+    <div class="flex flex-col gap-3">
+      <editor-item
+        title="Bảng màu chủ đạo"
+        description="Sử dụng các bảng màu của Angular Material."
+      >
+        <mat-form-field
+          appearance="outline"
+          class="w-[30rem]"
+          subscriptSizing="dynamic"
+        >
+          <mat-select
+            [(ngModel)]="editorDataService.editorData.uiConfig.pallette"
+            (ngModelChange)="save()"
+            matInput
+          >
+            <mat-option [value]="palettes.RED">Đỏ</mat-option>
+            <mat-option [value]="palettes.GREEN">Xanh lá</mat-option>
+            <mat-option [value]="palettes.BLUE">Xanh biển</mat-option>
+            <mat-option [value]="palettes.YELLOW">Vàng</mat-option>
+            <mat-option [value]="palettes.CYAN">Hatsune Miku</mat-option>
+            <mat-option [value]="palettes.MAGENTA">Đỏ sậm</mat-option>
+            <mat-option [value]="palettes.ORANGE">Cam</mat-option>
+            <mat-option [value]="palettes.CHARTREUSE">Lục nhạt</mat-option>
+            <mat-option [value]="palettes.AZURE">Xanh ngọc</mat-option>
+            <mat-option [value]="palettes.VIOLET">Violet</mat-option>
+          </mat-select>
+          <mat-label>Bảng màu chủ đạo</mat-label>
+        </mat-form-field>
+      </editor-item>
+      <mat-divider></mat-divider>
+      <editor-item
+        title="Chế độ tối"
+        description="Bật hoặc tắt chế độ tối cho giao diện trận đấu."
+      >
+        <div class="grid place-items-center w-max">
+          <mat-slide-toggle
+            (ngModelChange)="save()"
+            [(ngModel)]="editorDataService.editorData.uiConfig.darkMode"
+          />
+        </div>
+      </editor-item>
+    </div>
+    <div class="mt-10 flex gap-6">
+      <image-input
+        title="Logo"
+        description="Sẽ xuất hiện như Watermark ở trong các câu hỏi."
+        [src]="
+          this.editorDataService.editorData.uiConfig.miscImageSrc?.logo
+            ? this.editorDataService.editorData.uiConfig.miscImageSrc?.logo!
+            : '../../assets/misc/logo.png'
+        "
+        (imageChangeEvent)="handleImageChange($event, 'logo')"
+      />
+      <image-input
+        title="Logo dài"
+        description="Sẽ xuất hiện ở màn hình chào."
+        [src]="
+          this.editorDataService.editorData.uiConfig.miscImageSrc?.['logo-long']
+            ? this.editorDataService.editorData.uiConfig.miscImageSrc
+                ?.['logo-long']!
+            : '../../assets/misc/legion.png'
+        "
+        (imageChangeEvent)="handleImageChange($event, 'logo-long')"
+      />
+    </div>
+    <div class="mt-10 flex gap-6">
+      <image-input
+        title="Placeholder"
+        description="Sẽ xuất hiện để che hình ảnh và video trước khi hiện trong phần thi Tăng Tốc và Về Đích."
+        [src]="
+          this.editorDataService.editorData.uiConfig.miscImageSrc?.placeholder
+            ? this.editorDataService.editorData.uiConfig.miscImageSrc
+                ?.placeholder!
+            : '../../assets/misc/placeholder.png'
+        "
+        (imageChangeEvent)="handleImageChange($event, 'placeholder')"
+      />
+      <image-input
+        title="Hình nền"
+        description="Sẽ xuất hiện xuyên suốt trong ứng dụng."
+        [src]="
+          this.editorDataService.editorData.uiConfig.miscImageSrc?.background
+            ? this.editorDataService.editorData.uiConfig.miscImageSrc
+                ?.background!
+            : '../../assets/misc/placeholder.png'
+        "
+        (imageChangeEvent)="handleImageChange($event, 'background')"
+      />
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+}
+
+<div class="w-full h-0.5 flex"></div>

@@ -3,9 +3,10 @@ import { MatchPosition } from './contracts/game';
 /** localStorage keys — the only place they may appear. */
 export const STORAGE_KEYS = {
   serverUrl: 'legion.serverUrl',
-  authToken: 'legion.authToken',
-  roomToken: 'legion.authToken',
+  roomTokenPrefix: 'legion.room.',
   accountToken: 'legion.accountToken',
+  panelSizesPrefix: 'legion.panels.',
+  adminSidebar: 'legion.admin.sidebar',
   paletteSeed: 'legion.paletteSeed',
   paletteMode: 'legion.paletteMode',
   obsUrl: 'legion.obs.url',

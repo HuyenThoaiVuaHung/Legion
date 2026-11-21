@@ -83,11 +83,13 @@
           <div class="float-left">
             <span>
               @for (question of vcnv.questions; track question.id; let i = $index) {
-                {{ question.type === 'CNV' ? 'CNV' : 'HN' + (i + 1) }}: {{ question.answer }} |
+                HN{{ i + 1 }}: {{ question.answer }} |
                 {{ vcnvAnswerLength(question.answer) }} Kí tự
                 <br />
               }
-              Giải thích: {{ vcnvObstacleQuestion()?.question }}
+              CNV: {{ vcnv.obstacle.answer }} | {{ vcnvAnswerLength(vcnv.obstacle.answer) }} Kí tự
+              <br />
+              Giải thích: {{ vcnv.obstacle.question }}
             </span>
           </div>
           <div class="float-right">

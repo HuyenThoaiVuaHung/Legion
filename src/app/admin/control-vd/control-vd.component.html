@@ -1,4 +1,4 @@
-<div class="admin-container">
+<div class="admin-container" appResizeGroup>
   <mat-card class="w-full h-full" appearance="outlined">
     <mat-card-header>
       <mat-card-title>Quản lý câu hỏi</mat-card-title>
@@ -13,43 +13,11 @@
     </mat-card-header>
     <mat-card-content class="overflow-y-auto">
       @if (currentQuestionPool().length > 0) {
-        <table mat-table [dataSource]="currentQuestionPool()">
-          <ng-container matColumnDef="question">
-            <th mat-header-cell *matHeaderCellDef>Câu hỏi</th>
-            <td
-              mat-cell
-              [ngClass]="{ choose: chosenRow() === element }"
-              *matCellDef="let element"
-            >
-              {{ element.question }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="answer">
-            <th mat-header-cell *matHeaderCellDef>Đáp án</th>
-            <td mat-cell *matCellDef="let element">{{ element.answer }}</td>
-          </ng-container>
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef>Loại</th>
-            <td mat-cell *matCellDef="let element">{{ element.type }}</td>
-          </ng-container>
-          <ng-container matColumnDef="value">
-            <th mat-header-cell *matHeaderCellDef>Giá trị</th>
-            <td
-              mat-cell
-              [ngClass]="{ highlight: displayingRow() === element }"
-              *matCellDef="let element"
-            >
-              {{ element.value }}
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
-          <tr
-            mat-row
-            *matRowDef="let row; columns: displayedQuestionColumns"
-            (click)="onClickQuestion(row)"
-            (dblclick)="onDoubleClickQuestion(row)"
-          ></tr>
-        </table>
+        <editable-table [rows]="currentQuestionPool()" [columns]="questionColumns" [selected]="chosenRow()" (cellSave)="saveQuestionCell($event)" (rowClick)="onClickQuestion($event)" (rowDblClick)="onDoubleClickQuestion($event)">
+          <ng-template tableCell="value" let-row>
+            <span class="flex items-center gap-2">{{ row.value }} @if (displayingRow() === row) { <mat-icon>visibility</mat-icon> }</span>
+          </ng-template>
+        </editable-table>
       } @else {
         <div class="text-center">Vui lòng chọn thí sinh.</div>
       }
@@ -171,55 +139,16 @@
       }
       <mat-card appearance="outlined" class="player-table-card">
         <mat-card-content>
-          <table mat-table [dataSource]="players()" class="w-max">
-            <ng-container matColumnDef="id">
-              <th mat-header-cell *matHeaderCellDef>ID</th>
-              <td
-                mat-cell
-                *matCellDef="let element"
-                [ngClass]="{ choose: chosenPlayer() === element }"
-              >
-                {{ element.id }}
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Tên</th>
-              <td
-                mat-cell
-                *matCellDef="let element; let i = index"
-                [ngClass]="{ turn: stealingPlayerIndex() === i }"
-              >
-                {{ element.name }}
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="score">
-              <th mat-header-cell *matHeaderCellDef>Điểm</th>
-              <td mat-cell *matCellDef="let element">{{ element.score }}</td>
-            </ng-container>
-            <ng-container matColumnDef="active">
-              <th mat-header-cell *matHeaderCellDef>Đã kết nối?</th>
-              <td
-                mat-cell
-                *matCellDef="let element; let i = index"
-                [ngClass]="{ highlight: round()?.activePlayerIndex === i }"
-              >
-                <mat-checkbox disabled="true" [checked]="element.isReady"></mat-checkbox>
-              </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
-            <tr
-              mat-row
-              *matRowDef="let row; columns: displayedPlayerColumns"
-              (dblclick)="onDoubleClickPlayer(row)"
-              (click)="choosePlayer(row)"
-            ></tr>
-          </table>
+          <editable-table [rows]="players()" [columns]="playerColumns" [selected]="activePlayer()" (cellSave)="savePlayerCell($event)" (rowDblClick)="onDoubleClickPlayer($event)">
+            <ng-template tableCell="active" let-row let-i="index">
+              <span class="flex items-center gap-2">
+                <mat-checkbox disabled="true" [checked]="row.isReady"></mat-checkbox>
+                @if (stealingPlayerIndex() === i) { <mat-icon>notifications_active</mat-icon> }
+              </span>
+            </ng-template>
+          </editable-table>
         </mat-card-content>
         <mat-card-actions align="end">
-          <button [disabled]="!chosenPlayer()" mat-button (click)="editPlayer()">
-            <mat-icon>edit</mat-icon>
-            Sửa thông tin
-          </button>
           <button [disabled]="!activePlayer()" mat-button (click)="clearPlayer()">
             <mat-icon>clear</mat-icon>
             Kết thúc lượt

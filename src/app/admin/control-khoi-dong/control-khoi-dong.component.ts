@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import {
   MatCard,
@@ -14,19 +13,21 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
+import { CellEdit, EditableTableComponent, TableCellDirective, TableColumn } from '../../components/editable-table/editable-table.component';
 import { MatTooltip } from '@angular/material/tooltip';
-import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
 import { FormQKdComponent } from '../../components/forms/form-q-kd/form-q-kd.component';
 import { MenuItemComponent } from '../../components/menu-item/menu-item.component';
 import { KdGamemode, KdQuestion, KdRound, Player } from '../../core/contracts/game';
 import { ApiService } from '../../core/services/api.service';
 import { NetworkService } from '../../core/services/network.service';
 import { SessionService } from '../../core/services/session.service';
+import { queryParamState } from '../../core/query-param';
 
 /** Question counts per Olympia rules: 6 per singleplayer turn, 12 head-to-head. */
 const SINGLEPLAYER_QUESTIONS = 6;
 const MULTIPLAYER_QUESTIONS = 12;
+
+import { ResizeGroupDirective } from '../../components/resizable/resize-group.directive';
 
 @Component({
   selector: 'app-control-khoi-dong',
@@ -34,7 +35,7 @@ const MULTIPLAYER_QUESTIONS = 12;
   styleUrls: ['./control-khoi-dong.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
+    ResizeGroupDirective,
     MatButton,
     MatCard,
     MatCardActions,
@@ -48,7 +49,8 @@ const MULTIPLAYER_QUESTIONS = 12;
     MatIcon,
     MatOption,
     MatSelect,
-    MatTableModule,
+    EditableTableComponent,
+    TableCellDirective,
     MatTooltip,
     MenuItemComponent,
   ],
@@ -59,16 +61,23 @@ export class ControlKhoiDongComponent {
   private readonly dialog = inject(MatDialog);
   protected readonly session = inject(SessionService);
 
-  protected readonly displayedQuestionColumns = ['question', 'answer', 'type'];
-  protected readonly displayedPlayerColumns = ['id', 'name', 'score', 'active'];
+  protected readonly questionColumns: readonly TableColumn[] = [
+    { key: 'question', label: 'Câu hỏi', flex: 3, edit: 'text' },
+    { key: 'answer', label: 'Đáp án', flex: 2, edit: 'text' },
+    { key: 'type', label: 'Loại', flex: 1 },
+  ];
+  protected readonly playerColumns: readonly TableColumn[] = [
+    { key: 'id', label: 'ID', flex: 0.5 },
+    { key: 'name', label: 'Tên', flex: 2, edit: 'text', sortable: true },
+    { key: 'score', label: 'Điểm', flex: 1, edit: 'number', sortable: true, align: 'end' },
+    { key: 'active', label: 'Đã kết nối?', flex: 1 },
+  ];
   protected readonly singleplayerQuestions = SINGLEPLAYER_QUESTIONS;
   protected readonly multiplayerQuestions = MULTIPLAYER_QUESTIONS;
 
   protected readonly round = signal<KdRound | null>(null);
   protected readonly currentTime = signal(0);
-  protected readonly chosenRow = signal<KdQuestion | null>(null);
   protected readonly displayingRow = signal<KdQuestion | null>(null);
-  protected readonly chosenPlayer = signal<Player | null>(null);
   /** Name of the player who buzzed in ('' when nobody holds the turn). */
   protected readonly lastTurnName = signal('');
   protected readonly maxQuestionNo = signal(0);
@@ -77,6 +86,14 @@ export class ControlKhoiDongComponent {
   protected readonly threeSecTimers = signal<[number, number]>([0, 0]);
 
   private questionCount = 0;
+
+  /** Chosen question index within the shown list, kept in the URL ("q"). */
+  private readonly chosenIndex = queryParamState('q');
+  protected readonly chosenRow = computed<KdQuestion | null>(() => {
+    const raw = this.chosenIndex.value();
+    const index = raw !== null && /^\d+$/.test(raw) ? Number(raw) : -1;
+    return this.currentQuestionList()[index] ?? null;
+  });
 
   protected readonly players = computed(() => this.session.match()?.players ?? []);
 
@@ -87,6 +104,8 @@ export class ControlKhoiDongComponent {
       ? (round.questions.singleplayer[round.activePlayerIndex] ?? [])
       : round.questions.multiplayer;
   });
+
+  protected readonly activePlayer = computed<Player | null>(() => this.players()[this.round()?.activePlayerIndex ?? -1] ?? null);
 
   protected readonly currentQuestionListName = computed(() => {
     const round = this.round();
@@ -131,7 +150,8 @@ export class ControlKhoiDongComponent {
   }
 
   onClickQuestion(row: KdQuestion): void {
-    this.chosenRow.set(row);
+    const index = this.currentQuestionList().indexOf(row);
+    this.chosenIndex.set(index >= 0 ? String(index) : null);
   }
 
   onDoubleClickQuestion(row: KdQuestion): void {
@@ -139,32 +159,32 @@ export class ControlKhoiDongComponent {
     this.network.emit('broadcast-kd-question', row);
   }
 
-  choosePlayer(row: Player): void {
-    this.chosenPlayer.set(row);
-  }
-
   /** Puts a player on the singleplayer podium. */
   async onDoubleClickPlayer(row: Player): Promise<void> {
     const index = this.players().indexOf(row);
     if (index < 0) return;
+    this.chosenIndex.set(null);
     this.round.set(await this.api.patchKdControl({ activePlayerIndex: index }));
   }
 
-  async onGamemodeChange(gamemode: KdGamemode): Promise<void> {
-    this.round.set(await this.api.patchKdControl({ gamemode }));
+  async saveQuestionCell(edit: CellEdit<KdQuestion>): Promise<void> {
+    const round = this.round();
+    if (!round) return;
+    const updated = structuredClone(round);
+    const list = updated.gamemode === 'S' ? updated.questions.singleplayer[updated.activePlayerIndex] : updated.questions.multiplayer;
+    const question = list?.[edit.index];
+    if (!question) return;
+    Object.assign(question, { [edit.key]: edit.value });
+    this.round.set(await this.api.putRound('kd', updated));
   }
 
-  editPlayer(): void {
-    const player = this.chosenPlayer();
-    if (!player) return;
-    const index = this.players().indexOf(player);
-    if (index < 0) return;
-    const dialogRef = this.dialog.open(FormPlayerComponent, { data: structuredClone(player) });
-    dialogRef.afterClosed().subscribe(async (result?: Player) => {
-      if (!result) return;
-      result.score = Number(result.score) || 0;
-      this.session.match.set(await this.api.updatePlayer(index, result));
-    });
+  async savePlayerCell(edit: CellEdit<Player>): Promise<void> {
+    this.session.match.set(await this.api.updatePlayer(edit.index, { ...edit.row, [edit.key]: edit.value }));
+  }
+
+  async onGamemodeChange(gamemode: KdGamemode): Promise<void> {
+    this.chosenIndex.set(null);
+    this.round.set(await this.api.patchKdControl({ gamemode }));
   }
 
   editQuestion(): void {
@@ -186,7 +206,7 @@ export class ControlKhoiDongComponent {
         updated.questions.multiplayer[questionIndex] = result;
       }
       this.round.set(await this.api.putRound('kd', updated));
-      this.chosenRow.set(null);
+      this.chosenIndex.set(null);
     });
   }
 

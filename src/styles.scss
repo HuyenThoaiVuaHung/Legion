@@ -1,34 +1,84 @@
 @use "@angular/material" as mat;
 @use "./app/themes/table-theme";
+@use "./app/editor/components/themes/table-theme" as editor-table;
 @use "./app/themes/player-ui-theme";
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-// Material theme — modern token API. Emits `--mat-sys-*` custom properties at
-// runtime; `color-scheme: light dark` makes every token (and therefore every
-// component and theme partial) follow the OS scheme automatically.
+$v2-typography: (
+  brand-family: "Lexend",
+  plain-family: "Noto Sans",
+  bold-weight: 700,
+  medium-weight: 500,
+  regular-weight: 400,
+);
+$v2-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$orange-palette,
+    ),
+    typography: $v2-typography,
+  )
+);
+
 html {
-  color-scheme: light dark;
+  color-scheme: dark;
   @include mat.theme(
     (
       color: (
-        primary: mat.$violet-palette,
-        tertiary: mat.$magenta-palette,
+        theme-type: dark,
+        primary: mat.$orange-palette,
       ),
-      typography: (
-        plain-family: "Lexend",
-        brand-family: "Lexend",
-      ),
+      typography: $v2-typography,
       density: 0,
     )
   );
+  @include mat.typography-hierarchy($v2-theme);
+
+  background: linear-gradient(
+    135deg,
+    var(--mat-sys-surface) 0%,
+    var(--mat-sys-surface) 80%,
+    var(--mat-sys-primary-container) 100%
+  );
+  background-attachment: fixed;
+  color: var(--mat-sys-on-surface);
+
+  a {
+    color: mat.get-theme-color($v2-theme, primary, 50);
+  }
 }
 
-// The three typography-hierarchy classes the templates actually use, backed
-// by system tokens instead of the legacy hierarchy mixin.
+.new-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 8rem;
+  box-sizing: border-box;
+  border-radius: 0.75rem;
+  border: 2px dashed var(--mat-sys-outline-variant);
+  background: transparent;
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-label-large);
+  cursor: pointer;
+  transition: border-color 0.15s;
+  &:hover:not(:disabled) {
+    border-color: var(--mat-sys-primary);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
 .mat-headline-1 {
   font: var(--mat-sys-display-large);
+}
+.mat-title-large {
+  font: var(--mat-sys-title-large);
 }
 .mat-title-medium {
   font: var(--mat-sys-title-medium);
@@ -39,15 +89,17 @@ html {
 
 html {
   ::-webkit-scrollbar-track {
-    background: var(--mat-sys-surface-dim);
-    border-radius: 12px;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--mat-sys-on-surface);
+    background: var(--mat-sys-outline-variant);
     border-radius: 12px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--mat-sys-primary);
+    background: var(--mat-sys-outline);
+    background-clip: padding-box;
   }
   ::selection {
     background: var(--mat-sys-primary);
@@ -70,18 +122,33 @@ app-root {
 
 body {
   margin: 0;
-  background: var(--mat-sys-surface);
+  background: transparent;
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
+}
+
+strong {
+  font-weight: 600 !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+noscript {
+  width: 100vw !important;
+  height: 100vh !important;
+  display: grid !important;
+  place-items: center !important;
+  font-family: "Noto Sans", sans-serif !important;
+  text-align: center !important;
 }
 
 app-root {
   display: block;
 }
 
-// Operator pages are hosted inside the admin tab panel, whose height is already
-// constrained by the shell. Use that available height instead of a viewport
-// calculation so tab navigation never clips controls at the bottom.
 .admin-container {
   flex: 1 1 auto;
   min-height: 0;
@@ -94,9 +161,45 @@ app-root {
   background: var(--mat-sys-surface-container);
 }
 
-// Shared UI classes, defined once globally. Previously copy-pasted into
-// several component stylesheets (and, under Angular's scoped encapsulation,
-// silently inert wherever a template used them without a local definition).
+.split-handle {
+  position: relative;
+  flex: 0 0 0;
+  z-index: 2;
+  outline: none;
+  touch-action: none;
+  --grip: color-mix(in srgb, var(--mat-sys-outline) 45%, transparent);
+}
+.split-handle-column { margin-left: -0.75rem; cursor: col-resize; }
+.split-handle-row { margin-top: -0.75rem; cursor: row-resize; }
+.split-handle::before {
+  content: '';
+  position: absolute;
+}
+.split-handle-column::before { top: 0; bottom: 0; left: calc(0.375rem - 0.5rem); width: 1rem; }
+.split-handle-row::before { left: 0; right: 0; top: calc(0.375rem - 0.5rem); height: 1rem; }
+.split-handle::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  background: var(--grip);
+  opacity: 0.6;
+  transition: background-color 150ms, opacity 150ms, width 150ms, height 150ms;
+}
+.split-handle-column::after { top: 50%; left: calc(0.375rem - 2px); width: 4px; height: 2rem; transform: translateY(-50%); }
+.split-handle-row::after { left: 50%; top: calc(0.375rem - 2px); height: 4px; width: 2rem; transform: translateX(-50%); }
+.split-handle:hover::after,
+.split-handle:focus-visible::after {
+  opacity: 1;
+  background: var(--mat-sys-primary);
+}
+.split-handle-column:hover::after,
+.split-handle-column:focus-visible::after { height: 3.5rem; }
+.split-handle-row:hover::after,
+.split-handle-row:focus-visible::after { width: 3.5rem; }
+.split-handle.dragging::after { opacity: 1; background: var(--mat-sys-primary); }
+.split-handle-column.dragging::after { top: 0; height: 100%; transform: none; }
+.split-handle-row.dragging::after { left: 0; width: 100%; transform: none; }
+
 @layer components {
   .inputForm {
     @apply p-2;
@@ -113,7 +216,6 @@ app-root {
   .hint-text {
     @apply text-sm opacity-70;
   }
-  // The Về đích / question-bar answer tile.
   .pick-tile {
     @apply grid place-items-center justify-center rounded-xl border-2 border-primary bg-surface text-6xl font-semibold h-40 w-40;
   }
@@ -123,8 +225,6 @@ app-root {
   @apply gap-3;
 }
 
-// Player tables live inside nested cards. Let only those tables inherit their
-// card surface; unrelated data tables keep Material's default visual hierarchy.
 .player-table-card {
   .mat-mdc-card-content {
     overflow: auto;
@@ -139,8 +239,6 @@ app-root {
   }
 }
 
-// Shared Material dialog anatomy for every question/player editor. The dialog
-// content scrolls independently while actions remain stable and predictable.
 .operator-dialog-content {
   display: grid;
   gap: 1rem;

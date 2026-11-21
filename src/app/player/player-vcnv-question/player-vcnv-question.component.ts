@@ -13,12 +13,7 @@ import { SessionService } from '../../core/services/session.service';
 import { SfxService } from '../../core/services/sfx.service';
 import { PlayerListComponent } from '../../components/player-list/player-list.component';
 
-/**
- * VCNV question board is always laid out as 4 hàng ngang rows (index 0-3),
- * one hàng ngang đặc biệt (index 4), and the CNV obstacle itself (index 5)
- * — that structure is fixed by the game rules, not configurable data.
- */
-const CNV_INDEX = 5;
+/** VCNV board: 4 hàng ngang rows (index 0-3) and one hàng ngang đặc biệt (index 4). */
 const HN_ROW_INDICES = [0, 1, 2, 3] as const;
 
 /**
@@ -69,7 +64,7 @@ export class PlayerVcnvQuestionComponent {
   protected readonly obstaclePieces = computed(() => {
     const round = this.round();
     if (!round) return [];
-    const token = round.questions[CNV_INDEX]?.imagePieceFiles?.join(',') ?? '';
+    const token = round.obstacle.imagePieceFiles?.join(',') ?? '';
     return OBSTACLE_PIECES.map((piece) => ({
       ...piece,
       label: piece.index + 1,
@@ -82,6 +77,10 @@ export class PlayerVcnvQuestionComponent {
     const index = this.session.playerIndex();
     return index === null || (this.round()?.disabledPlayers.includes(index) ?? false);
   });
+
+  protected readonly obstacleLength = computed(
+    () => this.round()?.obstacle.answer.replace(/\s/g, '').length ?? 0,
+  );
 
   /** Row text: masked with ◯ while closed, ⬤ once shown-but-unsolved, plain once open. */
   protected readonly rowStrings = computed(() => {

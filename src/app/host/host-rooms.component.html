@@ -1,0 +1,20 @@
+<div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-5">
+  <button class="new-card" [disabled]="store.busy()" (click)="store.newRoom()">
+    <mat-icon>add</mat-icon>
+    Tạo phòng
+  </button>
+  @for (room of store.profile()?.rooms ?? []; track room.roomId) {
+    <mat-card appearance="outlined" class="group cursor-pointer" tabindex="0" (click)="store.enter(room)" (keydown.enter)="store.enter(room)">
+      <mat-card-content>
+        <h6>{{ room.code }}</h6>
+        <small class="text-xs opacity-70">Tạo lúc {{ store.date(room.createdAt) }}</small>
+      </mat-card-content>
+      <div class="w-full h-full !absolute top-0 left-0 flex justify-end items-end box-border p-2 rounded-xl opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+        <button mat-raised-button tabindex="-1">
+          <mat-icon>admin_panel_settings</mat-icon>
+          Quản trị
+        </button>
+      </div>
+    </mat-card>
+  }
+</div>

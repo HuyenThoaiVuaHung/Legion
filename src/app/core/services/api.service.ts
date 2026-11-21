@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import {
-  API_PATHS, AccountCredentials, AccountProfile, AccountSession, AccountSessionWithRecovery, RecoverAccountRequest, ServerInfo, SessionResponse, JoinRoomRequest, JoinRoomResponse, JoinLinkRequest, CreateRoomResponse, RoomInfo, RoomSecrets, RoomSettingsRequest, CreateRoomLinkRequest, CreateRoomLinkResponse, RoomLink, BankItem, BrandSlot,
+  API_PATHS, AccountCredentials, AccountProfile, AccountSession, AccountSessionWithRecovery, RecoverAccountRequest, ServerInfo, SessionResponse, JoinRoomRequest, JoinRoomResponse, JoinLinkRequest, CreateRoomResponse, RoomInfo, PublicRoom, RoomSecrets, RoomSettingsRequest, CreateRoomLinkRequest, CreateRoomLinkResponse, RoomLink, BankItem, BrandSlot,
   BrandAssetKey,
   LegionImportResponse,
   LoginResponse,
@@ -49,6 +49,7 @@ export class ApiService {
   me(): Promise<AccountProfile> { return firstValueFrom(this.http.get<AccountProfile>(this.url(API_PATHS.me), { headers: this.accountHeaders() })); }
   createRoom(bankItemId?: string): Promise<CreateRoomResponse> { return firstValueFrom(this.http.post<CreateRoomResponse>(this.url(API_PATHS.rooms), bankItemId ? { bankItemId } : {}, { headers: this.accountHeaders() })); }
   enterRoom(id: string): Promise<JoinRoomResponse> { return firstValueFrom(this.http.post<JoinRoomResponse>(this.url(API_PATHS.enterRoom(id)), {}, { headers: this.accountHeaders() })); }
+  publicRooms(): Promise<PublicRoom[]> { return firstValueFrom(this.http.get<PublicRoom[]>(this.url(API_PATHS.publicRooms))); }
   joinRoom(body: JoinRoomRequest): Promise<JoinRoomResponse> { return firstValueFrom(this.http.post<JoinRoomResponse>(this.url(API_PATHS.joinRoom), body)); }
   joinLink(body: JoinLinkRequest): Promise<JoinRoomResponse> { return firstValueFrom(this.http.post<JoinRoomResponse>(this.url(API_PATHS.joinLink), body)); }
   currentRoom(): Promise<RoomInfo> { return firstValueFrom(this.http.get<RoomInfo>(this.url(API_PATHS.currentRoom))); }

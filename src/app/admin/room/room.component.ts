@@ -2,9 +2,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
@@ -18,11 +20,12 @@ import { STORAGE_KEYS } from '../../core/constants';
 import { BankItem, LinkRole, RoomInfo, RoomLink, RoomSecrets, SpectatorMode } from '../../core/contracts/api';
 import { ApiService } from '../../core/services/api.service';
 import { SessionService } from '../../core/services/session.service';
+import { queryParamState } from '../../core/query-param';
 
 @Component({
   selector: 'app-room', templateUrl: './room.component.html', styleUrl: './room.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, FormsModule, MatButton, MatCardModule, MatFormFieldModule, MatInput, MatProgressBar, MatSelectModule, MatSlideToggle],
+  imports: [DatePipe, FormsModule, MatButton, MatIcon, MatIconButton, MatTooltip, MatExpansionModule, MatFormFieldModule, MatInput, MatProgressBar, MatSelectModule, MatSlideToggle],
 })
 export class RoomComponent {
   private readonly api = inject(ApiService);
@@ -35,6 +38,17 @@ export class RoomComponent {
   protected readonly links = signal<RoomLink[]>([]);
   protected readonly bank = signal<BankItem[]>([]);
   protected readonly owner = signal(false);
+  protected readonly failed = signal(false);
+  private readonly openPanels = queryParamState('open');
+  private readonly defaultOpen = this.route.snapshot.fragment === 'bank' ? 'info,bank' : 'info';
+  protected isOpen(id: string): boolean {
+    return (this.openPanels.value() ?? this.defaultOpen).split(',').includes(id);
+  }
+  protected toggle(id: string, expanded: boolean): void {
+    const open = new Set((this.openPanels.value() ?? this.defaultOpen).split(',').filter((p) => p && p !== 'none'));
+    if (expanded) open.add(id); else open.delete(id);
+    this.openPanels.set(open.size ? [...open].join(',') : 'none');
+  }
   protected readonly now = signal(Date.now());
   protected readonly revealed = signal<Partial<Record<keyof RoomSecrets, boolean>>>({});
   protected readonly roles: readonly { key: keyof RoomSecrets; label: string }[] = [
@@ -45,7 +59,7 @@ export class RoomComponent {
     const expiry = this.session.roomExpiring() ?? this.room()?.expiresAt;
     if (!expiry) return 'Không xác định';
     const seconds = Math.max(0, Math.ceil((expiry - this.now()) / 1000));
-    return `${Math.floor(seconds / 86400)} ngày ${Math.floor(seconds % 86400 / 3600)} giờ ${Math.floor(seconds % 3600 / 60)} phút ${seconds % 60} giây`;
+    return this.formatDuration(seconds);
   });
   protected role: LinkRole = 'viewer';
   protected view = '';
@@ -62,6 +76,21 @@ export class RoomComponent {
     inject(DestroyRef).onDestroy(() => clearInterval(timer));
     void this.load();
   }
+  protected formatBytes(bytes: number): string {
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let value = bytes;
+    let unit = 0;
+    while (value >= 1024 && unit < units.length - 1) { value /= 1024; unit++; }
+    return `${unit === 0 ? value : value.toFixed(1)} ${units[unit]}`;
+  }
+  private formatDuration(seconds: number): string {
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor(seconds % 86400 / 3600);
+    const minutes = Math.floor(seconds % 3600 / 60);
+    if (days > 0) return `${days} ngày ${hours} giờ`;
+    if (hours > 0) return `${hours} giờ ${minutes} phút`;
+    return `${minutes} phút ${seconds % 60} giây`;
+  }
   private error(error: unknown): void {
     const message = error instanceof HttpErrorResponse && typeof error.error?.error === 'string' ? error.error.error : 'Không thể thực hiện thao tác.';
     this.snackBar.open(message, 'Đóng');
@@ -70,6 +99,7 @@ export class RoomComponent {
     return !!(await firstValueFrom(this.dialog.open(ConfirmationDialogComponent, { data: { title, message, confirmLabel } }).afterClosed()));
   }
   async load(): Promise<void> {
+    this.failed.set(false);
     try {
       const [room, links] = await Promise.all([this.api.currentRoom(), this.api.roomLinks()]);
       this.room.set(room);
@@ -83,7 +113,7 @@ export class RoomComponent {
       if (this.owner() && this.route.snapshot.fragment === 'bank') {
         setTimeout(() => document.getElementById('bank')?.scrollIntoView({ behavior: 'smooth' }));
       }
-    } catch (error) { this.error(error); }
+    } catch (error) { this.failed.set(!this.room()); this.error(error); }
   }
   async copy(value: string): Promise<void> {
     try { await navigator.clipboard.writeText(value); this.snackBar.open('Đã sao chép.', 'Đóng'); }
@@ -99,6 +129,10 @@ export class RoomComponent {
     if (!await this.confirm('Giải phóng chỗ', 'Phiên của thí sinh tại chỗ này sẽ bị thu hồi.', 'Giải phóng')) return;
     try { await this.api.releaseSeat(index); await this.load(); } catch (error) { this.error(error); }
   }
+  async setListed(listed: boolean): Promise<void> {
+    try { await this.api.roomSettings({ listed }); await this.load(); } catch (error) { this.error(error); await this.load(); }
+  }
+
   async setMode(spectatorMode: SpectatorMode): Promise<void> {
     try { await this.api.roomSettings({ spectatorMode }); await this.load(); } catch (error) { this.error(error); await this.load(); }
   }

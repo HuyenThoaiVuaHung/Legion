@@ -14,12 +14,12 @@ import { joinError } from './join-error';
   selector: 'app-room-link', changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, MatButton, MatFormField, MatLabel, MatInput],
   template: `<main class="p-8 max-w-lg mx-auto">
-    <h2>V?o ph?ng {{ code }}</h2>
+    <h2>Vào phòng {{ code }}</h2>
     @if (needUsername()) {
-      <mat-form-field class="w-full"><mat-label>T?n ng??i ch?i</mat-label><input matInput [(ngModel)]="username" maxlength="32" /></mat-form-field>
-      <button mat-flat-button (click)="join()">V?o ph?ng</button>
-    } @else if (!error()) { <p>?ang k?t n?i...</p> }
-    @if (error()) { <p role="alert">{{ error() }}</p><button mat-button (click)="join()">Th? l?i</button> }
+      <mat-form-field class="w-full"><mat-label>Tên người chơi</mat-label><input matInput [(ngModel)]="username" maxlength="32" /></mat-form-field>
+      <button mat-flat-button (click)="join()">Vào phòng</button>
+    } @else if (!error()) { <p>Đang kết nối...</p> }
+    @if (error()) { <p role="alert">{{ error() }}</p><button mat-button (click)="join()">Thử lại</button> }
   </main>`,
 })
 export class RoomLinkComponent {
@@ -40,7 +40,7 @@ export class RoomLinkComponent {
   }
   private async start(): Promise<void> {
     try { await this.session.connect(window.location.origin); await this.join(); }
-    catch { this.error.set('Kh?ng th? k?t n?i t?i m?y ch?.'); }
+    catch { this.error.set('Không thể kết nối tới máy chủ.'); }
   }
   async join(): Promise<void> {
     this.error.set('');
@@ -49,15 +49,14 @@ export class RoomLinkComponent {
         ? await this.api.joinLink({ token: this.token, username: this.username || undefined })
         : await this.api.joinRoom({ code: this.code });
       this.session.followMatch.set(!this.view);
-      await this.session.acceptRoomSession(result);
+      await this.session.acceptRoomSession(result, this.code);
       const views: Record<string, string> = {
         'sc-khoi-dong': '/misc/sc-khoi-dong', 'sc-question-bar': '/misc/sc-question-bar',
         'sc-ve-dich': '/misc/sc-ve-dich', 'kd': '/player/kd', 'vcnv-q': '/player/vcnv-q',
         'vcnv-a': '/player/vcnv-a', 'tangtoc-q': '/player/tangtoc-q',
         'tangtoc-a': '/player/tangtoc-a', 'vd': '/player/vd', 'chp': '/player/chp', 'points': '/player/points',
       };
-      const target = this.view ? (views[this.view] ?? '/player/points') :
-        result.roleId === Role.Admin ? '/admin' : result.roleId === Role.Mc ? '/mc' : '/player/points';
+      const target = this.view ? this.session.base() + (views[this.view] ?? '/player/points') : this.session.homeFor(result.roleId);
       await this.router.navigateByUrl(target);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 400 && /username/i.test(error.error?.error ?? '')) this.needUsername.set(true);

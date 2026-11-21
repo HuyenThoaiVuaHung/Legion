@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { queryParamState } from '../../core/query-param';
 import * as XLSX from 'xlsx';
 import { MatButton } from '@angular/material/button';
 import {
@@ -15,9 +17,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { NgClass } from '@angular/common';
-import { FormPlayerComponent } from '../../components/forms/form-player/form-player.component';
+import { CellEdit, EditableTableComponent, TableCellDirective, TableColumn } from '../../components/editable-table/editable-table.component';
 import { FormQKdComponent } from '../../components/forms/form-q-kd/form-q-kd.component';
 import { FormQTtComponent } from '../../components/forms/form-q-tt/form-q-tt.component';
 import { FormQVcnvComponent } from '../../components/forms/form-q-vcnv/form-q-vcnv.component';
@@ -45,13 +45,17 @@ import { NetworkService } from '../../core/services/network.service';
 import { SessionService } from '../../core/services/session.service';
 import { QuestionPreview, toQuestionPreview } from '../utils/question.adapter';
 
+const ROUND_KINDS: readonly RoundKind[] = ['kd', 'vcnv', 'tt', 'vd', 'chp'];
+
+import { ResizeGroupDirective } from '../../components/resizable/resize-group.directive';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
+    ResizeGroupDirective,
     MatButton,
     MatCard,
     MatCardActions,
@@ -65,7 +69,8 @@ import { QuestionPreview, toQuestionPreview } from '../utils/question.adapter';
     MatIcon,
     MatOption,
     MatSelect,
-    MatTableModule,
+    EditableTableComponent,
+    TableCellDirective,
     MenuItemComponent,
   ],
 })
@@ -77,8 +82,17 @@ export class AdminDashboardComponent {
   protected readonly media = inject(MediaService);
   protected readonly session = inject(SessionService);
 
-  protected readonly displayedQuestionColumns = ['question', 'answer', 'type'];
-  protected readonly displayedPlayerColumns = ['id', 'name', 'score', 'active'];
+  protected readonly questionColumns: readonly TableColumn[] = [
+    { key: 'question', label: 'Câu hỏi', flex: 3, edit: 'text' },
+    { key: 'answer', label: 'Đáp án', flex: 2, edit: 'text' },
+    { key: 'typeLabel', label: 'Loại', flex: 1 },
+  ];
+  protected readonly playerColumns: readonly TableColumn[] = [
+    { key: 'id', label: 'ID', flex: 0.5 },
+    { key: 'name', label: 'Tên', flex: 2, edit: 'text', sortable: true },
+    { key: 'score', label: 'Điểm', flex: 1, edit: 'number', sortable: true, align: 'end' },
+    { key: 'active', label: 'Đã kết nối?', flex: 1 },
+  ];
 
   protected readonly kdRound = signal<KdRound | null>(null);
   protected readonly vcnvRound = signal<VcnvRound | null>(null);
@@ -92,7 +106,6 @@ export class AdminDashboardComponent {
   protected readonly kdPreviewPlayerIndex = signal(0);
   protected readonly vdPreviewPlayerIndex = signal(-1);
 
-  protected readonly chosenRow = signal<QuestionPreview | null>(null);
   protected readonly importedFileName = signal('');
 
   protected readonly players = computed(() => this.session.match()?.players ?? []);
@@ -123,8 +136,21 @@ export class AdminDashboardComponent {
     return questions.map((question, index) => toQuestionPreview(kind, question, index));
   });
 
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly roundParam = queryParamState('round');
+  private readonly questionParam = queryParamState('q');
+
+  /** Resolved by index from the URL, so it survives row objects being rebuilt after saves. */
+  protected readonly chosenRow = computed<QuestionPreview | null>(() => {
+    const raw = this.questionParam.value();
+    if (raw === null) return null;
+    const index = Number(raw);
+    return Number.isInteger(index) ? (this.questionList()[index] ?? null) : null;
+  });
+
   protected readonly obstacleImage = computed(() => {
-    const obstacle = this.vcnvRound()?.questions.find((q) => q.type === 'CNV');
+    const obstacle = this.vcnvRound()?.obstacle;
     return obstacle?.imageFile ? this.media.resolve('vcnv', obstacle.imageFile) : null;
   });
 
@@ -139,7 +165,36 @@ export class AdminDashboardComponent {
     ]) {
       destroyRef.onDestroy(off);
     }
+    effect(() => {
+      const kind = this.roundParam.value();
+      if (kind && (ROUND_KINDS as readonly string[]).includes(kind)) this.selectedKind.set(kind as RoundKind);
+    });
     void this.loadRounds();
+  }
+
+  protected selectRound(kind: RoundKind): void {
+    this.selectedKind.set(kind);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { round: kind, q: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  protected selectKdPlayer(index: number): void {
+    this.kdPreviewPlayerIndex.set(index);
+    this.questionParam.set(null);
+  }
+
+  protected selectKdGamemode(mode: KdGamemode): void {
+    this.kdPreviewGamemode.set(mode);
+    this.questionParam.set(null);
+  }
+
+  protected selectVdPlayer(index: number): void {
+    this.vdPreviewPlayerIndex.set(index);
+    this.questionParam.set(null);
   }
 
   private async loadRounds(): Promise<void> {
@@ -160,7 +215,17 @@ export class AdminDashboardComponent {
   }
 
   onClickRow(row: QuestionPreview): void {
-    this.chosenRow.set(row);
+    this.questionParam.set(String(row.index));
+  }
+
+  async saveQuestionCell(edit: CellEdit<QuestionPreview>): Promise<void> {
+    const source = structuredClone(edit.row.source);
+    Object.assign(source, { [edit.key]: edit.value });
+    await this.saveEditedQuestion(edit.row, source);
+  }
+
+  async savePlayerCell(edit: CellEdit<Player>): Promise<void> {
+    this.session.match.set(await this.api.updatePlayer(edit.index, { ...edit.row, [edit.key]: edit.value }));
   }
 
   /** Open the matching Material editor for the selected canonical question. */
@@ -249,22 +314,11 @@ export class AdminDashboardComponent {
           break;
         }
       }
-      this.chosenRow.set(null);
+      this.questionParam.set(null);
       this.snackBar.open('Đã lưu câu hỏi.', 'Đóng');
     } catch {
       this.snackBar.open('Không thể lưu câu hỏi.', 'Đóng');
     }
-  }
-
-  editPlayer(player: Player): void {
-    const index = this.players().indexOf(player);
-    if (index < 0) return;
-    const dialogRef = this.dialog.open(FormPlayerComponent, { data: structuredClone(player) });
-    dialogRef.afterClosed().subscribe(async (result?: Player) => {
-      if (!result) return;
-      result.score = Number(result.score) || 0;
-      this.session.match.set(await this.api.updatePlayer(index, result));
-    });
   }
 
   async onExcelSelected(event: Event): Promise<void> {

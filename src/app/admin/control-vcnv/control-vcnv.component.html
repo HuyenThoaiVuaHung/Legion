@@ -1,5 +1,6 @@
-<div class="admin-container">
-  <mat-card appearance="outlined" class="w-full">
+<div class="admin-container" appResizeGroup>
+  <div class="flex flex-col gap-3 min-h-0 h-full" appResizeGroup="column">
+  <mat-card appearance="outlined" class="w-full min-h-0 flex-1">
     <mat-card-header class="py-2">
       <mat-card-title> Danh sách câu hỏi </mat-card-title>
       <mat-card-subtitle>
@@ -8,85 +9,26 @@
     </mat-card-header>
     <mat-card-content class="overflow-y-auto">
       @if (round(); as data) {
-        <table mat-table [dataSource]="data.questions">
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef>ID</th>
-            <td
-              mat-cell
-              [ngClass]="{ choose: chosenRow() === element }"
-              *matCellDef="let element"
-            >
-              {{ element.id }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="question">
-            <th mat-header-cell *matHeaderCellDef>Câu hỏi</th>
-            <td mat-cell *matCellDef="let element">
-              {{ element.question }}
-              @if (element.type === 'CNV') {
-                <img
-                  class="w-40 aspect-video object-cover"
-                  [src]="media.resolve('vcnv', element.imageFile)"
-                  alt="Hình ảnh chướng ngại vật"
-                />
-              }
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="answer">
-            <th mat-header-cell *matHeaderCellDef>Đáp án</th>
-            <td [ngClass]="{ opened: element.isOpen }" mat-cell *matCellDef="let element">
-              {{ element.answer }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef>Loại</th>
-            <td mat-cell *matCellDef="let element">{{ element.type }}</td>
-          </ng-container>
-          <ng-container matColumnDef="value">
-            <th mat-header-cell *matHeaderCellDef>Giá trị</th>
-            <td mat-cell *matCellDef="let element">{{ element.value }}</td>
-          </ng-container>
-          <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef>Hành động</th>
-            <td
-              mat-cell
-              [ngClass]="{ highlight: displayingRow() === element }"
-              *matCellDef="let element"
-            >
-              @if (element.type !== 'CNV') {
-                <div class="flex items-center flex-wrap gap-2">
-                  <button
-                    mat-icon-button
-                    matTooltip="Không cho thấy góc hình ảnh"
-                    (click)="closeRow(element.id)"
-                  >
-                    <mat-icon>disabled_by_default</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    matTooltip="Cho thấy góc hình ảnh"
-                    (click)="playSfx('VCNV_PIC_REVEAL'); openRow(element.id)"
-                  >
-                    <mat-icon>visibility</mat-icon>
-                  </button>
-                  <mat-checkbox
-                    matTooltip="Câu hỏi đã hiện hay chưa"
-                    color="primary"
-                    [checked]="element.isShown"
-                    (change)="setShown(element, $event.checked)"
-                  ></mat-checkbox>
-                </div>
-              }
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedQuestionColumns"></tr>
-          <tr
-            mat-row
-            *matRowDef="let row; columns: displayedQuestionColumns"
-            (click)="onClickQuestion(row)"
-            (dblclick)="onDoubleClickQuestion(row)"
-          ></tr>
-        </table>
+        <editable-table [rows]="data.questions" [columns]="questionColumns" [selected]="chosenRow()" (cellSave)="saveQuestionCell($event)" (rowClick)="onClickQuestion($event)" (rowDblClick)="onDoubleClickQuestion($event)">
+          <ng-template tableCell="type" let-row>
+            <span class="flex items-center gap-2">
+              {{ row.type }}
+              @if (displayingRow() === row) { <mat-icon>visibility</mat-icon> }
+              @if (row.isOpen) { <mat-icon>lock_open</mat-icon> }
+            </span>
+          </ng-template>
+          <ng-template tableCell="action" let-row>
+            <div class="flex items-center flex-wrap gap-2" (click)="$event.stopPropagation()">
+              <button mat-icon-button matTooltip="Không cho thấy góc hình ảnh" (click)="closeRow(row.id)">
+                <mat-icon>disabled_by_default</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Cho thấy góc hình ảnh" (click)="playSfx('VCNV_PIC_REVEAL'); openRow(row.id)">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <mat-checkbox matTooltip="Câu hỏi đã hiện hay chưa" color="primary" [checked]="row.isShown" (change)="setShown(row, $event.checked)"></mat-checkbox>
+            </div>
+          </ng-template>
+        </editable-table>
       } @else {
         <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
       }
@@ -118,6 +60,34 @@
       </button>
     </mat-card-actions>
   </mat-card>
+  <mat-card appearance="outlined" class="w-full min-h-0">
+    <mat-card-header class="py-2">
+      <mat-card-title> Chướng ngại vật </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="overflow-y-auto min-h-0">
+      @if (round(); as data) {
+        <button type="button" class="obstacle-image group relative block w-full aspect-video rounded-xl overflow-hidden" [class.empty]="!data.obstacle.imageFile" [disabled]="uploadingObstacle()" (click)="obstacleInput.click()" [matTooltip]="data.obstacle.imageFile ? 'Đổi ảnh chướng ngại vật' : 'Tải ảnh chướng ngại vật'">
+          @if (data.obstacle.imageFile) {
+            <img class="absolute inset-0 w-full h-full object-cover" [src]="media.resolve('vcnv', data.obstacle.imageFile)" alt="Hình ảnh chướng ngại vật" />
+          }
+          <span class="obstacle-image-hint absolute inset-0 flex flex-col items-center justify-center gap-1 transition-opacity" [class.opacity-0]="data.obstacle.imageFile" [class.group-hover:opacity-100]="data.obstacle.imageFile" [class.group-focus-visible:opacity-100]="data.obstacle.imageFile">
+            @if (uploadingObstacle()) { <mat-progress-spinner mode="indeterminate" [diameter]="28" /> } @else { <mat-icon>add_photo_alternate</mat-icon>{{ data.obstacle.imageFile ? 'Đổi ảnh' : 'Tải ảnh lên' }} }
+          </span>
+        </button>
+        <input #obstacleInput type="file" accept="image/*" hidden (change)="onObstacleImage($event)" />
+        <editable-table class="block mt-2" [rows]="obstacleRows()" [columns]="obstacleColumns" (cellSave)="saveObstacleCell($event)" />
+      } @else {
+        <p class="opacity-70">Chưa có chướng ngại vật.</p>
+      }
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-button (click)="editObstacle()">
+        <mat-icon>edit</mat-icon>
+        Chỉnh sửa
+      </button>
+    </mat-card-actions>
+  </mat-card>
+  </div>
   <mat-card appearance="outlined" class="w-full h-full">
     <mat-card-header>
       <mat-card-title> Quản lý vòng đấu </mat-card-title>
@@ -153,48 +123,13 @@
             <mat-card-title class="mat-title-medium"> Chấm hàng ngang </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <table mat-table [dataSource]="players()">
-              <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef>ID</th>
-                <td mat-cell *matCellDef="let element">{{ element.id }}</td>
-              </ng-container>
-              <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Tên</th>
-                <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-              </ng-container>
-              <ng-container matColumnDef="score">
-                <th mat-header-cell *matHeaderCellDef>Điểm</th>
-                <td mat-cell *matCellDef="let element">{{ element.score }}</td>
-              </ng-container>
-              <ng-container matColumnDef="response">
-                <th mat-header-cell *matHeaderCellDef>Trả lời</th>
-                <td mat-cell *matCellDef="let element; let i = index">
-                  {{ data.playerAnswers[i]?.answer?.toUpperCase() }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="mark">
-                <th mat-header-cell *matHeaderCellDef>Chấm</th>
-                <td mat-cell *matCellDef="let element; let i = index">
-                  <mat-checkbox
-                    [checked]="data.playerAnswers[i]?.correct ?? false"
-                    (change)="setAnswerMark(i, $event.checked)"
-                    >Đúng</mat-checkbox
-                  >
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="active">
-                <th mat-header-cell *matHeaderCellDef>Đã kết nối?</th>
-                <td mat-cell *matCellDef="let element">
-                  <mat-checkbox disabled="true" [checked]="element.isReady"></mat-checkbox>
-                </td>
-              </ng-container>
-              <tr mat-header-row *matHeaderRowDef="displayedPlayerColumns"></tr>
-              <tr
-                mat-row
-                *matRowDef="let row; columns: displayedPlayerColumns"
-                (dblclick)="onDoubleClickPlayer(row)"
-              ></tr>
-            </table>
+            <editable-table [rows]="players()" [columns]="playerColumns" (cellSave)="savePlayerCell($event)">
+              <ng-template tableCell="response" let-i="index">{{ data.playerAnswers[i]?.answer?.toUpperCase() }}</ng-template>
+              <ng-template tableCell="mark" let-i="index">
+                <mat-checkbox [checked]="data.playerAnswers[i]?.correct ?? false" (change)="setAnswerMark(i, $event.checked)">Đúng</mat-checkbox>
+              </ng-template>
+              <ng-template tableCell="active" let-row><mat-checkbox disabled="true" [checked]="row.isReady"></mat-checkbox></ng-template>
+            </editable-table>
           </mat-card-content>
           <mat-card-actions align="end">
             <button mat-flat-button [disabled]="currentTime() > 0" (click)="submitMark()">
@@ -214,35 +149,13 @@
             <mat-card-title class="mat-title-medium"> Chấm chướng ngại vật </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <table mat-table [dataSource]="data.obstacleBuzzes">
-              <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef>ID</th>
-                <td mat-cell *matCellDef="let element">{{ element.playerIndex + 1 }}</td>
-              </ng-container>
-              <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Tên</th>
-                <td mat-cell *matCellDef="let element">
-                  {{ players()[element.playerIndex]?.name }}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="time">
-                <th mat-header-cell *matHeaderCellDef>Thời gian</th>
-                <td mat-cell *matCellDef="let element">{{ element.readableTime }}</td>
-              </ng-container>
-              <ng-container matColumnDef="mark">
-                <th mat-header-cell *matHeaderCellDef>Chấm</th>
-                <td mat-cell *matCellDef="let element">
-                  <mat-checkbox
-                    color="primary"
-                    [checked]="obstacleMarks()[element.playerIndex] ?? false"
-                    (change)="setObstacleMark(element.playerIndex, $event.checked)"
-                  ></mat-checkbox
-                  >Đúng
-                </td>
-              </ng-container>
-              <tr mat-header-row *matHeaderRowDef="displayedBuzzColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedBuzzColumns"></tr>
-            </table>
+            <editable-table [rows]="data.obstacleBuzzes" [columns]="buzzColumns">
+              <ng-template tableCell="id" let-row>{{ row.playerIndex + 1 }}</ng-template>
+              <ng-template tableCell="name" let-row>{{ players()[row.playerIndex]?.name }}</ng-template>
+              <ng-template tableCell="mark" let-row>
+                <mat-checkbox color="primary" [checked]="obstacleMarks()[row.playerIndex] ?? false" (change)="setObstacleMark(row.playerIndex, $event.checked)">Đúng</mat-checkbox>
+              </ng-template>
+            </editable-table>
           </mat-card-content>
           <mat-card-actions align="end">
             <button
