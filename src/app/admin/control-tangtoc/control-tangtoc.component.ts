@@ -19,14 +19,13 @@ import { POSITION_LABELS } from '../../core/constants';
 import { Player, TtQuestion, TtRound } from '../../core/contracts/game';
 import { queryParamState } from '../../core/query-param';
 import { ApiService } from '../../core/services/api.service';
+import { ConfigService } from '../../core/services/config.service';
 import { MediaService } from '../../core/services/media.service';
 import { NetworkService } from '../../core/services/network.service';
 import { SessionService } from '../../core/services/session.service';
 
 /** Sentinel question id the server understands as "hide the question". */
 const HIDE_QUESTION_ID = -1;
-/** Countdown length while the video question plays. */
-const VIDEO_TIMER_SECONDS = 40;
 
 import { ResizeGroupDirective } from '../../components/resizable/resize-group.directive';
 
@@ -56,6 +55,7 @@ export class ControlTangtocComponent {
   private readonly api = inject(ApiService);
   private readonly network = inject(NetworkService);
   private readonly dialog = inject(MatDialog);
+  private readonly config = inject(ConfigService);
   protected readonly media = inject(MediaService);
   protected readonly session = inject(SessionService);
 
@@ -237,7 +237,7 @@ export class ControlTangtocComponent {
 
   togglePlayVideo(): void {
     this.network.emit('tangtoc-play-video');
-    this.startTimer(VIDEO_TIMER_SECONDS);
+    this.startTimer(this.config.rules().ttVideoSeconds);
   }
 
   toggleResultsDisplay(): void {

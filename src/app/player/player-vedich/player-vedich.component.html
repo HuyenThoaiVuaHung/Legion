@@ -16,12 +16,12 @@
   </div>
   @if (round()?.isQuestionPickerShown === false) {
     <div class="flex-grow flex flex-col gap-5">
-      <div class="disablePointerActions flex questionBox h-full w-full text-4xl p-10 box-border border-2 rounded-xl">
+      <div class="disablePointerActions flex flex-col questionBox h-full w-full text-4xl p-10 box-border border-2 rounded-xl gap-y-6">
         <div class="rounded-xl w-full">
           {{ currentQuestion()?.question }}
         </div>
         @if (currentQuestion() && currentQuestion()?.type !== 'N' && currentQuestion()?.type !== 'A') {
-          <div class="w-full">
+          <div class="w-full flex justify-around">
             @if (currentQuestion()?.type === 'V') {
               <video
                 id="vedich-video"

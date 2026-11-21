@@ -188,6 +188,11 @@ export class ControlChpComponent {
     this.lastTurnIndex.set(null);
   }
 
+  resetTurn(): void {
+    this.network.emit('clear-turn-chp');
+    this.lastTurnIndex.set(null);
+  }
+
   clearQuestion(): void {
     this.network.emit('clear-question-chp');
   }

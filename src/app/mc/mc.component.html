@@ -40,6 +40,22 @@
       }
     }
 
+    @if (position() === 'CHP') {
+      @if (currentChpQuestion(); as question) {
+        <div class="mb-5">
+          Câu hỏi: {{ question.question }}<br />
+          Đáp án: {{ question.answer }}
+        </div>
+      }
+      @if (chpRound(); as chp) {
+        <div>
+          @for (player of players(); track player.id; let i = $index) {
+            <div>{{ player.name }}: {{ chp.playedPlayers[i] ? 'đã chơi' : 'chưa chơi' }}</div>
+          }
+        </div>
+      }
+    }
+
     @if (position() === 'VD') {
       @if (currentVdQuestion(); as question) {
         @if (vdRound()?.hopeStarActive) {

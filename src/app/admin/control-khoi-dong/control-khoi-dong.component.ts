@@ -141,6 +141,8 @@ export class ControlKhoiDongComponent {
     ]) {
       destroyRef.onDestroy(off);
     }
+    // Leaving the KD screen (another admin section, home, logout) silences the looping music.
+    destroyRef.onDestroy(() => this.network.emit('stop-kd-sound'));
     void this.init();
   }
 
@@ -216,6 +218,7 @@ export class ControlKhoiDongComponent {
 
   roundStart(amount: number): void {
     this.network.emit('start-turn-kd', amount);
+    this.network.emit('stop-kd-sound');
     this.maxQuestionNo.set(amount);
     this.currentQuestionNo.set(0);
     this.questionCount = 0;

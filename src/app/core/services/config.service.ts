@@ -20,6 +20,7 @@ export interface GameRules {
   vcnvRowPoints: number;
   obstacleValueByRevealedCount: Record<number, number>;
   ttPointsByPlacement: number[];
+  ttVideoSeconds: number;
   vdStealTicks: number;
   vdWrongPenaltyDivisor: number;
   vdHopeStarMultiplier: number;
@@ -46,6 +47,7 @@ const DEFAULT_RULES: Readonly<GameRules> = {
   vcnvRowPoints: 10,
   obstacleValueByRevealedCount: { 0: 50, 1: 50, 2: 40, 3: 30, 4: 20, 5: 10 },
   ttPointsByPlacement: [40, 30, 20, 10],
+  ttVideoSeconds: 30,
   vdStealTicks: 50,
   vdWrongPenaltyDivisor: 2,
   vdHopeStarMultiplier: 2,
