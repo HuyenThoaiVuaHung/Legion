@@ -21,12 +21,12 @@ jobs:
       BACKEND_DIR: _release/Legendary
     steps:
       - name: Check out Legion main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Check out matching Legendary tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: HuyenThoaiVuaHung/Legendary
           ref: v${{ inputs.version }}
