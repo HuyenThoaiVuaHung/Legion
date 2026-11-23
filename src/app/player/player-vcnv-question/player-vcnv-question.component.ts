@@ -125,7 +125,7 @@ export class PlayerVcnvQuestionComponent {
   }
 
   submitAnswer(): void {
-    if (this.currentTime() <= 0) return;
+    if (this.currentTime() <= 0 || !this.playerAnswer().trim()) return;
     this.answerCache.set(this.playerAnswer().toUpperCase());
     this.network.emit('submit-answer-vcnv', this.playerAnswer());
     this.playerAnswer.set('');

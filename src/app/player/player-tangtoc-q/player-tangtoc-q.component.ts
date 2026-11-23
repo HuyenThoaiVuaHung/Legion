@@ -92,7 +92,7 @@ export class PlayerTangtocQComponent {
   }
 
   submitAnswer(): void {
-    if (this.currentTime() <= 0) return;
+    if (this.currentTime() <= 0 || !this.playerAnswer().trim()) return;
     this.network.emit('player-submit-answer-tangtoc', this.playerAnswer());
     this.answerCache.set(this.playerAnswer());
     this.playerAnswer.set('');
